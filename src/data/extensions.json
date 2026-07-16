@@ -1,0 +1,101 @@
+{
+  "source": "https://repository.frostyard.org/ext/index",
+  "updatedAt": "2026-07-16T00:43:29.822Z",
+  "extensions": [
+    {
+      "name": "1password",
+      "label": "1Password desktop",
+      "version": "8.12.26"
+    },
+    {
+      "name": "1password-cli",
+      "label": "1Password CLI",
+      "version": "2.33.1-1"
+    },
+    {
+      "name": "azurevpn",
+      "label": "Azure VPN",
+      "version": "3.0.0"
+    },
+    {
+      "name": "bitwarden",
+      "label": "Bitwarden",
+      "version": "2026.6.1"
+    },
+    {
+      "name": "claude-desktop",
+      "label": "Claude Desktop",
+      "version": "1.18286.2"
+    },
+    {
+      "name": "code-server",
+      "label": "code-server",
+      "version": "4.118.0"
+    },
+    {
+      "name": "coder",
+      "label": "Coder",
+      "version": "2.34.6-1"
+    },
+    {
+      "name": "debdev",
+      "label": "Debian development",
+      "version": "1.0.141"
+    },
+    {
+      "name": "dev",
+      "label": "Development tools",
+      "version": "12.12"
+    },
+    {
+      "name": "docker",
+      "label": "Docker CE",
+      "version": "5+29.4.1-1~debian.13~trixie"
+    },
+    {
+      "name": "edge",
+      "label": "Microsoft Edge",
+      "version": "150.0.4078.48-1"
+    },
+    {
+      "name": "emdash",
+      "label": "Emdash",
+      "version": "0.4.50"
+    },
+    {
+      "name": "himmelblau",
+      "label": "Himmelblau",
+      "version": "4.0.0-debian13~20260514"
+    },
+    {
+      "name": "incus",
+      "label": "Incus",
+      "version": "1+7.2-debian13-202607011341+r1"
+    },
+    {
+      "name": "lemonade",
+      "label": "Lemonade",
+      "version": "10.10.0~13"
+    },
+    {
+      "name": "nix",
+      "label": "Nix",
+      "version": "2.26.3+dfsg-1"
+    },
+    {
+      "name": "podman",
+      "label": "Podman + Distrobox",
+      "version": "5.4.2+ds1-2+b2"
+    },
+    {
+      "name": "tailscale",
+      "label": "Tailscale",
+      "version": "1.98.3"
+    },
+    {
+      "name": "vscode",
+      "label": "Visual Studio Code",
+      "version": "1.127.0-1782814776"
+    }
+  ]
+}
