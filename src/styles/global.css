@@ -1,0 +1,139 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap");
+
+/* Frostyard design system tokens — github.com/frostyard/design-system */
+:root {
+  /* Base inks — darker blue backgrounds */
+  --ink: #06111d;
+  --deep: #081b2d;
+  --panel: #0d263b;
+  --panel-bright: #0d2a41;
+  /* Cool/cold blue accents */
+  --ice: #aee9ff;
+  --sky: #47b8ef;
+  --blue: #168bd0;
+  --mist: #b6d0df;
+  --mist-bright: #c7dce8;
+  /* Text */
+  --text-body: #edf8ff;
+  --text-muted: #b6d0df;
+  --text-dim: #a6c1d0;
+  --text-eyebrow: #82b6d0;
+  --text-footer: #7799ab;
+  --text-mono-accent: #8ddbf8;
+  /* Lines + borders */
+  --line: rgba(162, 222, 255, .18);
+  --line-strong: #2c6380;
+  --line-tag: #a6dffa38;
+  /* Semantic surfaces */
+  --surface-page: var(--ink);
+  --surface-panel: var(--panel);
+  --surface-code: #061826;
+  --gradient-page: radial-gradient(circle at 82% 2%, #10416455, transparent 27rem), linear-gradient(180deg, #071a2a 0%, #06111d 38%, #06111d 100%);
+  --gradient-card: linear-gradient(160deg, #0f3048, #091c2d 62%);
+  --gradient-card-alt: linear-gradient(160deg, #17445e, #0a1f31 64%);
+  --gradient-card-deep: linear-gradient(160deg, #12364c, #081827 64%);
+  --gradient-panel: linear-gradient(135deg, #0d2d45, #071827);
+  --gradient-signal: linear-gradient(135deg, #0f3b58, #0b2034);
+  --gradient-primary: linear-gradient(135deg, #5ac9f7, #1584ca);
+  --gradient-ice-line: linear-gradient(90deg, #7edafa, transparent);
+  --on-primary: #02131f;
+  /* Interactive */
+  --link: #8eddf9;
+  --link-hover: var(--ice);
+  --tag-text: #b9e9fb;
+  /* State (admin surfaces — cold-shifted) */
+  --state-ok: #7edafa;
+  --state-ok-dim: #0e3247;
+  --state-warn: #e0b15c;
+  --state-warn-dim: #33291433;
+  --state-danger: #e07a72;
+  --state-danger-dim: #3a181e;
+
+  /* Type */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif-accent: Georgia, serif; /* italic <em> inside display headings only */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --text-display-size: clamp(3.4rem, 6.4vw, 6.4rem);
+  --text-display-lh: .94;
+  --text-display-ls: -.072em;
+  --text-display-weight: 700;
+  --text-h2-size: clamp(2.5rem, 4vw, 4.25rem);
+  --text-h2-lh: 1;
+  --text-h2-ls: -.06em;
+  --text-h2-compact-size: clamp(2.3rem, 3.8vw, 3.8rem);
+  --text-eyebrow-size: .7rem;
+  --text-eyebrow-ls: .17em;
+  --text-eyebrow-weight: 700;
+  --text-lede-size: 1.08rem;
+  --text-body-size: .93rem;
+  --text-small-size: .87rem;
+  --text-caption-size: .82rem;
+  --text-mono-size: .72rem;
+  --text-tag-size: .68rem;
+  --brand-weight: 720;
+  --brand-ls: -.04em;
+  --brand-size: 1.25rem;
+
+  /* Layout */
+  --container-max: 1240px;
+  --container-pad: 32px;
+  --container-pad-mobile: 20px;
+  --nav-height: 92px;
+  --nav-height-mobile: 72px;
+  --section-pad: 8rem;
+  --section-pad-mobile: 5rem;
+  --panel-pad: 3.5rem;
+  --card-pad: 1.35rem;
+  --tool-pad: 2.2rem 2.4rem;
+  --radius-tag: 2px;
+  --radius-node: 3px;
+  --radius-button: 4px;
+  --radius-pill: 100px;
+  --eyebrow-dash-w: 24px;
+}
+
+/* Base */
+* { box-sizing: border-box }
+html { scroll-behavior: smooth }
+body { margin: 0; background-color: var(--surface-page); background-image: var(--gradient-page); color: var(--text-body); font-family: var(--font-sans); line-height: 1.5 }
+main, footer { max-width: var(--container-max); margin: auto; padding-left: var(--container-pad); padding-right: var(--container-pad) }
+a { color: inherit; text-decoration: none }
+
+/* Nav */
+nav { height: var(--nav-height); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line) }
+.brand { font-weight: var(--brand-weight); letter-spacing: var(--brand-ls); font-size: var(--brand-size); white-space: nowrap }
+.brand .flake { color: var(--ice); font-size: 1.55rem; margin-right: .3rem }
+.nav-links { display: flex; gap: 2rem; font-size: var(--text-small-size); color: #b7d0df }
+.nav-links a:hover, .nav-links a[aria-current] { color: var(--ice) }
+.source-link { font-size: .83rem; border: 1px solid var(--line); padding: .55rem .8rem; border-radius: var(--radius-pill); color: #d9f2ff }
+.source-link span { color: var(--ice); margin-left: .35rem }
+
+/* Eyebrow — 24px sky dash + uppercase letter-spaced kicker */
+.eyebrow { font-size: var(--text-eyebrow-size); text-transform: uppercase; letter-spacing: var(--text-eyebrow-ls); font-weight: var(--text-eyebrow-weight); color: var(--text-eyebrow); margin: 0 0 1.1rem }
+.eyebrow span, .eyebrow i { width: var(--eyebrow-dash-w); height: 1px; background: var(--sky); display: inline-block; vertical-align: middle; margin-right: .6rem }
+
+/* Buttons */
+.button { display: inline-flex; align-items: center; padding: .75rem 1rem; border-radius: var(--radius-button); font-size: .86rem; font-weight: 650; white-space: nowrap }
+.button.primary { background: var(--gradient-primary); color: var(--on-primary) }
+.button.ghost { border: 1px solid var(--line); color: #d8edf7 }
+.button span { margin-left: .35rem }
+.button.primary span { color: var(--on-primary) }
+.button.ghost span { color: var(--ice) }
+
+/* Tags */
+.tag { font-size: var(--text-tag-size); border: 1px solid var(--line-tag); color: var(--tag-text); padding: .28rem .45rem; border-radius: var(--radius-tag); display: inline-block; line-height: 1.4 }
+.tag small { color: #72bad8; display: block; font-size: .57rem; line-height: 1.3; margin-top: .15rem }
+
+/* Footer */
+footer { padding-bottom: 3rem; display: flex; justify-content: space-between; align-items: center; color: var(--text-footer); font-size: .8rem }
+footer p { margin: 0 }
+footer a:hover { color: var(--ice) }
+footer > a:last-child { color: #a4d9ef }
+
+@media (max-width: 800px) {
+  main, footer { padding-left: var(--container-pad-mobile); padding-right: var(--container-pad-mobile) }
+  nav { height: var(--nav-height-mobile) }
+  .nav-links { display: none }
+  .source-link { font-size: .7rem }
+  footer { flex-wrap: wrap; gap: 1rem }
+}

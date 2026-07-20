@@ -1,4 +1,5 @@
 ---
+import Site from "../layouts/Site.astro";
 const tools = [
   {
     name: "updex",
@@ -22,42 +23,55 @@ const tools = [
   },
 ];
 ---
+<Site title="Tools | Frostyard" description="Frostyard tools for working with layered, updateable Linux systems." active="tools" footerLabel="Explore images →" footerHref="/">
+  <header class="hero">
+    <p class="eyebrow"><i></i> Tools for the layers</p>
+    <h1>Keep the base still.<br /><em>Move with intent.</em></h1>
+    <p class="lede">Frostyard tools make an immutable system practical: manage the extensions around the OS, and give the desktop a clear place to maintain itself.</p>
+  </header>
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Frostyard tools for working with layered, updateable Linux systems." />
-    <title>Tools | Frostyard</title>
-  </head>
-  <body>
-    <main>
-      <nav aria-label="Primary navigation">
-        <a class="brand" href="/" aria-label="Frostyard home"><span>✦</span> frostyard</a>
-        <div class="nav-links"><a href="/base">Base</a><a href="/#images">Images</a><a href="/#extensions">Extensions</a><a href="/why-atomic">Why Atomic</a><a href="/tools" aria-current="page">Tools</a></div>
-        <a class="source" href="https://github.com/frostyard">Frostyard on GitHub ↗</a>
-      </nav>
+  <section class="tools" aria-label="Frostyard tools">
+    {tools.map((tool, index) => <article class="tool" data-index={index}>
+      <div class="tool-head"><div class="mark">{tool.mark}</div><div><p>{tool.label}</p><h2>{tool.name}</h2></div><a href={tool.href} aria-label={`Open ${tool.name} source`}>↗</a></div>
+      <div class="tool-body"><div><h3>{tool.title}</h3><p>{tool.body}</p><code>{tool.command}</code></div><ul>{tool.points.map(point => <li>{point}</li>)}</ul></div>
+      <a class="inspect" href={tool.href}>Inspect {tool.name} <span>↗</span></a>
+    </article>)}
+  </section>
 
-      <header class="hero">
-        <p class="eyebrow"><i></i> Tools for the layers</p>
-        <h1>Keep the base still.<br /><em>Move with intent.</em></h1>
-        <p>Frostyard tools make an immutable system practical: manage the extensions around the OS, and give the desktop a clear place to maintain itself.</p>
-      </header>
-
-      <section class="tools" aria-label="Frostyard tools">
-        {tools.map((tool, index) => <article class={`tool tool-${index}`}>
-          <div class="tool-head"><div class="mark">{tool.mark}</div><div><p>{tool.label}</p><h2>{tool.name}</h2></div><a href={tool.href} aria-label={`Open ${tool.name} source`}>↗</a></div>
-          <div class="tool-body"><div><h3>{tool.title}</h3><p>{tool.body}</p><code>{tool.command}</code></div><ul>{tool.points.map(point => <li>{point}</li>)}</ul></div>
-          <a class="inspect" href={tool.href}>Inspect {tool.name} <span>↗</span></a>
-        </article>)}
-      </section>
-
-      <section class="relationship"><p class="eyebrow"><i></i> Different jobs, shared direction</p><h2>Updex handles the extension layer.<br />ChairLift makes that layer approachable.</h2><p>Both leave the operating system image intact. That is the point: capabilities can change without turning the base into an accumulation of exceptions.</p></section>
-    </main>
-    <footer><a class="brand" href="/"><span>✦</span> frostyard</a><p>Cold systems. Clear boundaries.</p><a href="/">Explore images →</a></footer>
-  </body>
-</html>
+  <section class="relationship"><p class="eyebrow"><i></i> Different jobs, shared direction</p><h2>Updex handles the extension layer.<br />ChairLift makes that layer approachable.</h2><p>Both leave the operating system image intact. That is the point: capabilities can change without turning the base into an accumulation of exceptions.</p></section>
+</Site>
 
 <style>
-  :root{--ink:#06111d;--panel:#0d263b;--line:rgba(162,222,255,.18);--ice:#aee9ff;--sky:#47b8ef;--mist:#b6d0df}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 78% 2%,#10416455,transparent 28rem),linear-gradient(180deg,#071a2a,#06111d 55%);color:#edf8ff;font-family:Inter,ui-sans-serif,system-ui,sans-serif;line-height:1.5}main,footer{max-width:1240px;margin:auto;padding-left:32px;padding-right:32px}nav{height:92px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}a{color:inherit;text-decoration:none}.brand{font-weight:720;letter-spacing:-.04em;font-size:1.25rem}.brand span{color:var(--ice);font-size:1.55rem;margin-right:.3rem}.nav-links{display:flex;gap:2rem;font-size:.87rem;color:#b7d0df}.nav-links a[aria-current]{color:var(--ice)}.source{font-size:.8rem;border:1px solid var(--line);padding:.55rem .8rem;border-radius:100px;color:#d9f2ff}.hero{padding:7rem 0 5.5rem;max-width:820px}.eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:.17em;font-weight:700;color:#82b6d0;margin:0 0 1.1rem}.eyebrow i{display:inline-block;width:24px;height:1px;background:var(--sky);vertical-align:middle;margin-right:.6rem}.hero h1{font-size:clamp(3.7rem,6vw,6.4rem);line-height:.95;letter-spacing:-.075em;margin:0}.hero h1 em{font-family:Georgia,serif;font-weight:400;color:var(--ice)}.hero>p:last-child{font-size:1.08rem;color:var(--mist);max-width:580px;margin:2rem 0 0}.tools{display:grid;gap:1rem}.tool{background:linear-gradient(135deg,#0e3049,#081b2c);border:1px solid var(--line);padding:2.2rem 2.4rem}.tool-1{background:linear-gradient(135deg,#123b55,#0a1b2b)}.tool-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem;border-bottom:1px solid var(--line);padding-bottom:1.6rem}.mark{display:grid;place-items:center;width:48px;height:48px;border:1px solid #aee9ff80;background:#135477;border-radius:50%;font-weight:800;font-size:.75rem;color:var(--ice)}.tool-head p{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:#84bed5;margin:0}.tool-head h2{font-size:2rem;line-height:1;letter-spacing:-.06em;margin:.2rem 0 0}.tool-head>a{font-size:1.4rem;color:var(--ice)}.tool-body{display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;padding:2.2rem 0}.tool-body h3{font-size:1.45rem;letter-spacing:-.04em;margin:0 0 .7rem}.tool-body p{font-size:.93rem;color:var(--mist);margin:0 0 1.5rem}.tool-body code{font-family:ui-monospace,SFMono-Regular,monospace;font-size:.73rem;color:#8ddbf8;background:#061826;padding:.55rem .7rem;display:inline-block}.tool-body ul{list-style:none;margin:0;padding:0}.tool-body li{border-top:1px solid var(--line);padding:.75rem 0;color:#c0dce9;font-size:.85rem}.tool-body li:before{content:"✦";color:#67cdf3;font-size:.63rem;margin-right:.6rem}.inspect{font-size:.8rem;font-weight:700;color:#93e0fb}.inspect span{margin-left:.3rem}.relationship{margin:7rem 0 5rem;border-top:1px solid var(--line);padding-top:3rem;display:grid;grid-template-columns:1.25fr .75fr;gap:4rem;align-items:end}.relationship .eyebrow{grid-column:1/-1;margin:0}.relationship h2{font-size:clamp(2rem,3.3vw,3.5rem);line-height:1;letter-spacing:-.06em;margin:0}.relationship>p:last-child{color:var(--mist);font-size:.93rem;margin:0}footer{padding-bottom:3rem;display:flex;justify-content:space-between;align-items:center;color:#7799ab;font-size:.8rem}footer p{margin:0}footer a:last-child{color:#a4d9ef}@media(max-width:720px){main,footer{padding-left:20px;padding-right:20px}nav{height:72px}.nav-links{display:none}.source{font-size:.7rem}.hero{padding:5rem 0 4rem}.tool{padding:1.4rem}.tool-body,.relationship{grid-template-columns:1fr;gap:2rem}.relationship{margin-top:5rem}.relationship .eyebrow{grid-column:auto}footer{flex-wrap:wrap;gap:1rem}}
+  .hero{padding:7rem 0 5.5rem;max-width:820px}
+  .hero h1{font-size:var(--text-display-size);line-height:var(--text-display-lh);letter-spacing:var(--text-display-ls);font-weight:var(--text-display-weight);margin:0}
+  .hero h1 em{font-family:var(--font-serif-accent);font-weight:400;color:var(--ice)}
+  .lede{font-size:var(--text-lede-size);color:var(--text-muted);max-width:580px;margin:2rem 0 0}
+  .tools{display:grid;gap:1rem}
+  .tool{background:linear-gradient(135deg,#0e3049,#081b2c);border:1px solid var(--line);padding:var(--tool-pad)}
+  .tool[data-index="1"]{background:linear-gradient(135deg,#123b55,#0a1b2b)}
+  .tool-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem;border-bottom:1px solid var(--line);padding-bottom:1.6rem}
+  .mark{display:grid;place-items:center;width:48px;height:48px;border:1px solid #aee9ff80;background:#135477;border-radius:50%;font-weight:800;font-size:.75rem;color:var(--ice)}
+  .tool-head p{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:#84bed5;margin:0}
+  .tool-head h2{font-size:2rem;line-height:1;letter-spacing:-.06em;margin:.2rem 0 0}
+  .tool-head>a{font-size:1.4rem;color:var(--ice)}
+  .tool-body{display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;padding:2.2rem 0}
+  .tool-body h3{font-size:1.45rem;letter-spacing:-.04em;margin:0 0 .7rem}
+  .tool-body p{font-size:var(--text-body-size);color:var(--text-muted);margin:0 0 1.5rem}
+  .tool-body code{font-family:var(--font-mono);font-size:.73rem;color:var(--text-mono-accent);background:var(--surface-code);padding:.55rem .7rem;display:inline-block}
+  .tool-body ul{list-style:none;margin:0;padding:0}
+  .tool-body li{border-top:1px solid var(--line);padding:.75rem 0;color:#c0dce9;font-size:.85rem}
+  .tool-body li:before{content:"✦";color:#67cdf3;font-size:.63rem;margin-right:.6rem}
+  .inspect{font-size:.8rem;font-weight:700;color:#93e0fb}
+  .inspect span{margin-left:.3rem}
+  .relationship{margin:7rem 0 5rem;border-top:1px solid var(--line);padding-top:3rem;display:grid;grid-template-columns:1.25fr .75fr;gap:4rem;align-items:end}
+  .relationship .eyebrow{grid-column:1/-1;margin:0}
+  .relationship h2{font-size:clamp(2rem,3.3vw,3.5rem);line-height:1;letter-spacing:var(--text-h2-ls);margin:0}
+  .relationship>p:last-child{color:var(--text-muted);font-size:var(--text-body-size);margin:0}
+  @media(max-width:800px){
+    .hero{padding:5rem 0 4rem}
+    .tool{padding:1.4rem}
+    .tool-body,.relationship{grid-template-columns:1fr;gap:2rem}
+    .relationship{margin-top:5rem}
+    .relationship .eyebrow{grid-column:auto}
+  }
 </style>

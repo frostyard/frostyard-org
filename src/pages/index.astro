@@ -1,5 +1,7 @@
 ---
+import Site from "../layouts/Site.astro";
 import extensionCatalog from "../data/extensions.json";
+const heroScenes = ["moonlit-summit", "alpine-morning", "frozen-reflection", "blueprint"];
 const images = [
   { name: "snow", type: "Desktop", title: "A GNOME workstation that stays composed.", body: "A daily desktop built on Debian Trixie with a current backports kernel, atomic OS updates, and room for real work.", tags: ["GNOME", "Backports kernel", "Atomic updates"] },
   { name: "snowfield", type: "Surface", title: "Snow, tuned for Surface hardware.", body: "The Snow desktop with linux-surface and the hardware support that makes a tablet or laptop feel like a first-class machine.", tags: ["GNOME", "linux-surface", "Touch-ready"] },
@@ -24,94 +26,195 @@ const otherExtensions = extensionCatalog.extensions.filter(extension => !grouped
 if (otherExtensions.length) extensionGroups.push({ name: "Also published", extensions: otherExtensions });
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Frostyard builds composed, updateable operating system images with snosi." />
-    <title>Frostyard | Composed operating systems</title>
-  </head>
-  <body>
-    <main>
-      <nav aria-label="Primary navigation">
-        <a class="brand" href="#top" aria-label="Frostyard home"><span class="flake">✦</span> frostyard</a>
-        <div class="nav-links"><a href="/base">Base</a><a href="#images">Images</a><a href="#extensions">Extensions</a><a href="/why-atomic">Why Atomic</a><a href="/tools">Tools</a></div>
-        <a class="source-link" href="https://github.com/frostyard/snosi">Source <span>↗</span></a>
-      </nav>
+<Site title="Frostyard | Composed operating systems" description="Frostyard builds composed, updateable operating system images with snosi.">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow"><span></span> Debian · mkosi · bootc or A/B root</p>
+      <h1>Keep the system<br /><em>boring.</em> Make the work interesting.</h1>
+      <p class="lede">Frostyard images are atomic, updateable operating systems for desktops and servers. A known-good base stays put; your tools arrive as deliberate layers.</p>
+      <div class="hero-actions"><a class="button primary" href="#images">Explore images <span>↓</span></a><a class="button ghost" href="https://github.com/frostyard/snosi">Read the build <span>↗</span></a></div>
+    </div>
+    <div class="altitude" aria-hidden="true">
+      <svg class="rise" viewBox="0 0 2 440" preserveAspectRatio="none"><path d="M 1 30 V 330" /></svg>
+      <div class="layer float l1"></div>
+      <div class="layer float l2"></div>
+      <div class="layer float l3"></div>
+      <div class="layer l4"></div>
+      <div class="layer l5"></div>
+      <div class="alt-label lb1">USER SPACE<i></i><small>brew · flatpak · nix</small></div>
+      <div class="alt-label lb2">CONTAINERS<i></i><small>podman · distrobox · incus</small></div>
+      <div class="alt-label lb3">SYSEXT LAYER<i></i><small>versioned · removable</small></div>
+      <div class="alt-label lb4">BASE IMAGE<i></i><small>known-good · stays put</small></div>
+    </div>
+  </section>
 
-      <section class="hero" id="top">
-        <div class="hero-copy">
-          <p class="eyebrow"><span></span> Debian · mkosi · bootc or A/B root</p>
-          <h1>Keep the system<br /><em>boring.</em> Make the work interesting.</h1>
-          <p class="lede">Frostyard images are atomic, updateable operating systems for desktops and servers. A known-good base stays put; your tools arrive as deliberate layers.</p>
-          <div class="hero-actions"><a class="button primary" href="#images">Explore images <span>↓</span></a><a class="button ghost" href="https://github.com/frostyard/snosi">Read the build <span>↗</span></a></div>
-        </div>
-        <div class="orbital" aria-hidden="true">
-          <div class="glow"></div><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
-          <div class="core"><span>SNOSI</span><small>COMPOSED</small></div>
-          <i class="crystal c1"></i><i class="crystal c2"></i><i class="crystal c3"></i><i class="crystal c4"></i>
-        </div>
-      </section>
+  <section class="principles" aria-label="Principles">
+    <article><span class="number">01</span><h2>Atomic by default</h2><p>Update the whole operating system as a coherent image. Reboot into the new deployment; keep the previous one available.</p></article>
+    <article><span class="number">02</span><h2>Mutable where it counts</h2><p>Your data, configuration, containers, and projects live in persistent writable storage. The operating system does not get in their way.</p></article>
+    <article><span class="number">03</span><h2>Tools without drift</h2><p>Add capabilities as system extensions, containers, or user-space package environments instead of turning the base into a snowball.</p></article>
+  </section>
 
-      <section class="principles" aria-label="Principles">
-        <article><span class="number">01</span><h2>Atomic by default</h2><p>Update the whole operating system as a coherent image. Reboot into the new deployment; keep the previous one available.</p></article>
-        <article><span class="number">02</span><h2>Mutable where it counts</h2><p>Your data, configuration, containers, and projects live in persistent writable storage. The operating system does not get in their way.</p></article>
-        <article><span class="number">03</span><h2>Tools without drift</h2><p>Add capabilities as system extensions, containers, or user-space package environments instead of turning the base into a snowball.</p></article>
-      </section>
+  <section class="images section" id="images">
+    <div class="section-heading"><p class="eyebrow"><span></span> Three base images</p><h2>Choose the terrain.<br />The foundation is shared.</h2><p>Each image starts from the same reproducible Debian base and takes a clear role from there.</p></div>
+    <div class="composition-map" aria-label="Base image composition: Base feeds Cayo and Snow. Snow feeds Snowfield. System extensions add optional capabilities to Cayo, Snow, and Snowfield.">
+      <div class="map-copy"><span>How the images relate</span><strong>One shared base. One desktop variation. Optional layers for every image.</strong></div>
+      <svg viewBox="0 0 960 320" role="img" aria-labelledby="composition-title composition-description">
+        <title id="composition-title">Frostyard image composition</title><desc id="composition-description">The shared base image branches to the Cayo server and Snow desktop. Snow leads to the Snowfield Surface desktop. System extensions add optional capabilities to each image.</desc>
+        <defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" /></marker></defs>
+        <path class="main-line energy-line" d="M 205 86 H 350" marker-end="url(#arrow)" />
+        <path class="main-line energy-line" d="M 205 106 H 282 V 190 H 350" marker-end="url(#arrow)" />
+        <path class="main-line energy-line" d="M 530 190 H 620" marker-end="url(#arrow)" />
+        <path class="layer-line" d="M 430 264 V 130 M 450 264 V 234 M 700 264 V 234" />
+        <a href="/base" class="map-node base-node"><rect x="35" y="55" width="170" height="82" rx="3" /><text x="53" y="82" class="node-kicker">SHARED FOUNDATION</text><text x="53" y="112" class="node-name">shared base</text><text x="53" y="129" class="node-detail">system · boot · tools</text></a>
+        <a href="/cayo" class="map-node"><rect x="350" y="42" width="180" height="88" rx="3" /><text x="368" y="70" class="node-kicker">SERVER IMAGE</text><text x="368" y="101" class="node-name">cayo</text><text x="368" y="119" class="node-detail">headless · containers</text></a>
+        <a href="/snow" class="map-node"><rect x="350" y="146" width="180" height="88" rx="3" /><text x="368" y="174" class="node-kicker">DESKTOP IMAGE</text><text x="368" y="205" class="node-name">snow</text><text x="368" y="223" class="node-detail">GNOME · backports kernel</text></a>
+        <a href="/snowfield" class="map-node snowfield-node"><rect x="620" y="146" width="210" height="88" rx="3" /><text x="638" y="174" class="node-kicker">SURFACE DESKTOP</text><text x="638" y="205" class="node-name">snowfield</text><text x="638" y="223" class="node-detail">Snow · linux-surface kernel</text></a>
+        <a href="#extensions" class="extension-node"><rect x="285" y="264" width="620" height="42" rx="3" /><text x="307" y="291" class="extension-label">SYSEXT LAYER</text><text x="450" y="291" class="extension-detail">optional capabilities for any image · Incus · Docker · Podman · dev tools · apps</text></a>
+      </svg>
+    </div>
+    <div class="image-grid">
+      {images.map((image, index) => <article class="image-card" data-index={index}>
+        <div class="card-top"><span>{image.type}</span><b>0{index + 1}</b></div>
+        <div class="art" aria-hidden="true"><img src={`/assets/hero/${heroScenes[index % heroScenes.length]}.png`} alt="" loading="lazy" /><div class="art-shade"></div></div>
+        <h3><a href={`/${image.name}`}>{image.name}</a></h3><h4>{image.title}</h4><p>{image.body}</p>
+        <div class="tags">{image.tags.map(tag => <span class="tag">{tag}</span>)}</div>
+      </article>)}
+    </div>
+  </section>
 
-      <section class="images section" id="images">
-        <div class="section-heading"><p class="eyebrow"><span></span> Three base images</p><h2>Choose the terrain.<br />The foundation is shared.</h2><p>Each image starts from the same reproducible Debian base and takes a clear role from there.</p></div>
-        <div class="composition-map" aria-label="Base image composition: Base feeds Cayo and Snow. Snow feeds Snowfield. System extensions add optional capabilities to Cayo, Snow, and Snowfield.">
-          <div class="map-copy"><span>How the images relate</span><strong>One shared base. One desktop variation. Optional layers for every image.</strong></div>
-          <svg viewBox="0 0 960 320" role="img" aria-labelledby="composition-title composition-description">
-            <title id="composition-title">Frostyard image composition</title><desc id="composition-description">The shared base image branches to the Cayo server and Snow desktop. Snow leads to the Snowfield Surface desktop. System extensions add optional capabilities to each image.</desc>
-            <defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" /></marker></defs>
-            <path class="main-line energy-line" d="M 205 86 H 350" marker-end="url(#arrow)" />
-            <path class="main-line energy-line" d="M 205 106 H 282 V 190 H 350" marker-end="url(#arrow)" />
-            <path class="main-line energy-line" d="M 530 190 H 620" marker-end="url(#arrow)" />
-            <path class="layer-line" d="M 430 264 V 130 M 450 264 V 234 M 700 264 V 234" />
-            <a href="/base" class="map-node base-node"><rect x="35" y="55" width="170" height="82" rx="3" /><text x="53" y="82" class="node-kicker">SHARED FOUNDATION</text><text x="53" y="112" class="node-name">shared base</text><text x="53" y="129" class="node-detail">system · boot · tools</text></a>
-            <a href="/cayo" class="map-node"><rect x="350" y="42" width="180" height="88" rx="3" /><text x="368" y="70" class="node-kicker">SERVER IMAGE</text><text x="368" y="101" class="node-name">cayo</text><text x="368" y="119" class="node-detail">headless · containers</text></a>
-            <a href="/snow" class="map-node"><rect x="350" y="146" width="180" height="88" rx="3" /><text x="368" y="174" class="node-kicker">DESKTOP IMAGE</text><text x="368" y="205" class="node-name">snow</text><text x="368" y="223" class="node-detail">GNOME · backports kernel</text></a>
-            <a href="/snowfield" class="map-node snowfield-node"><rect x="620" y="146" width="210" height="88" rx="3" /><text x="638" y="174" class="node-kicker">SURFACE DESKTOP</text><text x="638" y="205" class="node-name">snowfield</text><text x="638" y="223" class="node-detail">Snow · linux-surface kernel</text></a>
-            <a href="#extensions" class="extension-node"><rect x="285" y="264" width="620" height="42" rx="3" /><text x="307" y="291" class="extension-label">SYSEXT LAYER</text><text x="450" y="291" class="extension-detail">optional capabilities for any image · Incus · Docker · Podman · dev tools · apps</text></a>
-          </svg>
-        </div>
-        <div class="image-grid">
-          {images.map((image, index) => <article class={`image-card card-${index}`}>
-            <div class="card-top"><span>{image.type}</span><b>0{index + 1}</b></div>
-            <div class="mountain" aria-hidden="true"><i></i><i></i><i></i></div>
-            <h3><a href={`/${image.name}`}>{image.name}</a></h3><h4>{image.title}</h4><p>{image.body}</p>
-            <div class="tags">{image.tags.map(tag => <span>{tag}</span>)}</div>
-          </article>)}
-        </div>
-      </section>
+  <section class="extensions section" id="extensions">
+    <div class="section-heading compact"><p class="eyebrow"><span></span> System extensions</p><h2>More capability.<br />No base-image sprawl.</h2><p>Sysexts are versioned, removable overlays for the parts of your system that deserve their own lifecycle.</p></div>
+    <div class="extension-area">
+      <div class="extension-total"><strong>{extensionCatalog.extensions.length}</strong><p>published extensions<br />in the live catalog</p><a href={extensionCatalog.source}>View repository index ↗</a><div class="ice-line"></div></div>
+      <div class="extension-groups">{extensionGroups.map(group => <article><p>{group.name}</p><div>{group.extensions.map(extension => <span class="tag" title={extension.name}>{extension.label}{extension.version && <small>v{extension.version}</small>}</span>)}</div></article>)}</div>
+    </div>
+  </section>
 
-      <section class="extensions section" id="extensions">
-        <div class="section-heading compact"><p class="eyebrow"><span></span> System extensions</p><h2>More capability.<br />No base-image sprawl.</h2><p>Sysexts are versioned, removable overlays for the parts of your system that deserve their own lifecycle.</p></div>
-        <div class="extension-area">
-          <div class="extension-total"><strong>{extensionCatalog.extensions.length}</strong><p>published extensions<br />in the live catalog</p><a href={extensionCatalog.source}>View repository index ↗</a><div class="ice-line"></div></div>
-          <div class="extension-groups">{extensionGroups.map(group => <article><p>{group.name}</p><div>{group.extensions.map(extension => <span title={extension.name}>{extension.label}{extension.version && <small>v{extension.version}</small>}</span>)}</div></article>)}</div>
-        </div>
-      </section>
+  <section class="workflow section" id="workflow">
+    <div class="workflow-panel"><div><p class="eyebrow"><span></span> The practical model</p><h2>Install software<br />at the right altitude.</h2><p>Immutability is not a prohibition. It is a boundary that makes each choice easier to reverse and reason about.</p></div><div class="lanes"><article><b>01</b><div><h3>System extension</h3><p>For a tool that belongs close to the OS: VPNs, IDEs, container runtimes, and services.</p></div></article><article><b>02</b><div><h3>Container or Distrobox</h3><p>For development stacks and workloads that should bring their own userspace.</p></div></article><article><b>03</b><div><h3>User-space environment</h3><p>For personal tooling with Nix, Homebrew, Flatpak, or a project-local runtime.</p></div></article></div></div>
+  </section>
 
-      <section class="workflow section" id="workflow">
-        <div class="workflow-panel"><div><p class="eyebrow"><span></span> The practical model</p><h2>Install software<br />at the right altitude.</h2><p>Immutability is not a prohibition. It is a boundary that makes each choice easier to reverse and reason about.</p></div><div class="lanes"><article><b>01</b><div><h3>System extension</h3><p>For a tool that belongs close to the OS: VPNs, IDEs, container runtimes, and services.</p></div></article><article><b>02</b><div><h3>Container or Distrobox</h3><p>For development stacks and workloads that should bring their own userspace.</p></div></article><article><b>03</b><div><h3>User-space environment</h3><p>For personal tooling with Nix, Homebrew, Flatpak, or a project-local runtime.</p></div></article></div></div>
-      </section>
-
-      <section class="build-callout"><div><p class="eyebrow"><span></span> No magic, just composition</p><h2>Built in the open<br />with <code>mkosi</code>.</h2></div><p>Cayo, Snow, and Snowfield share one definition, then branch only where purpose demands: packages, kernel, and configuration.</p><a class="button primary" href="https://github.com/frostyard/snosi">Inspect snosi <span>↗</span></a></section>
-    </main>
-    <footer><a class="brand" href="#top"><span class="flake">✦</span> frostyard</a><p>Cold systems. Clear boundaries.</p><a href="https://github.com/frostyard/snosi">github.com/frostyard/snosi ↗</a></footer>
-  </body>
-</html>
+  <section class="build-callout"><div><p class="eyebrow"><span></span> No magic, just composition</p><h2>Built in the open<br />with <code>mkosi</code>.</h2></div><p>Cayo, Snow, and Snowfield share one definition, then branch only where purpose demands: packages, kernel, and configuration.</p><a class="button primary" href="https://github.com/frostyard/snosi">Inspect snosi <span>↗</span></a></section>
+</Site>
 
 <style>
-  :root { --ink:#06111d; --deep:#081b2d; --panel:#0d263b; --line:rgba(162,222,255,.18); --ice:#aee9ff; --sky:#47b8ef; --blue:#168bd0; --mist:#c7dce8; } *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--ink);color:#edf8ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;background-image:radial-gradient(circle at 82% 2%,#10416455,transparent 27rem),linear-gradient(180deg,#071a2a 0%,#06111d 38%,#06111d 100%)} main{max-width:1240px;margin:auto;padding:0 32px} nav{height:92px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)} a{color:inherit;text-decoration:none}.brand{font-weight:720;letter-spacing:-.04em;font-size:1.25rem}.flake{color:var(--ice);font-size:1.55rem;margin-right:.3rem}.nav-links{display:flex;gap:2rem;font-size:.87rem;color:#b7d0df}.nav-links a:hover,footer a:hover{color:var(--ice)}.source-link{font-size:.83rem;border:1px solid var(--line);padding:.55rem .8rem;border-radius:100px;color:#d9f2ff}.source-link span,.button span{color:var(--ice);margin-left:.35rem}.hero{min-height:600px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;position:relative;overflow:hidden}.hero-copy{padding:7rem 0}.eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:.17em;font-weight:700;color:#82b6d0;margin:0 0 1.1rem}.eyebrow span{width:24px;height:1px;background:var(--sky);display:inline-block;vertical-align:middle;margin-right:.6rem}.hero h1{font-size:clamp(3.4rem,6.4vw,6.4rem);line-height:.94;letter-spacing:-.072em;margin:0;max-width:720px}.hero h1 em{font-family:Georgia,serif;font-weight:400;color:var(--ice)}.lede{font-size:1.08rem;color:#b6d0df;max-width:565px;margin:2rem 0 2.4rem}.hero-actions{display:flex;gap:.8rem}.button{display:inline-flex;align-items:center;padding:.75rem 1rem;border-radius:4px;font-size:.86rem;font-weight:650}.primary{background:linear-gradient(135deg,#5ac9f7,#1584ca);color:#02131f}.ghost{border:1px solid var(--line);color:#d8edf7}.orbital{height:440px;position:relative}.glow{position:absolute;width:290px;height:290px;border-radius:50%;background:radial-gradient(circle,#45c0f988 0%,#167ebd24 43%,transparent 70%);top:70px;left:50%;transform:translateX(-50%)}.orbit{position:absolute;border:1px solid #9adfff46;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-25deg)}.orbit-a{width:390px;height:150px}.orbit-b{width:245px;height:390px;transform:translate(-50%,-50%) rotate(42deg)}.core{width:128px;height:128px;border:1px solid #b1edff9e;border-radius:50%;background:linear-gradient(145deg,#1d91c8,#0a3454);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-content:center;text-align:center;box-shadow:0 0 50px #3cbdf444}.core span{font-size:.73rem;letter-spacing:.2em;font-weight:800}.core small{font-size:.48rem;letter-spacing:.18em;color:#b6e7ff;margin-top:.3rem}.crystal{position:absolute;width:10px;height:10px;background:#b8f0ff;transform:rotate(45deg);box-shadow:0 0 14px #86ddff}.c1{top:75px;left:19%}.c2{right:11%;top:34%}.c3{bottom:17%;left:22%;width:6px;height:6px}.c4{right:34%;bottom:4%;width:7px;height:7px}.principles{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.principles article{padding:2.25rem 2rem 2.4rem 0}.principles article+article{padding-left:2rem;border-left:1px solid var(--line)}.number{color:var(--sky);font-family:ui-monospace,monospace;font-size:.72rem}.principles h2{font-size:1.08rem;margin:.75rem 0}.principles p,.section-heading>p,.build-callout>p{color:#a6c1d0;font-size:.91rem;margin:0}.section{padding:8rem 0}.section-heading{max-width:670px}.section-heading h2,.build-callout h2{font-size:clamp(2.5rem,4vw,4.25rem);letter-spacing:-.06em;line-height:1;margin:.25rem 0 1.25rem}.image-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:3.3rem}.image-card{min-height:425px;border:1px solid var(--line);background:linear-gradient(160deg,#0f3048,#091c2d 62%);padding:1.35rem;position:relative;overflow:hidden}.card-1{background:linear-gradient(160deg,#17445e,#0a1f31 64%)}.card-2{background:linear-gradient(160deg,#12364c,#081827 64%)}.card-top{display:flex;justify-content:space-between;font-family:ui-monospace,monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:#9bcbdf}.card-top b{font-weight:400;color:#6b93a8}.mountain{height:125px;position:relative;margin:1rem -1.35rem 1.3rem;opacity:.85}.mountain i{position:absolute;bottom:0;background:linear-gradient(140deg,#3e9bc4,#153c56);clip-path:polygon(50% 0,100% 100%,0 100%)}.mountain i:nth-child(1){width:190px;height:105px;left:0}.mountain i:nth-child(2){width:250px;height:140px;left:24%;background:linear-gradient(140deg,#75cce8,#205b7a)}.mountain i:nth-child(3){width:180px;height:95px;right:-9%;background:#0c2a41}.image-card h3{font-size:2rem;letter-spacing:-.06em;margin:0}.image-card h4{font-size:1rem;margin:.5rem 0;color:#e7f8ff}.image-card p{font-size:.87rem;color:#b5cedb;margin:0}.tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:1.4rem}.tags span,.extension-groups span{font-size:.68rem;border:1px solid #a6dffa38;color:#b9e9fb;padding:.28rem .45rem;border-radius:2px}.extensions{border-top:1px solid var(--line);display:grid;grid-template-columns:.85fr 1.15fr;gap:4rem}.extension-area{display:grid;grid-template-columns:.7fr 1.3fr;gap:2rem;align-items:center}.extension-total strong{font-size:7rem;letter-spacing:-.09em;line-height:.8;color:#aee9ff}.extension-total strong span{color:#3caee2}.extension-total p{color:#a7c2d0;font-size:.82rem;margin:1rem 0}.ice-line{height:1px;background:linear-gradient(90deg,#7edafa,transparent);width:100%}.extension-groups article{padding:1.1rem 0;border-bottom:1px solid var(--line)}.extension-groups article:first-child{border-top:1px solid var(--line)}.extension-groups p{font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#7cbddc;margin:.1rem 0 .75rem}.extension-groups div{display:flex;flex-wrap:wrap;gap:.35rem}.workflow{padding-top:1rem}.workflow-panel{background:#0d2a41;border:1px solid #2c6380;padding:3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;position:relative;overflow:hidden}.workflow-panel:after{content:"";position:absolute;width:400px;height:400px;border:1px solid #5dc2e333;border-radius:50%;right:-260px;bottom:-280px}.workflow-panel h2{font-size:clamp(2.3rem,3.8vw,3.8rem);line-height:1;letter-spacing:-.06em;margin:.2rem 0 1.3rem}.workflow-panel>div>p:not(.eyebrow){color:#b7d3df;max-width:370px}.lanes article{display:flex;gap:1rem;padding:1.15rem 0;border-top:1px solid #92d8f43d;position:relative;z-index:1}.lanes b{font-family:ui-monospace,monospace;font-size:.7rem;color:#62c7ef}.lanes h3{font-size:1rem;margin:0}.lanes p{font-size:.82rem;color:#a9c7d5;margin:.3rem 0 0}.build-callout{margin:8rem 0;display:grid;grid-template-columns:1fr .8fr auto;gap:3rem;align-items:end;border-bottom:1px solid var(--line);padding-bottom:3rem}.build-callout h2{margin-bottom:0}.build-callout code{color:#8ee3ff;font-size:.8em}footer{max-width:1240px;margin:auto;padding:0 32px 3rem;display:flex;justify-content:space-between;align-items:center;color:#7799ab;font-size:.8rem}footer p{margin:0}footer a:last-child{color:#a4d9ef}@media(max-width:800px){main{padding:0 20px}nav{height:72px}.nav-links{display:none}.hero{grid-template-columns:1fr;min-height:auto}.hero-copy{padding:5rem 0 1rem}.orbital{height:300px}.principles,.extensions,.workflow-panel{grid-template-columns:1fr}.principles article,.principles article+article{padding:1.5rem 0;border-left:0;border-top:1px solid var(--line)}.principles article:first-child{border-top:0}.section{padding:5rem 0}.image-grid{grid-template-columns:1fr}.image-card{min-height:365px}.extensions{gap:2.5rem}.extension-area{grid-template-columns:1fr}.workflow-panel{padding:2rem;gap:2rem}.build-callout{margin:5rem 0;grid-template-columns:1fr;gap:1.5rem}.build-callout .button{width:max-content}footer{padding:0 20px 2rem;flex-wrap:wrap;gap:1rem}.hero h1{font-size:3.4rem}}
-</style>
+  .hero{min-height:600px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;position:relative;overflow:hidden}
+  .hero-copy{padding:7rem 0}
+  .hero h1{font-size:var(--text-display-size);line-height:var(--text-display-lh);letter-spacing:var(--text-display-ls);font-weight:var(--text-display-weight);margin:0;max-width:720px}
+  .hero h1 em{font-family:var(--font-serif-accent);font-weight:400;color:var(--ice)}
+  .lede{font-size:var(--text-lede-size);color:var(--text-muted);max-width:565px;margin:2rem 0 2.4rem}
+  .hero-actions{display:flex;gap:.8rem}
 
-<style>
-  .extension-total a { color:#8eddf9; font-size:.72rem; }
-  .ice-line { margin-top:1.1rem; }
-  .extension-groups small { color:#72bad8; display:block; font-size:.57rem; margin-top:.15rem; }
-  .composition-map { background:linear-gradient(135deg,#0d2d45,#071827); border:1px solid var(--line); margin-top:3rem; overflow:hidden; padding:1.4rem 1.8rem 1.6rem; }.map-copy { align-items:baseline; display:flex; gap:1rem; margin-bottom:.8rem; }.map-copy span { color:#6bcaf0; font-size:.65rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }.map-copy strong { font-size:1rem; font-weight:550; letter-spacing:-.02em; }.composition-map svg { display:block; height:auto; width:100%; }.main-line { fill:none; stroke:#8ee3ff; stroke-width:1.4; }.energy-line { filter:drop-shadow(0 0 2px #78dfff); stroke-dasharray:3 8; animation:energy-flow 1.8s linear infinite; }.layer-line { fill:none; stroke:#6bcaf0; stroke-dasharray:4 5; stroke-width:1.3; }.map-node rect { fill:#103a55; stroke:#8fdffb; stroke-opacity:.55; }.map-node:hover rect { fill:#185473; stroke-opacity:1; }.snowfield-node rect { fill:#15516b; }.node-kicker,.guide-label { fill:#7fd9f8; font-family:ui-monospace,SFMono-Regular,monospace; font-size:9px; letter-spacing:1.1px; }.node-name { fill:#effaff; font-family:Inter,system-ui,sans-serif; font-size:23px; font-weight:750; letter-spacing:-1px; }.node-detail,.guide-copy { fill:#91b8cb; font-family:Inter,system-ui,sans-serif; font-size:10px; }.extension-node rect { fill:#091c2d; stroke:#78d6f4; stroke-dasharray:4 4; stroke-opacity:.75; }.extension-label { fill:#aee9ff; font-family:ui-monospace,SFMono-Regular,monospace; font-size:10px; font-weight:700; letter-spacing:1px; }.extension-detail { fill:#90b9cc; font-family:Inter,system-ui,sans-serif; font-size:11px; }.guide-line { stroke:#75cef066; }.guide-copy { font-size:9px; }.composition-map marker path { fill:#8ee3ff; } @keyframes energy-flow { to { stroke-dashoffset:-22; } } @media(prefers-reduced-motion:reduce) { .energy-line { animation:none; } } @media(max-width:800px) { .composition-map { margin-top:2rem; padding:1rem; }.map-copy { align-items:flex-start; flex-direction:column; gap:.3rem; }.composition-map svg { min-width:680px; }.composition-map { overflow-x:auto; } }
+  /* Altitude stack — deliberate layers above a known-good base */
+  .altitude{height:440px;position:relative}
+  .altitude .rise{position:absolute;left:42%;top:0;height:100%;width:2px;overflow:visible}
+  .altitude .rise path{fill:none;stroke:#8ee3ff;stroke-width:1.4;stroke-dasharray:3 8;filter:drop-shadow(0 0 2px #78dfff);animation:rise 1.8s linear infinite}
+  .layer{position:absolute;left:42%;width:200px;height:200px;transform:translateX(-50%) rotateX(58deg) rotateZ(45deg)}
+  .float{animation:bob 5s ease-in-out infinite alternate}
+  .l1{top:28px;background:rgba(174,233,255,.06);border:1px solid #8fdffb4d;animation-delay:-1s}
+  .l2{top:104px;background:rgba(174,233,255,.09);border:1px solid #8fdffb66;animation-delay:-2.6s}
+  .l3{top:180px;background:#091c2d99;border:1px dashed #78d6f4;animation-delay:-4.2s}
+  .l4{top:292px;background:#052033;border:1px solid #1c4a66}
+  .l5{top:280px;background:linear-gradient(145deg,#1d91c8,#0a3454);border:1px solid #b1edff9e;box-shadow:0 0 50px #3cbdf444}
+  .alt-label{position:absolute;right:0;text-align:right;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;color:#7fd9f8;white-space:nowrap}
+  .alt-label small{display:block;color:#91b8cb;font-size:.58rem;letter-spacing:.04em;margin-top:.2rem}
+  .alt-label i{display:inline-block;width:26px;height:1px;background:#6bcaf0;vertical-align:middle;margin-left:.5rem;opacity:.6}
+  .lb1{top:66px}.lb2{top:142px}.lb3{top:218px}.lb4{top:324px;color:var(--ice)}
+  @keyframes bob{from{transform:translateX(-50%) rotateX(58deg) rotateZ(45deg) translateZ(0)}to{transform:translateX(-50%) rotateX(58deg) rotateZ(45deg) translateZ(16px)}}
+  @keyframes rise{to{stroke-dashoffset:-22}}
+
+  .principles{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .principles article{padding:2.25rem 2rem 2.4rem 0}
+  .principles article+article{padding-left:2rem;border-left:1px solid var(--line)}
+  .number{color:var(--sky);font-family:var(--font-mono);font-size:var(--text-mono-size)}
+  .principles h2{font-size:1.08rem;margin:.75rem 0}
+  .principles p,.section-heading>p:not(.eyebrow),.build-callout>p{color:var(--text-dim);font-size:.91rem;margin:0}
+
+  .section{padding:var(--section-pad) 0}
+  .section-heading{max-width:670px}
+  .section-heading h2,.build-callout h2{font-size:var(--text-h2-size);letter-spacing:var(--text-h2-ls);line-height:var(--text-h2-lh);margin:.25rem 0 1.25rem}
+  .section-heading.compact h2{font-size:var(--text-h2-compact-size)}
+
+  .image-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:3.3rem}
+  .image-card{min-height:425px;border:1px solid var(--line);background:var(--gradient-card);padding:var(--card-pad);position:relative;overflow:hidden}
+  .image-card[data-index="1"]{background:var(--gradient-card-alt)}
+  .image-card[data-index="2"]{background:var(--gradient-card-deep)}
+  .card-top{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:#9bcbdf}
+  .card-top b{font-weight:400;color:#6b93a8}
+  .art{height:125px;position:relative;margin:1rem calc(-1 * var(--card-pad)) 1.3rem;overflow:hidden}
+  .art img{position:absolute;inset:0;width:100%;height:220%;object-fit:cover;object-position:50% 58%;display:block}
+  .art-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,17,29,.25),transparent 40%,rgba(9,28,45,.55))}
+  .image-card h3{font-size:2rem;letter-spacing:-.06em;margin:0}
+  .image-card h4{font-size:1rem;margin:.5rem 0;color:#e7f8ff}
+  .image-card p{font-size:.87rem;color:#b5cedb;margin:0}
+  .tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:1.4rem}
+
+  .extensions{border-top:1px solid var(--line);display:grid;grid-template-columns:.85fr 1.15fr;gap:4rem}
+  .extension-area{display:grid;grid-template-columns:.7fr 1.3fr;gap:2rem;align-items:center}
+  .extension-total strong{font-size:7rem;letter-spacing:-.09em;line-height:.8;color:var(--ice)}
+  .extension-total p{color:#a7c2d0;font-size:var(--text-caption-size);margin:1rem 0}
+  .extension-total a{color:var(--link);font-size:var(--text-mono-size)}
+  .extension-total a:hover{color:var(--link-hover)}
+  .ice-line{height:1px;background:var(--gradient-ice-line);width:100%;margin-top:1.1rem}
+  .extension-groups article{padding:1.1rem 0;border-bottom:1px solid var(--line)}
+  .extension-groups article:first-child{border-top:1px solid var(--line)}
+  .extension-groups p{font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#7cbddc;margin:.1rem 0 .75rem}
+  .extension-groups div{display:flex;flex-wrap:wrap;gap:.35rem}
+
+  .workflow{padding-top:1rem}
+  .workflow-panel{background:var(--panel-bright);border:1px solid var(--line-strong);padding:var(--panel-pad);display:grid;grid-template-columns:1fr 1fr;gap:4rem;position:relative;overflow:hidden}
+  .workflow-panel:after{content:"";position:absolute;width:400px;height:400px;border:1px solid #5dc2e333;border-radius:50%;right:-260px;bottom:-280px}
+  .workflow-panel h2{font-size:var(--text-h2-compact-size);line-height:1;letter-spacing:var(--text-h2-ls);margin:.2rem 0 1.3rem}
+  .workflow-panel>div>p:not(.eyebrow){color:#b7d3df;max-width:370px}
+  .lanes article{display:flex;gap:1rem;padding:1.15rem 0;border-top:1px solid #92d8f43d;position:relative;z-index:1}
+  .lanes b{font-family:var(--font-mono);font-size:.7rem;color:#62c7ef}
+  .lanes h3{font-size:1rem;margin:0}
+  .lanes p{font-size:var(--text-caption-size);color:#a9c7d5;margin:.3rem 0 0}
+
+  .build-callout{margin:var(--section-pad) 0;display:grid;grid-template-columns:1fr .8fr auto;gap:3rem;align-items:end;border-bottom:1px solid var(--line);padding-bottom:3rem}
+  .build-callout h2{margin-bottom:0}
+  .build-callout code{color:#8ee3ff;font-size:.8em;font-family:var(--font-mono)}
+
+  /* Composition map */
+  .composition-map{background:var(--gradient-panel);border:1px solid var(--line);margin-top:3rem;overflow:hidden;padding:1.4rem 1.8rem 1.6rem}
+  .map-copy{align-items:baseline;display:flex;gap:1rem;margin-bottom:.8rem}
+  .map-copy span{color:#6bcaf0;font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+  .map-copy strong{font-size:1rem;font-weight:550;letter-spacing:-.02em}
+  .composition-map svg{display:block;height:auto;width:100%}
+  .main-line{fill:none;stroke:#8ee3ff;stroke-width:1.4}
+  .energy-line{filter:drop-shadow(0 0 2px #78dfff);stroke-dasharray:3 8;animation:energy-flow 1.8s linear infinite}
+  .layer-line{fill:none;stroke:#6bcaf0;stroke-dasharray:4 5;stroke-width:1.3}
+  .map-node rect{fill:#103a55;stroke:#8fdffb;stroke-opacity:.55}
+  .map-node:hover rect{fill:#185473;stroke-opacity:1}
+  .snowfield-node rect{fill:#15516b}
+  .node-kicker{fill:#7fd9f8;font-family:var(--font-mono);font-size:9px;letter-spacing:1.1px}
+  .node-name{fill:#effaff;font-family:var(--font-sans);font-size:23px;font-weight:750;letter-spacing:-1px}
+  .node-detail{fill:#91b8cb;font-family:var(--font-sans);font-size:10px}
+  .extension-node rect{fill:#091c2d;stroke:#78d6f4;stroke-dasharray:4 4;stroke-opacity:.75}
+  .extension-label{fill:var(--ice);font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px}
+  .extension-detail{fill:#90b9cc;font-family:var(--font-sans);font-size:11px}
+  .composition-map marker path{fill:#8ee3ff}
+  @keyframes energy-flow{to{stroke-dashoffset:-22}}
+
+  @media(prefers-reduced-motion:reduce){.energy-line,.float,.altitude .rise path{animation:none}}
+  @media(max-width:800px){
+    .hero{grid-template-columns:1fr;min-height:auto}
+    .hero-copy{padding:5rem 0 1rem}
+    .hero h1{font-size:3.4rem}
+    .altitude{height:350px;transform:scale(.78);transform-origin:top center}
+    .principles,.extensions,.workflow-panel{grid-template-columns:1fr}
+    .principles article,.principles article+article{padding:1.5rem 0;border-left:0;border-top:1px solid var(--line)}
+    .principles article:first-child{border-top:0}
+    .section{padding:var(--section-pad-mobile) 0}
+    .image-grid{grid-template-columns:1fr}
+    .image-card{min-height:365px}
+    .extensions{gap:2.5rem}
+    .extension-area{grid-template-columns:1fr}
+    .workflow-panel{padding:2rem;gap:2rem}
+    .build-callout{margin:var(--section-pad-mobile) 0;grid-template-columns:1fr;gap:1.5rem}
+    .build-callout .button{width:max-content}
+    .composition-map{margin-top:2rem;padding:1rem;overflow-x:auto}
+    .map-copy{align-items:flex-start;flex-direction:column;gap:.3rem}
+    .composition-map svg{min-width:680px}
+  }
 </style>
