@@ -1,5 +1,5 @@
 ---
-import ProductPage from "../layouts/ProductPage.astro";
+import Site from "../layouts/Site.astro";
 const capabilities = [
   ["Boot and recovery", "systemd, systemd-boot, dracut, EFI tooling, and signed boot components provide a modern boot path without treating recovery as an afterthought."],
   ["Connected by default", "NetworkManager, Wi-Fi support, resolved, OpenSSH, and the core network utilities make the same base useful on a desk or in a rack."],
@@ -7,12 +7,33 @@ const capabilities = [
   ["Ready to extend", "Updex, EROFS tooling, compression tools, package metadata, and container prerequisites give system extensions a solid landing zone."],
 ];
 ---
-<ProductPage title="Base image" description="The shared foundation for Frostyard operating system images." active="base">
-  <header class="hero"><p class="eyebrow"><i></i> The common ground</p><h1>One base.<br /><em>Clear boundaries.</em></h1><p>Every Frostyard image begins here: a practical Debian foundation designed to boot cleanly, update coherently, and leave room for purpose-built layers.</p></header>
+<Site title="Base image | Frostyard" description="The shared foundation for Frostyard operating system images." active="base" footerLabel="Explore tools →" footerHref="/tools">
+  <header class="hero"><p class="eyebrow"><i></i> The common ground</p><h1>One base.<br /><em>Clear boundaries.</em></h1><p class="lede">Every Frostyard image begins here: a practical Debian foundation designed to boot cleanly, update coherently, and leave room for purpose-built layers.</p></header>
   <section class="foundation"><div><p class="eyebrow"><i></i> What ships everywhere</p><h2>The foundation is not minimal.<br />It is intentional.</h2></div><p>Base carries the system pieces that should behave consistently across desktop and server images. Product choices layer on top instead of rebuilding the ground beneath them.</p></section>
   <section class="capabilities">{capabilities.map(([title, body], index) => <article><b>0{index + 1}</b><h3>{title}</h3><p>{body}</p></article>)}</section>
   <section class="bottom"><p class="eyebrow"><i></i> A shared contract</p><h2>Tools, trust, and state<br />in familiar places.</h2><p>The base includes familiar shell and system utilities, Git, GPG, filesystem tools, and persistent writable state for user data, configuration, and workloads. The operating system stays composed; your work remains yours.</p></section>
-</ProductPage>
+</Site>
 <style>
-  .hero{padding:7rem 0 5.5rem;max-width:820px}.eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:.17em;font-weight:700;color:#82b6d0;margin:0 0 1.1rem}.eyebrow i{display:inline-block;width:24px;height:1px;background:#47b8ef;vertical-align:middle;margin-right:.6rem}.hero h1,.foundation h2,.bottom h2{font-size:clamp(3.3rem,6vw,6.3rem);line-height:.95;letter-spacing:-.075em;margin:0}.hero h1 em{font-family:Georgia,serif;font-weight:400;color:#aee9ff}.hero>p:last-child{font-size:1.08rem;color:#b6d0df;max-width:590px;margin:2rem 0 0}.foundation{display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;padding:3rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.foundation h2,.bottom h2{font-size:clamp(2.3rem,3.8vw,4rem)}.foundation>p,.bottom>p:last-child{color:#b6d0df;font-size:.93rem;margin:1.9rem 0 0}.capabilities{display:grid;grid-template-columns:repeat(2,1fr)}.capabilities article{padding:2.5rem 2.5rem 2.5rem 0;border-bottom:1px solid var(--line)}.capabilities article:nth-child(even){padding-left:2.5rem;border-left:1px solid var(--line)}.capabilities b{font:400 .7rem ui-monospace,monospace;color:#47b8ef}.capabilities h3{font-size:1.25rem;margin:.75rem 0}.capabilities p{font-size:.9rem;color:#b6d0df;margin:0}.bottom{margin:7rem 0 5rem;display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;align-items:end}.bottom .eyebrow{grid-column:1/-1;margin:0}@media(max-width:720px){.hero{padding:5rem 0 4rem}.foundation,.bottom,.capabilities{grid-template-columns:1fr;gap:2rem}.capabilities article,.capabilities article:nth-child(even){padding:1.8rem 0;border-left:0}.bottom{margin-top:5rem}.bottom .eyebrow{grid-column:auto}}
+  .hero{padding:7rem 0 5.5rem;max-width:820px}
+  .hero h1{font-size:var(--text-display-size);line-height:var(--text-display-lh);letter-spacing:var(--text-display-ls);font-weight:var(--text-display-weight);margin:0}
+  .hero h1 em{font-family:var(--font-serif-accent);font-weight:400;color:var(--ice)}
+  .lede{font-size:var(--text-lede-size);color:var(--text-muted);max-width:590px;margin:2rem 0 0}
+  .foundation h2,.bottom h2{font-size:clamp(2.3rem,3.8vw,4rem);line-height:1;letter-spacing:var(--text-h2-ls);margin:0}
+  .foundation{display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;padding:3rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .foundation>p,.bottom>p:last-child{color:var(--text-muted);font-size:var(--text-body-size);margin:1.9rem 0 0}
+  .capabilities{display:grid;grid-template-columns:repeat(2,1fr)}
+  .capabilities article{padding:2.5rem 2.5rem 2.5rem 0;border-bottom:1px solid var(--line)}
+  .capabilities article:nth-child(even){padding-left:2.5rem;border-left:1px solid var(--line)}
+  .capabilities b{font:400 .7rem var(--font-mono);color:var(--sky)}
+  .capabilities h3{font-size:1.25rem;margin:.75rem 0}
+  .capabilities p{font-size:.9rem;color:var(--text-muted);margin:0}
+  .bottom{margin:7rem 0 5rem;display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;align-items:end}
+  .bottom .eyebrow{grid-column:1/-1;margin:0}
+  @media(max-width:800px){
+    .hero{padding:5rem 0 4rem}
+    .foundation,.bottom,.capabilities{grid-template-columns:1fr;gap:2rem}
+    .capabilities article,.capabilities article:nth-child(even){padding:1.8rem 0;border-left:0}
+    .bottom{margin-top:5rem}
+    .bottom .eyebrow{grid-column:auto}
+  }
 </style>

@@ -1,6 +1,6 @@
 {
   "source": "https://repository.frostyard.org/ext/index",
-  "updatedAt": "2026-07-16T00:58:49.213Z",
+  "updatedAt": "2026-07-20T00:15:55.386Z",
   "extensions": [
     {
       "name": "1password",
@@ -10,7 +10,7 @@
     {
       "name": "1password-cli",
       "label": "1Password CLI",
-      "version": "2.33.1-1"
+      "version": "2.35.0-1"
     },
     {
       "name": "azurevpn",
@@ -25,17 +25,17 @@
     {
       "name": "claude-desktop",
       "label": "Claude Desktop",
-      "version": "1.18286.2"
+      "version": "1.21459.0"
     },
     {
       "name": "code-server",
       "label": "code-server",
-      "version": "4.118.0"
+      "version": "4.128.0"
     },
     {
       "name": "coder",
       "label": "Coder",
-      "version": "2.34.6-1"
+      "version": "2.34.5-1"
     },
     {
       "name": "debdev",
@@ -50,27 +50,27 @@
     {
       "name": "docker",
       "label": "Docker CE",
-      "version": "5+29.4.1-1~debian.13~trixie"
+      "version": "5+29.4.3-1~debian.13~trixie"
     },
     {
       "name": "edge",
       "label": "Microsoft Edge",
-      "version": "150.0.4078.48-1"
+      "version": "150.0.4078.65-1+r1"
     },
     {
       "name": "emdash",
       "label": "Emdash",
-      "version": "0.4.50"
+      "version": "0.4.37"
     },
     {
       "name": "himmelblau",
       "label": "Himmelblau",
-      "version": "4.0.0-debian13~20260514"
+      "version": "4.0.0-debian13~20260617"
     },
     {
       "name": "incus",
       "label": "Incus",
-      "version": "1+7.2-debian13-202607011341+r1"
+      "version": "1+7.2-debian13-202607011341"
     },
     {
       "name": "lemonade",
@@ -95,7 +95,7 @@
     {
       "name": "vscode",
       "label": "Visual Studio Code",
-      "version": "1.127.0-1782814776"
+      "version": "1.128.0-1783465401"
     }
   ]
 }

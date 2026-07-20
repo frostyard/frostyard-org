@@ -1,13 +1,35 @@
 ---
-import ProductPage from "../layouts/ProductPage.astro";
+import Site from "../layouts/Site.astro";
 const facts = [["Headless by design", "Cayo leaves the desktop behind and keeps the system focused on remote administration, services, and durable server work."], ["Containers included", "Podman, Distrobox, Buildah, crun, networking plugins, and the surrounding container stack are ready without first reshaping the host."], ["Built for the machine room", "OpenSSH, NetworkManager, mDNS, performance tuning, current firmware, and the Debian backports kernel form a capable starting point for servers and labs."]];
 ---
-<ProductPage title="Cayo" description="A Frostyard headless image for containers and servers." active="images">
-  <header class="hero"><p class="eyebrow"><i></i> Cayo · Headless server</p><h1>A stable place<br />for <em>useful services.</em></h1><p>Cayo is a composed server image for small infrastructure, homelabs, and remote machines. It keeps the operating system quiet so services and containers can be the interesting part.</p></header>
+<Site title="Cayo | Frostyard" description="A Frostyard headless image for containers and servers." active="images" footerLabel="Explore tools →" footerHref="/tools">
+  <header class="hero"><p class="eyebrow"><i></i> Cayo · Headless server</p><h1>A stable place<br />for <em>useful services.</em></h1><p class="lede">Cayo is a composed server image for small infrastructure, homelabs, and remote machines. It keeps the operating system quiet so services and containers can be the interesting part.</p></header>
   <section class="signal"><span>CAYO</span><p>Headless · Containers · Virtualization</p></section>
   <section class="facts">{facts.map(([title, body], index) => <article><b>0{index + 1}</b><h2>{title}</h2><p>{body}</p></article>)}</section>
   <section class="bottom"><div><p class="eyebrow"><i></i> For systems with a job</p><h2>Run the workload.<br />Keep the host uneventful.</h2></div><p>Use Cayo as a durable foundation for containers, development infrastructure, and virtual-machine-adjacent workloads. Its role is to make operational changes understandable and reversible.</p></section>
-</ProductPage>
+</Site>
 <style>
-  .hero{padding:7rem 0 5rem;max-width:850px}.eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:.17em;font-weight:700;color:#82b6d0;margin:0 0 1.1rem}.eyebrow i{display:inline-block;width:24px;height:1px;background:#47b8ef;vertical-align:middle;margin-right:.6rem}.hero h1,.bottom h2{font-size:clamp(3.4rem,6vw,6.4rem);line-height:.95;letter-spacing:-.075em;margin:0}.hero h1 em{font-family:Georgia,serif;font-weight:400;color:#aee9ff}.hero>p:last-child{font-size:1.08rem;color:#b6d0df;max-width:590px;margin:2rem 0 0}.signal{background:linear-gradient(135deg,#10364d,#071a2a);border:1px solid var(--line);padding:2rem 2.3rem;display:flex;align-items:center;justify-content:space-between}.signal span{font-size:2.7rem;font-weight:800;letter-spacing:-.08em;color:#aee9ff}.signal p{font:.72rem ui-monospace,monospace;color:#91cee7;margin:0}.facts{display:grid;grid-template-columns:repeat(3,1fr);margin-top:1rem;border-top:1px solid var(--line)}.facts article{padding:2.5rem 2rem 2.5rem 0;border-bottom:1px solid var(--line)}.facts article+article{padding-left:2rem;border-left:1px solid var(--line)}.facts b{font:400 .7rem ui-monospace,monospace;color:#47b8ef}.facts h2{font-size:1.2rem;margin:.8rem 0}.facts p,.bottom>p{font-size:.9rem;color:#b6d0df;margin:0}.bottom{margin:7rem 0 5rem;display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;align-items:end}.bottom h2{font-size:clamp(2.3rem,3.8vw,4rem);margin:0}@media(max-width:720px){.hero{padding:5rem 0 4rem}.signal{display:block}.signal p{margin-top:.7rem}.facts,.bottom{grid-template-columns:1fr;gap:2rem}.facts article,.facts article+article{padding:1.8rem 0;border-left:0}.bottom{margin-top:5rem}}
+  .hero{padding:7rem 0 5rem;max-width:850px}
+  .hero h1{font-size:var(--text-display-size);line-height:var(--text-display-lh);letter-spacing:var(--text-display-ls);font-weight:var(--text-display-weight);margin:0}
+  .hero h1 em{font-family:var(--font-serif-accent);font-weight:400;color:var(--ice)}
+  .lede{font-size:var(--text-lede-size);color:var(--text-muted);max-width:590px;margin:2rem 0 0}
+  .signal{background:linear-gradient(135deg,#10364d,#071a2a);border:1px solid var(--line);padding:2rem 2.3rem;display:flex;align-items:center;justify-content:space-between}
+  .signal span{font-size:2.7rem;font-weight:800;letter-spacing:-.08em;color:var(--ice)}
+  .signal p{font:var(--text-mono-size) var(--font-mono);color:#91cee7;margin:0}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);margin-top:1rem;border-top:1px solid var(--line)}
+  .facts article{padding:2.5rem 2rem 2.5rem 0;border-bottom:1px solid var(--line)}
+  .facts article+article{padding-left:2rem;border-left:1px solid var(--line)}
+  .facts b{font:400 .7rem var(--font-mono);color:var(--sky)}
+  .facts h2{font-size:1.2rem;margin:.8rem 0}
+  .facts p,.bottom>p{font-size:.9rem;color:var(--text-muted);margin:0}
+  .bottom{margin:7rem 0 5rem;display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;align-items:end}
+  .bottom h2{font-size:clamp(2.3rem,3.8vw,4rem);line-height:1;letter-spacing:var(--text-h2-ls);margin:0}
+  @media(max-width:800px){
+    .hero{padding:5rem 0 4rem}
+    .signal{display:block}
+    .signal p{margin-top:.7rem}
+    .facts,.bottom{grid-template-columns:1fr;gap:2rem}
+    .facts article,.facts article+article{padding:1.8rem 0;border-left:0}
+    .bottom{margin-top:5rem}
+  }
 </style>

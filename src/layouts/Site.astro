@@ -1,0 +1,35 @@
+---
+import "../styles/global.css";
+interface Props { title: string; description: string; active?: string; footerLabel?: string; footerHref?: string }
+const { title, description, active, footerLabel = "github.com/frostyard/snosi ↗", footerHref = "https://github.com/frostyard/snosi" } = Astro.props;
+const links: Array<[string, string, string]> = [
+  ["Base", "/base", "base"],
+  ["Images", "/#images", "images"],
+  ["Extensions", "/#extensions", "extensions"],
+  ["Why Atomic", "/why-atomic", "atomic"],
+  ["Tools", "/tools", "tools"],
+];
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <main id="top">
+      <nav aria-label="Primary navigation">
+        <a class="brand" href="/" aria-label="Frostyard home"><span class="flake">❄</span> frostyard</a>
+        <div class="nav-links">{links.map(([label, href, key]) => <a href={href} aria-current={active === key ? "page" : undefined}>{label}</a>)}</div>
+        <a class="source-link" href="https://github.com/frostyard/snosi">Source <span>↗</span></a>
+      </nav>
+      <slot />
+    </main>
+    <footer>
+      <a class="brand" href="/"><span class="flake">❄</span> frostyard</a>
+      <p>Cold systems. Clear boundaries.</p>
+      <a href={footerHref}>{footerLabel}</a>
+    </footer>
+  </body>
+</html>
