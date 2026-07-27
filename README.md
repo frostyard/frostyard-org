@@ -19,4 +19,5 @@ It uses the committed catalog snapshot if the published repository is unavailabl
 describes the shared image foundation, and the `snow`, `snowfield`, and `cayo`
 pages cover each image's distinct role. `src/pages/why-atomic.astro` explains
 the atomic model and supported workload boundaries. `src/pages/tools.astro` is
-the dedicated Updex and ChairLift page.
+the dedicated Updex and ChairLift page. `src/pages/projects.astro` is the
+Frostyard projects page.
