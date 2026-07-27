@@ -1,0 +1,30 @@
+# Repository configuration for the frostyard mill (spec-to-PR harness).
+
+[gates]
+# The repository has no formatter, linter, or unit-test command. Astro's
+# diagnostics provide static analysis. The validation build deliberately uses
+# the committed extension snapshot, avoiding a network-dependent catalog
+# refresh and timestamp rewrite while compiling the Cloudflare Worker bundle.
+chunk = [
+  "npm run check",
+  "npm run build:check",
+]
+# No hosted CI workflow exists. This single target runs every available local
+# health check in the same order and is the pre-ship gate.
+deep = ["npm run ci"]
+
+[context]
+docs = ["AGENTS.md", "README.md"]
+skills_dir = "docs/agents/skills"
+
+[review]
+security_invariants = """
+The site is public and has no authentication or server-side secret store.
+Values fetched from the public extension catalog are untrusted display data:
+they must remain escaped content and must never be rendered as executable
+markup or code. Secrets and private configuration must not be committed or
+included in the browser or Worker bundle.
+"""
+
+[harvest]
+allowlist = ["docs/agents/skills/", "AGENTS.md"]

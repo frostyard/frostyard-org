@@ -6,7 +6,10 @@
   "scripts": {
     "prebuild": "node scripts/sync-extensions.mjs",
     "dev": "astro dev",
+    "check": "astro check",
     "build": "astro build",
+    "build:check": "astro build",
+    "ci": "npm run check && npm run build:check",
     "preview": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "cf-typegen": "wrangler types"
