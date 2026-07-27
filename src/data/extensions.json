@@ -1,6 +1,6 @@
 {
   "source": "https://repository.frostyard.org/ext/index",
-  "updatedAt": "2026-07-20T19:35:52.002Z",
+  "updatedAt": "2026-07-27T02:52:57.825Z",
   "extensions": [
     {
       "name": "1password",
@@ -10,7 +10,7 @@
     {
       "name": "1password-cli",
       "label": "1Password CLI",
-      "version": "2.34.1-1"
+      "version": "2.33.1-1"
     },
     {
       "name": "azurevpn",
@@ -25,7 +25,7 @@
     {
       "name": "claude-desktop",
       "label": "Claude Desktop",
-      "version": "1.20186.1"
+      "version": "1.20186.9"
     },
     {
       "name": "code-server",
@@ -35,7 +35,7 @@
     {
       "name": "coder",
       "label": "Coder",
-      "version": "2.35.1-1"
+      "version": "2.34.6-1"
     },
     {
       "name": "debdev",
@@ -50,7 +50,7 @@
     {
       "name": "docker",
       "label": "Docker CE",
-      "version": "5+29.4.1-1~debian.13~trixie"
+      "version": "5+29.5.3-1~debian.13~trixie"
     },
     {
       "name": "edge",
@@ -60,27 +60,37 @@
     {
       "name": "emdash",
       "label": "Emdash",
-      "version": "0.4.50"
+      "version": "0.4.47"
     },
     {
       "name": "himmelblau",
       "label": "Himmelblau",
-      "version": "4.0.0-debian13~20260507"
+      "version": "4.0.0-debian13~20260414"
     },
     {
       "name": "incus",
       "label": "Incus",
-      "version": "1+7.2-debian13-202607011341+r1"
+      "version": "1+7.2-debian13-202607011341"
     },
     {
       "name": "lemonade",
       "label": "Lemonade",
-      "version": "11.0.0~13"
+      "version": "10.10.0~13"
     },
     {
       "name": "nix",
       "label": "Nix",
       "version": "2.26.3+dfsg-1"
+    },
+    {
+      "name": "paseo",
+      "label": "paseo",
+      "version": "0.2.1"
+    },
+    {
+      "name": "pilothouse",
+      "label": "pilothouse",
+      "version": "0.4.0"
     },
     {
       "name": "podman",
@@ -90,12 +100,12 @@
     {
       "name": "tailscale",
       "label": "Tailscale",
-      "version": "1.98.4"
+      "version": "1.98.2"
     },
     {
       "name": "vscode",
       "label": "Visual Studio Code",
-      "version": "1.128.1-1784039518"
+      "version": "1.129.0-1784074987"
     }
   ]
 }
