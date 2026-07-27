@@ -3,12 +3,12 @@ import Site from "../layouts/Site.astro";
 const projects = [
   {
     name: "Millhouse",
-    label: "Mill run supervisor",
+    label: "Coding job supervisor",
     mark: "MH",
-    title: "One supervisor for every mill run.",
-    body: "A cross-project supervisor for launching and watching mill runs. It gives every run a stable identity, tracks liveness and phase across CLI, HTTP, and MCP surfaces, and can stop the exact run you meant to stop.",
-    points: ["Launch mill runs against any repo and source", "Liveness and phase visibility for every run", "Stop the exact run, not a guess by name", "CLI, HTTP, and MCP control interfaces"],
-    command: "millhouse mill <repo> <source>",
+    title: "Keep every automated coding job in view.",
+    body: "When several automated coding jobs are working across repositories, scattered terminals make it hard to know what is still running or waiting on you. Millhouse tracks each job in one place, shows its progress, and lets you stop the one you chose without disrupting the rest.",
+    points: ["Start work in any repository from one place", "See what is running, finished, or waiting on you", "Restart Millhouse without losing track of active jobs", "Stop one job without touching the others"],
+    command: "millhouse mill <repo> <issue-or-spec>",
     href: "https://github.com/frostyard/millhouse",
   },
 ];
