@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap");
 
-/* Frostyard design system tokens — github.com/frostyard/design-system */
+/* Frostyard design system tokens — github.com/frostyard/core (.agents/skills/frostyard-design) */
 :root {
   /* Base inks — darker blue backgrounds */
   --ink: #06111d;
