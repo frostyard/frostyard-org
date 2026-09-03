@@ -2,6 +2,7 @@
 import "../styles/global.css";
 interface Props { title: string; description: string; active?: string; footerLabel?: string; footerHref?: string }
 const { title, description, active, footerLabel = "github.com/frostyard/snosi ↗", footerHref = "https://github.com/frostyard/snosi" } = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const links: Array<[string, string, string]> = [
   ["Base", "/base", "base"],
   ["Images", "/#images", "images"],
@@ -16,6 +17,11 @@ const links: Array<[string, string, string]> = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
     <title>{title}</title>
   </head>
   <body>
