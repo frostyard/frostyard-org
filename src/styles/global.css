@@ -98,6 +98,7 @@ html { scroll-behavior: smooth }
 body { margin: 0; background-color: var(--surface-page); background-image: var(--gradient-page); color: var(--text-body); font-family: var(--font-sans); line-height: 1.5 }
 main, footer { max-width: var(--container-max); margin: auto; padding-left: var(--container-pad); padding-right: var(--container-pad) }
 a { color: inherit; text-decoration: none }
+:focus-visible { outline: 3px solid var(--ice); outline-offset: 3px }
 
 /* Nav */
 nav { height: var(--nav-height); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line) }
@@ -129,6 +130,10 @@ footer { padding-bottom: 3rem; display: flex; justify-content: space-between; al
 footer p { margin: 0 }
 footer a:hover { color: var(--ice) }
 footer > a:last-child { color: #a4d9ef }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto }
+}
 
 @media (max-width: 800px) {
   main, footer { padding-left: var(--container-pad-mobile); padding-right: var(--container-pad-mobile) }
