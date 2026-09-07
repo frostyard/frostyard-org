@@ -16,7 +16,7 @@ The build refreshes the extension catalog from `https://repository.frostyard.org
 It uses the committed catalog snapshot if the published repository is unavailable.
 
 `src/pages/index.astro` is the image and extension overview. `src/pages/base.astro`
-describes the shared image foundation, and the `snow`, `snowfield`, and `cayo`
+describes the shared image foundation, and the `snow`, `snowfield`, and `floe`
 pages cover each image's distinct role. `src/pages/why-atomic.astro` explains
 the atomic model and supported workload boundaries. `src/pages/tools.astro` is
 the dedicated Updex and ChairLift page. `src/pages/projects.astro` is the

@@ -1,12 +1,12 @@
 ---
 import Site from "../layouts/Site.astro";
-const facts = [["Headless by design", "Cayo leaves the desktop behind and keeps the system focused on remote administration, services, and durable server work."], ["Containers included", "Podman, Distrobox, Buildah, crun, networking plugins, and the surrounding container stack are ready without first reshaping the host."], ["Built for the machine room", "OpenSSH, NetworkManager, mDNS, performance tuning, current firmware, and the Debian backports kernel form a capable starting point for servers and labs."]];
+const facts = [["Headless by design", "Floe leaves the desktop behind and keeps the system focused on remote administration, services, and durable server work."], ["Containers included", "Podman, Distrobox, Buildah, crun, networking plugins, and the surrounding container stack are ready without first reshaping the host."], ["Built for the machine room", "OpenSSH, NetworkManager, mDNS, performance tuning, current firmware, and the Debian backports kernel form a capable starting point for servers and labs."]];
 ---
-<Site title="Cayo | Frostyard" description="A Frostyard headless image for containers and servers." active="images" footerLabel="Explore tools →" footerHref="/tools">
-  <header class="hero"><p class="eyebrow"><i></i> Cayo · Headless server</p><h1>A stable place<br />for <em>useful services.</em></h1><p class="lede">Cayo is a composed server image for small infrastructure, homelabs, and remote machines. It keeps the operating system quiet so services and containers can be the interesting part.</p></header>
-  <section class="signal"><span>CAYO</span><p>Headless · Containers · Virtualization</p></section>
+<Site title="Floe | Frostyard" description="A Frostyard headless image for containers and servers." active="images" footerLabel="Explore tools →" footerHref="/tools">
+  <header class="hero"><p class="eyebrow"><i></i> Floe · Headless server</p><h1>A stable place<br />for <em>useful services.</em></h1><p class="lede">Floe is a composed server image for small infrastructure, homelabs, and remote machines. It keeps the operating system quiet so services and containers can be the interesting part.</p></header>
+  <section class="signal"><span>FLOE</span><p>Headless · Containers · Virtualization</p></section>
   <section class="facts">{facts.map(([title, body], index) => <article><b>0{index + 1}</b><h2>{title}</h2><p>{body}</p></article>)}</section>
-  <section class="bottom"><div><p class="eyebrow"><i></i> For systems with a job</p><h2>Run the workload.<br />Keep the host uneventful.</h2></div><p>Use Cayo as a durable foundation for containers, development infrastructure, and virtual-machine-adjacent workloads. Its role is to make operational changes understandable and reversible.</p></section>
+  <section class="bottom"><div><p class="eyebrow"><i></i> For systems with a job</p><h2>Run the workload.<br />Keep the host uneventful.</h2></div><p>Use Floe as a durable foundation for containers, development infrastructure, and virtual-machine-adjacent workloads. Its role is to make operational changes understandable and reversible.</p></section>
 </Site>
 <style>
   .hero{padding:7rem 0 5rem;max-width:850px}
