@@ -5,7 +5,7 @@ const heroScenes = ["moonlit-summit", "alpine-morning", "frozen-reflection", "bl
 const images = [
   { name: "snow", type: "Desktop", title: "A GNOME workstation that stays composed.", body: "A daily desktop built on Debian Trixie with a current backports kernel, atomic OS updates, and room for real work.", tags: ["GNOME", "Backports kernel", "Atomic updates"] },
   { name: "snowfield", type: "Surface", title: "Snow, tuned for Surface hardware.", body: "The Snow desktop with linux-surface and the hardware support that makes a tablet or laptop feel like a first-class machine.", tags: ["GNOME", "linux-surface", "Touch-ready"] },
-  { name: "cayo", type: "Server", title: "A quiet base for services and containers.", body: "A headless image for servers, labs, and small infrastructure. Podman is ready; the host stays deliberately uninteresting.", tags: ["Headless", "Containers", "Virtualization"] },
+  { name: "floe", type: "Server", title: "A quiet base for services and containers.", body: "A headless image for servers, labs, and small infrastructure. Podman is ready; the host stays deliberately uninteresting.", tags: ["Headless", "Containers", "Virtualization"] },
 ];
 
 type Extension = typeof extensionCatalog.extensions[number];
@@ -56,17 +56,17 @@ if (otherExtensions.length) extensionGroups.push({ name: "Also published", exten
 
   <section class="images section" id="images">
     <div class="section-heading"><p class="eyebrow"><span></span> Three base images</p><h2>Choose the terrain.<br />The foundation is shared.</h2><p>Each image starts from the same reproducible Debian base and takes a clear role from there.</p></div>
-    <div class="composition-map" aria-label="Base image composition: Base feeds Cayo and Snow. Snow feeds Snowfield. System extensions add optional capabilities to Cayo, Snow, and Snowfield.">
+    <div class="composition-map" aria-label="Base image composition: Base feeds Floe and Snow. Snow feeds Snowfield. System extensions add optional capabilities to Floe, Snow, and Snowfield.">
       <div class="map-copy"><span>How the images relate</span><strong>One shared base. One desktop variation. Optional layers for every image.</strong></div>
       <svg viewBox="0 0 960 320" role="img" aria-labelledby="composition-title composition-description">
-        <title id="composition-title">Frostyard image composition</title><desc id="composition-description">The shared base image branches to the Cayo server and Snow desktop. Snow leads to the Snowfield Surface desktop. System extensions add optional capabilities to each image.</desc>
+        <title id="composition-title">Frostyard image composition</title><desc id="composition-description">The shared base image branches to the Floe server and Snow desktop. Snow leads to the Snowfield Surface desktop. System extensions add optional capabilities to each image.</desc>
         <defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" /></marker></defs>
         <path class="main-line energy-line" d="M 205 86 H 350" marker-end="url(#arrow)" />
         <path class="main-line energy-line" d="M 205 106 H 282 V 190 H 350" marker-end="url(#arrow)" />
         <path class="main-line energy-line" d="M 530 190 H 620" marker-end="url(#arrow)" />
         <path class="layer-line" d="M 430 264 V 130 M 450 264 V 234 M 700 264 V 234" />
         <a href="/base" class="map-node base-node"><rect x="35" y="55" width="170" height="82" rx="3" /><text x="53" y="82" class="node-kicker">SHARED FOUNDATION</text><text x="53" y="112" class="node-name">shared base</text><text x="53" y="129" class="node-detail">system · boot · tools</text></a>
-        <a href="/cayo" class="map-node"><rect x="350" y="42" width="180" height="88" rx="3" /><text x="368" y="70" class="node-kicker">SERVER IMAGE</text><text x="368" y="101" class="node-name">cayo</text><text x="368" y="119" class="node-detail">headless · containers</text></a>
+        <a href="/floe" class="map-node"><rect x="350" y="42" width="180" height="88" rx="3" /><text x="368" y="70" class="node-kicker">SERVER IMAGE</text><text x="368" y="101" class="node-name">floe</text><text x="368" y="119" class="node-detail">headless · containers</text></a>
         <a href="/snow" class="map-node"><rect x="350" y="146" width="180" height="88" rx="3" /><text x="368" y="174" class="node-kicker">DESKTOP IMAGE</text><text x="368" y="205" class="node-name">snow</text><text x="368" y="223" class="node-detail">GNOME · backports kernel</text></a>
         <a href="/snowfield" class="map-node snowfield-node"><rect x="620" y="146" width="210" height="88" rx="3" /><text x="638" y="174" class="node-kicker">SURFACE DESKTOP</text><text x="638" y="205" class="node-name">snowfield</text><text x="638" y="223" class="node-detail">Snow · linux-surface kernel</text></a>
         <a href="#extensions" class="extension-node"><rect x="285" y="264" width="620" height="42" rx="3" /><text x="307" y="291" class="extension-label">SYSEXT LAYER</text><text x="450" y="291" class="extension-detail">optional capabilities for any image · Incus · Docker · Podman · dev tools · apps</text></a>
@@ -94,7 +94,7 @@ if (otherExtensions.length) extensionGroups.push({ name: "Also published", exten
     <div class="workflow-panel"><div><p class="eyebrow"><span></span> The practical model</p><h2>Install software<br />at the right altitude.</h2><p>Immutability is not a prohibition. It is a boundary that makes each choice easier to reverse and reason about.</p></div><div class="lanes"><article><b>01</b><div><h3>System extension</h3><p>For a tool that belongs close to the OS: VPNs, IDEs, container runtimes, and services.</p></div></article><article><b>02</b><div><h3>Container or Distrobox</h3><p>For development stacks and workloads that should bring their own userspace.</p></div></article><article><b>03</b><div><h3>User-space environment</h3><p>For personal tooling with Nix, Homebrew, Flatpak, or a project-local runtime.</p></div></article></div></div>
   </section>
 
-  <section class="build-callout"><div><p class="eyebrow"><span></span> No magic, just composition</p><h2>Built in the open<br />with <code>mkosi</code>.</h2></div><p>Cayo, Snow, and Snowfield share one definition, then branch only where purpose demands: packages, kernel, and configuration.</p><a class="button primary" href="https://github.com/frostyard/snosi">Inspect snosi <span>↗</span></a></section>
+  <section class="build-callout"><div><p class="eyebrow"><span></span> No magic, just composition</p><h2>Built in the open<br />with <code>mkosi</code>.</h2></div><p>Floe, Snow, and Snowfield share one definition, then branch only where purpose demands: packages, kernel, and configuration.</p><a class="button primary" href="https://github.com/frostyard/snosi">Inspect snosi <span>↗</span></a></section>
 </Site>
 
 <style>
