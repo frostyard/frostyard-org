@@ -4,7 +4,7 @@
 `src/pages/`.
 
 **What to do:** `README.md` contains a prose sentence for every route
-(`src/pages/index.astro`, `src/pages/tools.astro`, `src/pages/projects.astro`,
+(`src/pages/index.astro`, `src/pages/tools.astro`, `src/pages/install.astro`,
 etc.), each naming the file and describing its purpose in one clause. When a
 page is added or removed, update this sentence-per-page list in the same
 change. Treat a missing entry as documentation directly contradicted by the

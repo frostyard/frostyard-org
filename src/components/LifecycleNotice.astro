@@ -1,0 +1,29 @@
+<section class="lifecycle-notice" id="native-eol" aria-labelledby="native-eol-title">
+  <div>
+    <p class="eyebrow"><i></i> Native A/B and nbc lifecycle</p>
+    <h2 id="native-eol-title">Move to bootc<br />before September 30.</h2>
+  </div>
+  <div class="notice-copy">
+    <p>Native A/B images and systems installed with <code>nbc</code> reach end of support and routine publication on <strong>September 30, 2026</strong>. After that date Frostyard publishes no routine fixes, security updates, dependency refreshes, native images, or nbc packages for those systems.</p>
+    <p>There is no in-place conversion. Verify a readable backup, then reinstall with a bootc image for continued support.</p>
+    <div>
+      <a href="https://github.com/frostyard/snosi/blob/main/docs/adr/0015-retire-native-ab-images-and-nbc-installs.md">Read the accepted decision ↗</a>
+      <a href="https://github.com/frostyard/snosi/blob/main/docs/nbc-to-bootc-migration.md">Plan the migration ↗</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lifecycle-notice{background:var(--gradient-panel);border:1px solid var(--line-strong);display:grid;gap:4rem;grid-template-columns:1fr 1fr;margin:4rem 0;padding:var(--panel-pad)}
+  .lifecycle-notice h2{font-size:var(--text-h2-compact-size);letter-spacing:var(--text-h2-ls);line-height:1;margin:.25rem 0 0}
+  .notice-copy p{color:var(--text-muted);font-size:var(--text-body-size);margin:0}
+  .notice-copy p+p{margin-top:1rem}
+  .notice-copy code{color:var(--text-mono-accent);font-family:var(--font-mono)}
+  .notice-copy strong{color:var(--text-body)}
+  .notice-copy div{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.5rem}
+  .notice-copy a{color:var(--link);font-size:var(--text-caption-size);font-weight:700}
+  .notice-copy a:hover{color:var(--link-hover)}
+  @media(max-width:800px){
+    .lifecycle-notice{gap:2rem;grid-template-columns:1fr;margin:2.5rem 0;padding:2rem}
+  }
+</style>

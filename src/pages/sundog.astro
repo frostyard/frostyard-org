@@ -1,0 +1,39 @@
+---
+import Site from "../layouts/Site.astro";
+const facts = [
+  ["Plasma, deliberately composed", "Plasma on Wayland is the offered desktop session, with SDDM, Breeze, and Discover focused on Flatpak applications."],
+  ["Bootc from the start", "Sundog ships only through the bootc and OCI path. There is no native A/B Sundog image or channel."],
+  ["A shared workstation baseline", "The backports kernel, hardware and container baseline, Flatpak-first application model, and desktop system-extension compatibility carry over from Snow."],
+];
+---
+<Site title="Sundog | Frostyard" description="A bootc-only Frostyard KDE Plasma workstation." active="images" footerLabel="Install with Firn →" footerHref="/install">
+  <header class="hero"><p class="eyebrow"><i></i> Sundog · KDE Plasma workstation</p><h1>A bright desktop.<br /><em>A composed foundation.</em></h1><p class="lede">Sundog is Frostyard's bootc-only KDE Plasma workstation: a Wayland desktop with atomic deployments below it and deliberate software layers above.</p></header>
+  <section class="signal"><span>SUNDOG</span><p>KDE Plasma · Wayland · bootc only</p></section>
+  <section class="facts">{facts.map(([title, body], index) => <article><b>0{index + 1}</b><h2>{title}</h2><p>{body}</p></article>)}</section>
+  <section class="bottom"><div><p class="eyebrow"><i></i> A second desktop path</p><h2>Choose the workspace.<br />Keep the update model.</h2></div><p>Sundog translates Frostyard's workstation choices to Plasma without creating another transport. Install it with Firn and keep host changes in the same reversible layers used across the bootc products.</p></section>
+</Site>
+<style>
+  .hero{padding:7rem 0 5rem;max-width:900px}
+  .hero h1{font-size:var(--text-display-size);line-height:var(--text-display-lh);letter-spacing:var(--text-display-ls);font-weight:var(--text-display-weight);margin:0}
+  .hero h1 em{font-family:var(--font-serif-accent);font-weight:400;color:var(--ice)}
+  .lede{font-size:var(--text-lede-size);color:var(--text-muted);max-width:620px;margin:2rem 0 0}
+  .signal{background:linear-gradient(135deg,#17455f,#0a2033);border:1px solid var(--line);padding:2rem 2.3rem;display:flex;align-items:center;justify-content:space-between}
+  .signal span{font-size:2.4rem;font-weight:800;letter-spacing:-.08em;color:var(--ice)}
+  .signal p{font:var(--text-mono-size) var(--font-mono);color:#91cee7;margin:0}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);margin-top:1rem;border-top:1px solid var(--line)}
+  .facts article{padding:2.5rem 2rem 2.5rem 0;border-bottom:1px solid var(--line)}
+  .facts article+article{padding-left:2rem;border-left:1px solid var(--line)}
+  .facts b{font:400 .7rem var(--font-mono);color:var(--sky)}
+  .facts h2{font-size:1.2rem;margin:.8rem 0}
+  .facts p,.bottom>p{font-size:.9rem;color:var(--text-muted);margin:0}
+  .bottom{margin:7rem 0 5rem;display:grid;grid-template-columns:1.2fr .8fr;gap:4rem;align-items:end}
+  .bottom h2{font-size:clamp(2.3rem,3.8vw,4rem);line-height:1;letter-spacing:var(--text-h2-ls);margin:0}
+  @media(max-width:800px){
+    .hero{padding:5rem 0 4rem}
+    .signal{display:block}
+    .signal p{margin-top:.7rem}
+    .facts,.bottom{grid-template-columns:1fr;gap:2rem}
+    .facts article,.facts article+article{padding:1.8rem 0;border-left:0}
+    .bottom{margin-top:5rem}
+  }
+</style>
