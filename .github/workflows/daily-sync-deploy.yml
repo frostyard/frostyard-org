@@ -1,0 +1,107 @@
+name: Daily extension sync & deploy
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # 06:00 UTC daily (GitHub schedules are best-effort)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-sync-deploy
+  cancel-in-progress: false
+
+jobs:
+  sync-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # Full history so the commit step can rebase onto main before pushing.
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Snapshot committed catalog
+        run: git show HEAD:src/data/extensions.json > /tmp/old-extensions.json
+
+      - name: Sync extension catalog
+        run: node scripts/sync-extensions.mjs
+
+      - name: Validate refreshed catalog
+        run: |
+          set -euo pipefail
+          new_count=$(jq '.extensions | length' src/data/extensions.json)
+          old_count=$(jq '.extensions | length' /tmp/old-extensions.json)
+          if [ -z "$new_count" ] || [ "$new_count" -lt 1 ]; then
+            echo "::error::Refreshed catalog has no extensions; refusing to deploy."
+            exit 1
+          fi
+          # Guard against a bad HTTP-200 upstream body collapsing the catalog.
+          threshold=$(( old_count / 2 ))
+          if [ "$new_count" -lt "$threshold" ]; then
+            echo "::error::Catalog shrank from $old_count to $new_count entries; refusing to deploy."
+            exit 1
+          fi
+          echo "Catalog entries: old=$old_count new=$new_count"
+
+      - name: Detect meaningful change
+        id: detect
+        run: |
+          set -euo pipefail
+          # Compare catalogs ignoring the always-changing updatedAt timestamp and
+          # ignoring upstream list ordering (sort by name) to avoid noise deploys.
+          normalize='del(.updatedAt) | .extensions |= sort_by(.name)'
+          if diff -q \
+            <(jq -S "$normalize" /tmp/old-extensions.json) \
+            <(jq -S "$normalize" src/data/extensions.json) > /dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No meaningful catalog change; skipping build, deploy, and commit."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Catalog changed; will build, deploy, and commit."
+          fi
+
+      - name: Build site
+        if: steps.detect.outputs.changed == 'true'
+        # Call astro directly to bypass the "prebuild" hook so the catalog is
+        # synced exactly once and the deployed artifact matches what we commit.
+        run: npx astro build
+
+      - name: Deploy to Cloudflare
+        if: steps.detect.outputs.changed == 'true'
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Commit refreshed catalog
+        if: steps.detect.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/extensions.json
+          git commit -m "chore: refresh extension catalog"
+          # Rebase onto any concurrent writes to main, then push with a bounded
+          # retry so a non-fast-forward doesn't leave committed state behind live.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); retrying..."
+          done
+          echo "::error::Failed to push refreshed catalog after 3 attempts."
+          exit 1
