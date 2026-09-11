@@ -9,7 +9,8 @@
     "check": "astro check",
     "build": "astro build",
     "build:check": "astro build",
-    "ci": "npm run check && npm run build:check",
+    "check:site": "node scripts/check-site.mjs",
+    "ci": "npm run check && npm run build:check && npm run check:site",
     "preview": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "cf-typegen": "wrangler types"

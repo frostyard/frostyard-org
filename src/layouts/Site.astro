@@ -4,12 +4,11 @@ interface Props { title: string; description: string; active?: string; footerLab
 const { title, description, active, footerLabel = "github.com/frostyard/snosi ↗", footerHref = "https://github.com/frostyard/snosi" } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const links: Array<[string, string, string]> = [
-  ["Base", "/base", "base"],
   ["Images", "/#images", "images"],
+  ["Install", "/install", "install"],
   ["Extensions", "/#extensions", "extensions"],
-  ["Why Atomic", "/why-atomic", "atomic"],
   ["Tools", "/tools", "tools"],
-  ["Projects", "/projects", "projects"],
+  ["Why atomic", "/why-atomic", "atomic"],
 ];
 ---
 <html lang="en">
@@ -33,6 +32,13 @@ const links: Array<[string, string, string]> = [
         <a class="brand" href="/" aria-label="Frostyard home"><span class="flake">❄</span> frostyard</a>
         <div class="nav-links">{links.map(([label, href, key]) => <a href={href} aria-current={active === key ? "page" : undefined}>{label}</a>)}</div>
         <a class="source-link" href="https://github.com/frostyard/snosi">Source <span>↗</span></a>
+        <details class="mobile-nav">
+          <summary>Menu</summary>
+          <div class="mobile-nav-links">
+            {links.map(([label, href, key]) => <a href={href} aria-current={active === key ? "page" : undefined}>{label}</a>)}
+            <a href="https://github.com/frostyard/snosi">Source <span>↗</span></a>
+          </div>
+        </details>
       </nav>
       <slot />
     </main>

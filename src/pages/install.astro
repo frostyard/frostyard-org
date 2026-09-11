@@ -1,0 +1,87 @@
+---
+import LifecycleNotice from "../components/LifecycleNotice.astro";
+import Site from "../layouts/Site.astro";
+const products = [
+  ["Snow", "GNOME desktop", "/snow"],
+  ["Snowfield", "GNOME for Microsoft Surface", "/snowfield"],
+  ["Sundog", "KDE Plasma · bootc only", "/sundog"],
+  ["Floe", "Headless server", "/floe"],
+];
+const artifacts = [
+  ["Download the stable installer ISO", "https://repository.frostyard.org/isos/native/v1/snosi-installer-latest-x86-64.iso"],
+  ["Open SHA256SUMS", "https://repository.frostyard.org/isos/native/v1/SHA256SUMS"],
+  ["Open SHA256SUMS.gpg", "https://repository.frostyard.org/isos/native/v1/SHA256SUMS.gpg"],
+];
+---
+<Site title="Install | Frostyard" description="Choose a Frostyard bootc image and install it with Firn." active="install" footerLabel="Read the complete guide →" footerHref="https://github.com/frostyard/snosi/blob/main/docs/installing.md">
+  <header class="hero">
+    <p class="eyebrow"><i></i> Firn installer · bootc images</p>
+    <h1>Choose the image.<br /><em>Verify the path.</em></h1>
+    <p class="lede">Firn is the supported installer for published Frostyard images. For a new system, choose one of the four bootc products and use the complete Snosi guide for media verification, disk selection, and recovery details.</p>
+    <div class="hero-actions"><a class="button primary" href={artifacts[0][1]}>Download Firn <span>↓</span></a><a class="button ghost" href="https://github.com/frostyard/snosi/blob/main/docs/installing.md">Read the guide <span>↗</span></a></div>
+  </header>
+
+  <section class="prerequisites" aria-labelledby="before-installing">
+    <div><p class="eyebrow"><i></i> Before installing</p><h2 id="before-installing">A clear target.<br />A readable backup.</h2></div>
+    <div class="requirements">
+      <article><b>01</b><h3>Boot with UEFI</h3><p>Firn requires UEFI. Hardware and security choices vary; installer availability is not a universal compatibility or Secure Boot guarantee.</p></article>
+      <article><b>02</b><h3>Expect disk erasure</h3><p>Installation erases the selected target disk. Back up what matters and verify that the backup is readable from another machine.</p></article>
+    </div>
+  </section>
+
+  <section class="products" aria-labelledby="choose-product">
+    <div><p class="eyebrow"><i></i> Four bootc products</p><h2 id="choose-product">Pick the role.<br />Keep the supported path.</h2></div>
+    <div class="product-grid">{products.map(([name, role, href], index) => <a href={href}><b>0{index + 1}</b><strong>{name}</strong><span>{role}</span></a>)}</div>
+  </section>
+
+  <LifecycleNotice />
+
+  <section class="verification" aria-labelledby="verify-installer">
+    <div>
+      <p class="eyebrow"><i></i> Published artifacts</p>
+      <h2 id="verify-installer">Download once.<br />Verify before writing.</h2>
+      <p>The stable URL resolves to the current versioned installer. Verify the signed checksum index and the ISO exactly as described in the complete installation guide.</p>
+    </div>
+    <div class="artifact-links">{artifacts.map(([label, href]) => <a href={href}>{label}<span>↗</span></a>)}</div>
+  </section>
+
+  <section class="quality">
+    <div><p class="eyebrow"><i></i> Availability is not verification</p><h2>Published here.<br />Measured separately.</h2></div>
+    <div><p>An available installer artifact does not mean every installation lane or hardware combination has passed. Frostyard Lab reports current quality evidence separately and uses <em>unproven</em> when it retains no passing run.</p><a class="button ghost" href="https://frostyard.github.io/lab/">Check quality status <span>↗</span></a></div>
+  </section>
+</Site>
+
+<style>
+  .hero{padding:7rem 0 5.5rem;max-width:880px}
+  .hero h1{font-size:var(--text-display-size);line-height:var(--text-display-lh);letter-spacing:var(--text-display-ls);font-weight:var(--text-display-weight);margin:0}
+  .hero h1 em{font-family:var(--font-serif-accent);font-weight:400;color:var(--ice)}
+  .lede{font-size:var(--text-lede-size);color:var(--text-muted);max-width:650px;margin:2rem 0 2.4rem}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:.8rem}
+  .prerequisites,.products,.verification,.quality{border-top:1px solid var(--line);display:grid;gap:4rem;grid-template-columns:.9fr 1.1fr;padding:4.5rem 0}
+  .prerequisites h2,.products h2,.verification h2,.quality h2{font-size:var(--text-h2-compact-size);letter-spacing:var(--text-h2-ls);line-height:1;margin:.25rem 0 0}
+  .requirements{display:grid;grid-template-columns:1fr 1fr}
+  .requirements article{border-left:1px solid var(--line);padding:0 1.5rem}
+  .requirements b,.product-grid b{color:var(--sky);font:400 .7rem var(--font-mono)}
+  .requirements h3{font-size:1.1rem;margin:.8rem 0}
+  .requirements p,.verification>div>p,.quality p{color:var(--text-muted);font-size:var(--text-body-size);margin:0}
+  .product-grid{display:grid;grid-template-columns:1fr 1fr}
+  .product-grid a{background:var(--gradient-card);border:1px solid var(--line);display:grid;gap:.35rem;margin:-1px 0 0 -1px;padding:1.3rem}
+  .product-grid a:hover{border-color:var(--line-strong)}
+  .product-grid strong{font-size:1.3rem;letter-spacing:-.04em}
+  .product-grid span{color:var(--text-muted);font-size:var(--text-caption-size)}
+  .artifact-links{display:grid}
+  .artifact-links a{border-top:1px solid var(--line);color:var(--link);display:flex;font-size:var(--text-body-size);justify-content:space-between;padding:1rem 0}
+  .artifact-links a:last-child{border-bottom:1px solid var(--line)}
+  .artifact-links a:hover{color:var(--link-hover)}
+  .artifact-links span{margin-left:1rem}
+  .quality{align-items:end;margin-bottom:5rem}
+  .quality .button{margin-top:1.5rem;width:max-content}
+  .quality em{color:var(--ice)}
+  @media(max-width:800px){
+    .hero{padding:5rem 0 4rem}
+    .prerequisites,.products,.verification,.quality{gap:2rem;grid-template-columns:1fr;padding:3rem 0}
+    .requirements,.product-grid{grid-template-columns:1fr}
+    .requirements article{border-left:0;border-top:1px solid var(--line);padding:1.3rem 0}
+    .quality{margin-bottom:3rem}
+  }
+</style>

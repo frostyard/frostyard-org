@@ -101,13 +101,14 @@ a { color: inherit; text-decoration: none }
 :focus-visible { outline: 3px solid var(--ice); outline-offset: 3px }
 
 /* Nav */
-nav { height: var(--nav-height); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line) }
+nav { min-height: var(--nav-height); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line) }
 .brand { font-weight: var(--brand-weight); letter-spacing: var(--brand-ls); font-size: var(--brand-size); white-space: nowrap }
 .brand .flake { color: var(--ice); font-size: 1.55rem; margin-right: .3rem }
 .nav-links { display: flex; gap: 2rem; font-size: var(--text-small-size); color: #b7d0df }
 .nav-links a:hover, .nav-links a[aria-current] { color: var(--ice) }
 .source-link { font-size: .83rem; border: 1px solid var(--line); padding: .55rem .8rem; border-radius: var(--radius-pill); color: #d9f2ff }
 .source-link span { color: var(--ice); margin-left: .35rem }
+.mobile-nav { display: none }
 
 /* Eyebrow — 24px sky dash + uppercase letter-spaced kicker */
 .eyebrow { font-size: var(--text-eyebrow-size); text-transform: uppercase; letter-spacing: var(--text-eyebrow-ls); font-weight: var(--text-eyebrow-weight); color: var(--text-eyebrow); margin: 0 0 1.1rem }
@@ -137,8 +138,15 @@ footer > a:last-child { color: #a4d9ef }
 
 @media (max-width: 800px) {
   main, footer { padding-left: var(--container-pad-mobile); padding-right: var(--container-pad-mobile) }
-  nav { height: var(--nav-height-mobile) }
-  .nav-links { display: none }
-  .source-link { font-size: .7rem }
+  nav { min-height: var(--nav-height-mobile); display: grid; grid-template-columns: 1fr; align-items: start; padding: .8rem 0 }
+  nav > .brand { align-self: start; grid-area: 1 / 1; line-height: 2.6rem }
+  .nav-links, .source-link { display: none }
+  .mobile-nav { display: block; grid-area: 1 / 1; min-width: 0; pointer-events: none; width: 100% }
+  .mobile-nav summary { border: 1px solid var(--line); border-radius: var(--radius-button); color: #d9f2ff; cursor: pointer; font-size: .8rem; font-weight: 650; list-style-position: inside; margin-left: auto; padding: .55rem .7rem; pointer-events: auto; width: max-content }
+  .mobile-nav summary::marker { color: var(--ice) }
+  .mobile-nav-links { border-top: 1px solid var(--line); display: grid; gap: 0; margin-top: .8rem; padding: .35rem 0 .15rem; pointer-events: auto }
+  .mobile-nav-links a { border-bottom: 1px solid var(--line); color: #b7d0df; font-size: var(--text-small-size); padding: .75rem .2rem }
+  .mobile-nav-links a:hover, .mobile-nav-links a[aria-current] { color: var(--ice) }
+  .mobile-nav-links span { color: var(--ice); margin-left: .25rem }
   footer { flex-wrap: wrap; gap: 1rem }
 }
