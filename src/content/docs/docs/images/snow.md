@@ -131,8 +131,8 @@ when you install.
 
 ## Choose Snow
 
-Choose Snow for a GNOME desktop. Do not use it as a server; Floe is the server
-image. The other products are:
+Choose Snow for a GNOME desktop. Do not use it as a server;
+[Floe](/docs/images/floe/) is the server image. The other products are:
 
 - Snowfield: GNOME for Microsoft Surface devices. It is untested on
   representative Surface hardware; its hardware gate was waived for catalog
