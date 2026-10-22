@@ -155,7 +155,9 @@ Podman, Distrobox, and Buildah are in the image. `systemd-container` adds
 `systemd-vmspawn` uses.
 
 Every image ships each system extension switched off. Floe creates
-`/var/lib/extensions` for merged extensions. Three extensions have a guide:
+`/var/lib/extensions` for merged extensions. The
+[extension catalog](/docs/sysexts/) lists every extension and the Updex steps.
+Three extensions have a guide:
 
 - [Docker system extension](/docs/sysexts/docker/)
 - [Incus system extension](/docs/sysexts/incus/)
