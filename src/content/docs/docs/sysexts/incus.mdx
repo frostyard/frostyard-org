@@ -167,8 +167,9 @@ Stop or migrate your workloads first, and reboot when the command finishes.
 
 Without `--force`, Updex refuses while Incus is merged:
 `Extension incus (version ...) is active. Removing requires --force and a reboot to take effect.`
-Updex v2.0.3 does not have this check yet: it removes the extension at once,
-with or without `--force`. `updex catalog remove` has the same check.
+Updex v2.0.4 and later have this check, and `updex catalog remove` has it
+too. Updex v2.0.3 and older do not: they remove the extension at once, with
+or without `--force`. Run `updex --version` to see yours.
 
 Removal takes away the daemon, the CLI, the web UI, and their units. Your
 containers, virtual machines, storage pools, and other data in `/var` stay.
@@ -306,6 +307,8 @@ Updex v2.0.3 commit
 - [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/docs/nbc-to-bootc-migration.md)
 - [Updex v2.0.3 release](https://github.com/frostyard/updex/releases/tag/v2.0.3)
 - [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)
+- [Updex v2.0.4 release](https://github.com/frostyard/updex/releases/tag/v2.0.4)
+- [Updex v2.0.4 `updex/features.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/updex/features.go)
 - [Updex v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
 - [Updex v2.0.3 `updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
 - [Updex v2.0.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go)

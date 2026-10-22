@@ -217,6 +217,7 @@ assert(snowText.includes("bootc upgrade") && snowText.includes("staged digest"),
 assert(snowText.includes("Both paths verify the staged digest"), "/docs/images/snow must state that both stager paths verify the digest.");
 assert(snowText.includes("You do not need to run them"), "/docs/images/snow must describe the commands as stager behavior.");
 assert(snowText.includes("does not force a reboot"), "/docs/images/snow must state that the stager does not force a reboot.");
+assert(!snowText.includes("A rollback also changes the image") && snowText.includes("It waits for the next published image"), "/docs/images/snow must describe the rollback hold correctly.");
 assert(snowText.includes("linux-image-amd64/forky") && snowText.includes("trixie-backports"), "/docs/images/snow must preserve the confirmed kernel selection.");
 
 const floe = await readRoute("/docs/images/floe");
@@ -481,10 +482,13 @@ for (const page of sysextPages) {
   assert(html.includes(`/var/lib/extensions/${page.name}.raw`), `${page.route} must name the live sysext link.`);
   assert(html.includes(`/var/lib/extensions.d/${page.name}.raw`), `${page.route} must name the removed legacy link.`);
   assert(text.includes("Updex refuses while"), `${page.route} must state that Updex refuses removal of a merged extension without --force.`);
-  assert(text.includes("Updex v2.0.3 does not have this check yet"), `${page.route} must state that the released Updex lacks the removal guard.`);
+  assert(text.includes("Updex v2.0.4 and later have this check"), `${page.route} must state that Updex v2.0.4 has the removal guard.`);
+  assert(!text.includes("does not have this check yet"), `${page.route} must not say that the released Updex lacks the removal guard.`);
+  assert(text.includes("Updex v2.0.3 and older do not"), `${page.route} must state that Updex v2.0.3 lacks the removal guard.`);
+  assert(html.includes("https://github.com/frostyard/updex/releases/tag/v2.0.4"), `${page.route} must link the Updex v2.0.4 release.`);
   assert(text.includes("Removing requires --force and a reboot to take effect"), `${page.route} must quote the refusal message for a merged extension.`);
-  assert(text.includes("it removes the extension at once"), `${page.route} must state that Updex v2.0.3 removes a merged extension at once.`);
-  assert(text.includes("updex catalog remove has the same check"), `${page.route} must cover the catalog remove guard.`);
+  assert(text.includes("they remove the extension at once"), `${page.route} must state that older Updex removes a merged extension at once.`);
+  assert(text.includes("updex catalog remove has it"), `${page.route} must cover the catalog remove guard.`);
   assert(text.includes("only sets Enabled=false"), `${page.route} must explain plain disable.`);
   assert(text.includes("keeps running"), `${page.route} must state that plain disable leaves the daemon running.`);
   assert(text.includes("one row for each enabled feature"), `${page.route} must describe features check.`);

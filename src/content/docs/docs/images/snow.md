@@ -94,8 +94,8 @@ sudo systemctl reboot
 ```
 
 Homes and container data in `/var` are shared by all versions, so a rollback
-keeps them. A rollback also changes the image the host follows: the updater
-does not stage the version you rolled back from again.
+keeps them. After a rollback, the updater does not stage the version you
+rolled back from again. It waits for the next published image.
 
 Keep about twice the image size free in `/var`. The updater pulls each new
 image into `/var` before it stages it.
@@ -110,7 +110,7 @@ desktop, a kernel, and the image output format.
 | Base | Debian Trixie userspace, systemd, the hourly update stager, Updex, and the system-extension definitions |
 | Bootc runtime | `bootc`, `libostree-1-1`, and the packages OCI bootc needs |
 | Desktop | GNOME Shell, GDM, Nautilus, Ptyxis, PipeWire, CUPS, Flatpak, and the desktop integration packages |
-| Kernel | `linux-image-amd64/forky` for now, with firmware and Mesa from `trixie-backports` |
+| Kernel | `linux-image-amd64/forky` for now, with most firmware and Mesa from `trixie-backports` |
 | Core Flatpak set | Bazaar, Mission Center, Extension Manager, DistroShelf, and a set of GNOME apps. The image carries the list and an OCI label; Firn installs the apps when the recipe includes the core set. |
 | Containers | Podman and Distrobox, plus `systemd-container` and the Frostyard Intune integration |
 
@@ -121,8 +121,8 @@ build.
 
 Snow uses the `linux-image-amd64/forky` kernel until the Trixie backports
 kernel is complete. The build file for it is still called `backports`; the
-name is out of date. Mesa and firmware come from `trixie-backports`, pinned in
-the same file. If you build Snow yourself, do not add second, unpinned copies
+name is out of date. Mesa and most firmware come from `trixie-backports`,
+pinned in the same file. If you build Snow yourself, do not add second, unpinned copies
 of them to the Snow package list.
 
 The core Flatpak list is fixed at build time, and each build checks that the
