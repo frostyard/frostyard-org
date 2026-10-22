@@ -187,7 +187,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/apps/frostmail/", "/docs/apps/frostnotes/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -476,6 +476,10 @@ assert(updexText.includes("This guide follows Updex v2.0.5"), "/docs/tools/updex
 assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.5"), "/docs/tools/updex must link the Updex v2.0.5 release.");
 assert(updexText.includes("sudo updex --dry-run daemon enable") && updexText.includes("Updex v2.0.4 and older ignore --dry-run here"), "/docs/tools/updex must explain the daemon dry run and its v2.0.4 limit (updex#452).");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
+
+for (const route of ["/docs/apps/frostmail/", "/docs/apps/frostnotes/"]) {
+  assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
+}
 
 const frostmail = await readRoute("/docs/apps/frostmail");
 const frostmailText = textOf(frostmail);
