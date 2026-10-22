@@ -62,9 +62,13 @@ const docsRoutes = [
   "/docs/images/snow",
   "/docs/images/floe",
   "/docs/sysexts",
+  "/docs/sysexts/dev",
   "/docs/sysexts/docker",
   "/docs/sysexts/incus",
+  "/docs/sysexts/k3s",
+  "/docs/sysexts/nix",
   "/docs/sysexts/tailscale",
+  "/docs/sysexts/vscode",
   "/docs/sysexts/manage",
   "/docs/tools/updex",
 ];
@@ -139,9 +143,13 @@ for (const route of docsRoutes) {
     "/docs/images/snow/",
     "/docs/images/floe/",
     "/docs/sysexts/",
+    "/docs/sysexts/dev/",
     "/docs/sysexts/docker/",
     "/docs/sysexts/incus/",
+    "/docs/sysexts/k3s/",
+    "/docs/sysexts/nix/",
     "/docs/sysexts/tailscale/",
+    "/docs/sysexts/vscode/",
     "/docs/sysexts/manage/",
     "/docs/tools/updex/",
   ]) {
@@ -345,7 +353,7 @@ for (const entry of catalog.extensions) {
   assert(catalogPage.includes(listedVersion), `/docs/sysexts must render the listed version for ${entry.name}.`);
 }
 assert(catalogPage.includes(catalogDate), "/docs/sysexts must render the catalog snapshot date.");
-for (const href of ["/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/"]) {
+for (const href of ["/docs/sysexts/dev/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/k3s/", "/docs/sysexts/nix/", "/docs/sysexts/tailscale/", "/docs/sysexts/vscode/"]) {
   assert(catalogPage.includes(`href="${href}"`), `/docs/sysexts must link the guide ${href}.`);
 }
 assert(catalogPage.includes("sudo updex features enable"), "/docs/sysexts must use the current Updex enable syntax.");
@@ -502,6 +510,118 @@ for (const page of sysextPages) {
   }
   if (page.route === "/docs/sysexts/incus") {
     assert(text.includes("Running containers and virtual machines can stop immediately"), "Incus must warn that removal can stop workloads.");
+  }
+}
+
+// The shorter guides link the general lifecycle instead of repeating it.
+const commandPages = [
+  {
+    route: "/docs/sysexts/dev",
+    name: "dev",
+    enableId: "enable-dev-tools",
+    useId: "use-dev-tools",
+    sources: [
+      "mkosi.images/dev/mkosi.conf",
+      "mkosi.images/dev/mkosi.postinst.chroot",
+      "mkosi.images/dev/required-paths.txt",
+      "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.dev.d/dev.feature",
+      "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.dev.d/dev.transfer",
+    ],
+    statements: [
+      "come from the image, not from this extension",
+      "repoints every /usr/bin and /usr/sbin link",
+      "SVG loader",
+    ],
+  },
+  {
+    route: "/docs/sysexts/k3s",
+    name: "k3s",
+    enableId: "enable-k3s",
+    useId: "use-k3s",
+    sources: [
+      "mkosi.images/k3s/mkosi.conf",
+      "mkosi.images/k3s/mkosi.postinst.chroot",
+      "mkosi.images/k3s/required-paths.txt",
+      "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.feature",
+      "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.transfer",
+    ],
+    statements: [
+      "Use k3s ctr",
+      "starts a standalone server",
+      "br_netfilter",
+    ],
+  },
+  {
+    route: "/docs/sysexts/nix",
+    name: "nix",
+    enableId: "enable-nix",
+    useId: "use-nix",
+    sources: [
+      "mkosi.images/nix/mkosi.conf",
+      "mkosi.images/nix/mkosi.finalize",
+      "mkosi.images/nix/required-paths.txt",
+      "mkosi.images/nix/mkosi.extra/usr/lib/sysusers.d/nix.conf",
+      "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.nix.d/nix.feature",
+      "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.nix.d/nix.transfer",
+    ],
+    statements: [
+      "nix-users group and adds nobody to it",
+      "start a new login session",
+      "bound to that mount",
+    ],
+  },
+  {
+    route: "/docs/sysexts/vscode",
+    name: "vscode",
+    enableId: "enable-visual-studio-code",
+    useId: "use-visual-studio-code",
+    sources: [
+      "mkosi.images/vscode/mkosi.conf",
+      "mkosi.images/vscode/required-paths.txt",
+      "shared/packages/vscode/mkosi.postinst.d/vscode.chroot",
+      "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.feature",
+      "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.transfer",
+    ],
+    statements: [
+      "The build adds inode/directory",
+      "no service",
+      "gui-base",
+    ],
+  },
+];
+
+for (const page of commandPages) {
+  const html = await readRoute(page.route);
+  const text = textOf(html);
+  const entry = catalog.extensions.find((item) => item.name === page.name);
+  assert(entry, `${page.route} must have a matching entry in the checked catalog.`);
+
+  for (const heading of ["before-you-start", page.enableId, page.useId, "update-and-remove", "troubleshooting", "what-ships", "see-also", "sources"]) {
+    assert(html.includes(`id="${heading}"`), `${page.route} must render the "${heading}" section.`);
+  }
+
+  assert(html.includes("In the extension catalog"), `${page.route} must render the catalog snapshot component.`);
+  assert(html.includes(`>${escapeHtml(entry.label)}</dd>`), `${page.route} must render the escaped snapshot label.`);
+  assert(html.includes(snapshotVersionMarkup(entry.version)), `${page.route} must render the snapshot version with the expected markup.`);
+  assert(html.includes(catalogDate), `${page.route} must render the catalog snapshot date.`);
+  assert(html.includes(`>${escapeHtml(entry.name)}</code>`), `${page.route} must render the component name.`);
+
+  assert(html.includes(`sudo updex features enable ${page.name} --now`), `${page.route} must use the current Updex enable syntax.`);
+  assert(html.includes('href="/docs/sysexts/manage/"'), `${page.route} must link the general lifecycle guide.`);
+  assert(html.includes("refresh_error"), `${page.route} must explain a failed refresh.`);
+  assert(text.includes("--force"), `${page.route} must explain the --force removal guard.`);
+  assert(text.includes("unmerges all extensions on the host"), `${page.route} must warn that removal unmerges all extensions.`);
+
+  for (const source of page.sources) {
+    assert(html.includes(`https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/${source}`), `${page.route} must cite ${source}.`);
+  }
+  assert(html.includes("https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md"), `${page.route} must cite the system extension model.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md"), `${page.route} must cite the Updex v2.0.5 README.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/features.go"), `${page.route} must cite updex/features.go.`);
+  assert(html.includes("https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json"), `${page.route} must cite the catalog snapshot.`);
+
+  for (const statement of page.statements) {
+    assert(text.includes(statement), `${page.route} must state "${statement}".`);
   }
 }
 
