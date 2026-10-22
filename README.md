@@ -13,7 +13,7 @@ npm ci
 npm run dev
 ```
 
-Use `npm run build` to produce the static site in `dist/`. Use
+Use `npm run build` to produce the static site in `dist/client/`. Use
 `npm run build:check` to build from the committed extension snapshot without a
 network refresh. `npm run check` runs Astro diagnostics, and
 `npm run check:site` checks the built routes, docs navigation, source links, and

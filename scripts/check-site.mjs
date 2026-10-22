@@ -1,7 +1,8 @@
 import { access, readFile, readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
 
-const dist = new URL("../dist/", import.meta.url);
+// Astro 7 with the Cloudflare adapter writes the static site to dist/client.
+const dist = new URL("../dist/client/", import.meta.url);
 
 async function htmlFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });

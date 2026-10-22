@@ -5,7 +5,11 @@ import starlight from "@astrojs/starlight";
 
 export default defineConfig({
   site: "https://frostyard.org",
-  adapter: cloudflare(),
+  // The site is static and has no sessions, so the adapter must not add a SESSION KV binding.
+  session: false,
+  // Keep the Astro 5 behaviour: build-time images (no Images binding to provision) and
+  // prerendering in Node. Starlight's Markdown parser has no workerd build.
+  adapter: cloudflare({ imageService: "compile", prerenderEnvironment: "node" }),
   integrations: [
     starlight({
       title: "Frostyard docs",
