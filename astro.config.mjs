@@ -37,6 +37,13 @@ export default defineConfig({
           ],
         },
         {
+          label: "Apps",
+          items: [
+            { label: "Frostmail", slug: "docs/apps/frostmail" },
+            { label: "Frostnotes", slug: "docs/apps/frostnotes" },
+          ],
+        },
+        {
           label: "Tools",
           items: [
             { label: "Updex", slug: "docs/tools/updex" },

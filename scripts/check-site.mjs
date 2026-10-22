@@ -74,6 +74,8 @@ const docsRoutes = [
   "/docs/sysexts/vscode",
   "/docs/sysexts/manage",
   "/docs/tools/updex",
+  "/docs/apps/frostmail",
+  "/docs/apps/frostnotes",
   "/docs/tools/nsl",
   "/docs/tools/igloo",
 ];
@@ -160,6 +162,8 @@ for (const route of docsRoutes) {
     "/docs/sysexts/vscode/",
     "/docs/sysexts/manage/",
     "/docs/tools/updex/",
+    "/docs/apps/frostmail/",
+    "/docs/apps/frostnotes/",
     "/docs/tools/nsl/",
     "/docs/tools/igloo/",
   ]) {
@@ -183,7 +187,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/apps/frostmail/", "/docs/apps/frostnotes/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -472,6 +476,86 @@ assert(updexText.includes("This guide follows Updex v2.0.5"), "/docs/tools/updex
 assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.5"), "/docs/tools/updex must link the Updex v2.0.5 release.");
 assert(updexText.includes("sudo updex --dry-run daemon enable") && updexText.includes("Updex v2.0.4 and older ignore --dry-run here"), "/docs/tools/updex must explain the daemon dry run and its v2.0.4 limit (updex#452).");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
+
+const frostmail = await readRoute("/docs/apps/frostmail");
+const frostmailText = textOf(frostmail);
+for (const heading of [
+  "status",
+  "before-you-start",
+  "install-maild-and-mailctl",
+  "add-an-account",
+  "install-the-desktop-app",
+  "accounts",
+  "gmail",
+  "frostmail-and-lodge",
+  "remove",
+  "limits",
+  "see-also",
+  "sources",
+]) {
+  assert(frostmail.includes(`id="${heading}"`), `/docs/apps/frostmail must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "Makefile",
+  "docs/design/accounts.md",
+  "docs/design/desktop.md",
+  "docs/specs/lodge-app.md",
+  "packaging/systemd/maild.service",
+  "packaging/flatpak/install.sh",
+]) {
+  assert(frostmail.includes(`https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/${source}`), `/docs/apps/frostmail must cite ${source}.`);
+}
+assert(frostmail.includes("https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md"), "/docs/apps/frostmail must cite the lodge README.");
+assert(frostmailText.includes("Frostmail is pre-release"), "/docs/apps/frostmail must say that Frostmail is pre-release.");
+assert(frostmailText.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), "/docs/apps/frostmail must say that there is no published install path.");
+assert(frostmail.includes('data-code="git clone https://github.com/frostyard/frostmail'), "/docs/apps/frostmail must give the clone command.");
+assert(frostmail.includes('data-code="make install-app"'), "/docs/apps/frostmail must give the app install command.");
+assert(frostmail.includes('data-code="mailctl hello"'), "/docs/apps/frostmail must give the daemon check.");
+assert(frostmail.includes('data-code="mailctl oauth set-client google'), "/docs/apps/frostmail must give the Google client command.");
+assert(frostmail.includes('href="/docs/tools/nsl/"') && frostmail.includes('href="/docs/apps/frostnotes/"'), "/docs/apps/frostmail must link the nsl and Frostnotes pages.");
+
+const frostnotes = await readRoute("/docs/apps/frostnotes");
+const frostnotesText = textOf(frostnotes);
+for (const heading of [
+  "status",
+  "before-you-start",
+  "build-and-start-notesd",
+  "register-a-vault",
+  "open-an-obsidian-vault",
+  "versions-and-revert",
+  "sync-with-a-hub",
+  "the-desktop-app",
+  "the-web-app-in-lodge",
+  "agents-over-mcp",
+  "remove",
+  "limits",
+  "see-also",
+  "sources",
+]) {
+  assert(frostnotes.includes(`id="${heading}"`), `/docs/apps/frostnotes must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "Makefile",
+  "docs/design/vault.md",
+  "docs/design/sync.md",
+  "docs/design/hub.md",
+  "docs/specs/mcp.md",
+  "packaging/systemd/frostnotes.service",
+  "scripts/dev-app.sh",
+]) {
+  assert(frostnotes.includes(`https://github.com/frostyard/frostnotes/blob/1b63ff73c0d91e121000e38ca718b58adfe7b930/${source}`), `/docs/apps/frostnotes must cite ${source}.`);
+}
+assert(frostnotes.includes("https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md"), "/docs/apps/frostnotes must cite the lodge README.");
+assert(frostnotesText.includes("Frostnotes is pre-release"), "/docs/apps/frostnotes must say that Frostnotes is pre-release.");
+assert(frostnotesText.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), "/docs/apps/frostnotes must say that there is no published install path.");
+assert(frostnotes.includes('data-code="git clone https://github.com/frostyard/frostnotes'), "/docs/apps/frostnotes must give the clone command.");
+assert(frostnotes.includes('data-code="build/notesctl vault add ~/Notes"'), "/docs/apps/frostnotes must give the vault command.");
+assert(frostnotes.includes("build/notesctl revert Projects/plan.md VERSION --base HASH"), "/docs/apps/frostnotes must give the revert command.");
+assert(frostnotes.includes('data-code="nsl create frostnotes --distro debian:13'), "/docs/apps/frostnotes must give the nsl machine commands.");
+assert(frostnotes.includes('data-code="claude mcp add frostnotes'), "/docs/apps/frostnotes must give the MCP command.");
+assert(frostnotes.includes('href="/docs/tools/nsl/"') && frostnotes.includes('href="/docs/apps/frostmail/"'), "/docs/apps/frostnotes must link the nsl and Frostmail pages.");
 
 const nsl = await readRoute("/docs/tools/nsl");
 const nslText = textOf(nsl);
