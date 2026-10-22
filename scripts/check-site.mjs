@@ -148,9 +148,8 @@ for (const text of [
   "Start here",
   "Choose an image",
   "Install and first boot",
-  "Software layers",
-  "Source and snapshot policy",
-  "What this pilot does not cover",
+  "How a Frostyard system is built",
+  "Not covered yet",
   "not a maximum",
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
@@ -160,20 +159,19 @@ for (const route of ["/install", "/docs/images/snow/", "/docs/sysexts/docker/", 
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
 assert(docsLanding.includes("Updex v2.0.3"), "/docs must name the Updex v2.0.3 source pin.");
-assert(docsLanding.includes("runtime bug report"), "/docs must acknowledge the linked Updex runtime bug report.");
-assert(docsLanding.includes("https://github.com/frostyard/updex/issues/444"), "/docs must link Updex issue #444.");
+assert(docsLanding.includes("https://github.com/frostyard/updex/pull/445"), "/docs must link Updex PR #445.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
 
 const snow = await readRoute("/docs/images/snow");
 const snowText = textOf(snow);
 for (const heading of [
-  "purpose-and-support-boundary",
+  "install",
+  "first-boot",
+  "updates-and-rollback",
   "what-ships",
   "choose-snow",
-  "install",
-  "first-boot-and-use",
-  "updates-and-rollback",
-  "special-cases-and-troubleshooting",
+  "troubleshooting",
+  "moving-from-an-nbc-or-ab-install",
   "see-also",
   "sources",
 ]) {
@@ -192,12 +190,12 @@ for (const source of [
 ]) {
   assert(snow.includes(`https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/${source}`), `/docs/images/snow must cite ${source}.`);
 }
-assert(snow.includes("Fresh-install evidence"), "/docs/images/snow must state the fresh-install evidence limit.");
-assert(snow.includes("There is no in-place conversion"), "/docs/images/snow must state the migration limit.");
-assert(!snow.includes("Boot presentation"), "/docs/images/snow must not carry the removed boot-presentation row.");
-assert(snow.includes("Image and system-extension applications live under"), "/docs/images/snow must separate /usr payloads from /var state.");
-assert(snow.includes("Firn can install the chosen core Flatpak set"), "/docs/images/snow must state that Firn can install the core Flatpak set.");
-assert(!snow.includes("present only if"), "/docs/images/snow must not claim the core apps have one install path.");
+assert(snowText.includes("Fresh-install test results"), "/docs/images/snow must state the fresh-install test limit.");
+assert(snowText.includes("There is no in-place conversion"), "/docs/images/snow must state the migration limit.");
+assert(!snowText.includes("Boot presentation"), "/docs/images/snow must not carry the removed boot-presentation row.");
+assert(snowText.includes("Image and system-extension applications live under"), "/docs/images/snow must separate /usr payloads from /var state.");
+assert(snowText.includes("Firn can install the chosen core Flatpak set"), "/docs/images/snow must state that Firn can install the core Flatpak set.");
+assert(!snowText.includes("present only if"), "/docs/images/snow must not claim the core apps have one install path.");
 assert(!snowText.includes("userspace, systemd, bootc,"), "/docs/images/snow must not attribute bootc to Base.");
 assert(snowText.includes("Bootc runtime"), "/docs/images/snow must have a separate bootc-runtime row.");
 assert(snowText.includes("The table shows the main layers only"), "/docs/images/snow must scope the table to main layers.");
@@ -208,7 +206,7 @@ assert(!snowText.includes("testing still pending"), "/docs/images/snow must not 
 assert(snowText.includes("first staged update") && snowText.includes("steady state"), "/docs/images/snow must explain both stager paths.");
 assert(snowText.includes("bootc upgrade") && snowText.includes("staged digest"), "/docs/images/snow must describe the steady-state upgrade and digest check.");
 assert(snowText.includes("Both paths verify the staged digest"), "/docs/images/snow must state that both stager paths verify the digest.");
-assert(snowText.includes("operators do not need to run them"), "/docs/images/snow must describe the commands as stager behavior.");
+assert(snowText.includes("You do not need to run them"), "/docs/images/snow must describe the commands as stager behavior.");
 assert(snowText.includes("does not force a reboot"), "/docs/images/snow must state that the stager does not force a reboot.");
 assert(snowText.includes("linux-image-amd64/forky") && snowText.includes("trixie-backports"), "/docs/images/snow must preserve the confirmed kernel selection.");
 
@@ -270,10 +268,11 @@ for (const page of sysextPages) {
   const entry = catalog.extensions.find((item) => item.name === page.name);
   assert(entry, `${page.route} must have a matching entry in the checked catalog.`);
 
-  for (const heading of ["purpose-and-host-prerequisites", "what-ships", "enable", "updates-and-removal", "troubleshooting", "see-also", "sources"]) {
+  for (const heading of ["before-you-start", "update", "stop-updates-or-remove", "special-cases", "troubleshooting", "what-ships", "see-also", "sources"]) {
     assert(html.includes(`id="${heading}"`), `${page.route} must render the "${heading}" section.`);
   }
-  assert(/(id="choose-[^"]+")/.test(html), `${page.route} must render a choice section.`);
+  assert(html.includes(`id="choose-${page.name}"`), `${page.route} must render a choice section.`);
+  assert(html.includes(`id="enable-${page.name}"`), `${page.route} must render the enable section.`);
 
   assert(html.includes("In the extension catalog"), `${page.route} must render the catalog snapshot component.`);
   const escapedLabel = escapeHtml(entry.label);
@@ -328,23 +327,22 @@ for (const page of sysextPages) {
   assert(html.includes("https://github.com/frostyard/updex/releases/tag/v2.0.3"), `${page.route} must link the Updex v2.0.3 release.`);
   assert(html.includes("Updex v2.0.3 release"), `${page.route} must label the Updex release source.`);
   assert(html.includes("Updex v2.0.3 commit"), `${page.route} must label the Updex commit source.`);
-  assert(html.includes("https://github.com/frostyard/updex/issues/444"), `${page.route} must link Updex issue #444.`);
+  assert(html.includes("https://github.com/frostyard/updex/pull/445"), `${page.route} must link Updex PR #445.`);
+  assert(text.includes("--force"), `${page.route} must explain the --force removal guard.`);
   assert(html.includes("https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go"), `${page.route} must cite updex/install.go.`);
   assert(html.includes("https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go"), `${page.route} must cite sysext/manager.go.`);
   assert(!html.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), `${page.route} must not cite the old Updex branch commit.`);
   assert(html.includes(`/var/lib/extensions/${page.name}.raw`), `${page.route} must name the live sysext link.`);
   assert(html.includes(`/var/lib/extensions.d/${page.name}.raw`), `${page.route} must name the removed legacy link.`);
-  assert(text.includes("takes effect at once"), `${page.route} must state that removal acts at once.`);
-  assert(text.includes("also when the extension is merged"), `${page.route} must state that removal acts on a merged extension.`);
-  assert(text.includes("does not detect a merged image"), `${page.route} must document the Updex #444 merged-image limitation.`);
-  assert(text.includes("--force guard does not fire"), `${page.route} must not present --force as a working guard.`);
-  assert(text.includes("If Updex refuses"), `${page.route} must keep the conditional refusal path.`);
-  assert(text.includes("Do not rely on that refusal as a safety check"), `${page.route} must not present a refusal as a safety check.`);
-  assert(text.includes("writes only Enabled=false"), `${page.route} must explain plain disable.`);
-  assert(text.includes("daemon is not stopped"), `${page.route} must state that plain disable leaves the daemon running.`);
-  assert(text.includes("iterates the enabled features in scope"), `${page.route} must describe features check.`);
-  assert(text.includes("gets no row") && text.includes("no row is not an up-to-date result"), `${page.route} must explain the disabled-feature no-row result.`);
-  assert(!text.includes("requires --force and a reboot"), `${page.route} must not keep the old --force prerequisite claim.`);
+  assert(text.includes("Updex refuses while"), `${page.route} must state that Updex refuses removal of a merged extension without --force.`);
+  assert(text.includes("Updex v2.0.3 does not have this check yet"), `${page.route} must state that the released Updex lacks the removal guard.`);
+  assert(text.includes("Removing requires --force and a reboot to take effect"), `${page.route} must quote the refusal message for a merged extension.`);
+  assert(text.includes("it removes the extension at once"), `${page.route} must state that Updex v2.0.3 removes a merged extension at once.`);
+  assert(text.includes("updex catalog remove has the same check"), `${page.route} must cover the catalog remove guard.`);
+  assert(text.includes("only sets Enabled=false"), `${page.route} must explain plain disable.`);
+  assert(text.includes("keeps running"), `${page.route} must state that plain disable leaves the daemon running.`);
+  assert(text.includes("one row for each enabled feature"), `${page.route} must describe features check.`);
+  assert(text.includes("has no row") && text.includes("a missing row does not mean"), `${page.route} must explain the disabled-feature no-row result.`);
   if (page.route === "/docs/sysexts/docker") {
     assert(text.includes("Running containers can stop immediately"), "Docker must warn that removal can stop containers.");
   }

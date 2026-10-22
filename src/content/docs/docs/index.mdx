@@ -1,24 +1,19 @@
 ---
 title: Frostyard documentation
-description: Operator documentation for Frostyard bootc images and system extensions, with commit-pinned sources.
+description: Install and run Frostyard bootc images, and add Docker, Incus, or Tailscale as system extensions.
 ---
 
 import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 
-Frostyard publishes bootc images and `/usr` system extensions built with
-[snosi](https://github.com/frostyard/snosi). This pilot documentation set
-explains the Snow desktop image and three opt-in system extensions: Docker,
-Incus, and Tailscale.
-
-Each page states its support boundary, its current lifecycle commands, and
-the exact source files behind every product fact. The sources are pinned to a
-commit, so a page describes a known revision, not an undated moving target.
+Frostyard makes bootc images and `/usr` system extensions, built with
+[snosi](https://github.com/frostyard/snosi). These guides cover the Snow
+desktop and three extensions you can turn on: Docker, Incus, and Tailscale.
+Each page lists its sources at the bottom.
 
 :::caution[Support boundary]
-Fresh-install evidence for Snow, Floe, and Sundog is pending. Do not read these
-pages as evidence of production Secure Boot support, or of signed update and
-rollback verification. The pinned sources withhold that support claim.
-See [Snow](/docs/images/snow/#purpose-and-support-boundary) and the snosi
+Secure Boot, signed updates, and signed rollback are not production-ready yet.
+Fresh-install test results for Snow, Floe, and Sundog are still pending. See
+[Snow](/docs/images/snow/) and the snosi
 [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md).
 :::
 
@@ -26,81 +21,68 @@ See [Snow](/docs/images/snow/#purpose-and-support-boundary) and the snosi
 
 <CardGrid>
   <LinkCard title="Snow" href="/docs/images/snow/" description="The general-purpose GNOME desktop on a bootc/composefs image." />
-  <LinkCard title="Install a Frostyard image" href="/install" description="The supported Firn installer path, checksums, and disk choices." />
-  <LinkCard title="Docker" href="/docs/sysexts/docker/" description="Opt-in Docker Engine, containerd, Buildx, and Compose." />
-  <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Opt-in containers and virtual machines with the bundled QEMU runtime." />
-  <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Opt-in Tailscale daemon and CLI for a private tailnet." />
+  <LinkCard title="Install a Frostyard image" href="/install" description="Download Firn, check the ISO, and pick a disk." />
+  <LinkCard title="Docker" href="/docs/sysexts/docker/" description="Add Docker Engine, containerd, Buildx, and Compose." />
+  <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Run system containers and virtual machines, with Incus's own QEMU." />
+  <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Put the host on your tailnet." />
 </CardGrid>
 
 ## Choose an image
 
-Snow is the GNOME workstation. The wider product set is:
+Snow is the GNOME desktop. All the images:
 
 | Product | Role | Page |
 | --- | --- | --- |
-| Snow | General-purpose GNOME desktop | This pilot |
+| Snow | General-purpose GNOME desktop | This guide |
 | Snowfield | GNOME desktop for Microsoft Surface devices | [Site overview](/snowfield) |
 | Sundog | KDE Plasma desktop, bootc only | [Site overview](/sundog) |
 | Floe | Headless server image | [Site overview](/floe) |
 | Base | Shared image foundation, not an installer choice | [Site overview](/base) |
 
-Snowfield's representative Surface hardware installation is untested. The
-installer offers only the four bootc products, and Base is not one of them.
-See the snosi
+Snowfield is untested on representative Surface hardware. The installer
+offers the four bootc products; Base is not one of them. The snosi
 [installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md)
-for the complete selection table.
+has the full table.
 
 ## Install and first boot
 
-Use the supported Firn installer. It erases the selected target disk, requires
-UEFI, and makes each security choice explicit. The maintained guide covers
-media verification, the disk warning, first boot, and MOK enrollment. Start
-with [Install a Frostyard image](/install).
+Install with Firn. It needs UEFI, erases the disk you pick, and asks you
+about each security choice. Start with
+[Install a Frostyard image](/install): it covers checking the ISO, the disk
+warning, first boot, and MOK enrollment.
 
-Published bootc images check for updates hourly, stage an available deployment,
-and apply it at the next natural reboot. They do not force a reboot. The
-[Snow page](/docs/images/snow/#updates-and-rollback) gives the current
-verification and rollback commands.
+Every image checks for updates hourly, stages a new version, and starts it at
+your next normal reboot. It never forces a reboot. The
+[Snow page](/docs/images/snow/#updates-and-rollback) shows how to check an
+update and roll back.
 
-## Software layers
+## How a Frostyard system is built
 
 A Frostyard system has three layers:
 
-1. **The bootc image.** It supplies the immutable `/usr` tree, the kernel, the
-   desktop or server payload, and the update stager.
-2. **Persistent state.** `/var` holds homes, container storage, and service
-   state. `/etc` is deployment-managed and keeps local configuration.
-3. **System extensions.** These are EROFS images that overlay `/usr` only.
-   They cannot write `/etc` or `/var` directly. A captured factory default in
-   `/usr/share/factory/etc` is copied into `/etc` at boot by `tmpfiles.d`.
+1. **The image.** It holds the read-only `/usr`, the kernel, the desktop or
+   server software, and the updater.
+2. **Your state.** `/var` holds homes, containers, and service data. `/etc`
+   holds your configuration and carries it into each new version.
+3. **System extensions.** EROFS images that add to `/usr` only. They cannot
+   write `/etc` or `/var`. An extension keeps its default configuration in
+   `/usr/share/factory/etc`, and `tmpfiles.d` copies it into `/etc` at boot.
 
-The system extension pages explain the enable, update, and removal lifecycle
-with the current Updex commands. The base image ships each component disabled
-by default; enabling one is an operator choice.
+Every image ships each extension switched off. You turn one on with Updex;
+each extension page has the steps.
 
-## Source and snapshot policy
+Each extension page shows the version the catalog listed on its last sync.
+The sync takes a pattern match, not a maximum, so it is not always the newest
+version. Run `updex features check` to see what you can update to.
 
-Product facts cite files in the pinned snosi commits and Updex v2.0.3 at the
-bottom of each page. The three extension pages also show a checked catalog
-snapshot from `src/data/extensions.json` in the website repository. That
-snapshot records a regex-selected value from the published checksum manifest.
-It is not a maximum version, and it is not a claim about what is newest today.
+## Not covered yet
 
-Where the Updex v2.0.3 README disagrees with observed snosi behavior, the
-extension pages link the runtime bug report and follow the observed behavior.
+Snowfield, Sundog, Floe, Base, the rest of the extension catalog, the APT
+repository, and per-application migrations have no guide here yet.
 
-If a source file and a source comment disagree, these pages prefer executable
-configuration and current lifecycle contracts, and say so where the difference
-matters. The pages do not invent commands. If a feature has no source evidence,
-it is omitted or marked as a source limit.
-
-## What this pilot does not cover
-
-This pilot has one image page and three extension pages. It does not yet
-document Snowfield, Sundog, Floe, Base, the full extension catalog, the APT
-repository, or application-specific migrations. Legacy nbc and native A/B hosts
-receive no new images or updates after 2026-09-30 and need a backup, a fresh
-install, and a state restore. They cannot convert in place. See the snosi
+Old nbc and native A/B installs get no new images or updates after
+2026-09-30. They cannot convert in place: back up, install fresh, and restore.
+See the snosi
 [migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md).
 
 ## Sources
@@ -113,4 +95,4 @@ install, and a state restore. They cannot convert in place. See the snosi
 - System extension model: [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md).
 - Updex v2.0.3 release: [tag v2.0.3](https://github.com/frostyard/updex/releases/tag/v2.0.3).
 - Updex lifecycle commands: [v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md).
-- Updex runtime bug report: [issue #444](https://github.com/frostyard/updex/issues/444).
+- [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)

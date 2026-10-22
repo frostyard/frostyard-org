@@ -9,7 +9,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Frostyard docs",
-      description: "Operator documentation for Frostyard bootc images and system extensions.",
+      description: "Install, update, and extend Frostyard bootc images.",
       disable404Route: true,
       components: {
         MobileMenuToggle: "./src/components/starlight/MobileMenuToggle.astro",

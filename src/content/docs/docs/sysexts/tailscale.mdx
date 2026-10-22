@@ -5,220 +5,130 @@ description: Enable, update, and remove the Tailscale system extension on a Fros
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
-Tailscale is an opt-in system extension for Frostyard bootc images. It supplies
-the Tailscale daemon and CLI, connects the host to a tailnet, and keeps its node
-identity in persistent state. The Base image registers the component and ships
-it disabled.
+The Tailscale extension adds the Tailscale daemon and CLI to a Frostyard
+bootc image, so the host itself can join your tailnet. The node identity lives
+in `/var`, so it survives updates. Every Frostyard bootc image ships the
+extension switched off; you turn it on with one command.
 
-## Purpose and host prerequisites
+## Before you start
 
-Use this extension when the host itself must join a tailnet. The extension
-provides `tailscaled` and the `tailscale` command under `/usr`; it does not
-provide a tailnet, an identity provider account, or a supported substitute for
-a host package installation.
+You need:
 
-Prerequisites:
-
-- A Frostyard bootc image built on the shared Base, with `systemd-sysext` and
-  the Base `frostyard-updex` binary.
-- Root access for enable, update, and removal. The read-only checks below are
-  shown without `sudo`.
+- A Frostyard bootc image. Every image built on Base has `systemd-sysext` and
+  `frostyard-updex`.
+- Root access to enable, update, and remove the extension. Checks that change
+  nothing run without `sudo`.
 - Network access to `https://repository.frostyard.org/ext/tailscale/` and to
-  your tailnet's coordination service.
-- A tailnet account and authorization for the host.
-- A backup plan for `/var/lib/tailscale` if you need to preserve this node's
-  identity across a reinstall.
+  your tailnet's coordination server.
+- A tailnet account, and the right to add this host to it.
+- A plan to back up `/var/lib/tailscale` if this node must keep its identity
+  across a reinstall.
 
-The pinned sources do not contain a per-product live test record for this
-extension. The migration runbook documents the persistent-state path and the
-re-authentication step, but it does not establish a runtime test result for
-every product.
-
-## What ships
-
-The component is defined in the Base image at
-[`/usr/lib/sysupdate.tailscale.d/tailscale.transfer`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer)
-and
-[`tailscale.feature`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature).
-The payload is composed by
-[`mkosi.images/tailscale/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.conf).
-
-| Item | What the pinned source defines |
-| --- | --- |
-| Packages | `tailscale` |
-| Key package | `tailscale` |
-| Published asset | `tailscale_<version>_<os>_<arch>.raw.zst`, with `.raw.xz`, `.raw.gz`, and `.raw` also accepted |
-| Transfer | `url-file` source under `https://repository.frostyard.org/ext/tailscale/`; `Verify=true`; target `/var/lib/extensions.d/`; `CurrentSymlink=tailscale.raw` |
-| Commands | `/usr/bin/tailscale` and `/usr/sbin/tailscaled` |
-| Service | `tailscaled.service`, enabled by `40-tailscale.preset` and upheld by `10-tailscale.conf` |
-| Configuration | A factory copy of `/etc/default/tailscaled` |
-| Persistent state | `/var/lib/tailscale` for the node identity and daemon state |
-
-<ExtensionSnapshot name="tailscale" />
-
-The transfer sets `CurrentSymlink=tailscale.raw`, but Updex removes the legacy
-`/var/lib/extensions.d/tailscale.raw` during installation. The live link is
-`/var/lib/extensions/tailscale.raw`, and it points to the selected image in
-`/var/lib/extensions.d/`. See
-[`updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
-and
-[`sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go).
-
-The transfer selects the OS version with `%w` and the architecture with `%a`.
-The checked catalog snapshot lists a version but no architecture matrix, so do
-not infer support for an architecture from the snapshot alone.
-
-The daemon requires `/etc/default/tailscaled` as its environment file. The
-extension captures the packaged file to `/usr/share/factory/etc` and restores
-it through `tmpfiles.d` when `/etc/default/tailscaled` is absent. This is why
-the extension can start after a merge even though a sysext cannot ship `/etc`
-directly.
+Tailscale has no published test results on Frostyard images yet. Try it on a
+machine you can spare first.
 
 ## Choose Tailscale
 
-Tailscale is the only Tailscale client extension in this pilot. The pinned
-sources do not define a second client, a relay, or a self-hosted control-plane
-variant. Use the extension when the host must be a tailnet node with the
-standard daemon and CLI.
+Use the extension when the host itself must be a node on your tailnet. It
+gives you the standard `tailscaled` daemon and `tailscale` command. There is
+no second client, relay, or self-hosted control server in the catalog.
 
-This is a host-level choice. Enabling the extension installs and enables the
-daemon; it does not authorize the host. On a new installation, the host joins a
-tailnet only after `tailscale up` and authorization. A restored node identity
-can reconnect without a new authorization. It is not a per-container sidecar
-and does not grant container workloads separate tailnet identities. Review your
-tailnet access rules before you authorize the host.
+The extension does not give you a tailnet or an identity provider account.
+It is not a sidecar for containers, and your containers do not get their own
+tailnet identities.
 
-## Enable
+Enabling the extension turns on the daemon. It does not authorize the host.
+On a new installation, the host joins the tailnet only after `tailscale up`
+and your authorization. A
+host with a restored node identity can reconnect without a new authorization.
+Review your tailnet access rules before you authorize the host.
 
-List the component and its feature:
+## Enable Tailscale
+
+See what Updex found:
 
 ```bash
 updex components
 updex features list --component=tailscale
 ```
 
-Enable it and download it now:
+`tailscale` appears as a component, with its feature disabled.
+
+Enable Tailscale and download it now:
 
 ```bash
 sudo updex features enable tailscale --now
 ```
 
-The enable drop-in is written to
-`/etc/sysupdate.tailscale.d/tailscale.feature.d/00-updex.conf`. Without
-`--now`, the feature is enabled for future updates but no image is downloaded.
-With `--now`, Updex downloads the image, verifies the checksum and detached
-signature, creates the sysext link, and refreshes the merged extensions. The
-transfer sets `Verify=true`; a missing or invalid signature fails the operation
-and Updex does not fall back to an unsigned image.
+Updex downloads the image, checks its checksum and signature, links it, and
+refreshes the merged extensions. A missing or bad signature stops the command;
+Updex never installs an unsigned image. Without `--now`, Updex only marks the
+feature enabled, and the next update downloads it.
 
-Check the merge and the service:
+Enabling writes one file in `/etc`:
+`/etc/sysupdate.tailscale.d/tailscale.feature.d/00-updex.conf`.
+
+Check that Tailscale is merged and the daemon is running:
 
 ```bash
 systemd-sysext status
 systemctl status tailscaled.service
 ```
 
-`--now` refreshes the overlay. It does not prove that setup completed. The Base
-image's [`reload-sysext.service`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
-runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, and
-`systemctl daemon-reload` after `systemd-sysext.service` at boot. A working
-`tailscaled.service` must be running before `tailscale up`. If the daemon is not
-active after an interactive merge, reboot and check again. A successful merge
-does not guarantee that the daemon started.
+`systemd-sysext status` lists `tailscale`, and `tailscaled.service` is
+active. The daemon must be running before `tailscale up`.
 
-Then authenticate the node:
+A merge does not prove that setup completed. At boot, `reload-sysext.service`
+runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, and
+`systemctl daemon-reload` after the merge. After an interactive `--now` merge,
+they may not have run yet. If the daemon is not active, reboot and check
+again.
+
+Then connect the host to your tailnet:
 
 ```bash
 sudo tailscale up
 ```
 
-`tailscale up` is the current authentication step in the pinned migration
-runbook. Complete the authentication flow that your tailnet requires before
-you depend on the host's tailnet address.
+Finish the sign-in your tailnet asks for. Wait until it completes before you
+rely on the host's tailnet address.
 
-If `enable --now` reports a refresh failure (`refresh_error` in JSON), Updex
-reports the completed steps, but the final refresh failed. Treat the merge
-state as unproven. Run `sudo systemd-sysext refresh` or reboot, then check
-`systemd-sysext status` and `systemctl status tailscaled.service`. Do not treat
-the non-zero exit as a successful activation.
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the two checks above again.
 
-## Updates and removal
+## Update
 
-Check for an update without changing state:
+See whether an update exists:
 
 ```bash
 updex features check --component=tailscale
 ```
 
-`features check` iterates the enabled features in scope. For each enabled
-feature, it fetches and verifies each transfer's manifest. A feature that is not
-enabled gets no row; no row is not an up-to-date result. If a manifest cannot be
-fetched or verified, the feature is reported as `UPDATE=error`, the other
-enabled features are still reported, and the command exits non-zero. An errored
-row is not an up-to-date result.
+This changes nothing. It shows one row for each enabled feature. A feature
+you have not enabled has no row, so a missing row does not mean "up to date".
+If Updex cannot fetch or verify a manifest, that row shows `UPDATE=error` and
+the command exits non-zero. Treat an error row as unknown, not as up to date.
 
-Install the newest available version:
+Install the newest version:
 
 ```bash
 sudo updex features update --component=tailscale
 ```
 
-`update` downloads, verifies, installs, relinks, vacuums older versions by
-default, and refreshes the merged extensions. `--no-vacuum` keeps older
-versions. `sudo updex --dry-run features update --component=tailscale` previews
-the selection without changing files or sysext links.
-
-A refresh re-merges `/usr` while the host is running. The Tailscale daemon can
-restart, and existing sessions or connections can drop. Plan an interactive
-update for a maintenance window if the host provides remote access to other
-systems.
-
-Stop future updates without removing the current image:
+Updex downloads and verifies the new image, switches the link, deletes older
+versions, and refreshes the merge. Add `--no-vacuum` to keep older versions.
+To see what would change, without changing anything:
 
 ```bash
-sudo updex features disable tailscale
+sudo updex --dry-run features update --component=tailscale
 ```
 
-`disable` without `--now` writes only `Enabled=false`. The
-`/var/lib/extensions/tailscale.raw` link stays, so the current image stays
-merged and active now and at every boot. The host stays on the tailnet; the
-daemon is not stopped. `features update` and the timer skip the disabled
-feature.
+The refresh swaps `/usr` under the running system. The daemon can restart,
+and open sessions and connections can drop. If you reach other machines
+through this host, update in a maintenance window.
 
-:::danger[Removal acts immediately]
-`sudo updex features disable tailscale --now` takes effect at once, also when
-the extension is merged. Current Updex does not detect a merged image on snosi
-hosts, so the `--force` guard does not fire
-([Updex #444](https://github.com/frostyard/updex/issues/444)). It unmerges all
-extensions on the host, removes the Tailscale image, and refreshes. If the final
-refresh fails, the remaining extensions stay unmerged. A remote session through
-the tailnet can drop immediately. Stop or drain host-wide workloads before you
-run it. If Updex refuses with "Extension ... is active", add `--force`. Do not
-rely on that refusal as a safety check.
-:::
-
-To remove the installed image now:
-
-```bash
-sudo updex features disable tailscale --now
-```
-
-Removal deletes the staged image and the sysext link. The daemon and CLI
-disappear after the refresh or reboot, and the host goes offline on the
-tailnet. The node identity under `/var/lib/tailscale` is outside the extension
-and is not removed by the extension lifecycle. If the final refresh fails after
-`disable --now`, all remaining extensions stay unmerged until a later refresh
-or reboot. Keep or delete that state deliberately:
-
-- Restoring `/var/lib/tailscale` on a reinstalled host preserves the node
-  identity. A still-authorized node reconnects without a new authorization.
-- Without that state, the host is a new node. Run `tailscale up` and authorize
-  it.
-
-Do not assume that re-enabling the extension restores connectivity. The
-daemon, image, and node authorization are separate states.
-
-For unattended staging:
+To download updates automatically, turn on the Updex timer:
 
 ```bash
 sudo updex daemon enable
@@ -226,49 +136,111 @@ updex daemon status
 sudo updex daemon disable
 ```
 
-The Updex timer stages updates daily with `--no-refresh`; it never refreshes
-the running system. Activation happens at a later refresh or reboot. This is
-different from an interactive update, and an active timer does not mean the
-newest version is running.
+The timer runs `updex features update --no-refresh` once a day. It downloads
+and stages, but never swaps the running system. The new version runs after
+your next refresh or reboot.
 
-## Special cases and network changes
+## Stop updates or remove
 
-`tailscaled.service` is upheld by a drop-in at boot. The preset enables the
-service, and the drop-in supplies the post-merge activation timing that a
-preset alone cannot provide for a sysext-provided unit. The daemon is a system
-service; it does not run as a per-user service.
+Stop updates and keep the current version:
 
-The factory `/etc/default/tailscaled` is copied only when the target is absent.
-Local edits persist in the deployment-managed `/etc` layer. The unit requires
-`/etc/default/tailscaled` as its environment file. The extension restores the
-packaged default when the file is absent.
+```bash
+sudo updex features disable tailscale
+```
 
-A Tailscale state restore is a network identity operation. Restoring
-`/var/lib/tailscale` preserves the node identity, and a still-authorized node
-reconnects without a new authorization. Without that state, the host is a new
-installation; run `tailscale up` and authorize it. Review the node in your
-tailnet before you rely on it.
+This only sets `Enabled=false`. The link `/var/lib/extensions/tailscale.raw`
+stays, so Tailscale keeps running and the host stays on the tailnet, now and
+after every reboot. Updex and the timer skip it from now on.
 
-The pinned sources define only the daemon and its environment file. They do not
-document host-side configuration for subnet routers, exit nodes, MagicDNS, or
-tailnet access rules. Treat those as separate configuration choices and review
-them before you expose the host.
+Remove Tailscale now:
+
+```bash
+sudo updex features disable tailscale --now --force
+```
+
+This unmerges all extensions on the host, deletes the Tailscale image, and
+merges the rest again. A remote session through the tailnet can drop
+immediately. Make sure you have another way in, stop or drain your
+workloads, and reboot when the command finishes.
+
+Without `--force`, Updex refuses while Tailscale is merged:
+`Extension tailscale (version ...) is active. Removing requires --force and a reboot to take effect.`
+Updex v2.0.3 does not have this check yet: it removes the extension at once,
+with or without `--force`. `updex catalog remove` has the same check.
+
+Removal takes away the daemon and the CLI, and the host leaves the tailnet.
+The node identity in `/var/lib/tailscale` stays. Keep it or delete it on
+purpose:
+
+- Restore `/var/lib/tailscale` on a reinstalled host to keep the node
+  identity. A still-authorized node reconnects without a new authorization.
+- Without that state, the host is a new node. Run `tailscale up` and
+  authorize it.
+
+Enabling Tailscale again does not by itself bring the host back on the
+tailnet. The daemon, the image, and the node's authorization are separate.
+
+If the refresh at the end fails, the remaining extensions stay unmerged. Run
+`sudo systemd-sysext refresh`, or reboot.
+
+## Special cases
+
+`tailscaled.service` is a system service, not a per-user one. The preset
+enables it, and the `10-tailscale.conf` drop-in starts it at boot after the
+merge. A preset alone cannot do that for a unit that arrives in an extension.
+
+The daemon reads `/etc/default/tailscaled` and will not start without it. The
+extension copies its default file there when it is missing. Your edits to it
+survive reboots and updates.
+
+Restoring `/var/lib/tailscale` restores the node's identity on the network.
+Check the node in your tailnet before you rely on it.
+
+Subnet routers, exit nodes, MagicDNS, and access rules are not covered here.
+Set them up as separate choices, and review them before you expose the host.
 
 ## Troubleshooting
 
-| Symptom | Source-backed check | Safe next action |
+| Symptom | Check | Fix |
 | --- | --- | --- |
-| The extension is not listed | `updex features list --component=tailscale` and `updex components` | Enable the feature. If the component is absent, the image may predate the component-scoped layout. |
-| `enable --now` exits non-zero after downloading | The command reports a refresh failure (`refresh_error` in JSON) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
-| The daemon does not start | `systemctl status tailscaled.service` and its journal | Check that `/etc/default/tailscaled` exists. The unit requires it as an environment file. |
-| The host is not on the tailnet | `systemctl status tailscaled.service` | Check the service. If the node key expired or an administrator removed the node, run `sudo tailscale up` and authorize the host again. |
-| A manifest or signature check fails | `updex features check --component=tailscale` | Keep verification enabled and check the published manifest and network path. |
-| Remote access drops during an update | The journal shows the daemon restart and the `/usr` refresh | Use a maintenance window. Keep an out-of-band access path. |
-| Removal leaves the host offline remotely | `systemd-sysext status` and `systemctl status tailscaled.service` | Re-enable the extension. A still-authorized node can reconnect without new authorization. The node state under `/var` is separate. |
+| Tailscale is not listed | `updex features list --component=tailscale` and `updex components` | If `tailscale` is listed but disabled, enable it. If it is missing, the image may be older than named components. |
+| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| The daemon does not start | `systemctl status tailscaled.service` and its journal | Check that `/etc/default/tailscaled` exists. The daemon needs it. |
+| The host is not on the tailnet | `systemctl status tailscaled.service` | Check the service first. If the node key expired or an administrator removed the node, run `sudo tailscale up` and authorize the host again. |
+| A manifest or signature check fails | `updex features check --component=tailscale` | Check the network and the published manifest. Never turn verification off. |
+| Remote access dropped during an update | The journal shows the daemon restart after the `/usr` refresh | Update in a maintenance window. Keep another way into the host. |
+| The host is offline after removal | `systemd-sysext status` and `systemctl status tailscaled.service` | Enable Tailscale again. A still-authorized node reconnects without a new authorization. |
 
-The extension does not provide a supported host `apt` repair path. If the
-merged image is structurally incomplete, use the required-path build check and
-publish a corrected extension instead of installing packages by hand.
+Do not repair the extension with `apt`. If a merged image is missing files,
+the fix is a corrected extension build.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Package | `tailscale`; the image file name carries its version |
+| Image file | `tailscale_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/tailscale/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+| Commands | `/usr/bin/tailscale` and `/usr/sbin/tailscaled` |
+| Service | `tailscaled.service`, enabled by `40-tailscale.preset` and started at boot by `10-tailscale.conf` |
+| Configuration | A default `/etc/default/tailscaled` |
+| State | `/var/lib/tailscale`: the node identity and daemon state |
+
+<ExtensionSnapshot name="tailscale" />
+
+The active image is the link `/var/lib/extensions/tailscale.raw`. It points
+to the chosen file in `/var/lib/extensions.d/`. The transfer file names a
+second link, `CurrentSymlink=tailscale.raw`, but Updex deletes that one
+(`/var/lib/extensions.d/tailscale.raw`) when it installs.
+
+Updex picks the image that matches your OS version (`%w` in the file name)
+and your architecture (`%a`). The catalog lists versions, not architectures,
+so it does not tell you which architectures exist.
+
+An extension cannot ship files in `/etc`. The extension keeps the packaged
+`/etc/default/tailscaled` in `/usr/share/factory/etc`, and `tmpfiles.d` copies
+it into `/etc` when the file is missing. That is why the daemon can start
+right after a merge.
 
 ## See also
 
@@ -299,7 +271,7 @@ Updex v2.0.3 commit
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
 - [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
 - [Updex v2.0.3 release](https://github.com/frostyard/updex/releases/tag/v2.0.3)
-- [Updex issue #444: merged-image detection](https://github.com/frostyard/updex/issues/444)
+- [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)
 - [Updex v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
 - [Updex v2.0.3 `updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
 - [Updex v2.0.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go)

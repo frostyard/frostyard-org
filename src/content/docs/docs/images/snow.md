@@ -1,112 +1,61 @@
 ---
 title: Snow
-description: The Frostyard general-purpose GNOME desktop image, its composition, installation, updates, and support limits.
+description: Install, update, and roll back Snow, the Frostyard GNOME desktop image.
 ---
 
-Snow is Frostyard's general-purpose GNOME workstation. It is a Debian Trixie
-bootc/composefs image built by snosi for x86-64 UEFI machines. The supported
-installer is Firn, and the image follows the shared Base composition rather
-than a separate package universe.
+Snow is Frostyard's GNOME desktop. It is a Debian Trixie bootc/composefs
+image for x86-64 machines with UEFI, built from the same Base as the other
+Frostyard images. You install it with Firn.
 
-## Purpose and support boundary
+The system lives in a read-only `/usr` that updates as one piece, and you can
+roll back to the previous version. Image and system-extension applications
+live under `/usr`. Your homes, Flatpak data, containers, and update state live
+under `/var`.
 
-Snow is the desktop choice when you want a GNOME workstation with an immutable
-`/usr`, atomic deployments, and optional `/usr` system extensions for
-application payloads. Image and system-extension applications live under
-`/usr`. User homes, Flatpak data, container stores, and update state live under
-`/var`.
-
-The product facts below describe the pinned build configuration. They are not
-a published artifact manifest, and they are not a test report.
-
-:::caution[No production secure-boot or signed-rollback claim]
-Fresh-install evidence for Snow, Floe, and Sundog is pending. Fixture coverage
-does not establish production Secure Boot support, signed update evidence, or
-signed rollback evidence. An ordinary Firn install is not that evidence. The
-secure path also requires authorized signed secure N/N+1/N+2 artifacts and
-hardware results that the current sources withhold.
-See [`README.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/README.md)
-and [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md).
+:::caution[Secure Boot is not production-ready yet]
+Firn can install with Secure Boot on, but Frostyard does not yet claim
+production Secure Boot support, signed updates, or signed rollback.
+Fresh-install test results for Snow, Floe, and Sundog are still pending. A
+normal Firn install does not change that, and neither does a working
+`bootc rollback`. The secure layout
+also needs signed secure N/N+1/N+2 release images and hardware test results
+that are not published yet. An existing install cannot convert to the secure
+layout in place.
 :::
-
-## What ships
-
-The Snow profile depends on Base and includes the bootc runtime, the bootc
-security composition, the Snow payload, the kernel fragment, and the image
-output format. The build configuration is
-[`mkosi.profiles/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.profiles/snow/mkosi.conf).
-
-| Layer | What the pinned build composes | Evidence |
-| --- | --- | --- |
-| Base | Debian Trixie userspace, systemd, the hourly update stager, Updex, and the system-extension transfer definitions | [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.conf) |
-| Bootc runtime | `bootc`, `libostree-1-1`, and the OCI bootc package requirements | [`shared/packages/bootc/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/bootc/mkosi.conf) |
-| Desktop | GNOME Shell, GDM, Nautilus, Ptyxis, PipeWire, CUPS, Flatpak, and the desktop integration packages | [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/snow/mkosi.conf) |
-| Kernel | `linux-image-amd64/forky` as a temporary selection, with firmware and Mesa packages from `trixie-backports` | [`shared/kernel/backports/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/kernel/backports/mkosi.conf) |
-| Core Flatpak set | Bazaar, Mission Center, Extension Manager, DistroShelf, and a set of GNOME applications. The image ships the list and the OCI label; Firn installs the payloads when the recipe selects the core set. | [`flatpaks/snow.json`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/flatpaks/snow.json), [`flatpaks/core-flatpaks.py`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/flatpaks/core-flatpaks.py) |
-| Containers | Podman and Distrobox, plus `systemd-container` and the Frostyard Intune integration | [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/snow/mkosi.conf) |
-
-The kernel fragment is named `backports`, but the pinned file currently selects
-`linux-image-amd64/forky` while the Trixie backports kernel chain is
-incomplete. Treat the executable package selection as current and the fragment
-name as historical. The same fragment pins Mesa and firmware from
-`trixie-backports`; do not add unpinned duplicates to the Snow package set.
-
-The table shows the main layers only; it is not the complete composition. The
-[Snow composition](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/composition/snow/mkosi.conf)
-and the [Snow package set](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/snow/mkosi.conf)
-also carry Homebrew integration, `frostyard-chairlift`, `snow-first-setup`, the
-Snow Plymouth theme, the hotedge and Logo Menu GNOME extensions, and the Bazaar
-companion build.
-
-The core Flatpak list is a JSON manifest in the source, not a live store
-listing. The build checks that the image's on-disk file matches the manifest.
-It does not prove that every listed Flatpak is available from Flathub at
-install time.
-
-## Choose Snow
-
-Snow is the GNOME desktop. The current product line also has Snowfield (GNOME
-for Surface devices, untested on representative Surface hardware; its hardware
-gate was waived for catalog inclusion), Sundog (KDE Plasma, bootc only), and
-Floe (headless server). Base is the shared foundation and is not a fifth
-installer choice. See the
-[snosi installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md).
-
-Snow's build uses the Trixie userspace with a newer kernel selection. The
-pinned sources do not publish a per-product application test matrix, so use the
-image page and the installer picker together: choose Snow for a GNOME desktop,
-not for a server role.
 
 ## Install
 
-Firn is the supported installer. It requires UEFI, erases the selected target
-disk, and supports machines with or without Secure Boot, TPM 2.0, or disk
-encryption by making each choice explicit. Use at least 30 GiB, and more when
-you plan to keep Flatpaks, containers, and updates.
+Firn is the installer. It needs UEFI and erases the disk you pick. It works
+with or without Secure Boot, TPM 2.0, and disk encryption, and asks you about
+each one. Use a disk of at least 30 GiB, and more if you plan to keep
+Flatpaks, containers, and several updates.
 
-- [Installer ISO](https://repository.frostyard.org/isos/native/v1/snosi-installer-latest-x86-64.iso)
-- [SHA256SUMS](https://repository.frostyard.org/isos/native/v1/SHA256SUMS)
-- [SHA256SUMS.gpg](https://repository.frostyard.org/isos/native/v1/SHA256SUMS.gpg)
-- [Complete installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md)
+1. Download the installer and its checksums:
+   - [Installer ISO](https://repository.frostyard.org/isos/native/v1/snosi-installer-latest-x86-64.iso)
+   - [SHA256SUMS](https://repository.frostyard.org/isos/native/v1/SHA256SUMS)
+   - [SHA256SUMS.gpg](https://repository.frostyard.org/isos/native/v1/SHA256SUMS.gpg)
+2. Check the signing key's fingerprint and the ISO, then write the ISO to a
+   USB stick. The
+   [installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md)
+   has the exact `gpgv` and `sha256sum` commands and the commands to write the
+   stick. Read its warning on picking the right device.
+3. Boot the stick. In Firn, pick the bootc Snow product, review the recipe
+   Firn builds, and confirm the exact target disk.
+4. If Firn shows a recovery key, store it somewhere other than this disk
+   before you continue.
+5. If Secure Boot is on, enroll the MOK when asked. Without it, the
+   MOK-signed boot stage is not trusted while Secure Boot is enforced.
 
-The `native` segment in the ISO URL is a retained publication namespace, not an
-A/B installer choice. Verify the signing-key fingerprint and the ISO before
-writing media. The maintained guide gives the exact `gpgv` and `sha256sum`
-checks, the device-identification warning, and the Firn wizard steps. This page
-does not repeat the disk-writing commands.
+The `native` in the ISO address is an old folder name. It does not mean an
+A/B install.
 
-During installation, select the bootc Snow product, review the generated
-recipe, and confirm the exact target-disk path. If Firn displays a recovery key,
-store it outside the installed disk before you continue. A missing MOK
-enrollment leaves the MOK-signed stage untrusted while Secure Boot is enforced.
+## First boot
 
-## First boot and use
+Log in at the GDM screen with the user you created in Firn. Firn can install
+the chosen core Flatpak set as part of the recipe; if yours included it, the
+apps are already there. The image itself carries only the list.
 
-The desktop session is GDM-based. Firn has already created the first user.
-Firn can install the chosen core Flatpak set as part of the recipe. The image
-ships the core-set list and OCI label, not the Flatpak payloads.
-
-Use read-only status checks first:
+Check that the system is healthy:
 
 ```bash
 systemctl is-system-running
@@ -115,70 +64,107 @@ sudo snosi-update-status --check
 systemctl list-timers bootc-update-stage.timer
 ```
 
-These are the post-install checks in the maintained
-[installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md).
-`bootc status` should name the followed image, not `null`. `bootc status`
-reports the deployment and staged state; `snosi-update-status --check` reports
-whether a newer published image is available.
+`bootc status` shows the booted and staged deployments, and names the image
+it follows. If it shows `null` instead, see
+[Troubleshooting](#troubleshooting). `snosi-update-status --check` tells you
+whether a newer image is published. The timer is listed with its next run.
 
-For application payloads, prefer the image's own tools and the documented
-system extensions. Do not add host-level APT packages to an immutable `/usr`
-tree: they do not survive an image update as a supported layer. The Base and
-Snow package sets are build inputs, not a package-manager contract.
+Install applications as Flatpaks or as [system extensions](/docs/sysexts/docker/).
+Do not install APT packages into `/usr`: an image update does not keep them.
+The package lists in the build are not a package manager you can add to.
 
 ## Updates and rollback
 
-Published bootc images run `bootc-update-stage.timer` hourly. The stager pulls
-the followed image with Podman. On the first staged update, while the followed
-spec is not yet `containers-storage`, it stages with `bootc switch --transport
-containers-storage`. In steady state, when the spec already follows
-`containers-storage`, it uses `bootc upgrade`; a second switch to the identical
-spec is a silent no-op. Both paths verify the staged digest before they record
-success. The deployment applies at the next natural reboot. The stager does not
-force a reboot. The stager uses these bootc commands internally; operators do
-not need to run them. The [stager source](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
-gives the exact transport and digest checks. The timer and its preset are in
-the Base image:
-[`bootc-update-stage.timer`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer)
-and
-[`04-bootc-update.preset`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset).
+Updates are automatic. Every hour, `bootc-update-stage.timer` checks for a
+new image, pulls it with Podman, and stages it. The new version starts at your
+next normal reboot. The stager does not force a reboot.
 
-To return to the previous deployment:
+The stager runs the bootc commands itself. You do not need to run them. On
+the first staged update, while the host does not yet follow the image from
+`containers-storage`, it runs `bootc switch --transport containers-storage`.
+From then on, in steady state, it runs `bootc upgrade`, because a second
+`bootc switch` to the same image would do nothing. Both paths verify the
+staged digest before they report success.
+
+To go back to the previous version:
 
 ```bash
 sudo bootc rollback
 sudo systemctl reboot
 ```
 
-`/var` is shared across deployments, so homes and container data survive a
-rollback. A rollback also changes the followed image reference; the updater
-will not re-stage the deployment you rolled away from. The migration runbook
-documents this behavior and the disk-headroom requirement: the updater pulls a
-new image into `/var` before staging it, so keep roughly twice the image size
-free in `/var`.
+Homes and container data in `/var` are shared by all versions, so a rollback
+keeps them. A rollback also changes the image the host follows: the updater
+does not stage the version you rolled back from again.
 
-The secure path is separate. The pinned sources say update and rollback remain
-unproven for the signed secure layout, and existing installations cannot be
-converted in place to that layout. Do not treat `bootc rollback` as evidence
-that signed secure rollback is supported.
+Keep about twice the image size free in `/var`. The updater pulls each new
+image into `/var` before it stages it.
 
-## Special cases and troubleshooting
+## What ships
 
-| Symptom | Check | Next action |
+Snow is Base plus the bootc runtime, the bootc security setup, the Snow
+desktop, a kernel, and the image output format.
+
+| Layer | What you get |
+| --- | --- |
+| Base | Debian Trixie userspace, systemd, the hourly update stager, Updex, and the system-extension definitions |
+| Bootc runtime | `bootc`, `libostree-1-1`, and the packages OCI bootc needs |
+| Desktop | GNOME Shell, GDM, Nautilus, Ptyxis, PipeWire, CUPS, Flatpak, and the desktop integration packages |
+| Kernel | `linux-image-amd64/forky` for now, with firmware and Mesa from `trixie-backports` |
+| Core Flatpak set | Bazaar, Mission Center, Extension Manager, DistroShelf, and a set of GNOME apps. The image carries the list and an OCI label; Firn installs the apps when the recipe includes the core set. |
+| Containers | Podman and Distrobox, plus `systemd-container` and the Frostyard Intune integration |
+
+The table shows the main layers only. Snow also carries Homebrew
+integration, `frostyard-chairlift`, `snow-first-setup`, the Snow Plymouth
+theme, the hotedge and Logo Menu GNOME extensions, and the Bazaar companion
+build.
+
+Snow uses the `linux-image-amd64/forky` kernel until the Trixie backports
+kernel is complete. The build file for it is still called `backports`; the
+name is out of date. Mesa and firmware come from `trixie-backports`, pinned in
+the same file. If you build Snow yourself, do not add second, unpinned copies
+of them to the Snow package list.
+
+The core Flatpak list is fixed at build time, and each build checks that the
+image's copy matches it. Flathub may no longer offer every app on the list
+when you install.
+
+## Choose Snow
+
+Choose Snow for a GNOME desktop. Do not use it as a server; Floe is the server
+image. The other products are:
+
+- Snowfield: GNOME for Microsoft Surface devices. It is untested on
+  representative Surface hardware; its hardware gate was waived for catalog
+  inclusion.
+- Sundog: KDE Plasma, bootc only.
+- Floe: a headless server.
+
+Base is the shared foundation, not a fifth installer choice. Snow has the
+Trixie userspace with a newer kernel. No per-product application test list
+exists yet.
+
+## Troubleshooting
+
+| Symptom | Check | Fix |
 | --- | --- | --- |
-| `bootc status` shows `spec.image: null` | The host is not bootc-managed; it is likely an nbc or native A/B install | Back up, perform a fresh Firn install, and restore state. There is no in-place conversion. |
-| No update is staged | `systemctl list-timers bootc-update-stage.timer` and `journalctl -u bootc-update-stage.service` | Wait for the hourly run. Check that the host has network access and free space in `/var`. |
-| Staging fails with no space | Compare free `/var` space with the image size | Free space or enlarge the disk. The updater needs room for the pull, the deployment, and the previous deployment. |
-| Secure Boot or TPM behavior is unclear | `bootc status`, firmware state, and the secure-operations runbook | Do not claim production secure support. The fresh-install and lifecycle evidence gates are still pending. |
-| Snowfield hardware behavior is needed | The product page and installer notes | Snowfield is a different image and its representative hardware install is untested. Do not generalize Snow results to it. |
+| `bootc status` shows `spec.image: null` | The host is not managed by bootc. It is most likely an old nbc or native A/B install. | See [Moving from an nbc or A/B install](#moving-from-an-nbc-or-ab-install). |
+| No update is staged | `systemctl list-timers bootc-update-stage.timer` and `journalctl -u bootc-update-stage.service` | Wait for the hourly run. Check the network and the free space in `/var`. |
+| Staging fails for lack of space | Compare the free space in `/var` with the image size | Free space or grow the disk. The updater needs room for the download, the new version, and the previous one. |
+| Secure Boot or TPM does not behave as you expect | `bootc status` and the firmware settings | Check the firmware settings, then read the [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md). Secure Boot is not production-ready yet. |
+| You need to know how Snowfield behaves on a Surface | The Snowfield page and installer notes | Snowfield is a different image and is untested on Surface hardware. Snow results do not carry over. |
 
-Legacy nbc and native A/B hosts receive no new images or updates after
-2026-09-30. The migration path is a backup, a fresh bootc install with Firn, and
-a state restore. The pinned
+## Moving from an nbc or A/B install
+
+Old nbc and native A/B installs get no new images or updates after
+2026-09-30. There is no in-place conversion. Back up, install fresh with
+Firn, and restore your data.
+
+The
 [migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
-lists what to capture, including `/etc` deltas, homes, Podman volumes, and
-`/var/lib/tailscale` when Tailscale is in use. Verify the backup from another
-machine before wiping the target disk.
+lists what to save: your `/etc` changes, homes, Podman volumes, and
+`/var/lib/tailscale` if you use Tailscale. Check the backup from another
+machine before you erase the disk.
 
 ## See also
 
