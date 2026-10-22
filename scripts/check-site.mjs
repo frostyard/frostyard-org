@@ -76,6 +76,8 @@ const docsRoutes = [
   "/docs/tools/updex",
   "/docs/tools/nsl",
   "/docs/tools/igloo",
+  "/docs/tools/chairlift",
+  "/docs/tools/intuneme",
 ];
 
 await Promise.all(["install", "sundog"].map(route => access(routeFile(`/${route}`))));
@@ -162,6 +164,8 @@ for (const route of docsRoutes) {
     "/docs/tools/updex/",
     "/docs/tools/nsl/",
     "/docs/tools/igloo/",
+    "/docs/tools/chairlift/",
+    "/docs/tools/intuneme/",
   ]) {
     assert(html.includes(`href="${href}"`), `${route} must render the docs navigation link ${href}.`);
   }
@@ -183,7 +187,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/", "/docs/tools/chairlift/", "/docs/tools/intuneme/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -530,6 +534,66 @@ assert(igloo.includes('data-code="flatpak remote-add --if-not-exists frostyard')
 assert(igloo.includes('data-code="flatpak install frostyard io.github.frostyard.Igloo"'), "/docs/tools/igloo must give the install command.");
 assert(iglooText.includes("Check Again"), "/docs/tools/igloo must mention the Check Again button.");
 assert(igloo.includes('href="/docs/tools/nsl/"'), "/docs/tools/igloo must link the nsl page.");
+
+const chairlift = await readRoute("/docs/tools/chairlift");
+const chairliftText = textOf(chairlift);
+for (const heading of [
+  "which-images-have-it",
+  "open-it",
+  "what-each-page-does",
+  "everyday-tasks",
+  "install-on-another-system",
+  "troubleshooting",
+  "see-also",
+  "sources",
+]) {
+  assert(chairlift.includes(`id="${heading}"`), `/docs/tools/chairlift must render the "${heading}" section.`);
+}
+for (const source of ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml"]) {
+  assert(chairlift.includes(`https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/${source}`), `/docs/tools/chairlift must cite ${source}.`);
+}
+for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
+  assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
+}
+assert(chairliftText.includes("This guide follows ChairLift v0.11.2"), "/docs/tools/chairlift must follow ChairLift v0.11.2.");
+assert(chairliftText.includes("Snow, Snowfield, and Sundog install ChairLift") && chairliftText.includes("Floe does not"), "/docs/tools/chairlift must name the images that have ChairLift.");
+assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chairlift must give the dry-run command.");
+assert(chairliftText.includes("/etc/chairlift/config.yml"), "/docs/tools/chairlift must name the administrator config file.");
+assert(chairliftText.includes("Trust is per user and needs no password"), "/docs/tools/chairlift must state that tap trust needs no password.");
+assert(chairliftText.includes("frostyard-chairlift-system-integration"), "/docs/tools/chairlift must warn about the system-integration package.");
+assert(chairlift.includes('href="/docs/tools/updex/"'), "/docs/tools/chairlift must link the Updex page.");
+assert(chairlift.includes('href="/docs/sysexts/manage/"'), "/docs/tools/chairlift must link the manage page.");
+
+const intuneme = await readRoute("/docs/tools/intuneme");
+const intunemeText = textOf(intuneme);
+for (const heading of [
+  "before-you-start",
+  "install",
+  "enroll-your-device",
+  "every-day",
+  "options",
+  "what-the-helper-can-do",
+  "upgrade",
+  "remove",
+  "troubleshooting",
+  "see-also",
+  "sources",
+]) {
+  assert(intuneme.includes(`id="${heading}"`), `/docs/tools/intuneme must render the "${heading}" section.`);
+}
+for (const source of ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md"]) {
+  assert(intuneme.includes(`https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/${source}`), `/docs/tools/intuneme must cite ${source}.`);
+}
+for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
+  assert(intuneme.includes(`https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/${source}`), `/docs/tools/intuneme must cite snosi ${source}.`);
+}
+assert(intunemeText.includes("This guide follows intuneme v0.20.4"), "/docs/tools/intuneme must follow intuneme v0.20.4.");
+assert(intunemeText.includes("Snow, Snowfield, and Sundog already include the frostyard-intuneme package") && intunemeText.includes("Floe does not"), "/docs/tools/intuneme must name the images that have intuneme.");
+for (const command of ["intuneme init", "intuneme start", "intuneme open portal", "intuneme recreate", "intuneme destroy --all"]) {
+  assert(intuneme.includes(`data-code="${command}`), `/docs/tools/intuneme must give the command ${command}.`);
+}
+assert(intuneme.includes("https://frostyard.github.io/intuneme/user-guide/broker-proxy/"), "/docs/tools/intuneme must link the broker proxy guide.");
+assert(intunemeText.includes("A root shell in the container needs a password"), "/docs/tools/intuneme must state the helper limits.");
 
 const catalog = JSON.parse(await readFile(new URL("../src/data/extensions.json", import.meta.url), "utf8"));
 const catalogDate = catalog.updatedAt.slice(0, 10);

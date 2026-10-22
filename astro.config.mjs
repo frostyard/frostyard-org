@@ -42,6 +42,8 @@ export default defineConfig({
             { label: "Updex", slug: "docs/tools/updex" },
             { label: "nsl", slug: "docs/tools/nsl" },
             { label: "Igloo", slug: "docs/tools/igloo" },
+            { label: "ChairLift", slug: "docs/tools/chairlift" },
+            { label: "intuneme", slug: "docs/tools/intuneme" },
           ],
         },
       ],
