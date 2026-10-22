@@ -48,8 +48,8 @@ updex features list --component=docker
 The table lists only the Docker feature.
 
 The [extension catalog](/docs/sysexts/) lists every published extension. Your
-image can enable only the features it has files for in
-`/usr/lib/sysupdate.<name>.d/`. If `updex features list` does not show an
+image ships its definitions in `/usr/lib/sysupdate.<name>.d/`, and it can
+enable only the features it has files for. If `updex features list` does not show an
 extension, your image cannot enable it.
 
 ## Enable an extension
@@ -113,12 +113,15 @@ reboot and check again.
 
 Frostyard transfers set `Verify=true`. Updex reads `SHA256SUMS` from the
 transfer's source and checks the detached signature in `SHA256SUMS.gpg` against
-the systemd keyring, `/etc/systemd/import-pubring.gpg` and then
-`/usr/lib/systemd/import-pubring.gpg`. Only then does it trust the hashes in
-that file, and it checks the downloaded image against its hash. A missing
-signature or a bad one stops the command, and no image is installed. The base
-image ships the Frostyard repository key at
-`/usr/lib/systemd/import-pubring.gpg`.
+the systemd keyring. Only then does it trust the hashes in that file, and it
+checks the downloaded image against its hash. A missing signature or a bad one
+stops the command, and no image is installed.
+
+The base image ships the Frostyard repository key at
+`/usr/lib/systemd/import-pubring.gpg`. Updex uses the first of these files
+that exists: `/etc/systemd/import-pubring.gpg`, then
+`/usr/lib/systemd/import-pubring.gpg`. If you create the `/etc` file, it must
+also hold the Frostyard key, or every Frostyard download fails verification.
 
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
 download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
@@ -168,6 +171,15 @@ change something.
 A refresh swaps `/usr` under the running system, and a service can restart.
 Stop or drain workloads first if a restart would hurt them.
 
+Preview the timer setup first. Nothing changes:
+
+```bash
+sudo updex --dry-run daemon enable
+```
+
+The output starts with `[DRY RUN] Would install`. Updex v2.0.4 and older ignore
+`--dry-run` here and make the change.
+
 Turn on the daily timer:
 
 ```bash
@@ -210,7 +222,9 @@ sudo updex features disable <name>
 
 The output says `Feature '<name>' disabled.` Updex writes `Enabled=false` in
 the drop-in. It does not unmerge the extension. The image and the link stay, so
-the extension keeps running, now and after every reboot.
+the extension keeps running, now and after every reboot. The output also
+suggests `updex features update`. Ignore it: an update does not remove a
+disabled extension.
 
 Remove the extension now:
 
@@ -232,7 +246,8 @@ Extension <name> (version <version>) is active. Removing requires --force and a 
 
 The version is the merged one. On systemd older than 258 it reads `unknown`. If
 Updex cannot read the merged state, it also refuses, and names the component
-with `merge state unknown`. In Updex v2.0.3 the check did not fire on a
+with `merge state unknown`. `<name>` is the transfer name, the same as the
+feature name for Frostyard extensions. In Updex v2.0.3 the check did not fire on a
 Frostyard host, and the extension was removed at once.
 
 An extension cannot provide files in `/etc` or `/var`. Your data in `/var` and
@@ -243,8 +258,11 @@ If the refresh at the end fails, the remaining extensions stay unmerged. Run
 
 ## How extensions are built
 
-An extension is an EROFS overlay (`Format=sysext`, `Overlay=yes`) on Base. It
-holds only what Base does not have.
+An extension is an EROFS overlay (`Format=sysext`, `Overlay=yes`) on its build
+base: Base, or for desktop applications gui-base (Base plus the GUI libraries
+that every desktop image ships). It holds only what that build base does not
+have. A desktop-application extension needs those GUI libraries, so it is
+meant for Snow, Snowfield, and Sundog, not Floe.
 
 - The payload is `/usr` only. A package that installs to `/opt` is relocated to
   `/usr/lib/<package>` with `/usr/bin` symlinks, because `/opt` is a bind mount
@@ -254,15 +272,19 @@ holds only what Base does not have.
   captures only the paths its rules name.
 - The file is `<name>_<version>_<os>_<arch>.raw.zst`. `%w` matches your OS
   version and `%a` your architecture. The transfer also accepts `.raw.xz`,
-  `.raw.gz`, and `.raw`.
+  `.raw.gz`, and `.raw`. Updex stores the image decompressed, as `.raw`. A
+  file that an older Updex installed can keep a `.raw.zst` name. Its content
+  is decompressed, and it works.
 - The version comes from the image's key package (`KEYPACKAGE`). A Debian epoch
   `5:1.2.3` becomes `5+1.2.3` in the file name.
 - `SYSEXT_REVISION=N` appends `+rN` to the version, for a content fix at the
   same package version.
-- The image is a delta against the Base it was built on. A later Base that
+- The image is a delta against the build base it was built on. A later Base that
   stops shipping a package the delta left out can break the merged extension.
 - Each build checks the paths in `mkosi.images/<name>/required-paths.txt`. A
   build that is missing one fails.
+- Each build also fails if the payload has files under `/opt`, a private key,
+  or a file that Base owns.
 
 ## Troubleshooting
 
@@ -274,6 +296,7 @@ holds only what Base does not have.
 | A service is not active after `enable --now` | `systemctl status <name>.service` and `systemd-sysext status` | Reboot, so that `reload-sysext.service` runs the setup, then check again. |
 | `disable --now` refuses with `is active` | The refusal names the extension and its version | Add `--force`, then reboot. |
 | A signature check fails | The command output | Check the network and the published manifest. The publisher must provide `SHA256SUMS.gpg`. Never turn verification off. |
+| Every Frostyard download fails verification | `ls /etc/systemd/import-pubring.gpg` | If the file exists, Updex uses it instead of the image's key. Add the Frostyard key to it, or remove it. |
 | `daemon enable` says `timer already installed` | `updex daemon status` | Run `sudo updex daemon disable`, then enable it again. |
 | `daemon disable` says `timer not installed` | `updex daemon status` | Nothing to turn off. The timer is not installed. |
 
@@ -321,3 +344,12 @@ Updex v2.0.5 commit
 - [`systemd/unit.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/systemd/unit.go)
 - [Updex v2.0.4 release](https://github.com/frostyard/updex/releases/tag/v2.0.4)
 - [Updex v2.0.5 release](https://github.com/frostyard/updex/releases/tag/v2.0.5)
+- [`mkosi.images/gui-base/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/gui-base/mkosi.conf)
+- [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/vscode/mkosi.conf)
+- [`shared/sysext/finalize/sysext-usr-only.sh`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/finalize/sysext-usr-only.sh)
+- [`shared/sysext/finalize/sysext-no-private-keys.sh`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/finalize/sysext-no-private-keys.sh)
+- [`shared/sysext/finalize/sysext-no-base-owned.sh`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/finalize/sysext-no-base-owned.sh)
+- [`shared/sysext/base-owned-paths.txt`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/base-owned-paths.txt)
+- [Updex PR #128: decompressed target file names](https://github.com/frostyard/updex/pull/128)
+- [Updex PR #452: honour `--dry-run` in `daemon enable` and `daemon disable`](https://github.com/frostyard/updex/pull/452)
+- [Updex issue #453: `features disable` suggests an update that does nothing for a disabled feature](https://github.com/frostyard/updex/issues/453)
