@@ -69,6 +69,7 @@ const docsRoutes = [
   "/docs/sysexts/nix",
   "/docs/sysexts/tailscale",
   "/docs/sysexts/vscode",
+  "/docs/sysexts/manage",
   "/docs/tools/updex",
 ];
 
@@ -149,6 +150,7 @@ for (const route of docsRoutes) {
     "/docs/sysexts/nix/",
     "/docs/sysexts/tailscale/",
     "/docs/sysexts/vscode/",
+    "/docs/sysexts/manage/",
     "/docs/tools/updex/",
   ]) {
     assert(html.includes(`href="${href}"`), `${route} must render the docs navigation link ${href}.`);
@@ -171,7 +173,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/floe/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/tools/updex/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/floe/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -355,7 +357,8 @@ for (const href of ["/docs/sysexts/dev/", "/docs/sysexts/docker/", "/docs/sysext
   assert(catalogPage.includes(`href="${href}"`), `/docs/sysexts must link the guide ${href}.`);
 }
 assert(catalogPage.includes("sudo updex features enable"), "/docs/sysexts must use the current Updex enable syntax.");
-assert(catalogPage.includes("--force"), "/docs/sysexts must explain the --force removal guard.");
+assert(catalogPage.includes('href="/docs/sysexts/manage/"'), "/docs/sysexts must link the lifecycle guide instead of repeating its steps.");
+assert(!catalogPage.includes("--force"), "/docs/sysexts must not keep a second removal instruction set.");
 const catalogList = await readFile(new URL("../src/components/ExtensionCatalog.astro", import.meta.url), "utf8");
 assert(!catalogList.includes("set:html"), "ExtensionCatalog must not render catalog values as raw HTML.");
 
@@ -621,6 +624,67 @@ for (const page of commandPages) {
     assert(text.includes(statement), `${page.route} must state "${statement}".`);
   }
 }
+
+const manage = await readRoute("/docs/sysexts/manage");
+const manageText = textOf(manage);
+for (const heading of [
+  "before-you-start",
+  "find-an-extension",
+  "enable-an-extension",
+  "check-that-it-works",
+  "update",
+  "stop-updates-or-remove",
+  "how-extensions-are-built",
+  "troubleshooting",
+  "see-also",
+  "sources",
+]) {
+  assert(manage.includes(`id="${heading}"`), `/docs/sysexts/manage must render the "${heading}" section.`);
+}
+for (const source of [
+  "docs/design/sysexts.md",
+  "docs/adr/0004-sysext-authoring-rules.md",
+  "mkosi.images/base/mkosi.conf",
+  "mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service",
+  "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer",
+  "mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf",
+  "mkosi.images/docker/required-paths.txt",
+  "shared/sysext/postoutput/sysext-postoutput.sh",
+  "shared/sysext/finalize/sysext-required-paths.sh",
+]) {
+  assert(manage.includes(`https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/${source}`), `/docs/sysexts/manage must cite ${source}.`);
+}
+for (const source of [
+  "README.md",
+  "docs/design/overview.md",
+  "docs/specs/config-reference.md",
+  "docs/adr/0007-daemon-stages-never-activates.md",
+  "docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md",
+  "cmd/updex/features_run.go",
+  "cmd/updex/daemon.go",
+  "updex/features.go",
+  "updex/install.go",
+  "updex/daemon.go",
+  "updex/list.go",
+  "manifest/gpg.go",
+  "sysext/manager.go",
+  "systemd/unit.go",
+]) {
+  assert(manage.includes(`https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/${source}`), `/docs/sysexts/manage must cite ${source}.`);
+}
+assert(manageText.includes("This guide follows Updex v2.0.5"), "/docs/sysexts/manage must follow Updex v2.0.5.");
+assert(manageText.includes("(version &lt;version&gt;) is active. Removing requires --force and a reboot to take effect."), "/docs/sysexts/manage must show the exact removal refusal message.");
+assert(manageText.includes("Updex v2.0.4 and later refuse to remove a merged extension"), "/docs/sysexts/manage must state the removal guard version.");
+assert(manageText.includes("In Updex v2.0.3 the check did not fire on a Frostyard host"), "/docs/sysexts/manage must state the v2.0.3 limit.");
+assert(manageText.includes("It never activates"), "/docs/sysexts/manage must state that the timer never activates.");
+assert(manageText.includes("--no-refresh"), "/docs/sysexts/manage must name the timer's --no-refresh command.");
+assert(manageText.includes("Updex unmerges all extensions on the host"), "/docs/sysexts/manage must warn that removal unmerges all extensions.");
+assert(manageText.includes("Reboot when the command finishes."), "/docs/sysexts/manage must ask for a reboot after removal.");
+assert(manageText.includes("import-pubring.gpg"), "/docs/sysexts/manage must name the systemd keyring it verifies against.");
+assert(manageText.includes("required-paths.txt"), "/docs/sysexts/manage must explain the required-path check.");
+assert(manageText.includes("sudo updex features enable"), "/docs/sysexts/manage must use the current Updex enable syntax.");
+assert(manage.includes("/var/lib/extensions.d/"), "/docs/sysexts/manage must name the staged image directory.");
+assert(manage.includes("/etc/sysupdate."), "/docs/sysexts/manage must name the drop-in path.");
 
 await access(new URL("pagefind/pagefind.js", dist));
 const pagefindEntry = JSON.parse(await readFile(new URL("pagefind/pagefind-entry.json", dist), "utf8"));
