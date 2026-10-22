@@ -48,9 +48,8 @@ Flatpaks, containers, and several updates.
    before you continue.
 5. If Secure Boot is on, enroll the MOK when asked. Without it, the
    MOK-signed boot stage is not trusted while Secure Boot is enforced.
-
-The image also carries the linux-surface signing certificate at
-`/usr/share/linux-surface-secureboot/surface.cer`.
+   Snowfield needs no other key: the linux-surface kernel boots inside the
+   Frostyard-signed image.
 
 The `native` in the ISO address is an old folder name. It does not mean an
 A/B install.
@@ -201,7 +200,6 @@ Reviewed 2026-10-22 against snosi commit
 - [`shared/kernel/surface/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/kernel/surface/mkosi.conf)
 - [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/composition/snow/mkosi.conf)
 - [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/snow/mkosi.conf)
-- [`shared/snow/scripts/build/surface-cert.chroot`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/snow/scripts/build/surface-cert.chroot)
 - [`mkosi.sandbox/etc/apt/sources.list.d/linux-surface.sources`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.sandbox/etc/apt/sources.list.d/linux-surface.sources)
 - [`mkosi.sandbox/etc/apt/preferences.d/backports`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.sandbox/etc/apt/preferences.d/backports)
 - [`shared/packages/bootc/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/bootc/mkosi.conf)

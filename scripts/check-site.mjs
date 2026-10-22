@@ -295,7 +295,6 @@ for (const source of [
   "shared/kernel/surface/mkosi.conf",
   "shared/composition/snow/mkosi.conf",
   "shared/packages/snow/mkosi.conf",
-  "shared/snow/scripts/build/surface-cert.chroot",
   "mkosi.sandbox/etc/apt/sources.list.d/linux-surface.sources",
   "mkosi.images/base/mkosi.conf",
   "docs/installing.md",
