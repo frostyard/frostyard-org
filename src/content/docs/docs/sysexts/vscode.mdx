@@ -1,0 +1,167 @@
+---
+title: Visual Studio Code
+description: Enable, update, and remove the Visual Studio Code system extension on a Frostyard desktop image.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The Visual Studio Code extension adds the Microsoft editor to a Frostyard
+desktop image, with its `code` command, a desktop entry, and an icon. Use it
+when you want the editor without changing the image. Every Frostyard bootc
+image ships the extension switched off.
+
+## Before you start
+
+You need:
+
+- A Frostyard desktop image. The feature is marked for Snow and Snowfield
+  (`X-Snosi-Products=snow,snowfield`), but Updex lists it on every image.
+- Root access to enable, update, and remove the extension.
+- Network access to `https://repository.frostyard.org/ext/vscode/`.
+- Free space in `/var` for the image.
+- A desktop session, to start the editor from the application grid.
+
+Visual Studio Code has no published test results on Frostyard images yet. Try
+it on a machine you can spare first.
+
+## Enable Visual Studio Code
+
+See what Updex found, then enable the feature and download it now:
+
+```bash
+updex features list --component=vscode
+sudo updex features enable vscode --now
+```
+
+`vscode` appears as a component, with its feature disabled. The enable command
+downloads the image, checks its checksum and signature, links it, and refreshes
+the merge.
+
+Check the merge and the files that start the editor:
+
+```bash
+systemd-sysext status
+command -v code
+ls /usr/share/applications/com.microsoft.VSCode.desktop
+```
+
+`systemd-sysext status` lists `vscode`. The command prints a path, and the
+desktop entry exists.
+
+There is no unit to check. The extension ships no service, no preset, and no
+boot drop-in.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the checks above again.
+
+## Use Visual Studio Code
+
+Run the editor from a terminal:
+
+```bash
+code
+```
+
+You can also pick Visual Studio Code in the application grid. Both paths start
+`/usr/share/code/code`; `/usr/bin/code` is a link to it.
+
+The desktop entry carries the MIME types `application/x-code-workspace` and
+`inode/directory`. The build adds `inode/directory`, so a file manager can open
+a folder in Code.
+
+The icon is `/usr/share/pixmaps/vscode.png`. That directory is the unthemed
+fallback path, which every toolkit scans.
+
+A merge in a running GNOME session does not always make the icon appear at
+once. Start a new session and the icon is there. The desktop entry itself
+appears without a new session.
+
+The extension adds the editor, its command, the launcher, and the icon. It
+ships no configuration file and keeps no state under `/var`.
+
+## Update and remove
+
+An update swaps `/usr` and replaces the editor. Close any open Code window
+first, because the files it runs from change under it. The extension keeps no
+state of its own, so nothing else is affected.
+
+Remove Visual Studio Code now:
+
+```bash
+sudo updex features disable vscode --now --force
+```
+
+Updex unmerges all extensions on the host, deletes the Visual Studio Code
+image, and merges the rest again. The command, the launcher, and the icon go.
+The extension holds only `/usr`, so removal leaves no data of its own behind.
+Reboot when the command finishes. Without `--force`, Updex refuses while the
+image is merged.
+
+See [Manage system extensions](/docs/sysexts/manage/) for the update check, the
+timer, and plain `disable`.
+
+## Troubleshooting
+
+| Symptom | Check | Fix |
+| --- | --- | --- |
+| `code` or the launcher is missing | `systemd-sysext status`, `command -v code`, and `ls /usr/share/applications/com.microsoft.VSCode.desktop` | Check that the image is merged. If it is, run `sudo systemd-sysext refresh` or reboot. |
+| The icon is the generic application icon | The icon in the application grid after a new login | A running GNOME session does not always rescan icons from a merge. Icons are reliable from the next session start. |
+| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+
+Do not repair the extension with `apt`. If a merged image is missing files, the
+fix is a corrected extension build.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Package | `code`, from `packages.microsoft.com/repos/code` |
+| Version | The image file name carries the `code` version |
+| Image file | `vscode_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/vscode/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+| Commands | `/usr/bin/code` and `/usr/share/code/code` |
+| Desktop entry | `/usr/share/applications/com.microsoft.VSCode.desktop`, with `inode/directory` added to its MIME types |
+| Icon | `/usr/share/pixmaps/vscode.png` |
+| Services | None: no preset and no boot drop-in |
+
+<ExtensionSnapshot name="vscode" />
+
+Each build checks that the launcher command, its binary, the desktop entry, and
+the icon are present. A build that is missing one fails.
+
+The image builds against `gui-base`, the shared set of desktop libraries that
+every desktop product already has. The delta leaves those libraries out, and
+your product supplies its own copies at merge time. An editor build therefore
+cannot put an older GUI library over the one your desktop uses. A finalize
+check fails the build when the delta carries a divergent GUI library.
+
+The image is an overlay that holds only what its build base does not already
+have. A later Base can break an older Visual Studio Code image.
+
+## See also
+
+- [System extension catalog](/docs/sysexts/)
+- [Dev tools system extension](/docs/sysexts/dev/)
+- [Manage system extensions](/docs/sysexts/manage/)
+- [Desktop applications in sysexts](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
+- [Updex v2.0.5 command reference](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
+
+## Sources
+
+Reviewed 2026-10-22. snosi commit
+[`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b);
+Updex v2.0.5 commit
+[`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb).
+
+- [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/vscode/mkosi.conf)
+- [`mkosi.images/vscode/required-paths.txt`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/vscode/required-paths.txt)
+- [`mkosi.images/gui-base/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/gui-base/mkosi.conf)
+- [`shared/packages/vscode/mkosi.postinst.d/vscode.chroot`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/vscode/mkosi.postinst.d/vscode.chroot)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.feature`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.transfer`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.transfer)
+- [`docs/native-ab-prototype-history.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/native-ab-prototype-history.md)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
+- [Updex v2.0.5 `README.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
+- [Updex v2.0.5 `updex/features.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/features.go)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
