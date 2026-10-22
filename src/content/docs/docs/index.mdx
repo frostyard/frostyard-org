@@ -1,14 +1,15 @@
 ---
 title: Frostyard documentation
-description: Install and run Frostyard bootc images, and add Docker, Incus, or Tailscale as system extensions.
+description: Install and run Frostyard bootc images, and add Dev tools, Docker, Incus, K3s, Nix, Tailscale, or Visual Studio Code as system extensions.
 ---
 
 import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 
 Frostyard makes bootc images and `/usr` system extensions, built with
-[snosi](https://github.com/frostyard/snosi). These guides cover the Snow
-desktop and three extensions you can turn on: Docker, Incus, and Tailscale.
-Each page lists its sources at the bottom.
+[snosi](https://github.com/frostyard/snosi). These guides cover each Frostyard
+image and seven extensions you can turn on: Dev tools, Docker, Incus, K3s,
+Nix, Tailscale, and Visual Studio Code. Each page lists its sources at the
+bottom.
 
 :::caution[Support boundary]
 Secure Boot, signed updates, and signed rollback are not production-ready yet.
@@ -27,6 +28,7 @@ Fresh-install test results for Snow, Floe, and Sundog are still pending. See
   <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Run system containers and virtual machines, with Incus's own QEMU." />
   <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Put the host on your tailnet." />
   <LinkCard title="System extension catalog" href="/docs/sysexts/" description="See every extension in the catalog, and enable or update one." />
+  <LinkCard title="Manage extensions" href="/docs/sysexts/manage/" description="Find, enable, check, update, and remove any extension." />
   <LinkCard title="Updex" href="/docs/tools/updex/" description="Manage system extensions: enable, update, and remove them." />
   <LinkCard title="nsl" href="/docs/tools/nsl/" description="Run WSL-style Linux machines on a Frostyard image." />
   <LinkCard title="Igloo" href="/docs/tools/igloo/" description="Open nsl machines from a GNOME terminal's New Tab menu." />
@@ -34,15 +36,15 @@ Fresh-install test results for Snow, Floe, and Sundog are still pending. See
 
 ## Choose an image
 
-Snow is the GNOME desktop. All the images:
+Each image has its own guide:
 
 | Product | Role | Page |
 | --- | --- | --- |
-| Snow | General-purpose GNOME desktop | This guide |
-| Snowfield | GNOME desktop for Microsoft Surface devices | [Site overview](/snowfield) |
-| Sundog | KDE Plasma desktop, bootc only | [Site overview](/sundog) |
-| Floe | Headless server image | [This guide](/docs/images/floe/) |
-| Base | Shared image foundation, not an installer choice | [Site overview](/base) |
+| Snow | General-purpose GNOME desktop | [Snow](/docs/images/snow/) |
+| Snowfield | GNOME desktop for Microsoft Surface devices | [Snowfield](/docs/images/snowfield/) |
+| Sundog | KDE Plasma desktop, bootc only | [Sundog](/docs/images/sundog/) |
+| Floe | Headless server image | [Floe](/docs/images/floe/) |
+| Base | Shared image foundation, not an installer choice | [Base](/docs/images/base/) |
 
 Snowfield is untested on representative Surface hardware. The installer
 offers the four bootc products; Base is not one of them. The snosi
@@ -82,10 +84,10 @@ version. Run `updex features check` to see what you can update to.
 
 ## Not covered yet
 
-Snowfield, Sundog, Base, the APT repository, and per-application migrations
-have no guide here yet. Extensions other than Docker, Incus, and Tailscale
-have no guide of their own yet; the [catalog](/docs/sysexts/) lists every
-extension.
+The APT repository and per-application migrations have no guide here yet.
+Extensions other than Dev tools, Docker, Incus, K3s, Nix, Tailscale, and
+Visual Studio Code have no guide of their own yet; the
+[catalog](/docs/sysexts/) lists every extension.
 
 Old nbc and native A/B installs get no new images or updates after
 2026-09-30. They cannot convert in place: back up, install fresh, and restore.

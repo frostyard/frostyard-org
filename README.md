@@ -36,15 +36,29 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   image choices, install and first boot, software layers, and the source policy.
 - `src/content/docs/docs/images/snow.md` covers the Snow GNOME image, its
   composition, installation, first boot, updates, rollback, and support limits.
+- `src/content/docs/docs/images/snowfield.md` covers the Snowfield GNOME image
+  for Microsoft Surface devices, its Surface kernel, installation, first boot,
+  updates, rollback, and support limits.
+- `src/content/docs/docs/images/sundog.md` covers the Sundog KDE Plasma image,
+  its KDE packages and services, installation, first boot, updates, rollback,
+  and support limits.
 - `src/content/docs/docs/images/floe.md` covers the Floe headless server image,
   its composition, installation, first boot, updates, rollback, containers, and
   support limits.
+- `src/content/docs/docs/images/base.md` covers the shared Base layer, what
+  every image inherits from it, and why Base is not an installer choice.
+- `src/content/docs/docs/sysexts/dev.mdx` covers the Dev tools extension.
 - `src/content/docs/docs/sysexts/docker.mdx` covers the Docker CE extension.
 - `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
+- `src/content/docs/docs/sysexts/k3s.mdx` covers the k3s Kubernetes extension.
+- `src/content/docs/docs/sysexts/nix.mdx` covers the Nix package manager extension.
 - `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
+- `src/content/docs/docs/sysexts/vscode.mdx` covers the Visual Studio Code extension.
 - `src/content/docs/docs/sysexts/index.mdx` is the system extension catalog.
-  It covers finding, enabling, updating, and removing an extension, and lists
-  every extension from the checked catalog snapshot.
+  It covers finding and enabling an extension, and lists every extension from
+  the checked catalog snapshot.
+- `src/content/docs/docs/sysexts/manage.md` covers the full lifecycle of any
+  extension: find, enable, check, update, and remove.
 - `src/content/docs/docs/tools/updex.md` covers Updex: features, components,
   updates, the daemon, catalogs, and removal.
 - `src/content/docs/docs/tools/nsl.md` covers nsl: host checks, install, machines, and removal.
@@ -54,7 +68,7 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   component and mirrors its expanded state onto the visible button for
   assistive technology. The default component still handles click and Escape.
 - `src/components/ExtensionSnapshot.astro` reads the checked
-  `src/data/extensions.json` snapshot for the three extension pages. It renders
+  `src/data/extensions.json` snapshot for the extension pages. It renders
   labels and versions as escaped text, shows the snapshot date and source, and
   never derives a link from a catalog value. The snapshot version is a regex
   match from `SHA256SUMS`, not a latest-version claim.
@@ -86,11 +100,19 @@ The docs pilot adds these content routes:
 
 `src/content/docs/docs/index.mdx` is `/docs/`.
 `src/content/docs/docs/images/snow.md` is `/docs/images/snow/`.
+`src/content/docs/docs/images/snowfield.md` is `/docs/images/snowfield/`.
+`src/content/docs/docs/images/sundog.md` is `/docs/images/sundog/`.
 `src/content/docs/docs/images/floe.md` is `/docs/images/floe/`.
+`src/content/docs/docs/images/base.md` is `/docs/images/base/`.
 `src/content/docs/docs/sysexts/index.mdx` is `/docs/sysexts/`.
+`src/content/docs/docs/sysexts/dev.mdx` is `/docs/sysexts/dev/`.
 `src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
 `src/content/docs/docs/sysexts/incus.mdx` is `/docs/sysexts/incus/`.
+`src/content/docs/docs/sysexts/k3s.mdx` is `/docs/sysexts/k3s/`.
+`src/content/docs/docs/sysexts/nix.mdx` is `/docs/sysexts/nix/`.
 `src/content/docs/docs/sysexts/tailscale.mdx` is `/docs/sysexts/tailscale/`.
+`src/content/docs/docs/sysexts/vscode.mdx` is `/docs/sysexts/vscode/`.
+`src/content/docs/docs/sysexts/manage.md` is `/docs/sysexts/manage/`.
 `src/content/docs/docs/tools/updex.md` is `/docs/tools/updex/`.
 `src/content/docs/docs/tools/nsl.md` is `/docs/tools/nsl/`.
 `src/content/docs/docs/tools/igloo.md` is `/docs/tools/igloo/`.

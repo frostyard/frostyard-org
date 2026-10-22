@@ -21,14 +21,19 @@ export default defineConfig({
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
       sidebar: [
         { label: "Start here", items: [{ label: "Documentation", link: "/docs/" }] },
-        { label: "Images", items: [{ label: "Snow", slug: "docs/images/snow" }, { label: "Floe", slug: "docs/images/floe" }] },
+        { label: "Images", items: [{ label: "Snow", slug: "docs/images/snow" }, { label: "Snowfield", slug: "docs/images/snowfield" }, { label: "Sundog", slug: "docs/images/sundog" }, { label: "Floe", slug: "docs/images/floe" }, { label: "Base", slug: "docs/images/base" }] },
         {
           label: "System extensions",
           items: [
             { label: "Catalog", link: "/docs/sysexts/" },
+            { label: "Manage extensions", slug: "docs/sysexts/manage" },
+            { label: "Dev tools", slug: "docs/sysexts/dev" },
             { label: "Docker", slug: "docs/sysexts/docker" },
             { label: "Incus", slug: "docs/sysexts/incus" },
+            { label: "K3s", slug: "docs/sysexts/k3s" },
+            { label: "Nix", slug: "docs/sysexts/nix" },
             { label: "Tailscale", slug: "docs/sysexts/tailscale" },
+            { label: "Visual Studio Code", slug: "docs/sysexts/vscode" },
           ],
         },
         {

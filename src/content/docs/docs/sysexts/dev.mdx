@@ -1,0 +1,164 @@
+---
+title: Dev tools
+description: Enable, update, and remove the Dev tools system extension, with build tools and development headers, on Frostyard bootc images.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The Dev tools extension adds a build toolchain to a Frostyard bootc image:
+CMake and Ninja, the autotools, GDB, Python tooling, and the GTK4 and WebKitGTK
+development headers. Use it where you build software, not just where you run
+it. Every image ships the extension switched off.
+
+## Before you start
+
+You need:
+
+- A Frostyard bootc image. Every image built on Base has `systemd-sysext` and
+  `frostyard-updex`.
+- Root access to enable, update, and remove the extension.
+- Network access to `https://repository.frostyard.org/ext/dev/`.
+- Free space in `/var` for the image. Leave room for the toolchain and its
+  headers.
+- Your source trees and build directories outside `/usr`, for example in your
+  home directory or in `/var`.
+
+The Dev tools extension has no published test results on Frostyard images yet.
+Try it on a machine you can spare first.
+
+## Enable Dev tools
+
+See what Updex found, then enable the feature and download it now:
+
+```bash
+updex features list --component=dev
+sudo updex features enable dev --now
+```
+
+`dev` appears as a component, with its feature disabled. The enable command
+downloads the image, checks its checksum and signature, links it, and refreshes
+the merge.
+
+Check the merge and the tools that the extension adds:
+
+```bash
+systemd-sysext status
+command -v cmake gdb ninja automake
+```
+
+`systemd-sysext status` lists `dev`, and each name prints a path.
+
+There is no unit to check. The extension ships no service.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the checks above again.
+
+## Use Dev tools
+
+Build a project the way you normally do. The tools are on `PATH`: `cmake` with
+`ninja`, the autotools with `pkg-config`, and the Python tools. The build asks
+for `gdb`, `valgrind`, `strace`, and `ltrace` as well.
+
+`gcc`, `g++`, and `make` come from the image, not from this extension. The
+extension adds what Base does not have.
+
+For GTK4 and WebKitGTK work, the headers are in `/usr/include/gtk-4.0` and
+`/usr/include/webkitgtk-6.0`.
+
+The build repoints every `/usr/bin` and `/usr/sbin` link that goes through
+`/etc/alternatives` to its real target. An extension cannot ship `/etc`, so a
+link through `/etc/alternatives` would dangle after a merge. The tools need no
+manual step.
+
+`live-build` and `debootstrap` are also in the extension.
+
+## Update and remove
+
+An update swaps `/usr` under the running system. Start a long build after an
+update, not during one. Your source trees and build directories are outside
+`/usr`, so an update leaves them alone.
+
+Remove Dev tools now:
+
+```bash
+sudo updex features disable dev --now --force
+```
+
+Updex unmerges all extensions on the host, deletes the Dev tools image, and
+merges the rest again. The tools this extension adds go; `gcc`, `g++`, and
+`make` stay, because the image supplies them. Reboot when the command finishes.
+Without `--force`, Updex refuses while the image is merged.
+
+See [Manage system extensions](/docs/sysexts/manage/) for the update check, the
+timer, and plain `disable`.
+
+## Troubleshooting
+
+| Symptom | Check | Fix |
+| --- | --- | --- |
+| `cmake`, `gdb`, `ninja`, or `automake` is missing | `systemd-sysext status` and `command -v cmake` | Check that the image is merged. If it is, run `sudo systemd-sysext refresh` or reboot. |
+| `gcc` or `make` is missing | `command -v gcc make` | They come from the image, not from this extension. Update the image. |
+| GNOME icons render blank after the merge | The installed `dev` image version | An older build carried a GdkPixbuf `loaders.cache` without the SVG loader, which hid Snow's icons. Install the current image. |
+| A link under `/usr/bin` points into `/etc/alternatives` and does not resolve | `readlink -f /usr/bin/automake` | The build repoints these links, and reports one it cannot resolve. Install a corrected build. |
+| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+
+Do not repair the extension with `apt`. If a merged image is missing files, the
+fix is a corrected extension build.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Build package requests | `build-essential`, `make`, `automake`, `autoconf`, `libtool`, `pkg-config`, `cmake`, `ninja-build`, `python3`, `python3-pip`, `python3-setuptools`, `python3-venv`, `valgrind`, `gdb`, `strace`, `ltrace`, `live-build`, `debootstrap`, `libgtk-4-dev`, `libwebkitgtk-6.0-dev`, `librsvg2-common` |
+| Version | The image file name carries the `build-essential` version, plus a `+rN` snosi revision when one is set |
+| Image file | `dev_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/dev/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+| Tools in the delta | `cmake`, `gdb`, `ninja`, and `automake`; `gcc`, `g++`, and `make` come from the image |
+| Headers | `/usr/include/gtk-4.0` and `/usr/include/webkitgtk-6.0` |
+| Runtime libraries | `libepoxy.so.0`, `libgdk_pixbuf-2.0.so.0`, `libgstreamer-1.0.so.0`, and `libpango-1.0.so.0` |
+| Icon support | `librsvg2-common`, the SVG GdkPixbuf loader, and a `loaders.cache` that names it |
+| Services | None |
+
+<ExtensionSnapshot name="dev" />
+
+Each build checks the tool paths, the header trees, the runtime libraries, and
+the SVG loader with its cache. A build that is missing one fails. The checks
+run against the finished image, not against the package list. The image holds
+only what Base does not have, so a package that Base already supplies is not in
+it.
+
+The SVG loader matters on Snow. A GdkPixbuf `loaders.cache` in an extension
+covers the whole `/usr`, and a cache without the SVG loader hides Snow's SVG
+icons. This extension therefore carries `librsvg2-common` and names the loader
+in its cache.
+
+The image is an overlay of Base. A later Base can break an older Dev tools
+image.
+
+## See also
+
+- [System extension catalog](/docs/sysexts/)
+- [Nix system extension](/docs/sysexts/nix/)
+- [Visual Studio Code system extension](/docs/sysexts/vscode/)
+- [Manage system extensions](/docs/sysexts/manage/)
+- [System extension model](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
+- [Updex v2.0.5 command reference](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
+
+## Sources
+
+Reviewed 2026-10-22. snosi commit
+[`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b);
+Updex v2.0.5 commit
+[`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb).
+
+- [`mkosi.images/dev/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/dev/mkosi.conf)
+- [`mkosi.images/dev/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/dev/mkosi.postinst.chroot)
+- [`mkosi.images/dev/required-paths.txt`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/dev/required-paths.txt)
+- [`mkosi.images/dev/README.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/dev/README.md)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.dev.d/dev.feature`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.dev.d/dev.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.dev.d/dev.transfer`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.dev.d/dev.transfer)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
+- [Updex v2.0.5 `README.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
+- [Updex v2.0.5 `updex/features.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/features.go)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
