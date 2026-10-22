@@ -27,6 +27,7 @@ Fresh-install test results for Snow, Floe, and Sundog are still pending. See
   <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Run system containers and virtual machines, with Incus's own QEMU." />
   <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Put the host on your tailnet." />
   <LinkCard title="System extension catalog" href="/docs/sysexts/" description="See every extension in the catalog, and enable or update one." />
+  <LinkCard title="Updex" href="/docs/tools/updex/" description="Manage system extensions: enable, update, and remove them." />
 </CardGrid>
 
 ## Choose an image
@@ -70,8 +71,8 @@ A Frostyard system has three layers:
    write `/etc` or `/var`. An extension keeps its default configuration in
    `/usr/share/factory/etc`, and `tmpfiles.d` copies it into `/etc` at boot.
 
-Every image ships each extension switched off. You turn one on with Updex;
-each extension page has the steps.
+Every image ships each extension switched off. You turn one on with
+[Updex](/docs/tools/updex/); each extension page has the steps.
 
 Each extension page shows the version the catalog listed on its last sync.
 The sync takes a pattern match, not a maximum, so it is not always the newest

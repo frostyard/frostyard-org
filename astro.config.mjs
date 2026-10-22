@@ -31,6 +31,10 @@ export default defineConfig({
             { label: "Tailscale", slug: "docs/sysexts/tailscale" },
           ],
         },
+        {
+          label: "Tools",
+          items: [{ label: "Updex", slug: "docs/tools/updex" }],
+        },
       ],
     }),
   ],
