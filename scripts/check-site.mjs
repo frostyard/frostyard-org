@@ -27,6 +27,8 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+assert(escapeHtml("<b>&") === "&lt;b&gt;&amp;", "The HTML escape helper must escape markup and ampersands.");
+
 function textOf(html) {
   return html
     .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
@@ -59,6 +61,7 @@ const docsRoutes = [
   "/docs",
   "/docs/images/snow",
   "/docs/images/floe",
+  "/docs/sysexts",
   "/docs/sysexts/docker",
   "/docs/sysexts/incus",
   "/docs/sysexts/tailscale",
@@ -133,6 +136,7 @@ for (const route of docsRoutes) {
     "/docs/",
     "/docs/images/snow/",
     "/docs/images/floe/",
+    "/docs/sysexts/",
     "/docs/sysexts/docker/",
     "/docs/sysexts/incus/",
     "/docs/sysexts/tailscale/",
@@ -264,6 +268,22 @@ const catalogDate = catalog.updatedAt.slice(0, 10);
 const catalogComponent = await readFile(new URL("../src/components/ExtensionSnapshot.astro", import.meta.url), "utf8");
 assert(!catalogComponent.includes("set:html"), "ExtensionSnapshot must not render catalog values as raw HTML.");
 assert(catalogComponent.includes("{entry.label}") && catalogComponent.includes("{entry.version}"), "ExtensionSnapshot must render catalog values as escaped expressions.");
+
+const catalogPage = await readRoute("/docs/sysexts");
+for (const entry of catalog.extensions) {
+  assert(catalogPage.includes(`>${escapeHtml(entry.label)}</td>`), `/docs/sysexts must render the escaped catalog label for ${entry.name}.`);
+  assert(catalogPage.includes(`>${escapeHtml(entry.name)}</code>`), `/docs/sysexts must render the escaped component name for ${entry.name}.`);
+  const listedVersion = entry.version ? `>${escapeHtml(entry.version)}</code>` : ">No version listed</td>";
+  assert(catalogPage.includes(listedVersion), `/docs/sysexts must render the listed version for ${entry.name}.`);
+}
+assert(catalogPage.includes(catalogDate), "/docs/sysexts must render the catalog snapshot date.");
+for (const href of ["/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/"]) {
+  assert(catalogPage.includes(`href="${href}"`), `/docs/sysexts must link the guide ${href}.`);
+}
+assert(catalogPage.includes("sudo updex features enable"), "/docs/sysexts must use the current Updex enable syntax.");
+assert(catalogPage.includes("--force"), "/docs/sysexts must explain the --force removal guard.");
+const catalogList = await readFile(new URL("../src/components/ExtensionCatalog.astro", import.meta.url), "utf8");
+assert(!catalogList.includes("set:html"), "ExtensionCatalog must not render catalog values as raw HTML.");
 
 const sysextPages = [
   {

@@ -1,0 +1,120 @@
+---
+import { getCollection } from "astro:content";
+
+import catalog from "../data/extensions.json";
+
+interface CatalogEntry {
+  name: string;
+  label: string;
+  version: string | null;
+}
+
+interface Catalog {
+  source: string;
+  updatedAt: string;
+  extensions: CatalogEntry[];
+}
+
+const snapshot = catalog as Catalog;
+const docs = await getCollection("docs");
+const guides = new Map(docs.map((entry) => [entry.id, entry]));
+
+const updatedLabel = snapshot.updatedAt.slice(0, 10);
+
+function versionOf(entry: CatalogEntry) {
+  return typeof entry.version === "string" && entry.version.trim() !== "" ? entry.version : null;
+}
+---
+
+<div class="extension-catalog">
+  <p class="catalog-meta">
+    Listed on <time datetime={snapshot.updatedAt}>{updatedLabel}</time>. Catalog source:
+    <code>{snapshot.source}</code>.
+  </p>
+  <div class="catalog-scroll" role="region" aria-label="Extension catalog table" tabindex="0">
+    <table>
+      <caption class="sr-only">System extensions in the catalog snapshot</caption>
+      <thead>
+        <tr>
+          <th scope="col">Extension</th>
+          <th scope="col">Component name</th>
+          <th scope="col">Listed version</th>
+          <th scope="col">Guide</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          snapshot.extensions.map((entry) => {
+            const guide = guides.get(`docs/sysexts/${entry.name}`);
+            const version = versionOf(entry);
+            return (
+              <tr>
+                <td>{entry.label}</td>
+                <td><code>{entry.name}</code></td>
+                <td>{version ? <code>{version}</code> : "No version listed"}</td>
+                <td>
+                  {guide ? (
+                    <a href={`/${guide.id}/`}>{guide.data.title}</a>
+                  ) : (
+                    <span class="no-guide">
+                      <span aria-hidden="true">-</span>
+                      <span class="sr-only">No guide</span>
+                    </span>
+                  )}
+                </td>
+              </tr>
+            );
+          })
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .extension-catalog {
+    margin: 1.5rem 0;
+  }
+
+  .catalog-meta {
+    margin: 0 0 0.75rem;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+
+  .catalog-scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 32rem;
+    font-size: var(--sl-text-sm);
+  }
+
+  caption {
+    text-align: left;
+  }
+
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    background: var(--sl-color-gray-6);
+    white-space: nowrap;
+  }
+
+  td code {
+    white-space: nowrap;
+  }
+
+  .no-guide {
+    color: var(--sl-color-gray-3);
+  }
+</style>

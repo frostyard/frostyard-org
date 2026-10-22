@@ -42,6 +42,9 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/content/docs/docs/sysexts/docker.mdx` covers the Docker CE extension.
 - `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
 - `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
+- `src/content/docs/docs/sysexts/index.mdx` is the system extension catalog.
+  It covers finding, enabling, updating, and removing an extension, and lists
+  every extension from the checked catalog snapshot.
 - `src/content.config.ts` defines the typed Starlight `docs` collection.
 - `src/components/starlight/MobileMenuToggle.astro` wraps the Starlight
   component and mirrors its expanded state onto the visible button for
@@ -51,6 +54,10 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   labels and versions as escaped text, shows the snapshot date and source, and
   never derives a link from a catalog value. The snapshot version is a regex
   match from `SHA256SUMS`, not a latest-version claim.
+- `src/components/ExtensionCatalog.astro` reads the same snapshot for the
+  catalog page. It renders labels, component names, and versions as escaped
+  text, builds no link from a catalog value, and links a guide only from the
+  docs collection.
 - `src/layouts/Site.astro` links the landing site navigation to `/docs/`.
 
 Every docs page ends with commit-pinned Sources. Add or change a product fact
@@ -76,6 +83,7 @@ The docs pilot adds these content routes:
 `src/content/docs/docs/index.mdx` is `/docs/`.
 `src/content/docs/docs/images/snow.md` is `/docs/images/snow/`.
 `src/content/docs/docs/images/floe.md` is `/docs/images/floe/`.
+`src/content/docs/docs/sysexts/index.mdx` is `/docs/sysexts/`.
 `src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
 `src/content/docs/docs/sysexts/incus.mdx` is `/docs/sysexts/incus/`.
 `src/content/docs/docs/sysexts/tailscale.mdx` is `/docs/sysexts/tailscale/`.
