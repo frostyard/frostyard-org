@@ -71,7 +71,7 @@ The build repoints every `/usr/bin` and `/usr/sbin` link that goes through
 link through `/etc/alternatives` would dangle after a merge. The tools need no
 manual step.
 
-`live-build` and `debootstrap` are in the extension for the Snow installer.
+`live-build` and `debootstrap` are also in the extension.
 
 ## Update and remove
 
@@ -111,7 +111,7 @@ fix is a corrected extension build.
 | Item | What you get |
 | --- | --- |
 | Build package requests | `build-essential`, `make`, `automake`, `autoconf`, `libtool`, `pkg-config`, `cmake`, `ninja-build`, `python3`, `python3-pip`, `python3-setuptools`, `python3-venv`, `valgrind`, `gdb`, `strace`, `ltrace`, `live-build`, `debootstrap`, `libgtk-4-dev`, `libwebkitgtk-6.0-dev`, `librsvg2-common` |
-| Version | The image file name carries the `build-essential` version |
+| Version | The image file name carries the `build-essential` version, plus a `+rN` snosi revision when one is set |
 | Image file | `dev_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
 | Download | From `https://repository.frostyard.org/ext/dev/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
 | Tools in the delta | `cmake`, `gdb`, `ninja`, and `automake`; `gcc`, `g++`, and `make` come from the image |
