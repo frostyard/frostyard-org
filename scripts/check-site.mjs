@@ -66,6 +66,8 @@ const docsRoutes = [
   "/docs/sysexts/incus",
   "/docs/sysexts/tailscale",
   "/docs/tools/updex",
+  "/docs/tools/nsl",
+  "/docs/tools/igloo",
 ];
 
 await Promise.all(["install", "sundog"].map(route => access(routeFile(`/${route}`))));
@@ -142,6 +144,8 @@ for (const route of docsRoutes) {
     "/docs/sysexts/incus/",
     "/docs/sysexts/tailscale/",
     "/docs/tools/updex/",
+    "/docs/tools/nsl/",
+    "/docs/tools/igloo/",
   ]) {
     assert(html.includes(`href="${href}"`), `${route} must render the docs navigation link ${href}.`);
   }
@@ -163,7 +167,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/floe/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/tools/updex/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/floe/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -328,6 +332,64 @@ assert(updexText.includes("This guide follows Updex v2.0.5"), "/docs/tools/updex
 assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.5"), "/docs/tools/updex must link the Updex v2.0.5 release.");
 assert(updexText.includes("sudo updex --dry-run daemon enable") && updexText.includes("Updex v2.0.4 and older ignore --dry-run here"), "/docs/tools/updex must explain the daemon dry run and its v2.0.4 limit (updex#452).");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
+
+const nsl = await readRoute("/docs/tools/nsl");
+const nslText = textOf(nsl);
+for (const heading of [
+  "before-you-start",
+  "install",
+  "create-your-first-machine",
+  "everyday-tasks",
+  "update-and-remove",
+  "igloo",
+  "troubleshooting",
+  "see-also",
+  "sources",
+]) {
+  assert(nsl.includes(`id="${heading}"`), `/docs/tools/nsl must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "site/content/getting-started/install.md",
+  "site/content/getting-started/first-machine.md",
+  "site/content/reference/limits.md",
+]) {
+  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/${source}`), `/docs/tools/nsl must cite ${source}.`);
+}
+for (const source of ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"]) {
+  assert(nsl.includes(`https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/${source}`), `/docs/tools/nsl must cite snosi ${source}.`);
+}
+assert(nsl.includes("https://github.com/frostyard/firn/blob/313f576ab450cfb8e6858d06f342b77b401882ef/internal/tui/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
+assert(nslText.includes("This guide follows nsl v0.10.0"), "/docs/tools/nsl must follow nsl v0.10.0.");
+assert(nslText.includes("Firn does not add your user to it"), "/docs/tools/nsl must state that Firn does not add the user to kvm.");
+assert(nsl.includes('data-code="sudo usermod -aG kvm'), "/docs/tools/nsl must give the kvm group command.");
+assert(nsl.includes("brew install --cask frostyard/tap/nsl"), "/docs/tools/nsl must give the Homebrew install command.");
+assert(nsl.includes("brew upgrade --cask frostyard/tap/nsl"), "/docs/tools/nsl must give the Homebrew upgrade command.");
+assert(nsl.includes('href="/docs/tools/igloo/"'), "/docs/tools/nsl must link the Igloo page.");
+
+const igloo = await readRoute("/docs/tools/igloo");
+const iglooText = textOf(igloo);
+for (const heading of [
+  "before-you-start",
+  "install",
+  "use-igloo",
+  "update",
+  "troubleshooting",
+  "see-also",
+  "sources",
+]) {
+  assert(igloo.includes(`id="${heading}"`), `/docs/tools/igloo must render the "${heading}" section.`);
+}
+for (const source of ["README.md", "io.github.frostyard.Igloo.json", "agent/ptyxis-nsl.c"]) {
+  assert(igloo.includes(`https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/${source}`), `/docs/tools/igloo must cite ${source}.`);
+}
+assert(igloo.includes("https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo"), "/docs/tools/igloo must cite the Snow Flathub remote.");
+assert(iglooText.includes("nsl 0.8.0 or later"), "/docs/tools/igloo must state the nsl 0.8.0 requirement.");
+assert(iglooText.includes("The Flatpak does not bundle nsl"), "/docs/tools/igloo must state that the Flatpak does not bundle nsl.");
+assert(igloo.includes('data-code="flatpak remote-add --if-not-exists frostyard'), "/docs/tools/igloo must give the Frostyard remote command.");
+assert(igloo.includes('data-code="flatpak install frostyard io.github.frostyard.Igloo"'), "/docs/tools/igloo must give the install command.");
+assert(iglooText.includes("Check Again"), "/docs/tools/igloo must mention the Check Again button.");
+assert(igloo.includes('href="/docs/tools/nsl/"'), "/docs/tools/igloo must link the nsl page.");
 
 const catalog = JSON.parse(await readFile(new URL("../src/data/extensions.json", import.meta.url), "utf8"));
 const catalogDate = catalog.updatedAt.slice(0, 10);
