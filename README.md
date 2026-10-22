@@ -39,6 +39,8 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/content/docs/docs/sysexts/docker.mdx` covers the Docker CE extension.
 - `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
 - `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
+- `src/content/docs/docs/tools/updex.md` covers Updex: features, components,
+  updates, the daemon, catalogs, and removal.
 - `src/content.config.ts` defines the typed Starlight `docs` collection.
 - `src/components/starlight/MobileMenuToggle.astro` wraps the Starlight
   component and mirrors its expanded state onto the visible button for
@@ -75,3 +77,4 @@ The docs pilot adds these content routes:
 `src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
 `src/content/docs/docs/sysexts/incus.mdx` is `/docs/sysexts/incus/`.
 `src/content/docs/docs/sysexts/tailscale.mdx` is `/docs/sysexts/tailscale/`.
+`src/content/docs/docs/tools/updex.md` is `/docs/tools/updex/`.

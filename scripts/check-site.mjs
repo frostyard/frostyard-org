@@ -61,6 +61,7 @@ const docsRoutes = [
   "/docs/sysexts/docker",
   "/docs/sysexts/incus",
   "/docs/sysexts/tailscale",
+  "/docs/tools/updex",
 ];
 
 await Promise.all(["install", "sundog"].map(route => access(routeFile(`/${route}`))));
@@ -134,6 +135,7 @@ for (const route of docsRoutes) {
     "/docs/sysexts/docker/",
     "/docs/sysexts/incus/",
     "/docs/sysexts/tailscale/",
+    "/docs/tools/updex/",
   ]) {
     assert(html.includes(`href="${href}"`), `${route} must render the docs navigation link ${href}.`);
   }
@@ -155,7 +157,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/tools/updex/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -210,6 +212,64 @@ assert(snowText.includes("Both paths verify the staged digest"), "/docs/images/s
 assert(snowText.includes("You do not need to run them"), "/docs/images/snow must describe the commands as stager behavior.");
 assert(snowText.includes("does not force a reboot"), "/docs/images/snow must state that the stager does not force a reboot.");
 assert(snowText.includes("linux-image-amd64/forky") && snowText.includes("trixie-backports"), "/docs/images/snow must preserve the confirmed kernel selection.");
+
+const updex = await readRoute("/docs/tools/updex");
+const updexText = textOf(updex);
+for (const heading of [
+  "check-your-version",
+  "features-and-components",
+  "enable-a-feature",
+  "check-and-update",
+  "automatic-updates",
+  "stop-updates-or-remove",
+  "catalogs",
+  "global-flags",
+  "troubleshooting",
+  "see-also",
+  "sources",
+]) {
+  assert(updex.includes(`id="${heading}"`), `/docs/tools/updex must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "docs/specs/config-reference.md",
+  "docs/design/overview.md",
+  "docs/adr/0003-catalog-ownership-marker.md",
+  "docs/adr/0004-single-updex-drop-in.md",
+  "docs/adr/0007-daemon-stages-never-activates.md",
+  "docs/adr/0014-local-catalog-signature-policy.md",
+  "docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md",
+  "cmd/updex/root.go",
+  "cmd/updex/features.go",
+  "cmd/updex/components.go",
+  "cmd/updex/daemon.go",
+  "cmd/updex/catalog.go",
+  "cmd/updex/features_run.go",
+  "updex/features.go",
+  "updex/install.go",
+  "updex/catalog.go",
+  "updex/daemon.go",
+  "sysext/manager.go",
+  "systemd/manager.go",
+  "systemd/unit.go",
+]) {
+  assert(updex.includes(`https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/${source}`), `/docs/tools/updex must cite ${source}.`);
+}
+for (const source of [
+  "mkosi.images/base/mkosi.conf",
+  "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature",
+  "docs/design/sysexts.md",
+]) {
+  assert(updex.includes(`https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/${source}`), `/docs/tools/updex must cite snosi ${source}.`);
+}
+assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.4"), "/docs/tools/updex must link the Updex v2.0.4 release.");
+assert(updex.includes("https://github.com/frostyard/updex/pull/445"), "/docs/tools/updex must link Updex PR #445.");
+assert(updexText.includes("Extension docker (version 5+29.9.1-1~debian.13~trixie) is active. Removing requires --force and a reboot to take effect."), "/docs/tools/updex must show the exact removal refusal message.");
+assert(updexText.includes("--force"), "/docs/tools/updex must explain --force.");
+assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name the daemon timer.");
+assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
+assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
+assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
 
 const catalog = JSON.parse(await readFile(new URL("../src/data/extensions.json", import.meta.url), "utf8"));
 const catalogDate = catalog.updatedAt.slice(0, 10);
