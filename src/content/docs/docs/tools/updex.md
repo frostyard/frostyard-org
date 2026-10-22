@@ -221,6 +221,10 @@ If the refresh at the end fails, the remaining extensions stay unmerged. Run
 
 ## Catalogs
 
+Frostyard extensions do not need a catalog: each image ships them as features.
+The [extension catalog page](/docs/sysexts/) lists them. An Updex catalog is a
+third-party source of extensions.
+
 Updex ships no catalogs, and a Frostyard image configures none. Add a catalog
 with a file in `/etc/updex/catalogs.d/`:
 
@@ -312,6 +316,7 @@ sysext.
 
 ## See also
 
+- [System extension catalog](/docs/sysexts/)
 - [Docker system extension](/docs/sysexts/docker/)
 - [Incus system extension](/docs/sysexts/incus/)
 - [Tailscale system extension](/docs/sysexts/tailscale/)

@@ -274,6 +274,7 @@ assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name th
 assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
 assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
 assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
+assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
 
 const catalog = JSON.parse(await readFile(new URL("../src/data/extensions.json", import.meta.url), "utf8"));
 const catalogDate = catalog.updatedAt.slice(0, 10);
