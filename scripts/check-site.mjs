@@ -60,7 +60,10 @@ async function readRoute(pathname) {
 const docsRoutes = [
   "/docs",
   "/docs/images/snow",
+  "/docs/images/snowfield",
+  "/docs/images/sundog",
   "/docs/images/floe",
+  "/docs/images/base",
   "/docs/sysexts",
   "/docs/sysexts/docker",
   "/docs/sysexts/incus",
@@ -136,7 +139,10 @@ for (const route of docsRoutes) {
   for (const href of [
     "/docs/",
     "/docs/images/snow/",
+    "/docs/images/snowfield/",
+    "/docs/images/sundog/",
     "/docs/images/floe/",
+    "/docs/images/base/",
     "/docs/sysexts/",
     "/docs/sysexts/docker/",
     "/docs/sysexts/incus/",
@@ -163,7 +169,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/floe/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/tools/updex/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/tools/updex/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -266,6 +272,130 @@ assert(!floeText.includes("A rollback also changes the image") && floeText.inclu
 assert(floeText.includes("twice the image size"), "/docs/images/floe must state the update space requirement.");
 assert(floeText.includes("Every image ships each system extension switched off"), "/docs/images/floe must state that extensions start switched off.");
 assert(floeText.includes("Homebrew"), "/docs/images/floe must cover the Homebrew units.");
+
+const snowfield = await readRoute("/docs/images/snowfield");
+const snowfieldText = textOf(snowfield);
+for (const heading of [
+  "install",
+  "first-boot",
+  "updates-and-rollback",
+  "what-ships",
+  "the-surface-kernel",
+  "choose-snowfield",
+  "troubleshooting",
+  "moving-from-an-nbc-or-ab-install",
+  "see-also",
+  "sources",
+]) {
+  assert(snowfield.includes(`id="${heading}"`), `/docs/images/snowfield must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "mkosi.profiles/snowfield/mkosi.conf",
+  "shared/kernel/surface/mkosi.conf",
+  "shared/composition/snow/mkosi.conf",
+  "shared/packages/snow/mkosi.conf",
+  "mkosi.sandbox/etc/apt/sources.list.d/linux-surface.sources",
+  "mkosi.images/base/mkosi.conf",
+  "docs/installing.md",
+  "docs/bootc-secure-operations.md",
+  "docs/nbc-to-bootc-migration.md",
+  "docs/design/overview.md",
+  "docs/design/testing.md",
+]) {
+  assert(snowfield.includes(`https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/${source}`), `/docs/images/snowfield must cite ${source}.`);
+}
+assert(snowfieldText.includes("untested on representative Surface hardware"), "/docs/images/snowfield must state the Surface hardware limit.");
+assert(snowfieldText.includes("gate was waived for catalog inclusion"), "/docs/images/snowfield must state the Surface hardware gate waiver.");
+assert(snowfieldText.includes("same desktop as Snow"), "/docs/images/snowfield must say it shares the Snow desktop.");
+assert(snowfieldText.includes("linux-image-surface") && snowfieldText.includes("pkg.surfacelinux.com"), "/docs/images/snowfield must name the Surface kernel and its repository.");
+assert(!snowfieldText.includes("linux-image-amd64/forky"), "/docs/images/snowfield must not claim the backports kernel.");
+assert(snowfieldText.includes("does not force a reboot"), "/docs/images/snowfield must state that the stager does not force a reboot.");
+assert(!snowfieldText.includes("A rollback also changes the image") && snowfieldText.includes("It waits for the next published image"), "/docs/images/snowfield must describe the rollback hold correctly.");
+
+const sundog = await readRoute("/docs/images/sundog");
+const sundogText = textOf(sundog);
+for (const heading of [
+  "install",
+  "first-boot",
+  "updates-and-rollback",
+  "what-ships",
+  "desktop-packages",
+  "services-and-settings",
+  "choose-sundog",
+  "troubleshooting",
+  "see-also",
+  "sources",
+]) {
+  assert(sundog.includes(`id="${heading}"`), `/docs/images/sundog must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "mkosi.profiles/sundog/mkosi.conf",
+  "shared/composition/sundog/mkosi.conf",
+  "shared/packages/sundog/mkosi.conf",
+  "shared/sundog/scripts/postinstall/sundog.postinst.chroot",
+  "shared/sundog/tree/etc/sddm.conf.d/10-sundog.conf",
+  "shared/sundog/tree/usr/lib/systemd/user-preset/90-sundog.preset",
+  "shared/floe/tree/usr/lib/systemd/system/journald.conf.d/10-floe-bootc-persistent.conf",
+  "shared/kernel/backports/mkosi.conf",
+  "flatpaks/sundog.json",
+  "flatpaks/core-flatpaks.py",
+  "docs/installing.md",
+  "docs/bootc-secure-operations.md",
+  "docs/design/overview.md",
+  "docs/design/sysexts.md",
+  "docs/design/testing.md",
+  "docs/adr/0016-name-kde-bootc-product-sundog.md",
+]) {
+  assert(sundog.includes(`https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/${source}`), `/docs/images/sundog must cite ${source}.`);
+}
+assert(sundogText.includes("ships only as a bootc image"), "/docs/images/sundog must state that Sundog is bootc only.");
+assert(sundogText.includes("Plasma on Wayland is the only desktop session"), "/docs/images/sundog must state the Wayland-only session limit.");
+assert(sundogText.includes("kde-plasma-desktop") && sundogText.includes("sddm-theme-breeze"), "/docs/images/sundog must name the KDE packages.");
+assert(sundogText.includes("plasma-discover-backend-flatpak"), "/docs/images/sundog must name the Flatpak Discover backend.");
+assert(sundogText.includes("Gwenview, Okular, KCalc, and Skanpage are Flatpaks"), "/docs/images/sundog must state that the KDE apps come from the Flatpak set.");
+assert(sundogText.includes("linux-image-amd64/forky"), "/docs/images/sundog must name the kernel selection.");
+assert(!sundogText.includes("A rollback also changes the image") && sundogText.includes("It waits for the next published image"), "/docs/images/sundog must describe the rollback hold correctly.");
+
+const base = await readRoute("/docs/images/base");
+const baseText = textOf(base);
+for (const heading of [
+  "the-layers",
+  "what-base-gives-you",
+  "updates",
+  "system-extensions",
+  "what-ships",
+  "what-base-does-not-include",
+  "choose-an-image",
+  "see-also",
+  "sources",
+]) {
+  assert(base.includes(`id="${heading}"`), `/docs/images/base must render the "${heading}" section.`);
+}
+assert(!base.includes('id="install"'), "/docs/images/base must not render an Install section.");
+for (const source of [
+  "README.md",
+  "mkosi.conf",
+  "mkosi.images/base/mkosi.conf",
+  "shared/packages/bootc/mkosi.conf",
+  "shared/outformat/image/mkosi.conf",
+  "mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage",
+  "mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status",
+  "mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service",
+  "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer",
+  "shared/firn-installer/catalog.json",
+  "docs/installing.md",
+  "docs/design/overview.md",
+  "docs/design/sysexts.md",
+]) {
+  assert(base.includes(`https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/${source}`), `/docs/images/base must cite ${source}.`);
+}
+assert(baseText.includes("Base is not an installer choice"), "/docs/images/base must state that Base is not an installer choice.");
+assert(baseText.includes("Firn offers only Snow, Snowfield, Sundog, and Floe"), "/docs/images/base must list the four installer choices.");
+assert(baseText.includes("snosi-update-status") && baseText.includes("/usr/lib/sysupdate."), "/docs/images/base must name the status tool and the extension definitions.");
+assert(baseText.includes("reload-sysext.service"), "/docs/images/base must cover the extension reload service.");
+assert(baseText.includes("not bootable"), "/docs/images/base must state that Base does not build a bootable image.");
 
 const updex = await readRoute("/docs/tools/updex");
 const updexText = textOf(updex);
