@@ -5,7 +5,7 @@ description: "Manage Frostyard system extensions with Updex: list features, enab
 
 Updex downloads, verifies, installs, and removes system extension images on a
 Frostyard image. Every Frostyard bootc image ships it as the
-`frostyard-updex` package. This guide follows Updex v2.0.4.
+`frostyard-updex` package. This guide follows Updex v2.0.5.
 
 ## Check your version
 
@@ -15,7 +15,7 @@ Show the version, the build commit, the build date, and the builder:
 updex --version
 ```
 
-This guide follows v2.0.4. An older version can lack a command, or remove an
+This guide follows v2.0.5. An older version can lack a command, or remove an
 extension without the `--force` check.
 
 ## Features and components
@@ -180,6 +180,16 @@ sudo updex daemon disable
 
 The command stops the timer, disables it, and removes both unit files.
 
+Preview either command first with `--dry-run`:
+
+```bash
+sudo updex --dry-run daemon enable
+```
+
+The output starts with `[DRY RUN] Would install`. Updex writes no unit file and
+runs no `systemctl` command. Updex v2.0.4 and older ignore `--dry-run` here and
+make the change.
+
 `daemon enable` does not write over an existing `updex-update.timer` or
 `updex-update.service`. Run `updex daemon disable` first to reinstall the
 units.
@@ -305,7 +315,7 @@ catalog set `AllowUnsigned=yes`. Add `AllowUnsigned=yes`, then run
 | `--verify` | Force GPG verification of `SHA256SUMS`. |
 | `--no-refresh` | Skip `systemd-sysext refresh` after an install, update, or removal. After `disable --now` or `catalog remove`, every extension stays unmerged until a refresh or reboot. |
 | `--json` | Print JSON. |
-| `-n, --dry-run` | Preview changes for `features` and `catalog` commands. A command that changes state still needs root. In v2.0.4, `daemon enable` and `daemon disable` ignore `--dry-run` and make the change. |
+| `-n, --dry-run` | Preview changes. It changes nothing. A command that changes state still needs root. |
 | `-v, --verbose` | Print debug output. |
 | `-s, --silent` | Suppress progress output. With `--json`, the final result is still printed. |
 
@@ -328,38 +338,40 @@ catalog set `AllowUnsigned=yes`. Add `AllowUnsigned=yes`, then run
 - [Incus system extension](/docs/sysexts/incus/)
 - [Tailscale system extension](/docs/sysexts/tailscale/)
 - [Snow image](/docs/images/snow/)
-- [Updex v2.0.4 command reference](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/README.md)
+- [Updex v2.0.5 command reference](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
 
 ## Sources
 
 Reviewed 2026-10-22.
 
-- Updex commit [`992b3d53151b73c227a871cb8e742d841b00fd6c`](https://github.com/frostyard/updex/tree/992b3d53151b73c227a871cb8e742d841b00fd6c)
-- [`README.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/README.md)
-- [`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/docs/specs/config-reference.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/docs/design/overview.md)
-- [`docs/adr/0003-catalog-ownership-marker.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/docs/adr/0003-catalog-ownership-marker.md)
-- [`docs/adr/0004-single-updex-drop-in.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/docs/adr/0004-single-updex-drop-in.md)
-- [`docs/adr/0007-daemon-stages-never-activates.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/docs/adr/0007-daemon-stages-never-activates.md)
-- [`docs/adr/0014-local-catalog-signature-policy.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/docs/adr/0014-local-catalog-signature-policy.md)
-- [`docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md)
-- [`cmd/updex-cli/main.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/cmd/updex-cli/main.go)
-- [`config/transfer.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/config/transfer.go)
-- [`catalog/cache.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/catalog/cache.go)
-- [`cmd/updex/root.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/cmd/updex/root.go)
-- [`cmd/updex/features.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/cmd/updex/features.go)
-- [`cmd/updex/components.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/cmd/updex/components.go)
-- [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/cmd/updex/daemon.go)
-- [`cmd/updex/catalog.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/cmd/updex/catalog.go)
-- [`cmd/updex/features_run.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/cmd/updex/features_run.go)
-- [`updex/features.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/updex/features.go)
-- [`updex/install.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/updex/install.go)
-- [`updex/catalog.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/updex/catalog.go)
-- [`updex/daemon.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/updex/daemon.go)
-- [`sysext/manager.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/sysext/manager.go)
-- [`systemd/manager.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/systemd/manager.go)
-- [`systemd/unit.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/systemd/unit.go)
+- Updex v2.0.5 commit [`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb)
+- [`README.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
+- [`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/docs/specs/config-reference.md)
+- [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/docs/design/overview.md)
+- [`docs/adr/0003-catalog-ownership-marker.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/docs/adr/0003-catalog-ownership-marker.md)
+- [`docs/adr/0004-single-updex-drop-in.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/docs/adr/0004-single-updex-drop-in.md)
+- [`docs/adr/0007-daemon-stages-never-activates.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/docs/adr/0007-daemon-stages-never-activates.md)
+- [`docs/adr/0014-local-catalog-signature-policy.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/docs/adr/0014-local-catalog-signature-policy.md)
+- [`docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md)
+- [`cmd/updex-cli/main.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/cmd/updex-cli/main.go)
+- [`config/transfer.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/config/transfer.go)
+- [`catalog/cache.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/catalog/cache.go)
+- [`cmd/updex/root.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/cmd/updex/root.go)
+- [`cmd/updex/features.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/cmd/updex/features.go)
+- [`cmd/updex/components.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/cmd/updex/components.go)
+- [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/cmd/updex/daemon.go)
+- [`cmd/updex/catalog.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/cmd/updex/catalog.go)
+- [`cmd/updex/features_run.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/cmd/updex/features_run.go)
+- [`updex/features.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/features.go)
+- [`updex/install.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/install.go)
+- [`updex/catalog.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/catalog.go)
+- [`updex/daemon.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/daemon.go)
+- [`sysext/manager.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/sysext/manager.go)
+- [`systemd/manager.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/systemd/manager.go)
+- [`systemd/unit.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/systemd/unit.go)
+- [Updex v2.0.5 release](https://github.com/frostyard/updex/releases/tag/v2.0.5)
 - [Updex v2.0.4 release](https://github.com/frostyard/updex/releases/tag/v2.0.4)
 - [Updex issue #451: `daemon` commands ignore `--dry-run`](https://github.com/frostyard/updex/issues/451)
+- [Updex PR #452: honour `--dry-run` in `daemon enable` and `daemon disable`](https://github.com/frostyard/updex/pull/452)
 - [Updex PR #445: detect merged images from systemd-sysext hierarchy metadata](https://github.com/frostyard/updex/pull/445)
 - snosi commit [`96d663b3c7025fbbeeda5987cc521b524fd1721c`](https://github.com/frostyard/snosi/tree/96d663b3c7025fbbeeda5987cc521b524fd1721c): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.conf), [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature), [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/design/sysexts.md)
