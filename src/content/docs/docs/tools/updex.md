@@ -159,8 +159,10 @@ Updex writes `/etc/systemd/system/updex-update.timer` and
 `/etc/systemd/system/updex-update.service`, then enables and starts the timer.
 The timer runs daily with a random delay of up to 1 hour. It runs
 `/usr/bin/updex features update --no-refresh`. New versions are downloaded and
-staged, and the link is updated. Nothing is activated until a later refresh or
-reboot.
+staged, and the link is updated. Nothing is activated until the next
+`systemd-sysext refresh` or reboot. A refresh activates every staged update:
+yours, or one that another Updex command runs, for example `features update` or
+`features enable --now`.
 
 Check the timer:
 
@@ -250,7 +252,8 @@ sudo updex catalog add fedora/zoxide
 `catalog list` shows each sysext, its catalog, and whether it is installed and
 enabled. `catalog search` finds names that contain the term. `catalog add`
 writes the published transfer and feature files in
-`/etc/sysupdate.catalog-<repo>.d/`, enables the feature, and downloads the
+`/etc/sysupdate.catalog-<repo>.d/` (or in the component that the `.catalog`
+file sets with `Component=`), enables the feature, and downloads the
 image. Use a bare `<name>` when it is unambiguous across the catalogs.
 
 Remove a catalog sysext:
@@ -275,6 +278,9 @@ ListURL=https://api.github.com/repos/example/sysexts/contents/
 AllowUnsigned=yes
 ```
 
+The setting applies to sysexts that you add while it is on. For a sysext that
+you added before, run `sudo updex catalog add <repo>/<name>` again.
+
 What it still protects: HTTPS on the transfer, and a SHA256 check on every
 image. What it loses: the checksum does not authenticate the publisher. A
 person who can replace both the image and `SHA256SUMS` at the site can serve a
@@ -287,8 +293,9 @@ Listings are cached for 60 minutes. Add `--no-cache` to `catalog list` or
 Upgrade notes. A transfer made by v2.0.0 keeps the catalog's `Verify=false`.
 Add `AllowUnsigned=yes` to its catalog, and run `catalog add` again only if the
 catalog `SiteURL` changed. A transfer made by v2.0.1 or v2.0.2 has no
-`Verify=` line. Add `AllowUnsigned=yes`, then run `catalog add` again for the
-sysext.
+`Verify=` line. Neither has a transfer made by v2.0.3 or later before the
+catalog set `AllowUnsigned=yes`. Add `AllowUnsigned=yes`, then run
+`catalog add` again for the sysext.
 
 ## Global flags
 
@@ -296,9 +303,9 @@ sysext.
 | --- | --- |
 | `-C, --definitions <path>` | Read `.transfer` and `.feature` files from one directory. It bypasses component discovery and cannot be used with `--component`. |
 | `--verify` | Force GPG verification of `SHA256SUMS`. |
-| `--no-refresh` | Skip `systemd-sysext refresh` after an install or update. |
+| `--no-refresh` | Skip `systemd-sysext refresh` after an install, update, or removal. After `disable --now` or `catalog remove`, every extension stays unmerged until a refresh or reboot. |
 | `--json` | Print JSON. |
-| `-n, --dry-run` | Preview changes. It changes nothing. A command that changes state still needs root. |
+| `-n, --dry-run` | Preview changes for `features` and `catalog` commands. A command that changes state still needs root. In v2.0.4, `daemon enable` and `daemon disable` ignore `--dry-run` and make the change. |
 | `-v, --verbose` | Print debug output. |
 | `-s, --silent` | Suppress progress output. With `--json`, the final result is still printed. |
 
@@ -306,7 +313,7 @@ sysext.
 
 | Symptom | Check | Fix |
 | --- | --- | --- |
-| `updex features list` shows no features | `updex components` | If no component is listed, Updex found no definition files. Check the image version. |
+| `updex features list` shows no features | `updex components` | If no component is listed and `/etc/sysupdate.d/` is empty, Updex found no definition files. Check the image version. |
 | `features check` shows `UPDATE=error` | The command output and the network | Check the network and the published manifest. The command exits non-zero. Do not read the row as up to date. |
 | `enable --now` exits non-zero after the download | The output shows `sysext refresh failed` | Run `sudo systemd-sysext refresh`, or reboot, then check `systemd-sysext status`. |
 | `disable --now` refuses with `is active` | The refusal names the extension and its version | Add `--force`, then reboot. |
@@ -353,5 +360,6 @@ Reviewed 2026-10-22.
 - [`systemd/manager.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/systemd/manager.go)
 - [`systemd/unit.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/systemd/unit.go)
 - [Updex v2.0.4 release](https://github.com/frostyard/updex/releases/tag/v2.0.4)
+- [Updex issue #451: `daemon` commands ignore `--dry-run`](https://github.com/frostyard/updex/issues/451)
 - [Updex PR #445: detect merged images from systemd-sysext hierarchy metadata](https://github.com/frostyard/updex/pull/445)
 - snosi commit [`96d663b3c7025fbbeeda5987cc521b524fd1721c`](https://github.com/frostyard/snosi/tree/96d663b3c7025fbbeeda5987cc521b524fd1721c): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.conf), [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature), [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/design/sysexts.md)

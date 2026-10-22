@@ -274,6 +274,8 @@ assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name th
 assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
 assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
 assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
+assert(updexText.includes("ignore --dry-run and make the change"), "/docs/tools/updex must state that daemon commands ignore --dry-run (updex#451).");
+assert(!updexText.includes("Preview changes. It changes nothing."), "/docs/tools/updex must not claim that --dry-run never changes state.");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
 
 const catalog = JSON.parse(await readFile(new URL("../src/data/extensions.json", import.meta.url), "utf8"));
