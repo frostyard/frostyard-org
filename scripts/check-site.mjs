@@ -213,6 +213,7 @@ assert(snowText.includes("bootc upgrade") && snowText.includes("staged digest"),
 assert(snowText.includes("Both paths verify the staged digest"), "/docs/images/snow must state that both stager paths verify the digest.");
 assert(snowText.includes("You do not need to run them"), "/docs/images/snow must describe the commands as stager behavior.");
 assert(snowText.includes("does not force a reboot"), "/docs/images/snow must state that the stager does not force a reboot.");
+assert(!snowText.includes("A rollback also changes the image") && snowText.includes("It waits for the next published image"), "/docs/images/snow must describe the rollback hold correctly.");
 assert(snowText.includes("linux-image-amd64/forky") && snowText.includes("trixie-backports"), "/docs/images/snow must preserve the confirmed kernel selection.");
 
 const catalog = JSON.parse(await readFile(new URL("../src/data/extensions.json", import.meta.url), "utf8"));
