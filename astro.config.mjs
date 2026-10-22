@@ -21,7 +21,7 @@ export default defineConfig({
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
       sidebar: [
         { label: "Start here", items: [{ label: "Documentation", link: "/docs/" }] },
-        { label: "Images", items: [{ label: "Snow", slug: "docs/images/snow" }, { label: "Floe", slug: "docs/images/floe" }] },
+        { label: "Images", items: [{ label: "Snow", slug: "docs/images/snow" }, { label: "Snowfield", slug: "docs/images/snowfield" }, { label: "Sundog", slug: "docs/images/sundog" }, { label: "Floe", slug: "docs/images/floe" }, { label: "Base", slug: "docs/images/base" }] },
         {
           label: "System extensions",
           items: [

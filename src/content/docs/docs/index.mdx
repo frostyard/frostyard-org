@@ -6,8 +6,8 @@ description: Install and run Frostyard bootc images, and add Dev tools, Docker, 
 import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 
 Frostyard makes bootc images and `/usr` system extensions, built with
-[snosi](https://github.com/frostyard/snosi). These guides cover the Snow
-desktop and seven extensions you can turn on: Dev tools, Docker, Incus, K3s,
+[snosi](https://github.com/frostyard/snosi). These guides cover each Frostyard
+image and seven extensions you can turn on: Dev tools, Docker, Incus, K3s,
 Nix, Tailscale, and Visual Studio Code. Each page lists its sources at the
 bottom.
 
@@ -34,15 +34,15 @@ Fresh-install test results for Snow, Floe, and Sundog are still pending. See
 
 ## Choose an image
 
-Snow is the GNOME desktop. All the images:
+Each image has its own guide:
 
 | Product | Role | Page |
 | --- | --- | --- |
-| Snow | General-purpose GNOME desktop | This guide |
-| Snowfield | GNOME desktop for Microsoft Surface devices | [Site overview](/snowfield) |
-| Sundog | KDE Plasma desktop, bootc only | [Site overview](/sundog) |
-| Floe | Headless server image | [This guide](/docs/images/floe/) |
-| Base | Shared image foundation, not an installer choice | [Site overview](/base) |
+| Snow | General-purpose GNOME desktop | [Snow](/docs/images/snow/) |
+| Snowfield | GNOME desktop for Microsoft Surface devices | [Snowfield](/docs/images/snowfield/) |
+| Sundog | KDE Plasma desktop, bootc only | [Sundog](/docs/images/sundog/) |
+| Floe | Headless server image | [Floe](/docs/images/floe/) |
+| Base | Shared image foundation, not an installer choice | [Base](/docs/images/base/) |
 
 Snowfield is untested on representative Surface hardware. The installer
 offers the four bootc products; Base is not one of them. The snosi
@@ -82,9 +82,9 @@ version. Run `updex features check` to see what you can update to.
 
 ## Not covered yet
 
-Snowfield, Sundog, Base, the APT repository, and per-application migrations
-have no guide here yet. Extensions other than Dev tools, Docker, Incus, K3s,
-Nix, Tailscale, and Visual Studio Code have no guide of their own yet; the
+The APT repository and per-application migrations have no guide here yet.
+Extensions other than Dev tools, Docker, Incus, K3s, Nix, Tailscale, and
+Visual Studio Code have no guide of their own yet; the
 [catalog](/docs/sysexts/) lists every extension.
 
 Old nbc and native A/B installs get no new images or updates after
