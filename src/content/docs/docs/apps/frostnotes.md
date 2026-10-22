@@ -174,11 +174,12 @@ you install lodge and set the hub up by hand. The unit runs
 `/usr/bin/notesd -lodge`, keeps its data in `/var/lib/frostnotes`, and needs a
 vault folder that the `frostnotes` user can write.
 
-On the hub, register the vault and serve it:
+On the hub, register the vault and serve it. Name the socket, because `sudo`
+does not pass `XDG_RUNTIME_DIR`:
 
 ```bash
-sudo -u frostnotes notesctl vault add /path/to/notes
-sudo -u frostnotes notesctl hub serve
+sudo -u frostnotes notesctl --socket /run/frostnotes/notesd.sock vault add /path/to/notes
+sudo -u frostnotes notesctl --socket /run/frostnotes/notesd.sock hub serve
 ```
 
 `hub serve` prints `serving` with the vault's name. With more than one vault,
@@ -196,7 +197,7 @@ It prints `approve this device on the hub: notesctl hub approve CODE`. The code
 has 8 characters and lasts 10 minutes. Approve it on the hub:
 
 ```bash
-sudo -u frostnotes notesctl hub approve CODE
+sudo -u frostnotes notesctl --socket /run/frostnotes/notesd.sock hub approve CODE
 ```
 
 The device then prints `syncing`, with the vault and its state. A device
@@ -210,8 +211,9 @@ build/notesctl sync verify
 ```
 
 `sync verify` prints `ok:` and the number of files that match the hub. On the
-hub, `notesctl hub devices` lists paired devices and `notesctl hub revoke ID`
-ends one device's sync. That device keeps its own copy of the vault.
+hub, `sudo -u frostnotes notesctl --socket /run/frostnotes/notesd.sock hub devices`
+lists paired devices, and the same command with `hub revoke ID` ends one
+device's sync. That device keeps its own copy of the vault.
 
 `notesctl history PATH` lists a note's revisions on the hub. The hub keeps every
 revision's record, and thins the content: every revision for 30 days, then the
@@ -250,7 +252,7 @@ make app-run
 `make app-run` builds `notesd` and the app, then starts them together in the
 machine. That `notesd` is its own: it keeps its data under `/var/tmp/frostnotes`
 in the machine, apart from any `notesd` on your host. `make app-build` alone
-builds the app into `build/frostnotes-app`.
+builds the app into `build/frostnotes-app`. The app runs inside the nsl machine.
 
 Live preview is still growing. Tables, nested lists, and embeds are the hard
 cases, and source mode shows the exact text of any note.
@@ -300,7 +302,7 @@ scoped token. You issue one in lodge, with the vault's ID from
 `notesctl vault list`:
 
 ```bash
-lodgectl token issue NAME --app notes --scope 'vault=ID'
+sudo lodgectl token issue NAME --app notes --scope 'vault=ID'
 ```
 
 Add `;write` to the scope to let the token write. A scope can limit writes to
@@ -366,4 +368,4 @@ Reviewed 2026-10-22.
 - [`cmd/notesctl/vault.go`](https://github.com/frostyard/frostnotes/blob/1b63ff73c0d91e121000e38ca718b58adfe7b930/cmd/notesctl/vault.go), [`cmd/notesctl/notes.go`](https://github.com/frostyard/frostnotes/blob/1b63ff73c0d91e121000e38ca718b58adfe7b930/cmd/notesctl/notes.go), [`cmd/notesctl/write.go`](https://github.com/frostyard/frostnotes/blob/1b63ff73c0d91e121000e38ca718b58adfe7b930/cmd/notesctl/write.go), [`cmd/notesctl/hub.go`](https://github.com/frostyard/frostnotes/blob/1b63ff73c0d91e121000e38ca718b58adfe7b930/cmd/notesctl/hub.go), [`cmd/notesctl/sync.go`](https://github.com/frostyard/frostnotes/blob/1b63ff73c0d91e121000e38ca718b58adfe7b930/cmd/notesctl/sync.go), [`cmd/notesctl/mcp.go`](https://github.com/frostyard/frostnotes/blob/1b63ff73c0d91e121000e38ca718b58adfe7b930/cmd/notesctl/mcp.go)
 - No Flatpak and no cask: [`apps.json`](https://github.com/frostyard/flatpak-index/blob/404aa05424b42093eed3e33e823216cf5569c570/apps.json) in the Flatpak index at `404aa05424b42093eed3e33e823216cf5569c570`, and the tap's [`Casks`](https://github.com/frostyard/homebrew-tap/tree/7b7cd158e7e40599ff767f61a272435f84d2da41/Casks) at `7b7cd158e7e40599ff767f61a272435f84d2da41`.
 - No APT package: the Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-22. It lists `frostyard-chairlift`, `frostyard-chairlift-system-integration`, and `frostyard-intuneme`.
-- lodge commit [`c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00`](https://github.com/frostyard/lodge/tree/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00): [`README.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md)
+- lodge commit [`c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00`](https://github.com/frostyard/lodge/tree/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00): [`README.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md), [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/docs/specs/app-contract.md)

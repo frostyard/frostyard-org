@@ -25,7 +25,7 @@ Working now:
 - Rules, smart mailboxes, VIPs, Send Later, and Remind Me.
 
 In progress: mail inside lodge. The web build, the agent endpoint, and the
-desktop app's remote mode are built and not yet used with a real mailbox.
+desktop app's remote mode are built, and in trial use on one host.
 
 Planned: packaging, which means a Flatpak built in the SDK and Google and
 Microsoft verification of Frostmail's sign-in clients.
@@ -216,7 +216,7 @@ agents.
 In that mode:
 
 - `maild --lodge` runs as the system user `frostmail`. It listens on
-  `/run/lodge/apps/mail.sock`, which only lodge's user can open. Secrets go to
+  `/run/lodge/apps/mail.sock`, which only lodge can open. Secrets go to
   a file in `/var/lib/frostmail`, because a system service has no Secret
   Service.
 - lodge serves the web build at `/app/mail/`. You build it with
@@ -230,11 +230,13 @@ In that mode:
   gives `list_mailboxes`, `search_messages`, and `read_thread`. Adding
   `;write` allows flags, moves, drafts, tasks, and Remind Me. Adding `;send`
   allows sending a draft after your undo delay. No agent tool deletes mail.
-- Run `mailctl` on that machine as the `frostmail` user:
-  `sudo -u frostmail mailctl hello`.
+- Run `mailctl` on that machine as the `frostmail` user, and name the socket,
+  because `sudo` does not pass `XDG_RUNTIME_DIR`:
+  `sudo -u frostmail mailctl --socket /run/frostmail/maild.sock hello`. It
+  prints `maild`, its version, and `(protocol 1)`.
 - When a sign-in cannot reach `maild`'s loopback address, as behind lodge,
   finish it with the address your browser was sent to:
-  `mailctl account finish-signin URL`.
+  `sudo -u frostmail mailctl --socket /run/frostmail/maild.sock account finish-signin URL`.
 
 To stage `maild`, its units, and the web build as a lodge app, run
 `make web-build` and then `make lodge-package`. The staged tree goes under
