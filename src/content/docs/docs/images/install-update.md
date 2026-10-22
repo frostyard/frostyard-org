@@ -251,6 +251,9 @@ The first command returns when the pull and the staging are done. The second
 shows `update to <version> staged` and a `Staged:` line. If it shows
 `up to date`, there is nothing new.
 
+Do not run `bootc upgrade` by hand. It does not pull a new image: it only
+stages what is already in local storage, and it skips the update status record.
+
 Then apply the update:
 
 ```bash

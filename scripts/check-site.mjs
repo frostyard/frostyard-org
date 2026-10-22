@@ -465,7 +465,7 @@ assert(guideText.includes("does not force a reboot") && guideText.includes("twic
 assert(guideText.includes("cannot convert to bootc in place") && guideText.includes("2026-09-30"), "/docs/images/install-update must state the nbc limit and the end-of-life date.");
 assert(guideText.includes("Fresh-install test results") && guideText.includes("cannot convert to the secure layout in place"), "/docs/images/install-update must state the Secure Boot support limit.");
 assert(guideText.includes("/var/lib/tailscale") && guideText.includes("/var/lib/himmelblau"), "/docs/images/install-update must list the state to back up.");
-assert(!guideText.includes("bootc upgrade"), "/docs/images/install-update must not tell the reader to run bootc upgrade by hand.");
+assert(guideText.includes("Do not run bootc upgrade by hand"), "/docs/images/install-update must warn against a bare bootc upgrade.");
 
 const updex = await readRoute("/docs/tools/updex");
 const updexText = textOf(updex);
