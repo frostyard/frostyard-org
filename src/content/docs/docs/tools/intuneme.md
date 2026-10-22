@@ -37,7 +37,13 @@ install it:
 sudo dpkg -i frostyard-intuneme_X.Y.Z_amd64.deb
 ```
 
-On Fedora or RHEL, use `sudo rpm -i` with the `.rpm` file. Then check it:
+On Fedora or RHEL, install the `.rpm` package:
+
+```bash
+sudo rpm -i frostyard-intuneme-X.Y.Z-1.x86_64.rpm
+```
+
+Then check it:
 
 ```bash
 intuneme --version
@@ -63,8 +69,8 @@ an uppercase letter, a lowercase letter, and a special character, and it
 cannot contain your username. To give the password in a file, add
 `--password-file FILE`.
 
-`init` pulls the Ubuntu 24.04 image from the GitHub Container Registry,
-installs Edge and Intune Portal, and creates a container user that matches
+`init` pulls the Ubuntu 24.04 image, which contains Edge and Intune Portal,
+from the GitHub Container Registry, and creates a container user that matches
 your host UID. It also creates `~/Intune`, which is the container user's home.
 The command ends with `Initialized intuneme at` and the data path. Add
 `--insiders` for the pre-release image.
@@ -173,8 +179,9 @@ intuneme start
 `recreate` stops the container, pulls the new image, and builds the root
 filesystem again. Your enrollment, Edge profile, downloads, and keyring stay.
 Packages and settings inside the container come from the new image. If
-`recreate` fails with `disk quota exceeded`, add `--tmp-dir /var/tmp`. If you
-use the insiders image, add `--insiders` again.
+`recreate` fails with `disk quota exceeded`, add `--tmp-dir /var/tmp`.
+`recreate` keeps your image channel. `--insiders` switches to the insiders
+image, and `--insiders=false` switches back.
 
 ## Remove
 
@@ -200,6 +207,15 @@ This also removes the GNOME extension, the D-Bus broker service file, the whole
 first. The package stays: on Snow, Snowfield, and Sundog it is part of the
 image.
 
+If you installed the package yourself, run `intuneme destroy --all` first,
+because `destroy` needs the binary. Then remove the package:
+
+```bash
+sudo apt remove frostyard-intuneme
+```
+
+On Fedora or RHEL, run `sudo rpm -e frostyard-intuneme` instead.
+
 ## Troubleshooting
 
 | Symptom | Check | Fix |
@@ -210,7 +226,7 @@ image.
 | No sound in Edge | `ls /run/user/$UID/pipewire-0` on the host | Start PipeWire on the host: `systemctl --user start pipewire pipewire-pulse`. |
 | A YubiKey or webcam is missing in the container | `ls /etc/udev/rules.d/70-intuneme-*.rules` | Run `intuneme udev install`, then check `journalctl -t intuneme-hotplug`. |
 | `intuneme start` says `broker proxy failed to start within 5 seconds` | `echo $DBUS_SESSION_BUS_ADDRESS` | Run from a desktop session, or run `intuneme config broker-proxy disable`, then `intuneme stop` and `intuneme start`. |
-| Commands fail with a `config.toml` parse error | `~/.local/share/intuneme/config.toml` | Fix the TOML, or delete the file and run `intuneme init` again. |
+| Commands fail with a `config.toml` parse error | `~/.local/share/intuneme/config.toml` | Fix the TOML syntax. To rebuild the file, run `intuneme init --force`. Your `~/Intune` stays, but settings such as the broker proxy return to their defaults. |
 
 The [troubleshooting page](https://frostyard.github.io/intuneme/troubleshooting/)
 covers Edge crashes, X authorization errors, and the rest.

@@ -143,6 +143,16 @@ grep -F "  $package" checksums.txt | sha256sum --check -
 
 The check prints `<downloaded-package-filename>: OK`.
 
+After you install the package, print the installed version. On Debian or
+Ubuntu:
+
+```bash
+dpkg-query -W frostyard-chairlift
+```
+
+On Fedora or RHEL, run `rpm -q frostyard-chairlift` instead. ChairLift has no
+`--version` flag.
+
 Do not install `frostyard-chairlift-system-integration` next to it. That
 package has no app. It exists for a system that gets the app another way, and
 the two packages conflict.
