@@ -26,9 +26,13 @@ export default defineConfig({
           label: "System extensions",
           items: [
             { label: "Catalog", link: "/docs/sysexts/" },
+            { label: "Dev tools", slug: "docs/sysexts/dev" },
             { label: "Docker", slug: "docs/sysexts/docker" },
             { label: "Incus", slug: "docs/sysexts/incus" },
+            { label: "K3s", slug: "docs/sysexts/k3s" },
+            { label: "Nix", slug: "docs/sysexts/nix" },
             { label: "Tailscale", slug: "docs/sysexts/tailscale" },
+            { label: "Visual Studio Code", slug: "docs/sysexts/vscode" },
           ],
         },
         {

@@ -1,14 +1,15 @@
 ---
 title: Frostyard documentation
-description: Install and run Frostyard bootc images, and add Docker, Incus, or Tailscale as system extensions.
+description: Install and run Frostyard bootc images, and add Dev tools, Docker, Incus, K3s, Nix, Tailscale, or Visual Studio Code as system extensions.
 ---
 
 import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 
 Frostyard makes bootc images and `/usr` system extensions, built with
 [snosi](https://github.com/frostyard/snosi). These guides cover the Snow
-desktop and three extensions you can turn on: Docker, Incus, and Tailscale.
-Each page lists its sources at the bottom.
+desktop and seven extensions you can turn on: Dev tools, Docker, Incus, K3s,
+Nix, Tailscale, and Visual Studio Code. Each page lists its sources at the
+bottom.
 
 :::caution[Support boundary]
 Secure Boot, signed updates, and signed rollback are not production-ready yet.
@@ -81,9 +82,9 @@ version. Run `updex features check` to see what you can update to.
 ## Not covered yet
 
 Snowfield, Sundog, Base, the APT repository, and per-application migrations
-have no guide here yet. Extensions other than Docker, Incus, and Tailscale
-have no guide of their own yet; the [catalog](/docs/sysexts/) lists every
-extension.
+have no guide here yet. Extensions other than Dev tools, Docker, Incus, K3s,
+Nix, Tailscale, and Visual Studio Code have no guide of their own yet; the
+[catalog](/docs/sysexts/) lists every extension.
 
 Old nbc and native A/B installs get no new images or updates after
 2026-09-30. They cannot convert in place: back up, install fresh, and restore.
