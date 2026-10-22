@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Frostyard">
+  <rect width="32" height="32" rx="7" fill="#081b2a"/>
+  <g fill="none" stroke="#8ee3ff" stroke-width="2" stroke-linecap="round">
+    <path d="M16 5v22"/>
+    <path d="M6.5 10.5l19 11"/>
+    <path d="M6.5 21.5l19-11"/>
+    <path d="M16 8l-3.5-2M16 8l3.5-2M16 24l-3.5 2M16 24l3.5 2"/>
+  </g>
+</svg>

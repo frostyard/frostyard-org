@@ -1,0 +1,285 @@
+---
+title: Tailscale
+description: Enable, update, and remove the Tailscale system extension on a Frostyard bootc image.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+Tailscale is an opt-in system extension for Frostyard bootc images. It supplies
+the Tailscale daemon and CLI, connects the host to a tailnet, and keeps its node
+identity in persistent state. The Base image registers the component and ships
+it disabled.
+
+## Purpose and host prerequisites
+
+Use this extension when the host itself must join a tailnet. The extension
+provides `tailscaled` and the `tailscale` command under `/usr`; it does not
+provide a tailnet, an identity provider account, or a supported substitute for
+a host package installation.
+
+Prerequisites:
+
+- A Frostyard bootc image built on the shared Base, with `systemd-sysext` and
+  the Base `frostyard-updex` binary.
+- Root access for enable, update, and removal. The read-only checks below are
+  shown without `sudo`.
+- Network access to `https://repository.frostyard.org/ext/tailscale/` and to
+  your tailnet's coordination service.
+- A tailnet account and authorization for the host.
+- A backup plan for `/var/lib/tailscale` if you need to preserve this node's
+  identity across a reinstall.
+
+The pinned sources do not contain a per-product live test record for this
+extension. The migration runbook documents the persistent-state path and the
+re-authentication step, but it does not establish a runtime test result for
+every product.
+
+## What ships
+
+The component is defined in the Base image at
+[`/usr/lib/sysupdate.tailscale.d/tailscale.transfer`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer)
+and
+[`tailscale.feature`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature).
+The payload is composed by
+[`mkosi.images/tailscale/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.conf).
+
+| Item | What the pinned source defines |
+| --- | --- |
+| Packages | `tailscale` |
+| Key package | `tailscale` |
+| Published asset | `tailscale_<version>_<os>_<arch>.raw.zst`, with `.raw.xz`, `.raw.gz`, and `.raw` also accepted |
+| Transfer | `url-file` source under `https://repository.frostyard.org/ext/tailscale/`; `Verify=true`; target `/var/lib/extensions.d/`; `CurrentSymlink=tailscale.raw` |
+| Commands | `/usr/bin/tailscale` and `/usr/sbin/tailscaled` |
+| Service | `tailscaled.service`, enabled by `40-tailscale.preset` and upheld by `10-tailscale.conf` |
+| Configuration | A factory copy of `/etc/default/tailscaled` |
+| Persistent state | `/var/lib/tailscale` for the node identity and daemon state |
+
+<ExtensionSnapshot name="tailscale" />
+
+The transfer selects the OS version with `%w` and the architecture with `%a`.
+The checked catalog snapshot lists a version but no architecture matrix, so do
+not infer support for an architecture from the snapshot alone.
+
+The daemon requires `/etc/default/tailscaled` as its environment file. The
+extension captures the packaged file to `/usr/share/factory/etc` and restores
+it through `tmpfiles.d` when `/etc/default/tailscaled` is absent. This is why
+the extension can start after a merge even though a sysext cannot ship `/etc`
+directly.
+
+## Choose Tailscale
+
+Tailscale is the only Tailscale client extension in this pilot. The pinned
+sources do not define a second client, a relay, or a self-hosted control-plane
+variant. Use the extension when the host must be a tailnet node with the
+standard daemon and CLI.
+
+This is a host-level choice. Enabling the extension installs and enables the
+daemon; it does not authorize the host. The host joins a tailnet only after
+`tailscale up` and authorization. It is not a per-container sidecar and does
+not grant container workloads separate tailnet identities. Review your tailnet
+access rules before you authorize the host.
+
+## Enable
+
+List the component and its feature:
+
+```bash
+updex components
+updex features list --component=tailscale
+```
+
+Enable it and download it now:
+
+```bash
+sudo updex features enable tailscale --now
+```
+
+The enable drop-in is written to
+`/etc/sysupdate.tailscale.d/tailscale.feature.d/00-updex.conf`. Without
+`--now`, the feature is enabled for future updates but no image is downloaded.
+With `--now`, Updex downloads the image, verifies the checksum and detached
+signature, creates the sysext link, and refreshes the merged extensions. The
+transfer sets `Verify=true`; a missing or invalid signature fails the operation
+and Updex does not fall back to an unsigned image.
+
+Check the merge and the service:
+
+```bash
+systemd-sysext status
+systemctl status tailscaled.service
+```
+
+`--now` refreshes the overlay. It does not prove that setup completed. The Base
+image's [`reload-sysext.service`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, and
+`systemctl daemon-reload` after `systemd-sysext.service` at boot. A working
+`tailscaled.service` must be running before `tailscale up`. If the daemon is not
+active after an interactive merge, reboot and check again. A successful merge
+does not guarantee that the daemon started.
+
+Then authenticate the node:
+
+```bash
+sudo tailscale up
+```
+
+`tailscale up` is the current authentication step in the pinned migration
+runbook. Complete the authentication flow that your tailnet requires before
+you depend on the host's tailnet address.
+
+If `enable --now` reports a refresh failure (`refresh_error` in JSON), Updex
+reports the completed steps, but the final refresh failed. Treat the merge
+state as unproven. Run `sudo systemd-sysext refresh` or reboot, then check
+`systemd-sysext status` and `systemctl status tailscaled.service`. Do not treat
+the non-zero exit as a successful activation.
+
+## Updates and removal
+
+Check for an update without changing state:
+
+```bash
+updex features check --component=tailscale
+```
+
+`features check` fetches and verifies the manifest. An `UPDATE=error` row is a
+failed check, not an up-to-date result, and the command exits non-zero.
+
+Install the newest available version:
+
+```bash
+sudo updex features update --component=tailscale
+```
+
+`update` downloads, verifies, installs, relinks, vacuums older versions by
+default, and refreshes the merged extensions. `--no-vacuum` keeps older
+versions. `sudo updex --dry-run features update --component=tailscale` previews
+the selection without changing files or sysext links.
+
+A refresh re-merges `/usr` while the host is running. The Tailscale daemon can
+restart, and existing sessions or connections can drop. Plan an interactive
+update for a maintenance window if the host provides remote access to other
+systems.
+
+Stop future updates without removing the current image:
+
+```bash
+sudo updex features disable tailscale
+```
+
+A `disable --now` removal unmerges all extensions on the host before it removes
+files. If its final refresh fails, the remaining extensions stay unmerged. Stop
+or drain host-wide workloads before you run a removal command. Removing this
+extension can also cut your remote access path.
+
+Unmerge and remove the installed image now:
+
+```bash
+sudo updex features disable tailscale --now
+```
+
+If the extension is currently merged, add `--force` and reboot:
+
+```bash
+sudo updex features disable tailscale --now --force
+```
+
+Removal deletes the staged image and the sysext link. The daemon and CLI
+disappear after the refresh or reboot, and the host goes offline on the
+tailnet. The node identity under `/var/lib/tailscale` is outside the extension
+and is not removed by the extension lifecycle. If the final refresh fails after
+`disable --now`, all remaining extensions stay unmerged until a later refresh
+or reboot. Keep or delete that state deliberately:
+
+- Restoring `/var/lib/tailscale` on a reinstalled host preserves the node
+  identity, so a later `tailscale up` can re-authorize the same node.
+- Without that state, the host authenticates as a new node and you must
+  authorize it again.
+
+Do not assume that re-enabling the extension restores connectivity. The
+daemon, image, and node authorization are separate states.
+
+For unattended staging:
+
+```bash
+sudo updex daemon enable
+updex daemon status
+sudo updex daemon disable
+```
+
+The Updex timer stages updates daily with `--no-refresh`; it never refreshes
+the running system. Activation happens at a later refresh or reboot. This is
+different from an interactive update, and an active timer does not mean the
+newest version is running.
+
+## Special cases and network changes
+
+`tailscaled.service` is upheld by a drop-in at boot. The preset enables the
+service, and the drop-in supplies the post-merge activation timing that a
+preset alone cannot provide for a sysext-provided unit. The daemon is a system
+service; it does not run as a per-user service.
+
+The factory `/etc/default/tailscaled` is copied only when the target is absent.
+Local edits persist in the deployment-managed `/etc` layer. The unit requires
+`/etc/default/tailscaled` as its environment file. The extension restores the
+packaged default when the file is absent.
+
+A Tailscale state restore is a network identity operation. The migration
+runbook says restoring `/var/lib/tailscale` preserves the node identity; without
+that state, plan to run `tailscale up` and re-authorize the host. Review the
+restored node in your tailnet before you rely on it.
+
+The pinned sources define only the daemon and its environment file. They do not
+document host-side configuration for subnet routers, exit nodes, MagicDNS, or
+tailnet access rules. Treat those as separate configuration choices and review
+them before you expose the host.
+
+## Troubleshooting
+
+| Symptom | Source-backed check | Safe next action |
+| --- | --- | --- |
+| The extension is not listed | `updex features list --component=tailscale` and `updex components` | Enable the feature. If the component is absent, the image may predate the component-scoped layout. |
+| `enable --now` exits non-zero after downloading | The command reports a refresh failure (`refresh_error` in JSON) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| The daemon does not start | `systemctl status tailscaled.service` and its journal | Check that `/etc/default/tailscaled` exists. The unit requires it as an environment file. |
+| The host is not on the tailnet | `systemctl status tailscaled.service`; then run `sudo tailscale up` again | Complete authorization. A restored old state can require re-authorization. |
+| A manifest or signature check fails | `updex features check --component=tailscale` | Keep verification enabled and check the published manifest and network path. |
+| Remote access drops during an update | The journal shows the daemon restart and the `/usr` refresh | Use a maintenance window. Keep an out-of-band access path. |
+| Removal leaves the host offline remotely | `systemd-sysext status` and `systemctl status tailscaled.service` | Re-enable the extension and authenticate again. The node state under `/var` is separate. |
+
+The extension does not provide a supported host `apt` repair path. If the
+merged image is structurally incomplete, use the required-path build check and
+publish a corrected extension instead of installing packages by hand.
+
+## See also
+
+- [Snow image](/docs/images/snow/)
+- [Docker system extension](/docs/sysexts/docker/)
+- [Incus system extension](/docs/sysexts/incus/)
+- [System extension model](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
+- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
+- [Updex command reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/README.md)
+
+## Sources
+
+Reviewed 2026-10-22. snosi commit
+[`5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5`](https://github.com/frostyard/snosi/tree/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5);
+updex commit
+[`d750445daf3fe8c589419749a1ebae9f5eb1eba2`](https://github.com/frostyard/updex/tree/d750445daf3fe8c589419749a1ebae9f5eb1eba2).
+
+- [`mkosi.images/tailscale/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.conf)
+- [`mkosi.images/tailscale/mkosi.finalize`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.finalize)
+- [`mkosi.images/tailscale/required-paths.txt`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/required-paths.txt)
+- [`mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system-preset/40-tailscale.preset`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system-preset/40-tailscale.preset)
+- [`mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-tailscale.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-tailscale.conf)
+- [`mkosi.images/tailscale/mkosi.extra/usr/lib/tmpfiles.d/tailscale.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.extra/usr/lib/tmpfiles.d/tailscale.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/sysext/postoutput/sysext-postoutput.sh)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
+- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
+- [Updex `README.md`](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/README.md)
+- [Updex `updex/features.go`](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/updex/features.go)
+- [Updex configuration reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/specs/config-reference.md)
+- [Updex SDK reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/specs/sdk-api.md)
+- [Updex ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/adr/0007-daemon-stages-never-activates.md)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)

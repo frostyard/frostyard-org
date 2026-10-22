@@ -2,19 +2,60 @@
 
 Technical landing page for Frostyard's snosi operating system images and the
 Firn, Updex, and ChairLift tools that make their layered software model
-practical.
+practical. The site also carries the `/docs/` operator documentation pilot.
 
 ## Development
 
+Install the locked dependencies with `npm ci`:
+
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
-Use `npm run build` to produce the static site in `dist/`.
+Use `npm run build` to produce the static site in `dist/`. Use
+`npm run build:check` to build from the committed extension snapshot without a
+network refresh. `npm run check` runs Astro diagnostics, and
+`npm run check:site` checks the built routes, docs navigation, source links, and
+existing route invariants. `npm run ci` runs all three in order.
 
 The build refreshes the extension catalog from `https://repository.frostyard.org/ext/index`.
 It uses the committed catalog snapshot if the published repository is unavailable.
+`build:check` deliberately skips the refresh so CI stays network-independent and
+does not rewrite `src/data/extensions.json`. Do not hand-edit that generated file.
+
+## Documentation pilot
+
+Astro Starlight supplies the `/docs/` shell, sidebar, table of contents, search,
+code-copy controls, and light/dark theme. The docs content lives in
+`src/content/docs/docs/`; the nested `docs/` directory is intentional, because it
+scopes the injected Starlight routes under `/docs/` without changing the
+existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
+
+- `src/content/docs/docs/index.mdx` is the docs landing page. It explains the
+  image choices, install and first boot, software layers, and the source policy.
+- `src/content/docs/docs/images/snow.md` covers the Snow GNOME image, its
+  composition, installation, first boot, updates, rollback, and support limits.
+- `src/content/docs/docs/sysexts/docker.mdx` covers the Docker CE extension.
+- `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
+- `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
+- `src/content.config.ts` defines the typed Starlight `docs` collection.
+- `src/components/starlight/MobileMenuToggle.astro` wraps the Starlight
+  component and mirrors its expanded state onto the visible button for
+  assistive technology. The default component still handles click and Escape.
+- `src/components/ExtensionSnapshot.astro` reads the checked
+  `src/data/extensions.json` snapshot for the three extension pages. It renders
+  labels and versions as escaped text, shows the snapshot date and source, and
+  never derives a link from a catalog value. The snapshot version is a regex
+  match from `SHA256SUMS`, not a latest-version claim.
+- `src/layouts/Site.astro` links the landing site navigation to `/docs/`.
+
+Every docs page ends with commit-pinned Sources. Add or change a product fact
+only with a source file that supports it; do not invent commands or flags.
+`npm run check:site` fails if a pilot page, required section, source link, docs
+navigation link, or Pagefind page disappears.
+
+## Page inventory
 
 `src/pages/index.astro` is the image and extension overview.
 `src/pages/base.astro` describes the shared image foundation.
@@ -26,3 +67,11 @@ It uses the committed catalog snapshot if the published repository is unavailabl
 lifecycle guidance. `src/pages/why-atomic.astro` explains the atomic model and
 supported workload boundaries. `src/pages/tools.astro` is the dedicated Firn,
 Updex, and ChairLift page.
+
+The docs pilot adds these content routes:
+
+`src/content/docs/docs/index.mdx` is `/docs/`.
+`src/content/docs/docs/images/snow.md` is `/docs/images/snow/`.
+`src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
+`src/content/docs/docs/sysexts/incus.mdx` is `/docs/sysexts/incus/`.
+`src/content/docs/docs/sysexts/tailscale.mdx` is `/docs/sysexts/tailscale/`.

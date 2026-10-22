@@ -1,0 +1,34 @@
+---
+import DefaultMobileMenuToggle from "@astrojs/starlight/components/MobileMenuToggle.astro";
+---
+
+<DefaultMobileMenuToggle />
+
+<script>
+  // Starlight 0.37.7 stores the expanded state on the host element. Mirror it
+  // onto the real button so assistive technology gets the correct state. The
+  // default component handles the click toggle and Escape closure; this
+  // observer follows every host change.
+  customElements.whenDefined("starlight-menu-button").then(() => {
+    for (const element of document.querySelectorAll("starlight-menu-button")) {
+      if (!(element instanceof HTMLElement)) continue;
+      const host = element;
+      const button = host.querySelector("button");
+      if (!button || host.dataset.menuStateSynced === "true") continue;
+      host.dataset.menuStateSynced = "true";
+
+      const syncExpanded = () => {
+        button.setAttribute(
+          "aria-expanded",
+          host.getAttribute("aria-expanded") === "true" ? "true" : "false",
+        );
+      };
+
+      syncExpanded();
+      new MutationObserver(syncExpanded).observe(host, {
+        attributes: true,
+        attributeFilter: ["aria-expanded"],
+      });
+    }
+  });
+</script>
