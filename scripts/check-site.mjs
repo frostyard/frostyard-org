@@ -185,7 +185,11 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/images/install-update/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
+  assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
+}
+
+for (const route of ["/docs/images/install-update/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
