@@ -60,6 +60,7 @@ async function readRoute(pathname) {
 const docsRoutes = [
   "/docs",
   "/docs/images/snow",
+  "/docs/images/floe",
   "/docs/sysexts",
   "/docs/sysexts/docker",
   "/docs/sysexts/incus",
@@ -135,6 +136,7 @@ for (const route of docsRoutes) {
   for (const href of [
     "/docs/",
     "/docs/images/snow/",
+    "/docs/images/floe/",
     "/docs/sysexts/",
     "/docs/sysexts/docker/",
     "/docs/sysexts/incus/",
@@ -161,7 +163,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/tools/updex/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/floe/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/tools/updex/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -216,6 +218,53 @@ assert(snowText.includes("Both paths verify the staged digest"), "/docs/images/s
 assert(snowText.includes("You do not need to run them"), "/docs/images/snow must describe the commands as stager behavior.");
 assert(snowText.includes("does not force a reboot"), "/docs/images/snow must state that the stager does not force a reboot.");
 assert(snowText.includes("linux-image-amd64/forky") && snowText.includes("trixie-backports"), "/docs/images/snow must preserve the confirmed kernel selection.");
+
+const floe = await readRoute("/docs/images/floe");
+const floeText = textOf(floe);
+for (const heading of [
+  "install",
+  "first-boot",
+  "updates-and-rollback",
+  "what-ships",
+  "choose-floe",
+  "run-containers-and-extensions",
+  "troubleshooting",
+  "moving-from-an-nbc-or-ab-install",
+  "see-also",
+  "sources",
+]) {
+  assert(floe.includes(`id="${heading}"`), `/docs/images/floe must render the "${heading}" section.`);
+}
+for (const source of [
+  "mkosi.profiles/floe/mkosi.conf",
+  "shared/composition/floe/mkosi.conf",
+  "shared/packages/floe/mkosi.conf",
+  "shared/packages/bootc/mkosi.conf",
+  "shared/kernel/backports/mkosi.conf",
+  "mkosi.images/base/mkosi.conf",
+  "shared/floe/tree/usr/lib/sysctl.d/70-networking.conf",
+  "shared/floe/tree/usr/lib/systemd/system-preset/00-apt.preset",
+  "shared/floe/tree/usr/lib/systemd/system-preset/01-homebrew.preset",
+  "flatpaks/core-flatpaks.py",
+  "shared/composition/core-flatpaks.finalize",
+  "mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage",
+  "docs/installing.md",
+  "docs/bootc-secure-operations.md",
+  "docs/nbc-to-bootc-migration.md",
+  "docs/design/overview.md",
+  "docs/design/testing.md",
+]) {
+  assert(floe.includes(`https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/${source}`), `/docs/images/floe must cite ${source}.`);
+}
+assert(floeText.includes("Floe starts without a desktop"), "/docs/images/floe must state that Floe has no desktop.");
+assert(floeText.includes("Floe has no core Flatpak set"), "/docs/images/floe must state that Floe has no core Flatpak set.");
+assert(floeText.includes("linux-image-amd64/forky"), "/docs/images/floe must name the kernel selection.");
+assert(floeText.includes("systemd-vmspawn"), "/docs/images/floe must name the server virtual-machine tool.");
+assert(floeText.includes("turns off the APT daily update and upgrade timers"), "/docs/images/floe must state that the APT daily timers are off.");
+assert(!floeText.includes("A rollback also changes the image") && floeText.includes("It waits for the next published image"), "/docs/images/floe must describe the rollback hold correctly.");
+assert(floeText.includes("twice the image size"), "/docs/images/floe must state the update space requirement.");
+assert(floeText.includes("Every image ships each system extension switched off"), "/docs/images/floe must state that extensions start switched off.");
+assert(floeText.includes("Homebrew"), "/docs/images/floe must cover the Homebrew units.");
 
 const updex = await readRoute("/docs/tools/updex");
 const updexText = textOf(updex);

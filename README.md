@@ -36,6 +36,9 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   image choices, install and first boot, software layers, and the source policy.
 - `src/content/docs/docs/images/snow.md` covers the Snow GNOME image, its
   composition, installation, first boot, updates, rollback, and support limits.
+- `src/content/docs/docs/images/floe.md` covers the Floe headless server image,
+  its composition, installation, first boot, updates, rollback, containers, and
+  support limits.
 - `src/content/docs/docs/sysexts/docker.mdx` covers the Docker CE extension.
 - `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
 - `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
@@ -81,6 +84,7 @@ The docs pilot adds these content routes:
 
 `src/content/docs/docs/index.mdx` is `/docs/`.
 `src/content/docs/docs/images/snow.md` is `/docs/images/snow/`.
+`src/content/docs/docs/images/floe.md` is `/docs/images/floe/`.
 `src/content/docs/docs/sysexts/index.mdx` is `/docs/sysexts/`.
 `src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
 `src/content/docs/docs/sysexts/incus.mdx` is `/docs/sysexts/incus/`.
