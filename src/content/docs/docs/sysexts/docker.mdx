@@ -1,0 +1,265 @@
+---
+title: Docker
+description: Enable, update, and remove the Docker CE system extension on a Frostyard bootc image.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The Docker extension adds Docker Engine, the Docker CLI, containerd, Buildx,
+and Compose to a Frostyard bootc image. Use it when a workload needs Docker
+or Docker Compose. Every Frostyard bootc image ships it switched off; you turn
+it on with one command.
+
+## Before you start
+
+You need:
+
+- A Frostyard bootc image. Every image built on Base has `systemd-sysext` and
+  `frostyard-updex`.
+- Root access to enable, update, and remove the extension. Checks that change
+  nothing run without `sudo`.
+- Network access to `https://repository.frostyard.org/ext/docker/`.
+- Free space in `/var` for the download and the installed image.
+- A backup of any containers and volumes you cannot recreate.
+
+Docker has no published test results on Frostyard images yet. Try it on a
+machine you can spare first.
+
+## Choose Docker
+
+Pick Docker when your workload needs Docker Engine or Compose. Snow already
+includes Podman and Distrobox, and the catalog also has a `podman` extension.
+Running Docker next to another container engine on one host is not a
+supported setup. Pick the one your workload needs.
+
+The extension gives you the engine and its command-line tools. It does not
+give you Docker Desktop, a registry, or a package manager. It adds no APT
+repository and runs no `apt install`. Do not also install Docker from APT.
+
+## Enable Docker
+
+See what Updex found:
+
+```bash
+updex components
+updex features list --component=docker
+```
+
+`docker` appears as a component, with its feature disabled. `--component=docker`
+limits each command to Docker. Without it, Updex acts on every component it
+finds.
+
+Enable Docker and download it now:
+
+```bash
+sudo updex features enable docker --now
+```
+
+Updex downloads the image, checks its checksum and signature, links it, and
+runs `systemd-sysext refresh`. A missing or bad signature stops the command;
+Updex never installs an unsigned image. Without `--now`, Updex only marks the
+feature enabled, and the next update downloads it.
+
+Enabling writes one file in `/etc`:
+`/etc/sysupdate.docker.d/docker.feature.d/00-updex.conf`. The extension image
+itself does not change.
+
+Check that Docker is merged and its sockets are up:
+
+```bash
+systemd-sysext status
+systemctl status docker.socket containerd.service
+```
+
+`systemd-sysext status` lists `docker`, and both units are active. You do
+not start `docker.service` yourself: `docker.socket` starts it and hands
+`dockerd` its sockets.
+
+A merge does not prove that setup completed. At boot, `reload-sysext.service`
+runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, and
+`systemctl daemon-reload` after the merge. After an interactive `--now` merge,
+they may not have run yet. If the `docker` group, the files in `/etc/docker`,
+or the sockets are missing, reboot and check again.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the two checks above again.
+
+## Update
+
+See whether an update exists:
+
+```bash
+updex features check --component=docker
+```
+
+This changes nothing. It shows one row for each enabled feature. A feature
+you have not enabled has no row, so a missing row does not mean "up to date".
+If Updex cannot fetch or verify a manifest, that row shows `UPDATE=error` and
+the command exits non-zero. Treat an error row as unknown, not as up to date.
+
+Install the newest version:
+
+```bash
+sudo updex features update --component=docker
+```
+
+Updex downloads and verifies the new image, switches the link, deletes older
+versions, and refreshes the merge. Add `--no-vacuum` to keep older versions.
+To see what would change, without changing anything:
+
+```bash
+sudo updex --dry-run features update --component=docker
+```
+
+The refresh swaps `/usr` under the running system, and the engine can
+restart. Stop or drain containers first if a restart would hurt them. Images,
+containers, and volumes live in `/var`. An update does not touch them, and it
+does not back them up.
+
+To download updates automatically, turn on the Updex timer:
+
+```bash
+sudo updex daemon enable
+updex daemon status
+sudo updex daemon disable
+```
+
+The timer runs `updex features update --no-refresh` once a day. It downloads
+and stages, but never swaps the running system. The new version runs after
+your next refresh or reboot.
+
+## Stop updates or remove
+
+Stop updates and keep the current version:
+
+```bash
+sudo updex features disable docker
+```
+
+This only sets `Enabled=false`. The link `/var/lib/extensions/docker.raw`
+stays, so Docker keeps running, now and after every reboot. Updex and the
+timer skip it from now on.
+
+Remove Docker now:
+
+```bash
+sudo updex features disable docker --now --force
+```
+
+This unmerges all extensions on the host, deletes the Docker image, and merges
+the rest again. Running containers can stop immediately. Stop or drain your
+workloads first, and reboot when the command finishes.
+
+Without `--force`, Updex refuses while Docker is merged:
+`Extension docker (version ...) is active. Removing requires --force and a reboot to take effect.`
+Updex v2.0.3 does not have this check yet: it removes the extension at once, with or
+without `--force`. `updex catalog remove` has the same check.
+
+Removal does not touch `/var`. Images, containers, volumes, and bind-mounted
+data stay; only the engine and its units go. Enabling Docker again does not
+restart your workloads.
+
+If the refresh at the end fails, the remaining extensions stay unmerged. Run
+`sudo systemd-sysext refresh`, or reboot.
+
+## Special cases
+
+The extension copies its default files into `/etc/docker`,
+`/etc/default/docker`, and `/etc/containerd` only when they are missing. Your
+edits there survive reboots and updates. The defaults stay in
+`/usr/share/factory/etc`.
+
+The extension creates a `docker` group and ships the rootless extras. It adds
+nobody to the group. Choose rootless mode or group membership yourself.
+
+The extension owns `docker.socket` and `containerd.service`. Do not run a
+second container engine's daemon, or another containerd, on the same host
+unless you have tested that combination.
+
+## Troubleshooting
+
+| Symptom | Check | Fix |
+| --- | --- | --- |
+| Docker is not listed | `updex features list --component=docker` and `updex components` | If `docker` is listed but disabled, enable it. If it is missing, the image may be older than named components. |
+| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| The engine does not answer | `systemctl status docker.socket containerd.service` | Start with the socket and containerd. Docker starts through the socket, not `docker.service`. |
+| A signature or manifest check fails | The command output, and `updex features check --component=docker` | Check the network and the published manifest. Never turn verification off. |
+| An update stopped containers | The journal shows the engine restart after the `/usr` refresh | Drain workloads before you update by hand. Back up volumes. |
+| Workloads stopped after removal | `systemd-sysext status` and `systemctl status docker.socket` | Enable Docker again if you still need it. Your data in `/var` is still there. |
+
+Do not repair the extension with `apt`. If a merged image is missing files,
+the fix is a corrected extension build.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Packages | `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`, `docker-ce-rootless-extras` |
+| Version | The image file name carries the `docker-ce` version |
+| Image file | `docker_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/docker/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+| Services | `docker.socket` and `containerd.service`, enabled by `20-docker.preset` and started at boot by `10-docker.conf` |
+| Configuration | Defaults for `/etc/default/docker`, `/etc/docker`, and `/etc/containerd` |
+| Group | `docker`, from `usr/lib/sysusers.d/docker.conf` |
+
+<ExtensionSnapshot name="docker" />
+
+The active image is the link `/var/lib/extensions/docker.raw`. It points to
+the chosen file in `/var/lib/extensions.d/`. The transfer file names a second
+link, `CurrentSymlink=docker.raw`, but Updex deletes that one
+(`/var/lib/extensions.d/docker.raw`) when it installs.
+
+The Base image ships a preset that disables `docker.service` and
+`docker.socket`. The extension's `20-docker.preset` sorts first, and the first
+matching preset wins, so the extension's choice applies.
+
+Updex picks the image that matches your OS version (`%w` in the file name) and
+your architecture (`%a`). The catalog lists versions, not architectures, so it
+does not tell you which architectures exist.
+
+The image is an overlay (`Overlay=yes`) that holds only what Base does not
+already have. A later Base can
+therefore break an older Docker image. Each build checks that the engine, the
+CLI, containerd, the service unit, and the activation drop-in are present. A
+build that is missing one fails.
+
+## See also
+
+- [Snow image](/docs/images/snow/)
+- [Incus system extension](/docs/sysexts/incus/)
+- [Tailscale system extension](/docs/sysexts/tailscale/)
+- [System extension model](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
+- [Updex v2.0.3 command reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
+
+## Sources
+
+Reviewed 2026-10-22. snosi commit
+[`5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5`](https://github.com/frostyard/snosi/tree/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5);
+Updex v2.0.3 commit
+[`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d).
+
+- [`mkosi.images/docker/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.conf)
+- [`mkosi.images/docker/mkosi.finalize`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.finalize)
+- [`mkosi.images/docker/required-paths.txt`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/required-paths.txt)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/tmpfiles.d/docker.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.extra/usr/lib/tmpfiles.d/docker.conf)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/sysusers.d/docker.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.extra/usr/lib/sysusers.d/docker.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/30-docker.preset`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/30-docker.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/sysext/postoutput/sysext-postoutput.sh)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
+- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
+- [Updex v2.0.3 release](https://github.com/frostyard/updex/releases/tag/v2.0.3)
+- [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)
+- [Updex v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
+- [Updex v2.0.3 `updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
+- [Updex v2.0.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go)
+- [Updex v2.0.3 `updex/features.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/features.go)
+- [Updex v2.0.3 configuration reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/config-reference.md)
+- [Updex v2.0.3 SDK reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/sdk-api.md)
+- [Updex v2.0.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/adr/0007-daemon-stages-never-activates.md)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)

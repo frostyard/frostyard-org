@@ -1,0 +1,316 @@
+---
+title: Incus
+description: Enable, update, and remove the Incus system extension for containers and virtual machines on Frostyard bootc images.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The Incus extension adds the Incus daemon, CLI, and web UI to a Frostyard
+bootc image, with its own QEMU for virtual machines. Use it to run system
+containers and virtual machines on the host. Every Frostyard bootc image ships
+it switched off; you turn it on with one command.
+
+## Before you start
+
+You need:
+
+- A Frostyard bootc image. Every image built on Base has `systemd-sysext` and
+  `frostyard-updex`.
+- Root access to enable, update, and remove the extension. Checks that change
+  nothing run without `sudo`.
+- Network access to `https://repository.frostyard.org/ext/incus/`.
+- Free space in `/var` for the extension and for the storage your containers
+  and virtual machines will use.
+- CPU virtualization switched on in the firmware, if you want virtual
+  machines. The extension brings QEMU and OVMF; the firmware settings are up
+  to you.
+- A backup or export of any existing containers, virtual machines, and
+  storage pools.
+
+Incus has no published test results on Frostyard images yet. Try it on a
+machine you can spare first.
+
+## Choose Incus
+
+Pick Incus for system containers and virtual machines. Incus runs as a system
+service: it creates and runs workloads, manages storage and networks, and
+listens on a local socket. Pick [Docker](/docs/sysexts/docker/) for
+application containers instead.
+
+Docker and Incus use different daemons and sockets. Running both on one host
+is not a supported setup; test your exact combination before you rely on it.
+
+The extension works on Floe, the server image, as well as on the desktops. It
+carries the graphical libraries that Floe does not have, and each build checks
+that they are present.
+
+The extension does not give you a package manager, and it does not replace an
+Incus you installed some other way.
+
+## Enable Incus
+
+See what Updex found:
+
+```bash
+updex components
+updex features list --component=incus
+```
+
+`incus` appears as a component, with its feature disabled.
+
+Enable Incus and download it now:
+
+```bash
+sudo updex features enable incus --now
+```
+
+Updex downloads the image, checks its checksum and signature, links it, and
+refreshes the merged extensions. A missing or bad signature stops the command;
+Updex never installs an unsigned image. Without `--now`, Updex only marks the
+feature enabled, and the next update downloads it.
+
+Enabling writes one file in `/etc`:
+`/etc/sysupdate.incus.d/incus.feature.d/00-updex.conf`.
+
+Check that Incus is merged and its services are up:
+
+```bash
+systemd-sysext status
+systemctl status incus.socket incus-startup.service incus-sysext-setup.service
+```
+
+`systemd-sysext status` lists `incus`. Check the socket and the setup service
+first. `incus.service` starts on demand through `incus.socket`.
+
+`incus-sysext-setup.service` gives root a subordinate UID and GID range with
+`usermod`, so user namespaces work without a manual step. It runs after
+`systemd-sysusers` and `systemd-tmpfiles`, and before the Incus sockets and
+`incus-startup.service`.
+
+A merge does not prove that setup completed. At boot, `reload-sysext.service`
+runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, and
+`systemctl daemon-reload` after the merge. After an interactive `--now` merge,
+they may not have run yet. If the `dnsmasq` user, the `rdma` group, the files
+in `/etc`, or `incus-sysext-setup.service` are missing, reboot and check
+again.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the two checks above again.
+
+## Update
+
+See whether an update exists:
+
+```bash
+updex features check --component=incus
+```
+
+This changes nothing. It shows one row for each enabled feature. A feature
+you have not enabled has no row, so a missing row does not mean "up to date".
+If Updex cannot fetch or verify a manifest, that row shows `UPDATE=error` and
+the command exits non-zero. Treat an error row as unknown, not as up to date.
+
+Install the newest version:
+
+```bash
+sudo updex features update --component=incus
+```
+
+Updex downloads and verifies the new image, switches the link, deletes older
+versions, and refreshes the merge. Add `--no-vacuum` to keep older versions.
+To see what would change, without changing anything:
+
+```bash
+sudo updex --dry-run features update --component=incus
+```
+
+The refresh swaps `/usr` under the running system, and the Incus daemon can
+restart. Stop or migrate containers and virtual machines first if a restart
+would hurt them. Your containers, virtual machines, and storage pools live
+outside the extension. An update does not touch them, and it does not back
+them up. Check your storage pool configuration to see where they are.
+
+To download updates automatically, turn on the Updex timer:
+
+```bash
+sudo updex daemon enable
+updex daemon status
+sudo updex daemon disable
+```
+
+The timer runs `updex features update --no-refresh` once a day. It downloads
+and stages, but never swaps the running system. The new version runs after
+your next refresh or reboot.
+
+## Stop updates or remove
+
+Stop updates and keep the current version:
+
+```bash
+sudo updex features disable incus
+```
+
+This only sets `Enabled=false`. The link `/var/lib/extensions/incus.raw`
+stays, so Incus keeps running, now and after every reboot. Updex and the
+timer skip it from now on.
+
+Remove Incus now:
+
+```bash
+sudo updex features disable incus --now --force
+```
+
+This unmerges all extensions on the host, deletes the Incus image, and merges
+the rest again. Running containers and virtual machines can stop immediately.
+Stop or migrate your workloads first, and reboot when the command finishes.
+
+Without `--force`, Updex refuses while Incus is merged:
+`Extension incus (version ...) is active. Removing requires --force and a reboot to take effect.`
+Updex v2.0.3 does not have this check yet: it removes the extension at once,
+with or without `--force`. `updex catalog remove` has the same check.
+
+Removal takes away the daemon, the CLI, the web UI, and their units. Your
+containers, virtual machines, storage pools, and other data in `/var` stay.
+Manage or delete them yourself. Enabling Incus again does not restart your
+workloads or bring back a missing storage pool.
+
+If the refresh at the end fails, the remaining extensions stay unmerged. Run
+`sudo systemd-sysext refresh`, or reboot.
+
+## Special cases
+
+Incus runs privileged workloads. The extension creates the `dnsmasq` user,
+the `rdma` group, the runtime directories, and the alternatives links that its
+tools expect.
+
+The extension copies its default files into `/etc` only when they are
+missing. Your edits to `/etc/default/incus` or the libvirt configuration
+survive reboots and updates. The defaults stay in `/usr/share/factory/etc`.
+The extension carries only the `/etc` files it names, not a copy of the build
+machine's `/etc`. The QEMU network helpers, `/etc/qemu-ifup` and
+`/etc/qemu-ifdown`, come from Base, not from the extension.
+
+The extension ships `virt-viewer`, the client for
+`incus console --type=vga`. Graphical consoles use the display support in the
+bundled QEMU under `/usr/incus`. Incus always uses its own QEMU in
+`/usr/incus/bin`. Do not replace it with a host package, and do not expect a
+change to the host's `qemu-system-x86_64` to affect Incus.
+
+## Troubleshooting
+
+| Symptom | Check | Fix |
+| --- | --- | --- |
+| `incus launch --vm` says virtual machines are not supported | Run `incus info` and look for the QEMU driver, for example `driver: lxc \| qemu` | If only `lxc` is present, the bundled QEMU runtime is not loading. Check that the extension is merged and that its libraries load (next row). |
+| The bundled QEMU fails with a missing shared library | `LD_LIBRARY_PATH=/usr/incus/lib/ ldd /usr/incus/bin/qemu-system-x86_64` | This extension build does not match your Base. Install a corrected extension. Do not patch `/usr` by hand. |
+| The setup service did not run | `systemctl status incus-sysext-setup.service` and its journal | The service runs once per boot and skips when `/run/incus-sysext-setup.done` exists. Check that file. |
+| `incus.socket` is inactive | `systemctl status incus.socket` and `systemd-sysext status` | Check that the extension is merged and the preset applied. After a staged update, refresh or reboot. |
+| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| A manifest or signature check fails | `updex features check --component=incus` | Check the network and the published manifest. Never turn verification off. |
+| Containers or VMs stopped during an update | The journal shows the daemon restart after the `/usr` refresh | Drain or migrate workloads before you update by hand. Back up storage first. |
+
+Do not repair the extension with `apt`. If a merged image is missing files,
+the fix is a corrected extension build.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Build package requests | `incus`, `incus-extra`, `incus-ui-canonical`, `dnsmasq-base`, `genisoimage`, `virt-viewer`, `librsvg2-common` |
+| Version | The image file name carries the `incus` version |
+| Image file | `incus_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/incus/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+| Services | `incus.socket`, `incus-user.socket`, `incus-lxcfs.service`, `incus-startup.service`, and `incus-sysext-setup.service` |
+| Activation | `40-incus.preset` enables the services; `10-incus.conf` starts them at boot |
+| Setup | `incus-sysext-setup.service` runs a repeatable script once per boot, then writes `/run/incus-sysext-setup.done` |
+| Configuration | Defaults for `/etc/default/incus`, logrotate, needrestart, libvirt, and the VTE profile scripts |
+| Users and directories | The `dnsmasq` user and `rdma` group, plus runtime directories and alternatives links |
+
+<ExtensionSnapshot name="incus" />
+
+The active image is the link `/var/lib/extensions/incus.raw`. It points to
+the chosen file in `/var/lib/extensions.d/`. The transfer file names a second
+link, `CurrentSymlink=incus.raw`, but Updex deletes that one
+(`/var/lib/extensions.d/incus.raw`) when it installs.
+
+The checked catalog snapshot is generated, and its version changes with each
+sync. The source now builds revision 4 (`SYSEXT_REVISION=4`), but the
+published image can still be revision 3 for now: r4 must not publish before
+hosts run images with the new Base, because it leaves out libraries that Base
+now supplies. The revision is the `+r` number at the end of the version.
+
+The `incus` package comes from the Frostyard APT repository,
+`https://repository.frostyard.org/debian/`. It is Frostyard's rebuild of
+Zabbly's package, and it bundles QEMU, OVMF, swtpm, and virtiofsd under
+`/usr/incus`. `incusd` puts `/usr/incus/bin` first in its `PATH`, so it runs
+`/usr/incus/bin/qemu-system-x86_64`, not Debian's
+`/usr/bin/qemu-system-x86_64`.
+
+The package row is what the build asks for. It does not promise that every
+request ships in the image: Base already ships `qemu-system-x86`,
+`qemu-utils`, and `ovmf`, and the image holds only what Base does not have.
+
+Revision 4 ships no Debian QEMU or OVMF. It drops `qemu-kvm`, `qemu-utils`,
+`qemu-system-gui`, `qemu-system-modules-spice`, `ovmf`, and `ipxe-qemu`, which
+Incus never used. A build guard keeps it so: any extension build that ships
+Base's QEMU, OVMF, or SeaBIOS files fails. The published revision 3 image
+still carries the Debian `qemu-kvm`, `qemu-system-gui`,
+`qemu-system-modules-spice`, and `ipxe-qemu`. These Debian leftovers are
+separate from the bundled `/usr/incus` runtime, which Incus uses.
+
+Each build checks that the GTK3 and media libraries that the bundled QEMU and
+`virt-viewer` need are present. A smaller Base can still break an older Incus image: this has
+happened once, and a rebuild restored the libraries.
+
+Updex picks the image that matches your OS version (`%w` in the file name)
+and your architecture (`%a`). The catalog lists versions, not architectures,
+so it does not tell you which architectures exist. A Base with a different
+composition can break the image even when the OS version and architecture
+match. The build check protects the build, not a host with a different Base.
+
+## See also
+
+- [Snow image](/docs/images/snow/)
+- [Docker system extension](/docs/sysexts/docker/)
+- [Tailscale system extension](/docs/sysexts/tailscale/)
+- [System extension model](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/docs/design/sysexts.md)
+- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/docs/nbc-to-bootc-migration.md)
+- [Updex v2.0.3 command reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
+
+## Sources
+
+Reviewed 2026-10-22. snosi commit
+[`c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd`](https://github.com/frostyard/snosi/tree/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd);
+Updex v2.0.3 commit
+[`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d).
+
+- [`mkosi.images/incus/mkosi.conf`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.conf)
+- [`mkosi.images/incus/mkosi.finalize`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.finalize)
+- [`mkosi.images/incus/required-paths.txt`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/required-paths.txt)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system-preset/40-incus.preset`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system-preset/40-incus.preset)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-incus.conf`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-incus.conf)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/incus-sysext-setup.service`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/incus-sysext-setup.service)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/incus/incus-sysext-setup`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.extra/usr/lib/incus/incus-sysext-setup)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/tmpfiles.d/incus.conf`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.extra/usr/lib/tmpfiles.d/incus.conf)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/sysusers.d/dnsmasq.conf`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.extra/usr/lib/sysusers.d/dnsmasq.conf)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/sysusers.d/rdma.conf`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.extra/usr/lib/sysusers.d/rdma.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/base/mkosi.conf)
+- [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources)
+- [`shared/sysext/finalize/sysext-no-base-owned.sh`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/shared/sysext/finalize/sysext-no-base-owned.sh)
+- [`shared/sysext/base-owned-paths.txt`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/shared/sysext/base-owned-paths.txt)
+- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/shared/sysext/postoutput/sysext-postoutput.sh)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/docs/design/sysexts.md)
+- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/docs/nbc-to-bootc-migration.md)
+- [Updex v2.0.3 release](https://github.com/frostyard/updex/releases/tag/v2.0.3)
+- [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)
+- [Updex v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
+- [Updex v2.0.3 `updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
+- [Updex v2.0.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go)
+- [Updex v2.0.3 `updex/features.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/features.go)
+- [Updex v2.0.3 configuration reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/config-reference.md)
+- [Updex v2.0.3 SDK reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/sdk-api.md)
+- [Updex v2.0.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/adr/0007-daemon-stages-never-activates.md)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)

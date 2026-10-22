@@ -1,0 +1,98 @@
+---
+title: Frostyard documentation
+description: Install and run Frostyard bootc images, and add Docker, Incus, or Tailscale as system extensions.
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+Frostyard makes bootc images and `/usr` system extensions, built with
+[snosi](https://github.com/frostyard/snosi). These guides cover the Snow
+desktop and three extensions you can turn on: Docker, Incus, and Tailscale.
+Each page lists its sources at the bottom.
+
+:::caution[Support boundary]
+Secure Boot, signed updates, and signed rollback are not production-ready yet.
+Fresh-install test results for Snow, Floe, and Sundog are still pending. See
+[Snow](/docs/images/snow/) and the snosi
+[Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md).
+:::
+
+## Start here
+
+<CardGrid>
+  <LinkCard title="Snow" href="/docs/images/snow/" description="The general-purpose GNOME desktop on a bootc/composefs image." />
+  <LinkCard title="Install a Frostyard image" href="/install" description="Download Firn, check the ISO, and pick a disk." />
+  <LinkCard title="Docker" href="/docs/sysexts/docker/" description="Add Docker Engine, containerd, Buildx, and Compose." />
+  <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Run system containers and virtual machines, with Incus's own QEMU." />
+  <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Put the host on your tailnet." />
+</CardGrid>
+
+## Choose an image
+
+Snow is the GNOME desktop. All the images:
+
+| Product | Role | Page |
+| --- | --- | --- |
+| Snow | General-purpose GNOME desktop | This guide |
+| Snowfield | GNOME desktop for Microsoft Surface devices | [Site overview](/snowfield) |
+| Sundog | KDE Plasma desktop, bootc only | [Site overview](/sundog) |
+| Floe | Headless server image | [Site overview](/floe) |
+| Base | Shared image foundation, not an installer choice | [Site overview](/base) |
+
+Snowfield is untested on representative Surface hardware. The installer
+offers the four bootc products; Base is not one of them. The snosi
+[installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md)
+has the full table.
+
+## Install and first boot
+
+Install with Firn. It needs UEFI, erases the disk you pick, and asks you
+about each security choice. Start with
+[Install a Frostyard image](/install): it covers checking the ISO, the disk
+warning, first boot, and MOK enrollment.
+
+Every image checks for updates hourly, stages a new version, and starts it at
+your next normal reboot. It never forces a reboot. The
+[Snow page](/docs/images/snow/#updates-and-rollback) shows how to check an
+update and roll back.
+
+## How a Frostyard system is built
+
+A Frostyard system has three layers:
+
+1. **The image.** It holds the read-only `/usr`, the kernel, the desktop or
+   server software, and the updater.
+2. **Your state.** `/var` holds homes, containers, and service data. `/etc`
+   holds your configuration and carries it into each new version.
+3. **System extensions.** EROFS images that add to `/usr` only. They cannot
+   write `/etc` or `/var`. An extension keeps its default configuration in
+   `/usr/share/factory/etc`, and `tmpfiles.d` copies it into `/etc` at boot.
+
+Every image ships each extension switched off. You turn one on with Updex;
+each extension page has the steps.
+
+Each extension page shows the version the catalog listed on its last sync.
+The sync takes a pattern match, not a maximum, so it is not always the newest
+version. Run `updex features check` to see what you can update to.
+
+## Not covered yet
+
+Snowfield, Sundog, Floe, Base, the rest of the extension catalog, the APT
+repository, and per-application migrations have no guide here yet.
+
+Old nbc and native A/B installs get no new images or updates after
+2026-09-30. They cannot convert in place: back up, install fresh, and restore.
+See the snosi
+[migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md).
+
+## Sources
+
+- Website catalog snapshot: [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json), reviewed 2026-10-22.
+- snosi product and support status: [`README.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/README.md).
+- Installation and update flow: [`docs/installing.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md).
+- Secure-path limits: [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md).
+- Legacy host migration: [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md).
+- System extension model: [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md).
+- Updex v2.0.3 release: [tag v2.0.3](https://github.com/frostyard/updex/releases/tag/v2.0.3).
+- Updex lifecycle commands: [v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md).
+- [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)

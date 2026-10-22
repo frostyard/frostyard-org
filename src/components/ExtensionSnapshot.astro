@@ -1,0 +1,103 @@
+---
+import catalog from "../data/extensions.json";
+
+interface CatalogEntry {
+  name: string;
+  label: string;
+  version: string | null;
+}
+
+interface Catalog {
+  source: string;
+  updatedAt: string;
+  extensions: CatalogEntry[];
+}
+
+interface Props {
+  name: string;
+}
+
+const { name } = Astro.props;
+const snapshot = catalog as Catalog;
+const entry = snapshot.extensions.find((item) => item.name === name);
+
+if (!entry) {
+  throw new Error(`The checked extension catalog has no entry named "${name}".`);
+}
+
+const updated = new Date(snapshot.updatedAt);
+const updatedLabel = Number.isNaN(updated.getTime())
+  ? snapshot.updatedAt
+  : updated.toISOString().slice(0, 10);
+---
+
+<aside class="extension-snapshot" aria-label={`Extension catalog snapshot for ${entry.label}`}>
+  <p class="snapshot-heading">In the extension catalog</p>
+  <dl>
+    <div>
+      <dt>Extension</dt>
+      <dd>{entry.label}</dd>
+    </div>
+    <div>
+      <dt>Component name</dt>
+      <dd><code>{entry.name}</code></dd>
+    </div>
+    <div>
+      <dt>Listed version</dt>
+      <dd>{entry.version ? <code>{entry.version}</code> : "No version listed"}</dd>
+    </div>
+  </dl>
+  <p>
+    Listed on <time datetime={snapshot.updatedAt}>{updatedLabel}</time>. This is not always the
+    newest version: run <code>updex features check</code> to see what you can update to. Catalog:
+    <code>{snapshot.source}</code>.
+  </p>
+</aside>
+
+<style>
+  .extension-snapshot {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    background: var(--sl-color-gray-7);
+  }
+
+  .snapshot-heading {
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+  }
+
+  dl {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0 0 0.75rem;
+  }
+
+  dl div {
+    display: grid;
+    grid-template-columns: minmax(8rem, max-content) 1fr;
+    gap: 0.75rem;
+  }
+
+  dt {
+    color: var(--sl-color-gray-2);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .extension-snapshot > p:last-child {
+    margin: 0;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+
+  @media (max-width: 30rem) {
+    dl div {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+  }
+</style>
