@@ -1,0 +1,120 @@
+---
+title: System extensions
+description: Find, enable, update, and remove a system extension on a Frostyard bootc image.
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+import ExtensionCatalog from "../../../../components/ExtensionCatalog.astro";
+
+A system extension adds software to the read-only `/usr` of a Frostyard bootc
+image. Every image ships each extension switched off. You turn one on with
+Updex.
+
+## Find an extension
+
+See what Updex found:
+
+```bash
+updex components
+updex features list
+```
+
+Your image offers only the features it has files for. The catalog below lists
+what the repository published at the last sync. If `updex features list` does
+not show an extension, your image cannot enable it.
+
+## Enable an extension
+
+Enable one and download it now:
+
+```bash
+sudo updex features enable <name> --now
+```
+
+Replace `<name>` with the component name from the table. Check the merge:
+
+```bash
+systemd-sysext status
+```
+
+The output lists the extension you enabled. If `enable --now` exits with a
+refresh error (`refresh_error` in JSON), the download worked but the merge did
+not. Run `sudo systemd-sysext refresh`, or reboot.
+
+## Check for updates and update
+
+See what you can update to. This changes nothing:
+
+```bash
+updex features check
+```
+
+Install the newest versions:
+
+```bash
+sudo updex features update
+```
+
+To download and stage updates each day, turn on the Updex timer:
+
+```bash
+sudo updex daemon enable
+```
+
+The timer downloads and stages updates. It does not activate them. A staged
+update starts after a refresh or a reboot.
+
+## Stop updates or remove
+
+Stop updates and keep the extension merged:
+
+```bash
+sudo updex features disable <name>
+```
+
+Remove the extension now:
+
+```bash
+sudo updex features disable <name> --now --force
+```
+
+Updex v2.0.4 and later refuse to remove a merged extension without `--force`.
+Updex before v2.0.4 does not refuse: it removes the extension at once.
+Removal unmerges all extensions on the host, then merges the rest again.
+Reboot when the command finishes. If that refresh fails, the remaining
+extensions stay unmerged until you run `sudo systemd-sysext refresh` or
+reboot.
+
+## Guides
+
+Docker, Incus, and Tailscale have a full guide:
+
+<CardGrid>
+  <LinkCard title="Docker" href="/docs/sysexts/docker/" description="Add Docker Engine, containerd, Buildx, and Compose." />
+  <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Run system containers and virtual machines, with Incus's own QEMU." />
+  <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Put the host on your tailnet." />
+</CardGrid>
+
+## Catalog
+
+<ExtensionCatalog />
+
+The listed version is a match from the published checksums at the last sync.
+It is not always the newest: run `updex features check` to see what you can
+update to.
+
+## Sources
+
+Reviewed 2026-10-22. snosi commit
+[`96d663b3c7025fbbeeda5987cc521b524fd1721c`](https://github.com/frostyard/snosi/tree/96d663b3c7025fbbeeda5987cc521b524fd1721c);
+Updex v2.0.4 commit
+[`992b3d53151b73c227a871cb8e742d841b00fd6c`](https://github.com/frostyard/updex/tree/992b3d53151b73c227a871cb8e742d841b00fd6c).
+
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/design/sysexts.md)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
+- [Updex v2.0.4 release](https://github.com/frostyard/updex/releases/tag/v2.0.4)
+- [Updex v2.0.4 `README.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/README.md)
+- [Updex PR #445: detect merged extensions for the removal guard](https://github.com/frostyard/updex/pull/445)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
+- [`scripts/sync-extensions.mjs`](https://github.com/frostyard/frostyard-org/blob/main/scripts/sync-extensions.mjs)

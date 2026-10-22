@@ -25,6 +25,7 @@ export default defineConfig({
         {
           label: "System extensions",
           items: [
+            { label: "Catalog", link: "/docs/sysexts/" },
             { label: "Docker", slug: "docs/sysexts/docker" },
             { label: "Incus", slug: "docs/sysexts/incus" },
             { label: "Tailscale", slug: "docs/sysexts/tailscale" },
