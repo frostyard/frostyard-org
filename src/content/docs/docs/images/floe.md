@@ -51,8 +51,7 @@ A/B install.
 ## First boot
 
 Floe starts without a desktop. Log in on the console as the user you created
-in Firn. The Base image ships `openssh-server`, and Firn can add SSH keys for
-that user.
+in Firn, or over SSH. SSH is on by default: add your key in Firn.
 
 Check that the system is healthy:
 
@@ -96,9 +95,9 @@ sudo systemctl reboot
 ```
 
 Homes, container storage, and service data in `/var` are shared by all
-versions, so a rollback keeps them. A rollback also changes the image the
-host follows: the updater does not stage the version you rolled back from
-again.
+versions, so a rollback keeps them. After a rollback, the updater does not
+stage the version you rolled back from again. It waits for the next published
+image.
 
 Keep about twice the image size free in `/var`. The updater pulls each new
 image into `/var` before it stages it.
@@ -114,16 +113,19 @@ packages, a kernel, and the image output format.
 | Bootc runtime | `bootc`, `libostree-1-1`, and the packages OCI bootc needs |
 | Server tools | `systemd-container` for `systemd-nspawn` and `systemd-vmspawn`, `tuned`, `tuned-ppd`, `dbus-broker`, and `locales-all` |
 | Containers | `podman`, `distrobox`, `buildah`, `crun`, `fuse-overlayfs`, `slirp4netns`, `passt`, and `criu` |
-| Networking | `NetworkManager`, `avahi-daemon`, IPv4 forwarding, the BBR congestion control, and larger inotify limits |
-| Kernel | `linux-image-amd64/forky` for now, with firmware from `trixie-backports` |
+| Networking | `NetworkManager`, OpenSSH, mDNS with `avahi-daemon`, IPv4 forwarding, the BBR congestion control, and larger inotify limits |
+| Kernel | `linux-image-amd64/forky` for now, with most firmware and Mesa from `trixie-backports` |
 | Homebrew | `brew-setup.service`, `brew-update.timer`, `brew-upgrade.timer`, `bbrew-helper`, and the CLI bundle at `/usr/share/floe/bundles/cli.Brewfile` |
 | Logs | A journal that keeps its logs on disk across reboots |
 | Core Flatpak set | None |
 
 Floe uses the `linux-image-amd64/forky` kernel until the Trixie backports
 kernel is complete. The build file for it is still called `backports`; the
-name is out of date. Firmware comes from `trixie-backports`, pinned in the
-same file.
+name is out of date. Most firmware and Mesa come from `trixie-backports`,
+pinned in the same file.
+
+SSH, mDNS (Avahi), and `tuned` run by default. The image ships no enablement
+links in `/etc`; the presets enable these services at first boot.
 
 `brew-setup.service` unpacks the Homebrew archive to `/var/home/linuxbrew` at
 first boot. The two brew timers update and upgrade an installed Homebrew.
@@ -168,6 +170,7 @@ Three extensions have a guide:
 | Symptom | Check | Fix |
 | --- | --- | --- |
 | `bootc status` shows `spec.image: null` | The host is not managed by bootc. It is most likely an old nbc or native A/B install. | See [Moving from an nbc or A/B install](#moving-from-an-nbc-or-ab-install). |
+| `sudo snosi-update-status` says `published image equals the rollback deployment` | You rolled back, and no newer image is published yet | Nothing to fix. The updater holds until a newer image is published. |
 | No update is staged | `systemctl list-timers bootc-update-stage.timer` and `journalctl -u bootc-update-stage.service` | Wait for the hourly run. Check the network and the free space in `/var`. |
 | Staging fails for lack of space | Compare the free space in `/var` with the image size | Free space or grow the disk. The updater needs room for the download, the new version, and the previous one. |
 | A unit fails at boot | `systemctl --failed` | Read the unit's log with `journalctl -u <unit>`, then correct the service or its configuration. |
@@ -228,6 +231,9 @@ Reviewed 2026-10-22 against snosi commit
 - [`flatpaks/core-flatpaks.py`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/flatpaks/core-flatpaks.py)
 - [`shared/composition/core-flatpaks.finalize`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/shared/composition/core-flatpaks.finalize)
 - [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
+- [`docs/adr/0002-ship-no-enablement-symlinks-in-etc.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/adr/0002-ship-no-enablement-symlinks-in-etc.md)
+- [`mkosi.images/base/mkosi.extra/usr/libexec/preset-reconcile`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/libexec/preset-reconcile)
+- [`mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/design/sysexts.md)
 - [`docs/installing.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/installing.md)
