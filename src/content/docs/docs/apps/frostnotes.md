@@ -299,7 +299,7 @@ notes is data, not instructions.
 
 Through lodge, an agent reaches `https://lodge.TAILNET.ts.net/mcp/notes` with a
 scoped token. You issue one in lodge, with the vault's ID from
-`notesctl vault list`:
+`sudo -u frostnotes notesctl --socket /run/frostnotes/notesd.sock vault list`:
 
 ```bash
 sudo lodgectl token issue NAME --app notes --scope 'vault=ID'
