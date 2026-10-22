@@ -38,7 +38,11 @@ export default defineConfig({
         },
         {
           label: "Tools",
-          items: [{ label: "Updex", slug: "docs/tools/updex" }],
+          items: [
+            { label: "Updex", slug: "docs/tools/updex" },
+            { label: "nsl", slug: "docs/tools/nsl" },
+            { label: "Igloo", slug: "docs/tools/igloo" },
+          ],
         },
       ],
     }),

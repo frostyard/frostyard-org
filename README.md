@@ -61,6 +61,8 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   extension: find, enable, check, update, and remove.
 - `src/content/docs/docs/tools/updex.md` covers Updex: features, components,
   updates, the daemon, catalogs, and removal.
+- `src/content/docs/docs/tools/nsl.md` covers nsl: host checks, install, machines, and removal.
+- `src/content/docs/docs/tools/igloo.md` covers the Igloo terminal: install, use, and update.
 - `src/content.config.ts` defines the typed Starlight `docs` collection.
 - `src/components/starlight/MobileMenuToggle.astro` wraps the Starlight
   component and mirrors its expanded state onto the visible button for
@@ -112,3 +114,5 @@ The docs pilot adds these content routes:
 `src/content/docs/docs/sysexts/vscode.mdx` is `/docs/sysexts/vscode/`.
 `src/content/docs/docs/sysexts/manage.md` is `/docs/sysexts/manage/`.
 `src/content/docs/docs/tools/updex.md` is `/docs/tools/updex/`.
+`src/content/docs/docs/tools/nsl.md` is `/docs/tools/nsl/`.
+`src/content/docs/docs/tools/igloo.md` is `/docs/tools/igloo/`.
