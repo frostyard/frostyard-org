@@ -220,6 +220,7 @@ assert(catalogComponent.includes("{entry.label}") && catalogComponent.includes("
 const sysextPages = [
   {
     route: "/docs/sysexts/docker",
+    snosi: "5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5",
     name: "docker",
     sources: [
       "mkosi.images/docker/mkosi.conf",
@@ -234,6 +235,8 @@ const sysextPages = [
   },
   {
     route: "/docs/sysexts/incus",
+    // Incus is pinned after snosi#1020 (revision 4).
+    snosi: "c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd",
     name: "incus",
     sources: [
       "mkosi.images/incus/mkosi.conf",
@@ -243,12 +246,15 @@ const sysextPages = [
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature",
       "mkosi.images/base/mkosi.conf",
       "mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources",
+      "shared/sysext/finalize/sysext-no-base-owned.sh",
+      "shared/sysext/base-owned-paths.txt",
       "docs/design/sysexts.md",
     ],
     command: "sudo updex features enable incus --now",
   },
   {
     route: "/docs/sysexts/tailscale",
+    snosi: "5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5",
     name: "tailscale",
     sources: [
       "mkosi.images/tailscale/mkosi.conf",
@@ -291,7 +297,7 @@ for (const page of sysextPages) {
   assert(text.includes("unmerges all extensions on the host"), `${page.route} must warn that removal unmerges all extensions.`);
   assert(text.includes("remaining extensions stay unmerged"), `${page.route} must warn about a failed post-removal refresh.`);
   assert(text.includes("sudo systemd-sysext refresh"), `${page.route} must give the sudo refresh recovery command.`);
-  assert(html.includes("https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service"), `${page.route} must cite reload-sysext.service.`);
+  assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`), `${page.route} must cite reload-sysext.service.`);
   assert(html.includes("https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/features.go"), `${page.route} must cite updex/features.go.`);
   if (page.route === "/docs/sysexts/incus") {
     assert(html.includes('<code dir="auto">driver: lxc | qemu</code>'), "Incus must render the complete QEMU driver text.");
@@ -302,9 +308,16 @@ for (const page of sysextPages) {
     assert(text.includes("Build package requests"), "Incus must label the package list as build requests.");
     assert(text.includes("does not promise that every request ships"), "Incus must not imply every request ships.");
     assert(html.includes("repository.frostyard.org/debian/"), "Incus must cite the executable Frostyard APT source.");
-    assert(text.includes("Base already ships") && text.includes("delta therefore"), "Incus must distinguish Base packages from the delta.");
-    assert(text.includes("does not carry Debian") && text.includes("qemu-utils"), "Incus must state that the delta omits Base-owned qemu-utils.");
-    assert(text.includes("qemu-kvm") && text.includes("qemu-system-gui") && text.includes("qemu-system-modules-spice") && text.includes("ipxe-qemu"), "Incus must name the unused delta leftovers.");
+    assert(text.includes("Base already ships") && text.includes("holds only what Base does not have"), "Incus must distinguish Base packages from the delta.");
+    // snosi#1020: revision 4 drops the Debian QEMU; the published image can still be revision 3.
+    assert(text.includes("SYSEXT_REVISION=4") && text.includes("can still be revision 3"), "Incus must state that the source builds r4 and the published image can still be r3.");
+    assert(text.includes("Revision 4 ships no Debian QEMU or OVMF") && text.includes("A build guard keeps it so"), "Incus must state that r4 ships no Debian QEMU, enforced by a build guard.");
+    assert(text.includes("published revision 3 image still carries"), "Incus must limit the Debian leftovers to the published r3 image.");
+    assert(text.includes("qemu-kvm") && text.includes("qemu-system-gui") && text.includes("qemu-system-modules-spice") && text.includes("ipxe-qemu"), "Incus must name the r3 Debian leftovers.");
+    const incusRequests = text.slice(text.indexOf("Build package requests"), text.indexOf("Version", text.indexOf("Build package requests")));
+    assert(incusRequests.includes("librsvg2-common") && !/qemu|ovmf/.test(incusRequests), "Incus must list the r4 build requests without the dropped Debian QEMU packages.");
+    assert(!text.includes("QEMU display modules"), "Incus must not claim the extension ships the Debian QEMU display modules.");
+    assert(text.includes("/etc/qemu-ifdown , come from Base") || text.includes("come from Base, not from the extension"), "Incus must state that Base owns the QEMU network helpers.");
     assert(text.includes("These Debian leftovers are separate from the bundled"), "Incus must separate delta leftovers from the bundled runtime.");
     assert(!text.includes("remain carried and unused"), "Incus must not repeat the stale blanket carry claim.");
   }
@@ -322,7 +335,7 @@ for (const page of sysextPages) {
   }
 
   for (const source of page.sources) {
-    assert(html.includes(`https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/${source}`), `${page.route} must cite ${source}.`);
+    assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/${source}`), `${page.route} must cite ${source} at snosi ${page.snosi}.`);
   }
   assert(html.includes("https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md"), `${page.route} must cite the Updex v2.0.3 README.`);
   assert(html.includes("https://github.com/frostyard/updex/releases/tag/v2.0.3"), `${page.route} must link the Updex v2.0.3 release.`);
