@@ -25,6 +25,7 @@ Fresh-install test results for Snow, Floe, and Sundog are still pending. See
   <LinkCard title="Docker" href="/docs/sysexts/docker/" description="Add Docker Engine, containerd, Buildx, and Compose." />
   <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Run system containers and virtual machines, with Incus's own QEMU." />
   <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Put the host on your tailnet." />
+  <LinkCard title="System extension catalog" href="/docs/sysexts/" description="See every extension in the catalog, and enable or update one." />
   <LinkCard title="Updex" href="/docs/tools/updex/" description="Manage system extensions: enable, update, and remove them." />
 </CardGrid>
 
@@ -78,8 +79,10 @@ version. Run `updex features check` to see what you can update to.
 
 ## Not covered yet
 
-Snowfield, Sundog, Floe, Base, the rest of the extension catalog, the APT
-repository, and per-application migrations have no guide here yet.
+Snowfield, Sundog, Floe, Base, the APT repository, and per-application
+migrations have no guide here yet. Extensions other than Docker, Incus, and
+Tailscale have no guide of their own yet; the [catalog](/docs/sysexts/) lists
+every extension.
 
 Old nbc and native A/B installs get no new images or updates after
 2026-09-30. They cannot convert in place: back up, install fresh, and restore.
