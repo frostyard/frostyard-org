@@ -50,7 +50,7 @@ The payload is composed by
 
 | Item | What the pinned source defines |
 | --- | --- |
-| Packages | `incus`, `incus-extra`, `incus-ui-canonical`, `dnsmasq-base`, `ovmf`, `qemu-kvm`, `qemu-utils`, `qemu-system-gui`, `qemu-system-modules-spice`, `ipxe-qemu`, `genisoimage`, `virt-viewer`, `librsvg2-common` |
+| Build package requests | `incus`, `incus-extra`, `incus-ui-canonical`, `dnsmasq-base`, `ovmf`, `qemu-kvm`, `qemu-utils`, `qemu-system-gui`, `qemu-system-modules-spice`, `ipxe-qemu`, `genisoimage`, `virt-viewer`, `librsvg2-common` |
 | Key package | `incus` |
 | Published asset | `incus_<version>_<os>_<arch>.raw.zst`, with `.raw.xz`, `.raw.gz`, and `.raw` also accepted |
 | Transfer | `url-file` source under `https://repository.frostyard.org/ext/incus/`; `Verify=true`; target `/var/lib/extensions.d/`; `CurrentSymlink=incus.raw` |
@@ -62,19 +62,36 @@ The payload is composed by
 
 <ExtensionSnapshot name="incus" />
 
+The transfer sets `CurrentSymlink=incus.raw`, but Updex removes the legacy
+`/var/lib/extensions.d/incus.raw` during installation. The live link is
+`/var/lib/extensions/incus.raw`, and it points to the selected image in
+`/var/lib/extensions.d/`. See
+[`updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
+and
+[`sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go).
+
 The checked catalog snapshot is generated and its version can change. The
 pinned build configuration sets `SYSEXT_REVISION=3`; a build from this source
 carries revision 3. The snapshot and the build configuration are separate
 facts. Do not read the snapshot as the current published revision or as the
 newest available version.
 
-Provenance needs one correction. The `mkosi.conf` comment says the packages
-come from Debian Trixie, and part of the package list is Debian QEMU and OVMF.
-The design document describes the shipped `incus` as a Frostyard rebuild of
-Zabbly's deb that bundles its own QEMU, OVMF, swtpm, and virtiofsd under
-`/usr/incus`; the Debian QEMU and OVMF packages remain carried and unused
-pending their removal. Follow the design document for runtime behavior, and
-treat the inline provenance comment as stale.
+The executable APT source is
+[`frostyard.sources`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources):
+`https://repository.frostyard.org/debian/`. It agrees with the design document:
+the shipped `incus` is a Frostyard rebuild of Zabbly's deb and bundles QEMU,
+OVMF, swtpm, and virtiofsd under `/usr/incus`. The `mkosi.conf` comment that
+says Debian Trixie is stale.
+
+The package row lists build requests. It does not promise that every request
+ships in the delta. Base already ships `qemu-system-x86`, `qemu-utils`, and
+`ovmf` in
+[`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.conf),
+and a sysext delta omits packages that Base provides. The Incus delta therefore
+does not carry Debian `ovmf` or `qemu-utils`. It still carries unused
+`qemu-kvm`, `qemu-system-gui`, `qemu-system-modules-spice`, and `ipxe-qemu`
+pending #1014. These Debian leftovers are separate from the bundled
+`/usr/incus` runtime.
 
 The bundled runtime matters operationally. `incusd` prepends `/usr/incus/bin`
 to `PATH`, so it probes `/usr/incus/bin/qemu-system-x86_64`, not Debian's
@@ -163,8 +180,12 @@ Check for an update without changing state:
 updex features check --component=incus
 ```
 
-`features check` fetches and verifies the manifest. An `UPDATE=error` row is a
-failed check, not an up-to-date result, and the command exits non-zero.
+`features check` iterates the enabled features in scope. For each enabled
+feature, it fetches and verifies each transfer's manifest. A feature that is not
+enabled gets no row; no row is not an up-to-date result. If a manifest cannot be
+fetched or verified, the feature is reported as `UPDATE=error`, the other
+enabled features are still reported, and the command exits non-zero. An errored
+row is not an up-to-date result.
 
 Install the newest available version:
 
@@ -190,20 +211,27 @@ Stop future updates without removing the current image:
 sudo updex features disable incus
 ```
 
-A `disable --now` removal unmerges all extensions on the host before it removes
-files. If its final refresh fails, the remaining extensions stay unmerged.
-Stop or migrate host-wide workloads before you run a removal command.
+`disable` without `--now` writes only `Enabled=false`. The
+`/var/lib/extensions/incus.raw` link stays, so the current image stays merged
+and active now and at every boot. Incus keeps running; the daemon is not
+stopped. `features update` and the timer skip the disabled feature.
 
-Unmerge and remove the installed image now:
+:::danger[Removal acts immediately]
+`sudo updex features disable incus --now` takes effect at once, also when the
+extension is merged. Current Updex does not detect a merged image on snosi
+hosts, so the `--force` guard does not fire
+([Updex #444](https://github.com/frostyard/updex/issues/444)). It unmerges all
+extensions on the host, removes the Incus image, and refreshes. If the final
+refresh fails, the remaining extensions stay unmerged. Running containers and
+virtual machines can stop immediately. Stop or migrate host-wide workloads
+before you run it. If Updex refuses with "Extension ... is active", add
+`--force`. Do not rely on that refusal as a safety check.
+:::
+
+To remove the installed image now:
 
 ```bash
 sudo updex features disable incus --now
-```
-
-If the extension is currently merged, add `--force` and reboot:
-
-```bash
-sudo updex features disable incus --now --force
 ```
 
 Removal deletes the staged image and the sysext link. The daemon, CLI, web UI,
@@ -268,14 +296,14 @@ extension.
 - [Tailscale system extension](/docs/sysexts/tailscale/)
 - [System extension model](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
 - [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
-- [Updex command reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/README.md)
+- [Updex v2.0.3 command reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
 
 ## Sources
 
 Reviewed 2026-10-22. snosi commit
 [`5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5`](https://github.com/frostyard/snosi/tree/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5);
-updex commit
-[`d750445daf3fe8c589419749a1ebae9f5eb1eba2`](https://github.com/frostyard/updex/tree/d750445daf3fe8c589419749a1ebae9f5eb1eba2).
+Updex v2.0.3 commit
+[`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d).
 
 - [`mkosi.images/incus/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/incus/mkosi.conf)
 - [`mkosi.images/incus/mkosi.finalize`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/incus/mkosi.finalize)
@@ -290,12 +318,18 @@ updex commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature)
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.conf)
+- [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources)
 - [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/sysext/postoutput/sysext-postoutput.sh)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
 - [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
-- [Updex `README.md`](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/README.md)
-- [Updex `updex/features.go`](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/updex/features.go)
-- [Updex configuration reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/specs/config-reference.md)
-- [Updex SDK reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/specs/sdk-api.md)
-- [Updex ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/adr/0007-daemon-stages-never-activates.md)
+- [Updex v2.0.3 release](https://github.com/frostyard/updex/releases/tag/v2.0.3)
+- [Updex issue #444: merged-image detection](https://github.com/frostyard/updex/issues/444)
+- [Updex v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
+- [Updex v2.0.3 `updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
+- [Updex v2.0.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go)
+- [Updex v2.0.3 `updex/features.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/features.go)
+- [Updex v2.0.3 configuration reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/config-reference.md)
+- [Updex v2.0.3 SDK reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/sdk-api.md)
+- [Updex v2.0.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/adr/0007-daemon-stages-never-activates.md)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)

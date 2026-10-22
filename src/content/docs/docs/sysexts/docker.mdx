@@ -54,6 +54,14 @@ The payload is composed by
 
 <ExtensionSnapshot name="docker" />
 
+The transfer sets `CurrentSymlink=docker.raw`, but Updex removes the legacy
+`/var/lib/extensions.d/docker.raw` during installation. The live link is
+`/var/lib/extensions/docker.raw`, and it points to the selected image in
+`/var/lib/extensions.d/`. See
+[`updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
+and
+[`sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go).
+
 The extension is an `Overlay=yes` delta against Base. Its published image is
 built from the package closure that Base did not already provide, so a later
 Base change can invalidate an older delta. The source's required-path check
@@ -146,10 +154,12 @@ Use a read-only check first:
 updex features check --component=docker
 ```
 
-`features check` fetches each enabled component's manifest and reports whether
-an update exists. It does not download or activate anything. If the manifest
-cannot be fetched or verified, the component is reported as `UPDATE=error` and
-the command exits non-zero. An errored row is not an "up to date" result.
+`features check` iterates the enabled features in scope. For each enabled
+feature, it fetches and verifies each transfer's manifest. It does not download
+or activate anything. A feature that is not enabled gets no row; no row is not
+an up-to-date result. If a manifest cannot be fetched or verified, the feature
+is reported as `UPDATE=error`, the other enabled features are still reported,
+and the command exits non-zero. An errored row is not an "up to date" result.
 
 Install the newest available version:
 
@@ -177,20 +187,27 @@ To stop future updates without removing the current image:
 sudo updex features disable docker
 ```
 
-A `disable --now` removal unmerges all extensions on the host before it removes
-files. If its final refresh fails, the remaining extensions stay unmerged.
-Stop or drain host-wide workloads before you run a removal command.
+`disable` without `--now` writes only `Enabled=false`. The
+`/var/lib/extensions/docker.raw` link stays, so the current image stays merged
+and active now and at every boot. Docker keeps running; the daemon is not
+stopped. `features update` and the timer skip the disabled feature.
 
-To unmerge and remove the installed image now:
+:::danger[Removal acts immediately]
+`sudo updex features disable docker --now` takes effect at once, also when the
+extension is merged. Current Updex does not detect a merged image on snosi
+hosts, so the `--force` guard does not fire
+([Updex #444](https://github.com/frostyard/updex/issues/444)). It unmerges all
+extensions on the host, removes the Docker image, and refreshes. If the final
+refresh fails, the remaining extensions stay unmerged. Running containers can
+stop immediately. Stop or drain host-wide workloads before you run it.
+If Updex refuses with "Extension ... is active", add `--force`. Do not rely on
+that refusal as a safety check.
+:::
+
+To remove the installed image now:
 
 ```bash
 sudo updex features disable docker --now
-```
-
-If the extension is currently merged, Updex requires `--force` and a reboot:
-
-```bash
-sudo updex features disable docker --now --force
 ```
 
 Removal deletes staged images and the sysext link. It cannot delete `/var`
@@ -252,14 +269,14 @@ publish a corrected extension instead of installing packages by hand.
 - [Incus system extension](/docs/sysexts/incus/)
 - [Tailscale system extension](/docs/sysexts/tailscale/)
 - [System extension model](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
-- [Updex command reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/README.md)
+- [Updex v2.0.3 command reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
 
 ## Sources
 
 Reviewed 2026-10-22. snosi commit
 [`5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5`](https://github.com/frostyard/snosi/tree/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5);
-updex commit
-[`d750445daf3fe8c589419749a1ebae9f5eb1eba2`](https://github.com/frostyard/updex/tree/d750445daf3fe8c589419749a1ebae9f5eb1eba2).
+Updex v2.0.3 commit
+[`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d).
 
 - [`mkosi.images/docker/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.conf)
 - [`mkosi.images/docker/mkosi.finalize`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.finalize)
@@ -275,9 +292,13 @@ updex commit
 - [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/sysext/postoutput/sysext-postoutput.sh)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
 - [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
-- [Updex `README.md`](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/README.md)
-- [Updex `updex/features.go`](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/updex/features.go)
-- [Updex configuration reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/specs/config-reference.md)
-- [Updex SDK reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/specs/sdk-api.md)
-- [Updex ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/adr/0007-daemon-stages-never-activates.md)
+- [Updex v2.0.3 release](https://github.com/frostyard/updex/releases/tag/v2.0.3)
+- [Updex issue #444: merged-image detection](https://github.com/frostyard/updex/issues/444)
+- [Updex v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
+- [Updex v2.0.3 `updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
+- [Updex v2.0.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go)
+- [Updex v2.0.3 `updex/features.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/features.go)
+- [Updex v2.0.3 configuration reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/config-reference.md)
+- [Updex v2.0.3 SDK reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/sdk-api.md)
+- [Updex v2.0.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/adr/0007-daemon-stages-never-activates.md)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)

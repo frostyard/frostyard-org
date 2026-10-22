@@ -56,6 +56,14 @@ The payload is composed by
 
 <ExtensionSnapshot name="tailscale" />
 
+The transfer sets `CurrentSymlink=tailscale.raw`, but Updex removes the legacy
+`/var/lib/extensions.d/tailscale.raw` during installation. The live link is
+`/var/lib/extensions/tailscale.raw`, and it points to the selected image in
+`/var/lib/extensions.d/`. See
+[`updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
+and
+[`sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go).
+
 The transfer selects the OS version with `%w` and the architecture with `%a`.
 The checked catalog snapshot lists a version but no architecture matrix, so do
 not infer support for an architecture from the snapshot alone.
@@ -74,10 +82,11 @@ variant. Use the extension when the host must be a tailnet node with the
 standard daemon and CLI.
 
 This is a host-level choice. Enabling the extension installs and enables the
-daemon; it does not authorize the host. The host joins a tailnet only after
-`tailscale up` and authorization. It is not a per-container sidecar and does
-not grant container workloads separate tailnet identities. Review your tailnet
-access rules before you authorize the host.
+daemon; it does not authorize the host. On a new installation, the host joins a
+tailnet only after `tailscale up` and authorization. A restored node identity
+can reconnect without a new authorization. It is not a per-container sidecar
+and does not grant container workloads separate tailnet identities. Review your
+tailnet access rules before you authorize the host.
 
 ## Enable
 
@@ -141,8 +150,12 @@ Check for an update without changing state:
 updex features check --component=tailscale
 ```
 
-`features check` fetches and verifies the manifest. An `UPDATE=error` row is a
-failed check, not an up-to-date result, and the command exits non-zero.
+`features check` iterates the enabled features in scope. For each enabled
+feature, it fetches and verifies each transfer's manifest. A feature that is not
+enabled gets no row; no row is not an up-to-date result. If a manifest cannot be
+fetched or verified, the feature is reported as `UPDATE=error`, the other
+enabled features are still reported, and the command exits non-zero. An errored
+row is not an up-to-date result.
 
 Install the newest available version:
 
@@ -166,21 +179,28 @@ Stop future updates without removing the current image:
 sudo updex features disable tailscale
 ```
 
-A `disable --now` removal unmerges all extensions on the host before it removes
-files. If its final refresh fails, the remaining extensions stay unmerged. Stop
-or drain host-wide workloads before you run a removal command. Removing this
-extension can also cut your remote access path.
+`disable` without `--now` writes only `Enabled=false`. The
+`/var/lib/extensions/tailscale.raw` link stays, so the current image stays
+merged and active now and at every boot. The host stays on the tailnet; the
+daemon is not stopped. `features update` and the timer skip the disabled
+feature.
 
-Unmerge and remove the installed image now:
+:::danger[Removal acts immediately]
+`sudo updex features disable tailscale --now` takes effect at once, also when
+the extension is merged. Current Updex does not detect a merged image on snosi
+hosts, so the `--force` guard does not fire
+([Updex #444](https://github.com/frostyard/updex/issues/444)). It unmerges all
+extensions on the host, removes the Tailscale image, and refreshes. If the final
+refresh fails, the remaining extensions stay unmerged. A remote session through
+the tailnet can drop immediately. Stop or drain host-wide workloads before you
+run it. If Updex refuses with "Extension ... is active", add `--force`. Do not
+rely on that refusal as a safety check.
+:::
+
+To remove the installed image now:
 
 ```bash
 sudo updex features disable tailscale --now
-```
-
-If the extension is currently merged, add `--force` and reboot:
-
-```bash
-sudo updex features disable tailscale --now --force
 ```
 
 Removal deletes the staged image and the sysext link. The daemon and CLI
@@ -191,9 +211,9 @@ and is not removed by the extension lifecycle. If the final refresh fails after
 or reboot. Keep or delete that state deliberately:
 
 - Restoring `/var/lib/tailscale` on a reinstalled host preserves the node
-  identity, so a later `tailscale up` can re-authorize the same node.
-- Without that state, the host authenticates as a new node and you must
-  authorize it again.
+  identity. A still-authorized node reconnects without a new authorization.
+- Without that state, the host is a new node. Run `tailscale up` and authorize
+  it.
 
 Do not assume that re-enabling the extension restores connectivity. The
 daemon, image, and node authorization are separate states.
@@ -223,10 +243,11 @@ Local edits persist in the deployment-managed `/etc` layer. The unit requires
 `/etc/default/tailscaled` as its environment file. The extension restores the
 packaged default when the file is absent.
 
-A Tailscale state restore is a network identity operation. The migration
-runbook says restoring `/var/lib/tailscale` preserves the node identity; without
-that state, plan to run `tailscale up` and re-authorize the host. Review the
-restored node in your tailnet before you rely on it.
+A Tailscale state restore is a network identity operation. Restoring
+`/var/lib/tailscale` preserves the node identity, and a still-authorized node
+reconnects without a new authorization. Without that state, the host is a new
+installation; run `tailscale up` and authorize it. Review the node in your
+tailnet before you rely on it.
 
 The pinned sources define only the daemon and its environment file. They do not
 document host-side configuration for subnet routers, exit nodes, MagicDNS, or
@@ -240,10 +261,10 @@ them before you expose the host.
 | The extension is not listed | `updex features list --component=tailscale` and `updex components` | Enable the feature. If the component is absent, the image may predate the component-scoped layout. |
 | `enable --now` exits non-zero after downloading | The command reports a refresh failure (`refresh_error` in JSON) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
 | The daemon does not start | `systemctl status tailscaled.service` and its journal | Check that `/etc/default/tailscaled` exists. The unit requires it as an environment file. |
-| The host is not on the tailnet | `systemctl status tailscaled.service`; then run `sudo tailscale up` again | Complete authorization. A restored old state can require re-authorization. |
+| The host is not on the tailnet | `systemctl status tailscaled.service` | Check the service. If the node key expired or an administrator removed the node, run `sudo tailscale up` and authorize the host again. |
 | A manifest or signature check fails | `updex features check --component=tailscale` | Keep verification enabled and check the published manifest and network path. |
 | Remote access drops during an update | The journal shows the daemon restart and the `/usr` refresh | Use a maintenance window. Keep an out-of-band access path. |
-| Removal leaves the host offline remotely | `systemd-sysext status` and `systemctl status tailscaled.service` | Re-enable the extension and authenticate again. The node state under `/var` is separate. |
+| Removal leaves the host offline remotely | `systemd-sysext status` and `systemctl status tailscaled.service` | Re-enable the extension. A still-authorized node can reconnect without new authorization. The node state under `/var` is separate. |
 
 The extension does not provide a supported host `apt` repair path. If the
 merged image is structurally incomplete, use the required-path build check and
@@ -256,14 +277,14 @@ publish a corrected extension instead of installing packages by hand.
 - [Incus system extension](/docs/sysexts/incus/)
 - [System extension model](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
 - [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
-- [Updex command reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/README.md)
+- [Updex v2.0.3 command reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
 
 ## Sources
 
 Reviewed 2026-10-22. snosi commit
 [`5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5`](https://github.com/frostyard/snosi/tree/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5);
-updex commit
-[`d750445daf3fe8c589419749a1ebae9f5eb1eba2`](https://github.com/frostyard/updex/tree/d750445daf3fe8c589419749a1ebae9f5eb1eba2).
+Updex v2.0.3 commit
+[`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d).
 
 - [`mkosi.images/tailscale/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.conf)
 - [`mkosi.images/tailscale/mkosi.finalize`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/tailscale/mkosi.finalize)
@@ -277,9 +298,13 @@ updex commit
 - [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/sysext/postoutput/sysext-postoutput.sh)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
 - [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
-- [Updex `README.md`](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/README.md)
-- [Updex `updex/features.go`](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/updex/features.go)
-- [Updex configuration reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/specs/config-reference.md)
-- [Updex SDK reference](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/specs/sdk-api.md)
-- [Updex ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/d750445daf3fe8c589419749a1ebae9f5eb1eba2/docs/adr/0007-daemon-stages-never-activates.md)
+- [Updex v2.0.3 release](https://github.com/frostyard/updex/releases/tag/v2.0.3)
+- [Updex issue #444: merged-image detection](https://github.com/frostyard/updex/issues/444)
+- [Updex v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
+- [Updex v2.0.3 `updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
+- [Updex v2.0.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go)
+- [Updex v2.0.3 `updex/features.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/features.go)
+- [Updex v2.0.3 configuration reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/config-reference.md)
+- [Updex v2.0.3 SDK reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/sdk-api.md)
+- [Updex v2.0.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/adr/0007-daemon-stages-never-activates.md)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)

@@ -38,7 +38,8 @@ output format. The build configuration is
 
 | Layer | What the pinned build composes | Evidence |
 | --- | --- | --- |
-| Base | Debian Trixie userspace, systemd, bootc, the hourly update stager, Updex, and the system-extension transfer definitions | [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.conf) |
+| Base | Debian Trixie userspace, systemd, the hourly update stager, Updex, and the system-extension transfer definitions | [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.conf) |
+| Bootc runtime | `bootc`, `libostree-1-1`, and the OCI bootc package requirements | [`shared/packages/bootc/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/bootc/mkosi.conf) |
 | Desktop | GNOME Shell, GDM, Nautilus, Ptyxis, PipeWire, CUPS, Flatpak, and the desktop integration packages | [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/snow/mkosi.conf) |
 | Kernel | `linux-image-amd64/forky` as a temporary selection, with firmware and Mesa packages from `trixie-backports` | [`shared/kernel/backports/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/kernel/backports/mkosi.conf) |
 | Core Flatpak set | Bazaar, Mission Center, Extension Manager, DistroShelf, and a set of GNOME applications. The image ships the list and the OCI label; Firn installs the payloads when the recipe selects the core set. | [`flatpaks/snow.json`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/flatpaks/snow.json), [`flatpaks/core-flatpaks.py`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/flatpaks/core-flatpaks.py) |
@@ -50,6 +51,13 @@ incomplete. Treat the executable package selection as current and the fragment
 name as historical. The same fragment pins Mesa and firmware from
 `trixie-backports`; do not add unpinned duplicates to the Snow package set.
 
+The table shows the main layers only; it is not the complete composition. The
+[Snow composition](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/composition/snow/mkosi.conf)
+and the [Snow package set](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/snow/mkosi.conf)
+also carry Homebrew integration, `frostyard-chairlift`, `snow-first-setup`, the
+Snow Plymouth theme, the hotedge and Logo Menu GNOME extensions, and the Bazaar
+companion build.
+
 The core Flatpak list is a JSON manifest in the source, not a live store
 listing. The build checks that the image's on-disk file matches the manifest.
 It does not prove that every listed Flatpak is available from Flathub at
@@ -58,9 +66,10 @@ install time.
 ## Choose Snow
 
 Snow is the GNOME desktop. The current product line also has Snowfield (GNOME
-for Surface devices, with representative hardware testing still pending),
-Sundog (KDE Plasma, bootc only), and Floe (headless server). Base is the shared
-foundation and is not a fifth installer choice. See the
+for Surface devices, untested on representative Surface hardware; its hardware
+gate was waived for catalog inclusion), Sundog (KDE Plasma, bootc only), and
+Floe (headless server). Base is the shared foundation and is not a fifth
+installer choice. See the
 [snosi installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md).
 
 Snow's build uses the Trixie userspace with a newer kernel selection. The
@@ -120,9 +129,16 @@ Snow package sets are build inputs, not a package-manager contract.
 ## Updates and rollback
 
 Published bootc images run `bootc-update-stage.timer` hourly. The stager pulls
-the followed image with Podman, stages it with `bootc switch --transport
-containers-storage`, and leaves it for the next natural reboot. It does not
-force a reboot. The timer and its preset are in the Base image:
+the followed image with Podman. On the first staged update, while the followed
+spec is not yet `containers-storage`, it stages with `bootc switch --transport
+containers-storage`. In steady state, when the spec already follows
+`containers-storage`, it uses `bootc upgrade`; a second switch to the identical
+spec is a silent no-op. Both paths verify the staged digest before they record
+success. The deployment applies at the next natural reboot. The stager does not
+force a reboot. The stager uses these bootc commands internally; operators do
+not need to run them. The [stager source](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
+gives the exact transport and digest checks. The timer and its preset are in
+the Base image:
 [`bootc-update-stage.timer`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer)
 and
 [`04-bootc-update.preset`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset).
@@ -182,6 +198,7 @@ Reviewed 2026-10-22 against snosi commit
 - [`mkosi.profiles/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.profiles/snow/mkosi.conf)
 - [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/composition/snow/mkosi.conf)
 - [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/snow/mkosi.conf)
+- [`shared/packages/bootc/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/bootc/mkosi.conf)
 - [`shared/kernel/backports/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/kernel/backports/mkosi.conf)
 - [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.conf)
 - [`flatpaks/snow.json`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/flatpaks/snow.json)
