@@ -64,6 +64,7 @@ const docsRoutes = [
   "/docs/images/sundog",
   "/docs/images/floe",
   "/docs/images/base",
+  "/docs/images/install-update",
   "/docs/sysexts",
   "/docs/sysexts/dev",
   "/docs/sysexts/docker",
@@ -150,6 +151,7 @@ for (const route of docsRoutes) {
     "/docs/images/sundog/",
     "/docs/images/floe/",
     "/docs/images/base/",
+    "/docs/images/install-update/",
     "/docs/sysexts/",
     "/docs/sysexts/dev/",
     "/docs/sysexts/docker/",
@@ -183,7 +185,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/images/install-update/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -410,6 +412,56 @@ assert(baseText.includes("Firn offers only Snow, Snowfield, Sundog, and Floe"), 
 assert(baseText.includes("snosi-update-status") && baseText.includes("/usr/lib/sysupdate."), "/docs/images/base must name the status tool and the extension definitions.");
 assert(baseText.includes("reload-sysext.service"), "/docs/images/base must cover the extension reload service.");
 assert(baseText.includes("not bootable"), "/docs/images/base must state that Base does not build a bootable image.");
+
+const guide = await readRoute("/docs/images/install-update");
+const guideText = textOf(guide);
+for (const heading of [
+  "choose-an-image",
+  "download-and-check-firn",
+  "write-and-boot-the-installer",
+  "install-with-firn",
+  "enroll-the-mok",
+  "after-installation",
+  "how-updates-arrive",
+  "update-now-by-hand",
+  "roll-back",
+  "move-from-an-nbc-or-ab-install",
+  "find-out-what-you-have",
+  "back-up-first",
+  "reinstall-and-restore",
+  "troubleshooting",
+  "see-also",
+  "sources",
+]) {
+  assert(guide.includes(`id="${heading}"`), `/docs/images/install-update must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "docs/installing.md",
+  "docs/nbc-to-bootc-migration.md",
+  "docs/2026-07-03-bootc-migration-record.md",
+  "docs/bootc-secure-operations.md",
+  "docs/adr/0015-retire-native-ab-images-and-nbc-installs.md",
+  "docs/adr/0018-remove-native-ab-and-nbc-lanes.md",
+  "shared/native-ab/keys/import-pubring.gpg",
+  "mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage",
+  "mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service",
+  "mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer",
+  "mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status",
+]) {
+  assert(guide.includes(`https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/${source}`), `/docs/images/install-update must cite ${source}.`);
+}
+for (const href of ["/docs/", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/install"]) {
+  assert(guide.includes(`href="${href}"`), `/docs/images/install-update must link ${href}.`);
+}
+assert(guide.includes("F37282A35CB6BDFEBFC8FE775A2EAC5C8216FD68"), "/docs/images/install-update must give the signing-key fingerprint.");
+assert(guideText.includes("sudo systemctl start bootc-update-stage.service"), "/docs/images/install-update must give the manual update command.");
+assert(guideText.includes("sudo bootc rollback") && guideText.includes("published image equals the rollback deployment"), "/docs/images/install-update must cover rollback and the rollback hold.");
+assert(guideText.includes("does not force a reboot") && guideText.includes("twice the image size"), "/docs/images/install-update must state the reboot and space rules.");
+assert(guideText.includes("cannot convert to bootc in place") && guideText.includes("2026-09-30"), "/docs/images/install-update must state the nbc limit and the end-of-life date.");
+assert(guideText.includes("Fresh-install test results") && guideText.includes("cannot convert to the secure layout in place"), "/docs/images/install-update must state the Secure Boot support limit.");
+assert(guideText.includes("/var/lib/tailscale") && guideText.includes("/var/lib/himmelblau"), "/docs/images/install-update must list the state to back up.");
+assert(!guideText.includes("bootc upgrade"), "/docs/images/install-update must not tell the reader to run bootc upgrade by hand.");
 
 const updex = await readRoute("/docs/tools/updex");
 const updexText = textOf(updex);

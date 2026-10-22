@@ -47,6 +47,9 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   support limits.
 - `src/content/docs/docs/images/base.md` covers the shared Base layer, what
   every image inherits from it, and why Base is not an installer choice.
+- `src/content/docs/docs/images/install-update.md` is the shared procedure for
+  every image: install with Firn, how updates arrive, update by hand, roll
+  back, and move from an nbc or A/B install.
 - `src/content/docs/docs/sysexts/dev.mdx` covers the Dev tools extension.
 - `src/content/docs/docs/sysexts/docker.mdx` covers the Docker CE extension.
 - `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
@@ -104,6 +107,7 @@ The docs pilot adds these content routes:
 `src/content/docs/docs/images/sundog.md` is `/docs/images/sundog/`.
 `src/content/docs/docs/images/floe.md` is `/docs/images/floe/`.
 `src/content/docs/docs/images/base.md` is `/docs/images/base/`.
+`src/content/docs/docs/images/install-update.md` is `/docs/images/install-update/`.
 `src/content/docs/docs/sysexts/index.mdx` is `/docs/sysexts/`.
 `src/content/docs/docs/sysexts/dev.mdx` is `/docs/sysexts/dev/`.
 `src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
