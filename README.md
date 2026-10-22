@@ -43,8 +43,10 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
 - `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
 - `src/content/docs/docs/sysexts/index.mdx` is the system extension catalog.
-  It covers finding, enabling, updating, and removing an extension, and lists
-  every extension from the checked catalog snapshot.
+  It covers finding and enabling an extension, and lists every extension from
+  the checked catalog snapshot.
+- `src/content/docs/docs/sysexts/manage.md` covers the full lifecycle of any
+  extension: find, enable, check, update, and remove.
 - `src/content/docs/docs/tools/updex.md` covers Updex: features, components,
   updates, the daemon, catalogs, and removal.
 - `src/content.config.ts` defines the typed Starlight `docs` collection.
@@ -89,4 +91,5 @@ The docs pilot adds these content routes:
 `src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
 `src/content/docs/docs/sysexts/incus.mdx` is `/docs/sysexts/incus/`.
 `src/content/docs/docs/sysexts/tailscale.mdx` is `/docs/sysexts/tailscale/`.
+`src/content/docs/docs/sysexts/manage.md` is `/docs/sysexts/manage/`.
 `src/content/docs/docs/tools/updex.md` is `/docs/tools/updex/`.

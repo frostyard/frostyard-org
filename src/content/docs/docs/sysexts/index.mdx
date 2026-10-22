@@ -42,55 +42,20 @@ The output lists the extension you enabled. If `enable --now` exits with a
 refresh error (`refresh_error` in JSON), the download worked but the merge did
 not. Run `sudo systemd-sysext refresh`, or reboot.
 
-## Check for updates and update
+## Update and remove
 
-See what you can update to. This changes nothing:
-
-```bash
-updex features check
-```
-
-Install the newest versions:
-
-```bash
-sudo updex features update
-```
-
-To download and stage updates each day, turn on the Updex timer:
-
-```bash
-sudo updex daemon enable
-```
-
-The timer downloads and stages updates. It does not activate them. A staged
-update starts after a refresh or a reboot.
-
-## Stop updates or remove
-
-Stop updates and keep the extension merged:
-
-```bash
-sudo updex features disable <name>
-```
-
-Remove the extension now:
-
-```bash
-sudo updex features disable <name> --now --force
-```
-
-Updex v2.0.4 and later refuse to remove a merged extension without `--force`.
-Updex before v2.0.4 does not refuse: it removes the extension at once.
-Removal unmerges all extensions on the host, then merges the rest again.
-Reboot when the command finishes. If that refresh fails, the remaining
-extensions stay unmerged until you run `sudo systemd-sysext refresh` or
-reboot.
+Updex also checks for updates, installs them, and removes an extension again.
+A daily timer can download and stage new versions without activating them.
+[Manage system extensions](/docs/sysexts/manage/) has the steps, what to check
+after each one, and how removal works.
 
 ## Guides
 
-Docker, Incus, and Tailscale have a full guide:
+Docker, Incus, and Tailscale have a full guide. The lifecycle guide covers every
+extension:
 
 <CardGrid>
+  <LinkCard title="Manage extensions" href="/docs/sysexts/manage/" description="Find, enable, check, update, and remove any extension." />
   <LinkCard title="Docker" href="/docs/sysexts/docker/" description="Add Docker Engine, containerd, Buildx, and Compose." />
   <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Run system containers and virtual machines, with Incus's own QEMU." />
   <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Put the host on your tailnet." />
