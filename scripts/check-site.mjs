@@ -373,7 +373,7 @@ for (const heading of [
   "before-you-start",
   "install",
   "use-igloo",
-  "update",
+  "update-and-remove",
   "troubleshooting",
   "see-also",
   "sources",

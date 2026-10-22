@@ -6,7 +6,8 @@ description: "Install nsl on a Frostyard image, create your first Linux machine,
 nsl gives you WSL-style Linux machines on Linux: a systemd-nspawn container
 inside a systemd-vmspawn VM, with its own packages, services, and home. Use it
 when a project needs `apt`, `dnf`, or `pacman` and your host `/usr` is
-read-only. This guide follows nsl v0.10.0; the full documentation is at
+read-only. nsl is pre-release: commands and defaults can change between
+releases. This guide follows nsl v0.10.0; the full documentation is at
 [frostyard.github.io/nsl](https://frostyard.github.io/nsl/).
 
 ## Before you start

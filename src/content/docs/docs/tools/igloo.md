@@ -69,16 +69,29 @@ A profile's *Default Container* can be an nsl machine. Pinned or restored tabs
 reopen in their machine, and new tabs keep the current machine as they keep the
 current container.
 
+A new tab opened from a machine tab starts in the same directory. This needs a
+machine created from an nsl image built since 2026-10-05; older machines start
+new tabs in the guest home.
+
 Export and import are not in the interface yet. Use `nsl export` and
 `nsl import`.
 
-## Update
+## Update and remove
 
 Update Igloo with the Flatpak command:
 
 ```bash
 flatpak update
 ```
+
+Remove Igloo:
+
+```bash
+flatpak uninstall io.github.frostyard.Igloo
+```
+
+This keeps your Igloo settings in `~/.var/app/io.github.frostyard.Igloo/`. Add
+`--delete-data` to remove them too. nsl, your machines, and `nsl.conf` stay.
 
 ## Troubleshooting
 
@@ -111,3 +124,5 @@ Reviewed 2026-10-22.
 - [`meson.build`](https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/meson.build)
 - [`agent/ptyxis-nsl.c`](https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/agent/ptyxis-nsl.c)
 - snosi commit [`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b): [`shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo), [`shared/sundog/scripts/postinstall/sundog.postinst.chroot`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sundog/scripts/postinstall/sundog.postinst.chroot), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.profiles/snowfield/mkosi.conf)
+- nsl v0.10.0 [`site/content/reference/machine-images.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/reference/machine-images.md)
+- [Duncan's review: the OSC 7 image date and the uninstall behaviour (frostyard-org#22)](https://github.com/frostyard/frostyard-org/pull/22#pullrequestreview-5620027150)
