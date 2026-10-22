@@ -38,11 +38,11 @@ function textOf(html) {
 function snapshotVersionMarkup(version) {
   return version
     ? `>${escapeHtml(version)}</code>`
-    : ">No version in the snapshot</dd>";
+    : ">No version listed</dd>";
 }
 
-assert(snapshotVersionMarkup(null) === ">No version in the snapshot</dd>", "The null snapshot version must use the plain-text fallback.");
-assert(snapshotVersionMarkup("") === ">No version in the snapshot</dd>", "The empty snapshot version must use the plain-text fallback.");
+assert(snapshotVersionMarkup(null) === ">No version listed</dd>", "The null snapshot version must use the plain-text fallback.");
+assert(snapshotVersionMarkup("") === ">No version listed</dd>", "The empty snapshot version must use the plain-text fallback.");
 assert(snapshotVersionMarkup("1&2") === ">1&amp;2</code>", "The snapshot version markup must escape HTML.");
 
 function routeFile(pathname) {
@@ -275,12 +275,12 @@ for (const page of sysextPages) {
   }
   assert(/(id="choose-[^"]+")/.test(html), `${page.route} must render a choice section.`);
 
-  assert(html.includes("Checked catalog snapshot"), `${page.route} must render the catalog snapshot component.`);
+  assert(html.includes("In the extension catalog"), `${page.route} must render the catalog snapshot component.`);
   const escapedLabel = escapeHtml(entry.label);
   assert(html.includes(`>${escapedLabel}</dd>`), `${page.route} must render the escaped snapshot label.`);
   assert(html.includes(snapshotVersionMarkup(entry.version)), `${page.route} must render the snapshot version with the expected markup.`);
   assert(html.includes(catalogDate), `${page.route} must render the catalog snapshot date.`);
-  assert(html.includes("not a latest-version claim"), `${page.route} must state the snapshot version limit.`);
+  assert(html.includes("This is not always the"), `${page.route} must state that the listed version is not always the newest.`);
   assert(html.includes(page.command), `${page.route} must use the current Updex enable syntax.`);
   assert(html.includes("refresh_error"), `${page.route} must explain a failed refresh.`);
   assert(html.includes("features check"), `${page.route} must explain read-only update checks.`);

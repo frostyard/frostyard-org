@@ -32,7 +32,7 @@ const updatedLabel = Number.isNaN(updated.getTime())
 ---
 
 <aside class="extension-snapshot" aria-label={`Extension catalog snapshot for ${entry.label}`}>
-  <p class="snapshot-heading">Checked catalog snapshot</p>
+  <p class="snapshot-heading">In the extension catalog</p>
   <dl>
     <div>
       <dt>Extension</dt>
@@ -43,14 +43,13 @@ const updatedLabel = Number.isNaN(updated.getTime())
       <dd><code>{entry.name}</code></dd>
     </div>
     <div>
-      <dt>Observed version</dt>
-      <dd>{entry.version ? <code>{entry.version}</code> : "No version in the snapshot"}</dd>
+      <dt>Listed version</dt>
+      <dd>{entry.version ? <code>{entry.version}</code> : "No version listed"}</dd>
     </div>
   </dl>
   <p>
-    The checked catalog snapshot dated <time datetime={snapshot.updatedAt}>{updatedLabel}</time>
-    lists this value. The sync takes a regex match from the published <code>SHA256SUMS</code>,
-    not a version maximum, so this value is not a latest-version claim. Snapshot source:
+    Listed on <time datetime={snapshot.updatedAt}>{updatedLabel}</time>. This is not always the
+    newest version: run <code>updex features check</code> to see what you can update to. Catalog:
     <code>{snapshot.source}</code>.
   </p>
 </aside>
