@@ -47,12 +47,18 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   support limits.
 - `src/content/docs/docs/images/base.md` covers the shared Base layer, what
   every image inherits from it, and why Base is not an installer choice.
+- `src/content/docs/docs/sysexts/dev.mdx` covers the Dev tools extension.
 - `src/content/docs/docs/sysexts/docker.mdx` covers the Docker CE extension.
 - `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
+- `src/content/docs/docs/sysexts/k3s.mdx` covers the k3s Kubernetes extension.
+- `src/content/docs/docs/sysexts/nix.mdx` covers the Nix package manager extension.
 - `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
+- `src/content/docs/docs/sysexts/vscode.mdx` covers the Visual Studio Code extension.
 - `src/content/docs/docs/sysexts/index.mdx` is the system extension catalog.
-  It covers finding, enabling, updating, and removing an extension, and lists
-  every extension from the checked catalog snapshot.
+  It covers finding and enabling an extension, and lists every extension from
+  the checked catalog snapshot.
+- `src/content/docs/docs/sysexts/manage.md` covers the full lifecycle of any
+  extension: find, enable, check, update, and remove.
 - `src/content/docs/docs/tools/updex.md` covers Updex: features, components,
   updates, the daemon, catalogs, and removal.
 - `src/content.config.ts` defines the typed Starlight `docs` collection.
@@ -60,7 +66,7 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   component and mirrors its expanded state onto the visible button for
   assistive technology. The default component still handles click and Escape.
 - `src/components/ExtensionSnapshot.astro` reads the checked
-  `src/data/extensions.json` snapshot for the three extension pages. It renders
+  `src/data/extensions.json` snapshot for the extension pages. It renders
   labels and versions as escaped text, shows the snapshot date and source, and
   never derives a link from a catalog value. The snapshot version is a regex
   match from `SHA256SUMS`, not a latest-version claim.
@@ -97,7 +103,12 @@ The docs pilot adds these content routes:
 `src/content/docs/docs/images/floe.md` is `/docs/images/floe/`.
 `src/content/docs/docs/images/base.md` is `/docs/images/base/`.
 `src/content/docs/docs/sysexts/index.mdx` is `/docs/sysexts/`.
+`src/content/docs/docs/sysexts/dev.mdx` is `/docs/sysexts/dev/`.
 `src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
 `src/content/docs/docs/sysexts/incus.mdx` is `/docs/sysexts/incus/`.
+`src/content/docs/docs/sysexts/k3s.mdx` is `/docs/sysexts/k3s/`.
+`src/content/docs/docs/sysexts/nix.mdx` is `/docs/sysexts/nix/`.
 `src/content/docs/docs/sysexts/tailscale.mdx` is `/docs/sysexts/tailscale/`.
+`src/content/docs/docs/sysexts/vscode.mdx` is `/docs/sysexts/vscode/`.
+`src/content/docs/docs/sysexts/manage.md` is `/docs/sysexts/manage/`.
 `src/content/docs/docs/tools/updex.md` is `/docs/tools/updex/`.

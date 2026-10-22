@@ -1,14 +1,15 @@
 ---
 title: Frostyard documentation
-description: Install and run Frostyard bootc images, and add Docker, Incus, or Tailscale as system extensions.
+description: Install and run Frostyard bootc images, and add Dev tools, Docker, Incus, K3s, Nix, Tailscale, or Visual Studio Code as system extensions.
 ---
 
 import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 
 Frostyard makes bootc images and `/usr` system extensions, built with
 [snosi](https://github.com/frostyard/snosi). These guides cover each Frostyard
-image and three extensions you can turn on: Docker, Incus, and Tailscale.
-Each page lists its sources at the bottom.
+image and seven extensions you can turn on: Dev tools, Docker, Incus, K3s,
+Nix, Tailscale, and Visual Studio Code. Each page lists its sources at the
+bottom.
 
 :::caution[Support boundary]
 Secure Boot, signed updates, and signed rollback are not production-ready yet.
@@ -27,6 +28,7 @@ Fresh-install test results for Snow, Floe, and Sundog are still pending. See
   <LinkCard title="Incus" href="/docs/sysexts/incus/" description="Run system containers and virtual machines, with Incus's own QEMU." />
   <LinkCard title="Tailscale" href="/docs/sysexts/tailscale/" description="Put the host on your tailnet." />
   <LinkCard title="System extension catalog" href="/docs/sysexts/" description="See every extension in the catalog, and enable or update one." />
+  <LinkCard title="Manage extensions" href="/docs/sysexts/manage/" description="Find, enable, check, update, and remove any extension." />
   <LinkCard title="Updex" href="/docs/tools/updex/" description="Manage system extensions: enable, update, and remove them." />
 </CardGrid>
 
@@ -81,8 +83,9 @@ version. Run `updex features check` to see what you can update to.
 ## Not covered yet
 
 The APT repository and per-application migrations have no guide here yet.
-Extensions other than Docker, Incus, and Tailscale have no guide of their own
-yet; the [catalog](/docs/sysexts/) lists every extension.
+Extensions other than Dev tools, Docker, Incus, K3s, Nix, Tailscale, and
+Visual Studio Code have no guide of their own yet; the
+[catalog](/docs/sysexts/) lists every extension.
 
 Old nbc and native A/B installs get no new images or updates after
 2026-09-30. They cannot convert in place: back up, install fresh, and restore.
