@@ -160,9 +160,9 @@ Some limits follow:
 ## Upgrade
 
 On Snow, Snowfield, and Sundog, the package updates with the image. On
-another system, download the newer `.deb` or `.rpm` package from the
+another system with the `.deb` package, download the newer package from the
 [intuneme releases](https://github.com/frostyard/intuneme/releases) and
-install it as in [Install](#install).
+install it with `dpkg -i`, as in [Install](#install).
 
 After you upgrade the intuneme package, run `start`, even if the container
 already runs:
