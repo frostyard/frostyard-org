@@ -267,7 +267,7 @@ launcher.
 - [nsl](/docs/tools/nsl/): the machine that builds the app
 - [Frostnotes](/docs/apps/frostnotes/): the notes app from the same project
 - [Frostmail repository](https://github.com/frostyard/frostmail)
-- [lodge](https://github.com/frostyard/lodge)
+- [lodge](/docs/apps/lodge/)
 
 ## Sources
 

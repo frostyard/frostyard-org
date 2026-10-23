@@ -66,6 +66,9 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
   updates, the daemon, catalogs, and removal.
 - `src/content/docs/docs/apps/frostmail.md` covers Frostmail: building it from source, accounts, the app, and lodge.
 - `src/content/docs/docs/apps/frostnotes.md` covers Frostnotes: building it from source, vaults, sync, the app, and MCP.
+- `src/content/docs/docs/apps/lodge.md` covers lodge: building it from source, installing it on a host, adding apps, agent tokens, and inference providers.
+- `src/content/docs/docs/apps/frostread.md` covers frostread: installing it on lodge's host, feeds, read later, saving a note, `readctl`, and agents.
+- `src/content/docs/docs/apps/porter.md` covers Porter: installing it on lodge's host, chat, routines, and what it can and cannot do.
 - `src/content/docs/docs/tools/nsl.md` covers nsl: host checks, install, machines, and removal.
 - `src/content/docs/docs/tools/igloo.md` covers the Igloo terminal: install, use, and update.
 - `src/content/docs/docs/tools/chairlift.md` covers ChairLift: the pages, everyday tasks, and install.
@@ -124,6 +127,9 @@ The docs pilot adds these content routes:
 `src/content/docs/docs/tools/updex.md` is `/docs/tools/updex/`.
 `src/content/docs/docs/apps/frostmail.md` is `/docs/apps/frostmail/`.
 `src/content/docs/docs/apps/frostnotes.md` is `/docs/apps/frostnotes/`.
+`src/content/docs/docs/apps/lodge.md` is `/docs/apps/lodge/`.
+`src/content/docs/docs/apps/frostread.md` is `/docs/apps/frostread/`.
+`src/content/docs/docs/apps/porter.md` is `/docs/apps/porter/`.
 `src/content/docs/docs/tools/nsl.md` is `/docs/tools/nsl/`.
 `src/content/docs/docs/tools/igloo.md` is `/docs/tools/igloo/`.
 `src/content/docs/docs/tools/chairlift.md` is `/docs/tools/chairlift/`.

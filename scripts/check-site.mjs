@@ -77,6 +77,9 @@ const docsRoutes = [
   "/docs/tools/updex",
   "/docs/apps/frostmail",
   "/docs/apps/frostnotes",
+  "/docs/apps/lodge",
+  "/docs/apps/frostread",
+  "/docs/apps/porter",
   "/docs/tools/nsl",
   "/docs/tools/igloo",
   "/docs/tools/chairlift",
@@ -168,6 +171,9 @@ for (const route of docsRoutes) {
     "/docs/tools/updex/",
     "/docs/apps/frostmail/",
     "/docs/apps/frostnotes/",
+    "/docs/apps/lodge/",
+    "/docs/apps/frostread/",
+    "/docs/apps/porter/",
     "/docs/tools/nsl/",
     "/docs/tools/igloo/",
     "/docs/tools/chairlift/",
@@ -537,7 +543,7 @@ assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.5"),
 assert(updexText.includes("sudo updex --dry-run daemon enable") && updexText.includes("Updex v2.0.4 and older ignore --dry-run here"), "/docs/tools/updex must explain the daemon dry run and its v2.0.4 limit (updex#452).");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
 
-for (const route of ["/docs/apps/frostmail/", "/docs/apps/frostnotes/"]) {
+for (const route of ["/docs/apps/frostmail/", "/docs/apps/frostnotes/", "/docs/apps/lodge/", "/docs/apps/frostread/", "/docs/apps/porter/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 
@@ -620,6 +626,131 @@ assert(frostnotes.includes("build/notesctl revert Projects/plan.md VERSION --bas
 assert(frostnotes.includes('data-code="nsl create frostnotes --distro debian:13'), "/docs/apps/frostnotes must give the nsl machine commands.");
 assert(frostnotes.includes('data-code="claude mcp add frostnotes'), "/docs/apps/frostnotes must give the MCP command.");
 assert(frostnotes.includes('href="/docs/tools/nsl/"') && frostnotes.includes('href="/docs/apps/frostmail/"'), "/docs/apps/frostnotes must link the nsl and Frostmail pages.");
+
+const lodgeSha = "b6aaa95d8d62840f21b17e77c820a976bee18032";
+const coreSha = "d55b259c57c636169e9a86f89ce808b075a1bf3c";
+const lodge = await readRoute("/docs/apps/lodge");
+const lodgeText = textOf(lodge);
+for (const heading of [
+  "status",
+  "before-you-start",
+  "build-the-package",
+  "install-lodge",
+  "give-lodge-a-key",
+  "start-lodge-and-allow-yourself-in",
+  "add-an-app",
+  "agents-and-tokens",
+  "agents-on-lodges-host",
+  "inference-providers",
+  "lodgectl",
+  "limits",
+  "see-also",
+  "sources",
+]) {
+  assert(lodge.includes(`id="${heading}"`), `/docs/apps/lodge must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "packaging/README.md",
+  "packaging/install.sh",
+  "packaging/config.example.json",
+  "cmd/lodgectl/main.go",
+  "docs/specs/app-contract.md",
+]) {
+  assert(lodge.includes(`https://github.com/frostyard/lodge/blob/${lodgeSha}/${source}`), `/docs/apps/lodge must cite ${source}.`);
+}
+assert(lodge.includes(`https://github.com/frostyard/core/blob/${coreSha}/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`), "/docs/apps/lodge must cite the core ADR on system extensions.");
+assert(lodgeText.includes("lodge is pre-release"), "/docs/apps/lodge must say that lodge is pre-release.");
+assert(lodgeText.includes("not yet available as a package, a Flatpak, or a system extension"), "/docs/apps/lodge must say that there is no published install path.");
+assert(lodgeText.includes("Install lodge on a Debian 13 host, not on a Frostyard image."), "/docs/apps/lodge must state the /usr limit.");
+assert(lodge.includes('data-code="git clone https://github.com/frostyard/lodge'), "/docs/apps/lodge must give the clone command.");
+assert(lodge.includes('data-code="make shell-build'), "/docs/apps/lodge must give the build commands.");
+assert(lodge.includes('data-code="sudo systemctl enable --now lodge'), "/docs/apps/lodge must give the start command.");
+assert(lodge.includes('data-code="sudo lodgectl token issue NAME --app ID --scope SCOPE"'), "/docs/apps/lodge must give the token command.");
+assert(lodge.includes('href="/docs/tools/nsl/"') && lodge.includes('href="/docs/apps/porter/"') && lodge.includes('href="/docs/apps/frostread/"'), "/docs/apps/lodge must link the nsl, Porter, and frostread pages.");
+
+const frostread = await readRoute("/docs/apps/frostread");
+const frostreadText = textOf(frostread);
+const frostreadSha = "1075112dbdf0dc726bcf57bbd7e3d26cd9fcfc10";
+for (const heading of [
+  "status",
+  "before-you-start",
+  "install-on-lodges-host",
+  "build-and-copy",
+  "create-the-user-and-start-the-socket",
+  "write-the-configuration",
+  "let-frostread-reach-notes",
+  "issue-reads-notes-token",
+  "subscribe-to-feeds",
+  "use-read",
+  "save-from-your-phone",
+  "save-as-a-note",
+  "readctl",
+  "agents",
+  "configuration",
+  "limits",
+  "see-also",
+  "sources",
+]) {
+  assert(frostread.includes(`id="${heading}"`), `/docs/apps/frostread must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "Makefile",
+  "docs/specs/api.md",
+  "docs/adr/0003-the-fetcher-reaches-only-public-addresses.md",
+  "packaging/lodge/frostread.service",
+  "packaging/lodge/stage.sh",
+]) {
+  assert(frostread.includes(`https://github.com/frostyard/frostread/blob/${frostreadSha}/${source}`), `/docs/apps/frostread must cite ${source}.`);
+}
+assert(frostreadText.includes("frostread is pre-release"), "/docs/apps/frostread must say that frostread is pre-release.");
+assert(frostreadText.includes("lodge shows it as the app Read"), "/docs/apps/frostread must say that lodge shows it as Read.");
+assert(!/repository (is|stays) private|private for now|pre-release, private/i.test(frostreadText), "/docs/apps/frostread must not call the repository private.");
+assert(frostread.includes('data-code="git clone https://github.com/frostyard/frostread'), "/docs/apps/frostread must give the clone command.");
+assert(frostread.includes('data-code="make web-build'), "/docs/apps/frostread must give the build commands.");
+assert(frostread.includes("readctl notes-token"), "/docs/apps/frostread must give the notes token command.");
+assert(frostread.includes('data-code="sudo -u frostread readctl import feeds.opml'), "/docs/apps/frostread must give the import command.");
+assert(frostread.includes('href="/docs/apps/lodge/"') && frostread.includes('href="/docs/apps/frostnotes/"') && frostread.includes('href="/docs/apps/porter/"') && frostread.includes('href="/docs/tools/nsl/"'), "/docs/apps/frostread must link the lodge, Frostnotes, Porter, and nsl pages.");
+
+const porter = await readRoute("/docs/apps/porter");
+const porterText = textOf(porter);
+const porterSha = "8e43e43d001d6daecdcfba77e48c0134f4f4d273";
+for (const heading of [
+  "status",
+  "before-you-start",
+  "install-porter",
+  "copy-the-app-to-the-host",
+  "create-the-user-and-start-the-socket",
+  "write-the-configuration",
+  "let-porter-reach-the-apps",
+  "issue-the-tokens",
+  "use-porter",
+  "routines",
+  "what-porter-can-and-cannot-do",
+  "limits",
+  "see-also",
+  "sources",
+]) {
+  assert(porter.includes(`id="${heading}"`), `/docs/apps/porter must render the "${heading}" section.`);
+}
+for (const source of [
+  "README.md",
+  "Makefile",
+  "docs/specs/routines.md",
+  "docs/adr/0004-porter-drafts-and-the-owner-sends.md",
+  "packaging/lodge/frostporter.service",
+  "packaging/lodge/stage.sh",
+]) {
+  assert(porter.includes(`https://github.com/frostyard/porter/blob/${porterSha}/${source}`), `/docs/apps/porter must cite ${source}.`);
+}
+assert(porterText.includes("Porter is pre-release"), "/docs/apps/porter must say that Porter is pre-release.");
+assert(porter.includes('data-code="git clone https://github.com/frostyard/porter'), "/docs/apps/porter must give the clone command.");
+assert(porter.includes("make lodge-package"), "/docs/apps/porter must give the package command.");
+assert(porter.includes("porterd token set notes"), "/docs/apps/porter must give the notes token command.");
+assert(porter.includes("--agent frostporter"), "/docs/apps/porter must issue its tokens for the agent socket.");
+assert(porter.includes('href="/docs/apps/lodge/"') && porter.includes('href="/docs/apps/frostread/"') && porter.includes('href="/docs/apps/frostnotes/"') && porter.includes('href="/docs/apps/frostmail/"') && porter.includes('href="/docs/tools/nsl/"'), "/docs/apps/porter must link the lodge, frostread, Frostnotes, Frostmail, and nsl pages.");
+assert(frostmail.includes('href="/docs/apps/lodge/"') && frostnotes.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
 
 const nsl = await readRoute("/docs/tools/nsl");
 const nslText = textOf(nsl);
