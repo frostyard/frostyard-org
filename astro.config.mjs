@@ -41,6 +41,9 @@ export default defineConfig({
           items: [
             { label: "Frostmail", slug: "docs/apps/frostmail" },
             { label: "Frostnotes", slug: "docs/apps/frostnotes" },
+            { label: "lodge", slug: "docs/apps/lodge" },
+            { label: "frostread", slug: "docs/apps/frostread" },
+            { label: "Porter", slug: "docs/apps/porter" },
           ],
         },
         {

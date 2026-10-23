@@ -341,7 +341,7 @@ its hub.
 - [Frostmail](/docs/apps/frostmail/): the mail app from the same project
 - [nsl](/docs/tools/nsl/): the machine that builds the app
 - [Frostnotes repository](https://github.com/frostyard/frostnotes)
-- [lodge](https://github.com/frostyard/lodge)
+- [lodge](/docs/apps/lodge/)
 
 ## Sources
 
