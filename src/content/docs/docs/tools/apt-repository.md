@@ -57,6 +57,21 @@ Signed-By: /etc/apt/keyrings/frostyard.gpg
 EOF
 ```
 
+Give Debian's own packages priority:
+
+```bash
+sudo tee /etc/apt/preferences.d/frostyard.pref <<'EOF'
+Package: *
+Pin: release o=Frostyard
+Pin-Priority: 100
+EOF
+```
+
+The pin keeps a package that Debian also has, such as `libostree-1-1` or
+`incus`, on Debian's version, so that `apt upgrade` does not replace it and
+Debian's security updates keep installing. A package that only Frostyard has
+still installs and upgrades.
+
 Refresh the package lists:
 
 ```bash
@@ -76,8 +91,12 @@ apt list '?origin(Frostyard)'
 Frostyard tools carry the `frostyard-` prefix, for example `frostyard-updex`
 ([Updex](/docs/tools/updex/)) and `frostyard-chairlift`
 ([ChairLift](/docs/tools/chairlift/)). The binary keeps the bare name. The
-repository also carries Frostyard builds of `bootc`, `libostree-1-1`, and
-`incus`, and other applications.
+repository also carries other applications, and Frostyard builds of `bootc`,
+`libostree-1-1`, and `incus`. Those builds are for Frostyard images. They are
+not supported on plain Debian hosts.
+
+On arm64, the repository has fewer packages. Check with
+`apt-cache policy <package>`.
 
 List the versions of one package:
 
@@ -117,15 +136,10 @@ Upgrade one package:
 sudo apt install --only-upgrade <package>
 ```
 
-A Frostyard build with a higher version than Debian's replaces the Debian
-package on `apt upgrade` when you have that package installed. Before you
-upgrade, check where a package comes from:
-
-```bash
-apt-cache policy <package>
-```
-
-The output lists each version and the repository that offers it.
+With the pin from [Add the repository](#add-the-repository), a package that
+Debian also has stays with Debian. If a host already got a Frostyard build of
+a Debian package, go back to Debian's version with
+`sudo apt install <package>=<Debian version>`.
 
 ## Roll back a package
 
@@ -142,7 +156,7 @@ sudo apt install <package>=<version>
 ```
 
 apt shows the package as a downgrade and asks you to confirm. Use the version
-string exactly as `apt-cache policy` prints it, including a `~deb13` marker.
+string exactly as `apt-cache policy` prints it, including a `~deb13` marker when it has one.
 
 Stop `apt upgrade` from replacing it:
 
@@ -153,8 +167,9 @@ sudo apt-mark hold <package>
 A held package stays at its version. Resume upgrades with
 `sudo apt-mark unhold <package>`.
 
-A version that Frostyard withdrew is no longer listed, and apt cannot install
-it.
+After `sudo apt update`, a version that Frostyard withdrew is no longer
+listed, and apt cannot install it. A copy that you installed stays installed.
+If Frostyard publishes that release again, the version comes back.
 
 ## Remove
 
@@ -164,11 +179,11 @@ Remove a package:
 sudo apt remove <package>
 ```
 
-Remove the repository: delete the sources file and the key, then refresh the
+Remove the repository: delete the sources file, the pin, and the key, then refresh the
 lists:
 
 ```bash
-sudo rm /etc/apt/sources.list.d/frostyard.sources /etc/apt/keyrings/frostyard.gpg
+sudo rm /etc/apt/sources.list.d/frostyard.sources /etc/apt/preferences.d/frostyard.pref /etc/apt/keyrings/frostyard.gpg
 sudo apt update
 ```
 
@@ -192,5 +207,6 @@ Reviewed 2026-10-23.
 - snosi commit [`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201): [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources), [`shared/sysext/keys/README.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/sysext/keys/README.md)
 - [`dists/trixie/InRelease`](https://repository.frostyard.org/debian/dists/trixie/InRelease), read 2026-10-23: `Origin: Frostyard`, `Architectures: all amd64 arm64`
 - The steps on this page were run in a `debian:trixie` container on 2026-10-23.
+- [Lucilla's review of frostyard-org#32: the pin, arm64, and withdrawal](https://github.com/frostyard/frostyard-org/pull/32#pullrequestreview-5630777947)
 - [Lucilla's review of frostyard-org#29](https://github.com/frostyard/frostyard-org/pull/29#pullrequestreview-5630350205)
 - Owner statement, Murbella, 2026-10-23: system extensions are not supported on plain Debian.
