@@ -1206,7 +1206,9 @@ for (const source of [
 ]) {
   assert(manage.includes(`https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/${source}`), `/docs/sysexts/manage must cite ${source}.`);
 }
-assert(manageText.includes("This guide follows Updex v2.0.5"), "/docs/sysexts/manage must follow Updex v2.0.5.");
+assert(manageText.includes("This guide follows Updex v2.0.6"), "/docs/sysexts/manage must follow Updex v2.0.6.");
+assert(manage.includes('id="roll-back"'), "/docs/sysexts/manage must render the roll back section.");
+assert(manageText.includes("Updex v2.0.6 has no rollback command"), "/docs/sysexts/manage must state that Updex v2.0.6 has no rollback command.");
 assert(manageText.includes("(version &lt;version&gt;) is active. Removing requires --force and a reboot to take effect."), "/docs/sysexts/manage must show the exact removal refusal message.");
 assert(manageText.includes("Updex v2.0.4 and later refuse to remove a merged extension"), "/docs/sysexts/manage must state the removal guard version.");
 assert(manageText.includes("In Updex v2.0.3 the check did not fire on a Frostyard host"), "/docs/sysexts/manage must state the v2.0.3 limit.");

@@ -140,6 +140,19 @@ The timer runs `updex features update --no-refresh` once a day. It downloads
 and stages, but never swaps the running system. The new version runs after
 your next refresh or reboot.
 
+Planned: a packaged timer that runs every 6 hours and takes effect at the
+next boot. See [Update](/docs/sysexts/manage/#update).
+
+To take one update at the next boot without the timer, run
+`sudo updex features update --no-refresh --component=tailscale`, then reboot.
+
+## Roll back
+
+Updex v2.0.6 has no rollback command. To keep the version you run, stop
+updates as shown below. To remove the extension, use the remove command below.
+The node identity in `/var/lib/tailscale` stays either way. A rollback command is planned. See
+[Roll back](/docs/sysexts/manage/#roll-back).
+
 ## Stop updates or remove
 
 Stop updates and keep the current version:
@@ -254,7 +267,7 @@ right after a merge.
 
 ## Sources
 
-Reviewed 2026-10-22. snosi commit
+Reviewed 2026-10-23. snosi commit
 [`5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5`](https://github.com/frostyard/snosi/tree/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5);
 Updex v2.0.3 commit
 [`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d).
@@ -283,3 +296,4 @@ Updex v2.0.3 commit
 - [Updex v2.0.3 SDK reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/sdk-api.md)
 - [Updex v2.0.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/adr/0007-daemon-stages-never-activates.md)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

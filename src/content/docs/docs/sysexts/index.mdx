@@ -1,6 +1,6 @@
 ---
 title: System extensions
-description: Find, enable, update, and remove a system extension on a Frostyard bootc image.
+description: Find, enable, update, roll back, and remove a system extension on a Frostyard bootc image.
 ---
 
 import { CardGrid, LinkCard } from "@astrojs/starlight/components";
@@ -42,12 +42,15 @@ The output lists the extension you enabled. If `enable --now` exits with a
 refresh error (`refresh_error` in JSON), the download worked but the merge did
 not. Run `sudo systemd-sysext refresh`, or reboot.
 
-## Update and remove
+## Update, roll back, and remove
 
 Updex also checks for updates, installs them, and removes an extension again.
 A daily timer can download and stage new versions without activating them.
-[Manage system extensions](/docs/sysexts/manage/) has the steps, what to check
-after each one, and how removal works.
+Updex v2.0.6 has no rollback command: you can keep your current version or
+remove the extension, and a rollback command is planned. See
+[Roll back](/docs/sysexts/manage/#roll-back) and
+[Manage system extensions](/docs/sysexts/manage/) for the steps and what to
+check after each one.
 
 ## Guides
 
@@ -75,7 +78,7 @@ update to.
 
 ## Sources
 
-Reviewed 2026-10-22. snosi commit
+Reviewed 2026-10-23. snosi commit
 [`96d663b3c7025fbbeeda5987cc521b524fd1721c`](https://github.com/frostyard/snosi/tree/96d663b3c7025fbbeeda5987cc521b524fd1721c);
 Updex v2.0.4 commit
 [`992b3d53151b73c227a871cb8e742d841b00fd6c`](https://github.com/frostyard/updex/tree/992b3d53151b73c227a871cb8e742d841b00fd6c).
@@ -87,3 +90,4 @@ Updex v2.0.4 commit
 - [Updex PR #445: detect merged extensions for the removal guard](https://github.com/frostyard/updex/pull/445)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
 - [`scripts/sync-extensions.mjs`](https://github.com/frostyard/frostyard-org/blob/main/scripts/sync-extensions.mjs)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
