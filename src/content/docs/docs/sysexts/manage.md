@@ -261,6 +261,12 @@ the next update. These options exist today:
 Your data in `/var` stays after either option. By default Updex keeps the two
 newest versions on disk (`InstancesMax`), and `--no-vacuum` keeps all of them.
 
+An image rollback with `bootc rollback` does not roll back extensions. The
+links and the images are in `/var`, which every image version shares, so the
+older image merges the same extension versions at its next boot. An extension
+is built against the image it was made for. A newer extension can fail on an
+older image. If one does, stop its updates or remove it.
+
 Planned: Updex will get `updex features rollback <name>`. It will relink the
 extension to the newest staged version older than the linked one, or to
 `--to VERSION`. It will refuse when that image is not on disk. It will record
@@ -423,3 +429,4 @@ Updex v2.0.6 commit
 - [`cmd/updex/features_run.go` at v2.0.6](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/cmd/updex/features_run.go)
 - [`updex/features.go` at v2.0.6](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/updex/features.go)
 - [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md) (planned behaviour)
+- [Murbella's review: extensions after `bootc rollback` (frostyard-org#27)](https://github.com/frostyard/frostyard-org/pull/27#pullrequestreview-5630385504)

@@ -281,6 +281,12 @@ hourly run records `published image equals the rollback deployment` in
 `snosi-update-status`. A headless login says an update is available but not
 applied. The updater stages the next published image as usual.
 
+`bootc rollback` does not change your system extensions. They stay in `/var`
+and merge again on the older image. The next `updex features update` links the
+newest version again. An extension built for a newer image can fail on an older
+one. If it does, stop its updates or remove it, as in
+[Roll back an extension](/docs/sysexts/manage/#roll-back).
+
 ## Move from an nbc or A/B install
 
 Old nbc and native A/B installs got no new images or updates after
@@ -392,7 +398,7 @@ Podman services, and the merged extensions.
 
 ## Sources
 
-Reviewed 2026-10-22 against snosi commit
+Reviewed 2026-10-23 against snosi commit
 [`79ccc63ea44ce9309a837b9428e9b5d44290fada`](https://github.com/frostyard/snosi/tree/79ccc63ea44ce9309a837b9428e9b5d44290fada)
 (tag `2026-10-22.4`).
 
@@ -411,3 +417,6 @@ Reviewed 2026-10-22 against snosi commit
 - [`mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status)
 - [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-notify`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-notify)
 - [`mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged)
+- [snosi `docs/design/sysexts.md` at `9db7cde8`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
+- [Updex ADR-0016](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [Murbella's review: extensions after `bootc rollback` (frostyard-org#27)](https://github.com/frostyard/frostyard-org/pull/27#pullrequestreview-5630385504)
