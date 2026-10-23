@@ -315,6 +315,102 @@ note. Then add the token to Claude Code, for your user only. Never use
 claude mcp add --transport http notes https://lodge.TAILNET.ts.net/mcp/notes --header "Authorization: Bearer TOKEN"
 ```
 
+## Update
+
+Frostnotes has no releases, so you move to a newer `main`. Back up the database
+first, because `notesd` applies new migrations when it starts, and an earlier
+build cannot open the result. Stop `notesd` with Ctrl-C, then copy `notesd.db`
+with its `-wal` and `-shm` files out of `$XDG_DATA_HOME/frostnotes`:
+
+```bash
+mkdir -p ~/frostnotes-backup
+cp "${XDG_DATA_HOME:-$HOME/.local/share}"/frostnotes/notesd.db* ~/frostnotes-backup/
+```
+
+Then pull, build, and start it again:
+
+```bash
+cd frostnotes
+git pull
+make build
+build/notesd
+```
+
+In another terminal, check it:
+
+```bash
+build/notesctl hello
+```
+
+It prints `notesd`, its version, and `(protocol 1)`. `notesd` applies the pending
+migrations in order when it starts. Your vault files do not change.
+
+`notesd` records a checksum for each migration that it applies. If a database
+applied another text of a migration (a database from before M2), `notesd`
+refuses to start and names the database and the migration. Move that database
+aside, with its `-wal` and `-shm` files, and start `notesd` again. It makes a
+new one. The new database has no local versions and no sync state. A synced
+vault syncs again from its hub, and your files stay.
+
+To update the desktop app, run `make app-run` again.
+
+### On lodge's host
+
+To update the web app and `notesd` that run as lodge's `notes` app, stop the
+socket and the service. Back up the data first: copy `notesd.db` and its `-wal`
+and `-shm` files out of `/var/lib/frostnotes`.
+
+```bash
+sudo systemctl stop frostnotes-lodge.socket frostnotes.service
+```
+
+Pull, build, and replace the files. `make lodge-app` runs `make web-build`
+itself. Replace the binaries with `install`, not `cp`:
+
+```bash
+cd frostnotes
+git pull
+make build
+make lodge-app
+sudo install -m 0755 build/notesd build/notesctl /usr/bin/
+sudo rm -rf /usr/share/lodge/apps/notes
+sudo cp -r build/lodge/apps/notes /usr/share/lodge/apps/notes
+sudo systemctl start frostnotes-lodge.socket frostnotes.service
+sudo lodgectl reload
+```
+
+lodge shows `notes` as `down` while it is stopped. A new web build takes effect
+on the next page load. A changed manifest takes effect after `lodgectl reload`.
+
+Update the `notesd` that serves the app and its web build together. The app's
+handshake, `rpc.hello`, refuses only a different protocol major, so it does not
+catch every pair that does not match.
+
+## Roll back
+
+A database downgrade is not supported. To roll back across a migration, restore
+the copy you made before the update. Changes after that copy are lost. Without
+a copy, move the database aside, as in [Update](#update): the vault files are
+the source of truth, and you lose the local versions and the sync state.
+
+Check out the earlier commit in your clone, then run the same build and start
+steps:
+
+```bash
+git checkout COMMIT
+make build
+build/notesd
+```
+
+To restore the copy, stop `notesd` first, and copy the files back into
+`$XDG_DATA_HOME/frostnotes`. `notesd` stops on a database that is newer than
+itself, with `database schema N is newer than this notesd (M)`. On lodge's host,
+use the same steps with the update's stop and start commands, and
+`/var/lib/frostnotes`, and the files must be owned by `frostnotes`.
+
+To undo a change to one note, not to the software, see
+[Versions and revert](#versions-and-revert).
+
 ## Remove
 
 To forget a vault, run:
@@ -369,3 +465,6 @@ Reviewed 2026-10-22.
 - No Flatpak and no cask: [`apps.json`](https://github.com/frostyard/flatpak-index/blob/404aa05424b42093eed3e33e823216cf5569c570/apps.json) in the Flatpak index at `404aa05424b42093eed3e33e823216cf5569c570`, and the tap's [`Casks`](https://github.com/frostyard/homebrew-tap/tree/7b7cd158e7e40599ff767f61a272435f84d2da41/Casks) at `7b7cd158e7e40599ff767f61a272435f84d2da41`.
 - No APT package: the Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-22. It lists `frostyard-chairlift`, `frostyard-chairlift-system-integration`, and `frostyard-intuneme`.
 - lodge commit [`c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00`](https://github.com/frostyard/lodge/tree/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00): [`README.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md), [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/docs/specs/app-contract.md)
+- frostnotes commit [`4928e88ed6d5aa48be53ff7da6dbd16746a59fd0`](https://github.com/frostyard/frostnotes/tree/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0) for the update and roll back steps: [`Makefile`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/Makefile), [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/internal/store/store.go), [`docs/design/vault.md`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/docs/design/vault.md), [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/docs/specs/lodge-app.md), [`packaging/systemd/frostnotes.service`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/packaging/systemd/frostnotes.service)
+- lodge commit [`399f46dbb3adedb37f09b53708b3dee855118297`](https://github.com/frostyard/lodge/tree/399f46dbb3adedb37f09b53708b3dee855118297) for the update steps: [`docs/adr/0007-lodge-serves-every-apps-web-build-from-disk.md`](https://github.com/frostyard/lodge/blob/399f46dbb3adedb37f09b53708b3dee855118297/docs/adr/0007-lodge-serves-every-apps-web-build-from-disk.md)
+- Frostnotes at the same commit: [`packaging/systemd/frostnotes-lodge.socket`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/packaging/systemd/frostnotes-lodge.socket), [`packaging/sysusers.d/frostnotes.conf`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/packaging/sysusers.d/frostnotes.conf), [`docs/plans/0004-m2-sync.md`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/docs/plans/0004-m2-sync.md)

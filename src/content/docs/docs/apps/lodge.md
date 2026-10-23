@@ -383,6 +383,71 @@ If you lose a phone, remove it from your tailnet or run
 `sudo lodgectl disallow node NODE`. If a token ends up in the wrong hands, run
 `sudo lodgectl token revoke NAME`.
 
+## Update
+
+lodge has no releases, so you move to a newer `main`. Back up the database
+first, because lodge applies new migrations when it starts, and an earlier
+build cannot open the result. Stop lodge, then copy `lodge.db` with its `-wal`
+and `-shm` files out of `/var/lib/lodge`. The database holds the allow-lists,
+the tokens, the sessions, and the provider sign-ins.
+
+```bash
+sudo systemctl stop lodge
+```
+
+Go to your clone and build the package again, as in
+[Build the package](#build-the-package):
+
+```bash
+git pull
+make shell-build
+make dist
+```
+
+Copy the new tarball to the host, unpack it, and run the installer again:
+
+```bash
+tar -xzf lodge-VERSION-linux-amd64.tar.gz
+sudo ./lodge-VERSION-linux-amd64/packaging/install.sh
+sudo systemctl start lodge
+```
+
+The installer is safe to repeat. It replaces the binaries, the unit, and the
+shell's files. It does not touch `/etc/lodge/config.json` or `/var/lib/lodge`.
+If lodge runs, it restarts it and prints `install.sh: restarted lodge`.
+lodge applies the pending migrations in order when it starts.
+
+Check the result:
+
+```bash
+sudo lodgectl apps
+```
+
+Each app you installed is `up`. A new app bundle needs no lodge restart. After a
+manifest change, run `sudo lodgectl reload`.
+
+## Roll back
+
+A database downgrade is not supported. To roll back across a migration, restore
+the copy you made before the update. Changes after that copy are lost.
+
+Stop lodge, and check out the earlier commit in your clone. Then run the steps
+of the update again, from `make shell-build` on, with the tarball this commit
+builds:
+
+```bash
+sudo systemctl stop lodge
+git checkout COMMIT
+```
+
+Before you start lodge, copy the saved `lodge.db` and its `-wal` and `-shm`
+files back into `/var/lib/lodge`. They must be owned by `lodge`. lodge stops on
+a database that is newer than itself, with
+`the database is at version N, newer than this lodge's M`.
+
+Without a copy, you must set up the allow-lists, the tokens, and the provider
+sign-ins again.
+
 ## Remove
 
 These steps follow the install layout. They are not tested yet.
@@ -451,3 +516,4 @@ Reviewed 2026-10-23.
 - [`cmd/lodgectl/main.go`](https://github.com/frostyard/lodge/blob/b6aaa95d8d62840f21b17e77c820a976bee18032/cmd/lodgectl/main.go)
 - No release: the repository's [releases page](https://github.com/frostyard/lodge/releases), checked 2026-10-23.
 - frostyard/core commit [`d55b259c57c636169e9a86f89ce808b075a1bf3c`](https://github.com/frostyard/core/tree/d55b259c57c636169e9a86f89ce808b075a1bf3c): [`docs/adr/0057-run-first-party-apps-behind-lodge.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/adr/0057-run-first-party-apps-behind-lodge.md), and [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Proposed)
+- lodge commit [`399f46dbb3adedb37f09b53708b3dee855118297`](https://github.com/frostyard/lodge/tree/399f46dbb3adedb37f09b53708b3dee855118297) for the update and roll back steps: [`packaging/install.sh`](https://github.com/frostyard/lodge/blob/399f46dbb3adedb37f09b53708b3dee855118297/packaging/install.sh), [`packaging/README.md`](https://github.com/frostyard/lodge/blob/399f46dbb3adedb37f09b53708b3dee855118297/packaging/README.md), [`Makefile`](https://github.com/frostyard/lodge/blob/399f46dbb3adedb37f09b53708b3dee855118297/Makefile), [`internal/store/store.go`](https://github.com/frostyard/lodge/blob/399f46dbb3adedb37f09b53708b3dee855118297/internal/store/store.go), [`docs/adr/0007-lodge-serves-every-apps-web-build-from-disk.md`](https://github.com/frostyard/lodge/blob/399f46dbb3adedb37f09b53708b3dee855118297/docs/adr/0007-lodge-serves-every-apps-web-build-from-disk.md)
