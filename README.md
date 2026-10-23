@@ -57,6 +57,27 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/content/docs/docs/sysexts/nix.mdx` covers the Nix package manager extension.
 - `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
 - `src/content/docs/docs/sysexts/vscode.mdx` covers the Visual Studio Code extension.
+- `src/content/docs/docs/sysexts/1password.mdx` covers the 1Password desktop extension.
+- `src/content/docs/docs/sysexts/1password-cli.mdx` covers the 1Password CLI extension.
+- `src/content/docs/docs/sysexts/bitwarden.mdx` covers the Bitwarden extension.
+- `src/content/docs/docs/sysexts/chatgpt.mdx` covers the ChatGPT extension.
+- `src/content/docs/docs/sysexts/claude-desktop.mdx` covers the Claude Desktop extension.
+- `src/content/docs/docs/sysexts/code-server.mdx` covers the code-server extension.
+- `src/content/docs/docs/sysexts/coder.mdx` covers the Coder extension.
+- `src/content/docs/docs/sysexts/debdev.mdx` covers the Debian development extension.
+- `src/content/docs/docs/sysexts/edge.mdx` covers the Microsoft Edge extension.
+- `src/content/docs/docs/sysexts/gitdesktop.mdx` covers the GitDesktop extension.
+- `src/content/docs/docs/sysexts/github-copilot.mdx` covers the GitHub Copilot extension.
+- `src/content/docs/docs/sysexts/himmelblau.mdx` covers the Himmelblau extension.
+- `src/content/docs/docs/sysexts/lemonade.mdx` covers the Lemonade extension.
+- `src/content/docs/docs/sysexts/localsend.mdx` covers the LocalSend extension.
+- `src/content/docs/docs/sysexts/moonlight.mdx` covers the Moonlight extension.
+- `src/content/docs/docs/sysexts/obsidian.mdx` covers the Obsidian extension.
+- `src/content/docs/docs/sysexts/paseo.mdx` covers the paseo extension.
+- `src/content/docs/docs/sysexts/pilothouse.mdx` covers the pilothouse extension.
+- `src/content/docs/docs/sysexts/podman.mdx` covers the Podman + Distrobox extension.
+- `src/content/docs/docs/sysexts/sunshine.mdx` covers the Sunshine extension.
+- `src/content/docs/docs/sysexts/voxtype.mdx` covers the Voxtype extension.
 - `src/content/docs/docs/sysexts/index.mdx` is the system extension catalog.
   It covers finding and enabling an extension, and lists every extension from
   the checked catalog snapshot.

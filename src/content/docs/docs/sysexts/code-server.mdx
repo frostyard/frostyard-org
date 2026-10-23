@@ -1,0 +1,113 @@
+---
+title: code-server
+description: Enable, update, roll back, and remove the code-server system extension on Frostyard bootc images.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The code-server extension adds code-server, VS Code in the browser, to a Frostyard bootc image. Use it to edit code on this machine from a browser. Every image ships the extension switched off.
+
+## Before you start
+
+You need:
+
+- A Frostyard bootc image. Every image built on Base has `systemd-sysext` and `frostyard-updex`.
+- Root access to enable, update, and remove the extension.
+- Network access to `https://repository.frostyard.org/ext/code-server/`.
+- Free space in `/var` for the image.
+
+code-server has no published test results on Frostyard images yet. Try it on a machine you can spare first.
+
+## Enable code-server
+
+See what Updex found, then enable the feature and download it now:
+
+```bash
+updex features list --component=code-server
+sudo updex features enable code-server --now
+```
+
+`code-server` appears as a component, with its feature disabled. The enable command
+downloads the image, checks its checksum and signature, links it, and refreshes
+the merge.
+
+Check the merge and the command that the extension adds:
+
+```bash
+systemd-sysext status
+command -v code-server
+```
+
+`systemd-sysext status` lists `code-server`, and `command -v code-server` prints `/usr/bin/code-server`.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the checks above again.
+
+## Use code-server
+
+Start code-server from a terminal with `code-server`. Frostyard adds no preset and no boot-time drop-in for it, so nothing starts it for you at boot.
+
+The program is in `/usr/lib/code-server`. Your projects and settings stay outside `/usr`, so an update leaves them alone.
+
+## Update, roll back, and remove
+
+Check for an update, then install it:
+
+```bash
+updex features check --component=code-server
+sudo updex features update --component=code-server
+```
+
+Updex downloads and verifies the new image, switches the link, deletes older versions, and refreshes the merge. See [Manage system extensions](/docs/sysexts/manage/#update) for `--no-vacuum`, `--dry-run`, and the update timer. The refresh swaps `/usr` under the running system.
+
+Updex v2.0.6 has no rollback command. See
+[Manage system extensions](/docs/sysexts/manage/#roll-back) for the options
+and the planned `updex features rollback` command.
+
+Remove code-server:
+
+```bash
+sudo updex features disable code-server --now --force
+```
+
+Updex unmerges all extensions on the host, deletes the image, and merges the rest again. The `code-server` command goes. Files you created in your home directory stay. Reboot when the command finishes. Without `--force`, Updex refuses while the image is merged.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Package | The `code-server` package from the upstream release, installed into the image with `dpkg`. The build checks the download against a pinned checksum |
+| Command | `/usr/bin/code-server` |
+| Program files | `/usr/lib/code-server` |
+| Version | The image file name carries the `code-server` package version, plus a `+rN` snosi revision when one is set |
+| Image file | `code-server_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/code-server/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+| Services | None that Frostyard starts. The upstream package ships systemd units under `/usr/lib/systemd/`, and snosi adds no preset or `Upholds=` drop-in for them |
+
+<ExtensionSnapshot name="code-server" />
+
+Each build checks that `/usr/bin/code-server` and `/usr/lib/code-server` are present. A build that is missing one fails.
+
+## See also
+
+- [System extension catalog](/docs/sysexts/)
+- [Manage system extensions](/docs/sysexts/manage/)
+
+## Sources
+
+Reviewed 2026-10-23. snosi commit
+[`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201);
+Updex v2.0.6 commit
+[`c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93`](https://github.com/frostyard/updex/tree/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93).
+
+- [`mkosi.images/code-server/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/code-server/mkosi.conf)
+- [`mkosi.images/code-server/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/code-server/mkosi.postinst.chroot)
+- [`mkosi.images/code-server/required-paths.txt`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/code-server/required-paths.txt)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.code-server.d/code-server.feature`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.code-server.d/code-server.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.code-server.d/code-server.transfer`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.code-server.d/code-server.transfer)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
+- [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/adr/0004-sysext-authoring-rules.md)
+
+- [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
