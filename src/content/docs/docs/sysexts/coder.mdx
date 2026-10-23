@@ -66,7 +66,12 @@ Edit the file:
 sudoedit /etc/coder.d/coder.env
 ```
 
-Set `CODER_ACCESS_URL` to the URL that users and workspaces use to reach Coder, for example `CODER_ACCESS_URL=https://coder.example.com`. It must be reachable from outside the machine. The other keys are optional. If the file sets the key more than once, the last line counts. You can make the file mode `0600`: the check runs as root.
+Set 2 keys:
+
+- `CODER_ACCESS_URL`: the URL that users and workspaces use to reach Coder, for example `https://coder.example.com`. It must be reachable from outside the machine. If the file sets it more than once, the last line counts.
+- `CODER_HTTP_ADDRESS`: the address that Coder listens on, for example `0.0.0.0:3000`, or `127.0.0.1:3000` behind a reverse proxy. You can also delete the line: Coder then listens on `127.0.0.1:3000`. Do not leave it empty. An empty value replaces that default, and Coder exits at once and restarts every 5 seconds.
+
+The other keys can stay empty. An empty `CODER_PG_CONNECTION_URL` uses the built-in PostgreSQL, and an empty `CODER_TLS_ENABLE` leaves TLS off. You can make the file mode `0600`: the check runs as root.
 
 Start the server:
 
@@ -76,6 +81,8 @@ systemctl status coder.service
 ```
 
 `coder.service` is active. From now on it starts at boot.
+
+If the service keeps restarting and the journal shows `error: TLS is disabled. Enable with --tls-enable or specify a HTTP address`, `CODER_HTTP_ADDRESS` is empty. Set it or delete the line, then restart the service.
 
 The extension adds a `coder` system user with home `/home/coder`, and puts it in the `docker` and `incus-admin` groups. The groups let Coder templates create containers and Incus instances when the [Docker](/docs/sysexts/docker/) or [Incus](/docs/sysexts/incus/) extension is merged. On a host without that extension, the group is still created.
 
@@ -122,7 +129,7 @@ Updex unmerges all extensions on the host, deletes the image, and merges the res
 
 Each build checks `/usr/bin/coder`, both service units, the factory `coder.env`, the start check and its drop-in, and the user, tmpfiles, preset, and activation files. A build that is missing one fails.
 
-The image is a revised build: it carries `SYSEXT_REVISION=2`, so its file name has a `+r2` suffix until the Coder version changes. Revision 1 started `coder.service` with the empty factory settings. Revision 2 adds the start check.
+The image is a revised build: it carries `SYSEXT_REVISION=2`, so its file name has a `+r2` suffix until the Coder version changes. Revision 1 tried to start `coder.service` with the empty factory settings. The server exited at once and restarted every 5 seconds. Revision 2 skips the service until `CODER_ACCESS_URL` has a value.
 
 ## See also
 
@@ -156,7 +163,10 @@ Updex v2.0.6 commit
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/0999d7f2b3963c38fb093c6645d4da6335fde893/docs/adr/0004-sysext-authoring-rules.md)
 
 - [snosi#1119: skip `coder.service` until `CODER_ACCESS_URL` is set](https://github.com/frostyard/snosi/pull/1119)
+- [snosi#1120: the empty `CODER_HTTP_ADDRESS` makes `coder.service` fail and restart](https://github.com/frostyard/snosi/issues/1120)
+- [Coder v2.37.4 `cli/server.go`](https://github.com/coder/coder/blob/v2.37.4/cli/server.go)
 
 - [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
 - [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
+- [Murbella's review (frostyard-org#33)](https://github.com/frostyard/frostyard-org/pull/33#pullrequestreview-5632123106)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
