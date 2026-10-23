@@ -385,8 +385,18 @@ If you lose a phone, remove it from your tailnet or run
 
 ## Update
 
-lodge has no releases, so you move to a newer `main`. Go to your clone and
-build the package again, as in [Build the package](#build-the-package):
+lodge has no releases, so you move to a newer `main`. Back up the database
+first, because lodge applies new migrations when it starts, and an earlier
+build cannot open the result. Stop lodge, then copy `lodge.db` with its `-wal`
+and `-shm` files out of `/var/lib/lodge`. The database holds the allow-lists,
+the tokens, the sessions, and the provider sign-ins.
+
+```bash
+sudo systemctl stop lodge
+```
+
+Go to your clone and build the package again, as in
+[Build the package](#build-the-package):
 
 ```bash
 git pull
@@ -399,12 +409,13 @@ Copy the new tarball to the host, unpack it, and run the installer again:
 ```bash
 tar -xzf lodge-VERSION-linux-amd64.tar.gz
 sudo ./lodge-VERSION-linux-amd64/packaging/install.sh
+sudo systemctl start lodge
 ```
 
 The installer is safe to repeat. It replaces the binaries, the unit, and the
 shell's files. It does not touch `/etc/lodge/config.json` or `/var/lib/lodge`.
 If lodge runs, it restarts it and prints `install.sh: restarted lodge`.
-lodge applies any new database migration when it starts.
+lodge applies the pending migrations in order when it starts.
 
 Check the result:
 
@@ -417,16 +428,25 @@ manifest change, run `sudo lodgectl reload`.
 
 ## Roll back
 
-Check out the earlier commit in your clone. Then run the steps of the update
-again, from `make shell-build` on, with the tarball this commit builds:
+A database downgrade is not supported. To roll back across a migration, restore
+the copy you made before the update. Changes after that copy are lost.
+
+Stop lodge, and check out the earlier commit in your clone. Then run the steps
+of the update again, from `make shell-build` on, with the tarball this commit
+builds:
 
 ```bash
+sudo systemctl stop lodge
 git checkout COMMIT
 ```
 
-lodge refuses a database that is newer than itself, and stops with
-`the database is at version N, newer than this lodge's M`. So if the newer
-build changed the database, an earlier build cannot open it.
+Before you start lodge, copy the saved `lodge.db` and its `-wal` and `-shm`
+files back into `/var/lib/lodge`. They must be owned by `lodge`. lodge stops on
+a database that is newer than itself, with
+`the database is at version N, newer than this lodge's M`.
+
+Without a copy, you must set up the allow-lists, the tokens, and the provider
+sign-ins again.
 
 ## Remove
 

@@ -284,17 +284,19 @@ minutes after start and then every 24 hours.
 ## Update
 
 frostread has no releases, so you move to a newer `main`. A running `readd`
-cannot be copied over, so stop it first. Back up the data before you copy,
-because a newer `readd` migrates the database when it starts, and an earlier one
-cannot open it:
+cannot be copied over. Its socket starts the service again on the next
+connection, so stop both:
 
 ```bash
-sudo systemctl stop frostread.service
+sudo systemctl stop frostread.socket frostread.service
 ```
 
-Snapshot `/var/lib/frostread`, with its `blobs/` directory, as in
-[Configuration](#configuration). Then pull, build, and copy, as in
-[Build and copy](#build-and-copy):
+lodge shows `read` as `down` while it is stopped.
+
+Back up the data, because a newer `readd` migrates the database when it starts,
+and an earlier one cannot open it. Snapshot `/var/lib/frostread`, with its
+`blobs/` directory, as in [Configuration](#configuration). Then pull, build, and
+copy, as in [Build and copy](#build-and-copy):
 
 ```bash
 cd frostread
@@ -304,7 +306,7 @@ make lodge-package
 sudo rm -rf /usr/share/lodge/apps/read
 sudo cp -r build/lodge-root/usr/. /usr/
 sudo systemctl daemon-reload
-sudo systemctl start frostread.service
+sudo systemctl start frostread.socket frostread.service
 sudo lodgectl reload
 ```
 
@@ -320,22 +322,30 @@ sudo lodgectl apps
 
 ## Roll back
 
-Stop `readd`, and check out the earlier commit:
+A database downgrade is not supported. To roll back across a migration, restore
+the copy you made before the update. Changes after that copy are lost.
+
+Stop `readd` and its socket, and check out the earlier commit:
 
 ```bash
-sudo systemctl stop frostread.service
+sudo systemctl stop frostread.socket frostread.service
 git checkout COMMIT
 ```
 
-Build and copy with the update's steps, from `make web-build` on. Then restore
-the snapshot you took before the update. Restore `blobs/` from the same
-snapshot.
+Build and copy with the update's steps, from `make web-build` to
+`sudo systemctl daemon-reload`. Restore `/var/lib/frostread` from the snapshot
+you took before the update, with its `blobs/` from the same snapshot, owned by
+`frostread`. Then start both and reload lodge:
 
-`readd` refuses a database that is newer than itself, and stops with
-`database schema N is newer than this readd (M)`. So an earlier build needs the
-snapshot from before the update. After the grace period, the sweep removes the
-files that no row names, so a database restored without its own `blobs/` shows
-missing images and originals.
+```bash
+sudo systemctl start frostread.socket frostread.service
+sudo lodgectl reload
+```
+
+`readd` stops on a database that is newer than itself, with
+`database schema N is newer than this readd (M)`. After the grace period, the
+sweep removes the files that no row names, so a database restored without its
+own `blobs/` shows missing images and originals.
 
 ## Remove
 

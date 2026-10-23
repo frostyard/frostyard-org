@@ -245,9 +245,22 @@ this yet, and lodge is pre-release too, so you set the rest up by hand.
 
 ## Update
 
-Frostmail has no releases, so you move to a newer `main`. Go to your clone,
-pull, and run the install again. It is safe to repeat. It replaces the
-programs and the user service, restarts `maild`, and keeps your mail data:
+Frostmail has no releases, so you move to a newer `main`. Back up the database
+first, because `maild` applies new migrations when it starts, and an earlier
+build cannot open the result. Stop the daemon, then copy the database with its
+`-wal` and `-shm` files:
+
+```bash
+systemctl --user stop maild.service
+mkdir -p ~/frostmail-backup
+cp "${XDG_DATA_HOME:-$HOME/.local/share}"/frostmail/frostmail.db* ~/frostmail-backup/
+```
+
+The copy holds `frostmail.db`, `frostmail.db-wal`, and `frostmail.db-shm`.
+
+Go to your clone, pull, and run the install again. It is safe to repeat. It
+replaces the programs and the user service, restarts `maild`, and keeps your
+mail data:
 
 ```bash
 cd frostmail
@@ -257,7 +270,7 @@ mailctl hello
 ```
 
 `mailctl hello` prints `maild`, its version, and `(protocol 1)`. `maild`
-applies any new database migration when it starts.
+applies the pending migrations in order when it starts.
 
 If you installed the desktop app, build and install it again:
 
@@ -268,7 +281,37 @@ make install-app
 It ends with `installed org.frostyard.Frostmail; run it from the app menu or with frostmail`.
 It replaces the installed Flatpak.
 
+### As a lodge app
+
+If `maild` runs as lodge's `mail` app, stop its socket and service, and back up
+`/var/lib/frostmail`:
+
+```bash
+sudo systemctl stop frostmail.socket frostmail.service
+```
+
+Copy `frostmail.db` and its `-wal` and `-shm` files out of `/var/lib/frostmail`.
+Then pull, build, and copy:
+
+```bash
+cd frostmail
+git pull
+make web-build
+make lodge-package
+sudo rm -rf /usr/share/lodge/apps/mail
+sudo cp -r build/lodge-root/usr/. /usr/
+sudo systemctl daemon-reload
+sudo systemctl start frostmail.socket frostmail.service
+sudo lodgectl reload
+```
+
+lodge shows `mail` as `down` while it is stopped. The binaries go to
+`/usr/local/bin`.
+
 ## Roll back
+
+A database downgrade is not supported. To roll back across a migration, restore
+the copy you made before the update. Changes after that copy are lost.
 
 Check out the earlier commit in your clone, then run the same install steps
 for `maild` and for the app:
@@ -279,9 +322,20 @@ make install
 make install-app
 ```
 
-`maild` refuses a database that is newer than itself, and stops with
-`database schema N is newer than this maild (M)`. So if the newer build changed
-the database, an earlier build cannot open it.
+Restore the copy with `maild` stopped, then start it:
+
+```bash
+systemctl --user stop maild.service
+cp ~/frostmail-backup/frostmail.db* "${XDG_DATA_HOME:-$HOME/.local/share}"/frostmail/
+systemctl --user start maild.service
+```
+
+`maild` stops on a database that is newer than itself, with
+`database schema N is newer than this maild (M)`.
+
+Without a copy, the only fallback is to move the database aside. `maild` then
+syncs your mail again from the server. You must add your accounts again, and
+local-only state, such as the outbox, is lost.
 
 ## Remove
 
@@ -334,3 +388,4 @@ Reviewed 2026-10-22.
 - No APT package: the Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-22. It lists `frostyard-chairlift`, `frostyard-chairlift-system-integration`, and `frostyard-intuneme`.
 - lodge commit [`c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00`](https://github.com/frostyard/lodge/tree/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00): [`README.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md)
 - frostmail commit [`be8120dba6f823a23d8e6601d8b9050b756741a2`](https://github.com/frostyard/frostmail/tree/be8120dba6f823a23d8e6601d8b9050b756741a2) for the update and roll back steps: [`Makefile`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/Makefile), [`packaging/flatpak/install.sh`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/flatpak/install.sh), [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/internal/store/store.go), [`docs/adr/0003-sqlite-store.md`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/docs/adr/0003-sqlite-store.md)
+- Frostmail `packaging/lodge/stage.sh`, `packaging/lodge/frostmail.socket`, and `packaging/lodge/frostmail.service` at the same commit: [`packaging/lodge/stage.sh`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/lodge/stage.sh), [`packaging/lodge/frostmail.socket`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/lodge/frostmail.socket), [`packaging/lodge/frostmail.service`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/lodge/frostmail.service), [`docs/design/storage.md`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/docs/design/storage.md)

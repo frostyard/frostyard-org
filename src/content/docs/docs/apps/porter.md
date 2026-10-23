@@ -307,11 +307,18 @@ the four read tools: `list_sources`, `list_unread`, `search`, and `read_item`.
 ## Update
 
 Porter has no releases, so you move to a newer `main`. A running `porterd`
-cannot be copied over, so stop it first. Then pull, build, and copy, as in
-[Install Porter](#install-porter):
+cannot be copied over. Its socket starts the service again on the next
+connection, so stop both:
 
 ```bash
-sudo systemctl stop frostporter.service
+sudo systemctl stop frostporter.socket frostporter.service
+```
+
+lodge shows `porter` as `down` while it is stopped.
+
+Then pull, build, and copy, as in [Install Porter](#install-porter):
+
+```bash
 cd porter
 git pull
 make web-build
@@ -319,7 +326,7 @@ make lodge-package
 sudo rm -rf /usr/share/lodge/apps/porter
 sudo cp -r build/lodge-root/usr/. /usr/
 sudo systemctl daemon-reload
-sudo systemctl start frostporter.service
+sudo systemctl start frostporter.socket frostporter.service
 sudo lodgectl reload
 ```
 
@@ -338,17 +345,26 @@ sudo lodgectl apps
 
 ## Roll back
 
-Stop `porterd`, and check out the earlier commit:
+Stop `porterd` and its socket, and check out the earlier commit:
 
 ```bash
-sudo systemctl stop frostporter.service
+sudo systemctl stop frostporter.socket frostporter.service
 git checkout COMMIT
 ```
 
-Build and copy with the update's steps, from `make web-build` on.
+Build and copy with the update's steps, from `make web-build` to
+`sudo systemctl daemon-reload`. Then start both and reload lodge:
 
-The thread database in `/var/lib/frostporter` keeps no schema version. Its one
-migration adds the `last_success` column, and nothing removes it.
+```bash
+sudo systemctl start frostporter.socket frostporter.service
+sudo lodgectl reload
+```
+
+An older `porterd` reads a thread database that a newer one opened, so Porter
+needs no backup step. The thread database keeps no schema version. Its one
+migration adds the `last_success` column, and nothing removes it. While the
+older build runs, `last_success` does not change. After the next update, it
+shows the last success before the roll back.
 
 ## Remove
 
