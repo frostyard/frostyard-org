@@ -193,6 +193,7 @@ before you erase the disk.
 ## See also
 
 - [Install a Frostyard image](/install)
+- [Install, update, and roll back](/docs/images/install-update/)
 - [Snow image](/docs/images/snow/)
 - [Docker system extension](/docs/sysexts/docker/)
 - [Incus system extension](/docs/sysexts/incus/)

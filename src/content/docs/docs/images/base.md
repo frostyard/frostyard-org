@@ -137,6 +137,7 @@ Snowfield is untested on representative Surface hardware. The
 ## See also
 
 - [Install a Frostyard image](/install)
+- [Install, update, and roll back](/docs/images/install-update/)
 - [Snow image](/docs/images/snow/)
 - [System extension catalog](/docs/sysexts/)
 - [Updex](/docs/tools/updex/)
