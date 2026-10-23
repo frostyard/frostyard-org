@@ -104,6 +104,13 @@ the rest again. The mount unit and the daemon go. `/var/lib/nix` stays, with
 every store path and profile you built. Reboot when the command finishes.
 Without `--force`, Updex refuses while the image is merged.
 
+### Roll back
+
+Updex v2.0.6 has no rollback command. To keep the version you run, stop
+updates with `sudo updex features disable nix`. To remove the extension, use
+the command above. `/var/lib/nix` stays either way. A rollback command is planned. See
+[Roll back](/docs/sysexts/manage/#roll-back).
+
 See [Manage system extensions](/docs/sysexts/manage/) for the update check, the
 timer, and plain `disable`.
 
@@ -150,7 +157,7 @@ an older Nix image.
 
 ## Sources
 
-Reviewed 2026-10-22. snosi commit
+Reviewed 2026-10-23. snosi commit
 [`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b);
 Updex v2.0.5 commit
 [`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb).
@@ -171,3 +178,4 @@ Updex v2.0.5 commit
 - [Updex v2.0.5 `README.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
 - [Updex v2.0.5 `updex/features.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/features.go)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

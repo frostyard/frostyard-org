@@ -1,12 +1,12 @@
 ---
 title: Manage system extensions
-description: "Find, enable, check, update, and remove a system extension on a Frostyard bootc image."
+description: "Find, enable, check, update, roll back, and remove a system extension on a Frostyard bootc image."
 ---
 
 A system extension is an EROFS image that adds files to `/usr` only. Every
 Frostyard bootc image ships each extension switched off, and Updex turns one
 on. This guide covers the whole lifecycle of one extension: find it, enable
-it, check it, update it, and remove it.
+it, check it, update it, roll it back, and remove it.
 
 ## Before you start
 
@@ -17,14 +17,14 @@ You need:
 - Network access to `https://repository.frostyard.org/ext/`.
 - Free space in `/var` for the download and the installed image.
 
-This guide follows Updex v2.0.5. Check your version:
+This guide follows Updex v2.0.6. Check your version:
 
 ```bash
 updex --version
 ```
 
-The output shows the version. An older Updex can lack a command, or remove a
-merged extension without the `--force` check.
+The output shows the version. An older Updex can lack a command, print older
+messages, or remove a merged extension without the `--force` check.
 
 ## Find an extension
 
@@ -140,6 +140,11 @@ current version, the newest version, and `UPDATE`. `UPDATE` shows `yes`, `no`,
 or `error`. An `error` row means Updex could not fetch or verify the manifest,
 and the command exits non-zero. Do not read an error row as `no`.
 
+The current version is the one that the link
+`/var/lib/extensions/<name>.raw` points to. If the newest image is already on
+disk but the link names an older one, `UPDATE` shows `yes`. Updex v2.0.5 and
+older compared with the image files on disk, and could show `no` here.
+
 Install the newest versions:
 
 ```bash
@@ -149,6 +154,25 @@ sudo updex features update
 Each row shows the status `downloaded` or `up to date`. Updex downloads and
 verifies each new image, switches the link, removes old versions, and refreshes
 the merge.
+
+If the newest image is already on disk and only the link names an older one,
+Updex downloads nothing. It repoints the link and prints
+`Linked staged version <version>`. The row shows `up to date`. This means the
+host now has a newer version linked than the one it runs. Reboot to run it, or
+run `sudo systemd-sysext refresh`. With `--json`, the result has
+`next_action_message`: `Reboot required to activate changes`. Updex v2.0.5 and
+older print `Version <version> already installed and current` here.
+
+Take the update at the next boot instead of now:
+
+```bash
+sudo updex features update --no-refresh
+```
+
+Updex downloads, verifies, and links the new version, but does not run
+`systemd-sysext refresh`. Nothing changes in the running system. The new
+version runs after the next reboot. `--no-refresh` is a global flag: the
+daily timer below uses it too.
 
 Keep old versions:
 
@@ -195,6 +219,15 @@ random delay of up to 1 hour. It downloads and stages new versions and updates
 the link. It never activates them: nothing changes in the running system until
 a later refresh or reboot.
 
+Planned: the `frostyard-updex` package will ship the timer and service in
+`/usr/lib/systemd/system/`, and Frostyard images will enable the timer
+without `updex daemon enable`. It will run
+`updex features update --no-refresh` every 6 hours, only on AC power, with a
+random delay of up to 1 hour. A new version will run after the next reboot.
+To opt out, run `sudo systemctl mask updex-update.timer` for the whole host,
+or `sudo updex features disable <name>` for one extension. Updex v2.0.6 does
+not ship this timer.
+
 Check the timer:
 
 ```bash
@@ -212,6 +245,30 @@ sudo updex daemon disable
 The output says `Auto-update daemon disabled.` Updex stops the timer, disables
 it, and removes both unit files.
 
+## Roll back
+
+Updex v2.0.6 has no rollback command. Updex links the newest version on
+every `updex features update`, so a link that you move by hand lasts only until
+the next update. These options exist today:
+
+- Keep the version you run. Stop future updates with
+  `sudo updex features disable <name>`. See
+  [Stop updates or remove](#stop-updates-or-remove).
+- Remove the extension with
+  `sudo updex features disable <name> --now --force`. Reboot when the command
+  finishes.
+
+Your data in `/var` stays after either option. By default Updex keeps the two
+newest versions on disk (`InstancesMax`), and `--no-vacuum` keeps all of them.
+
+Planned: Updex will get `updex features rollback <name>`. It will relink the
+extension to the newest staged version older than the linked one, or to
+`--to VERSION`. It will refuse when that image is not on disk. It will record
+the rejected version in `/var/lib/updex/rollback/<name>`, so that updates skip
+it until a newer version is published. The change will take effect at the next
+boot, or at once with `--now`. `updex features rollback --clear <name>` will
+delete the record. Updex v2.0.6 does not have this command.
+
 ## Stop updates or remove
 
 Stop future updates and keep the extension merged:
@@ -223,8 +280,9 @@ sudo updex features disable <name>
 The output says `Feature '<name>' disabled.` Updex writes `Enabled=false` in
 the drop-in. It does not unmerge the extension. The image and the link stay, so
 the extension keeps running, now and after every reboot. The output also
-suggests `updex features update`. Ignore it: an update does not remove a
-disabled extension.
+says `Its extensions stay installed and merged. Run 'updex features disable <name> --now' to remove them.`
+Updex v2.0.5 and older suggest `updex features update` instead. Ignore that
+line: an update does not remove a disabled extension.
 
 Remove the extension now:
 
@@ -291,6 +349,8 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 | Symptom | Check | Fix |
 | --- | --- | --- |
 | `updex features list` shows no features | `updex components` | If no component is listed, Updex found no definition files. Check that your image ships `/usr/lib/sysupdate.<name>.d/`. |
+| `features check` shows `UPDATE=yes` but `features update` downloads nothing | The output of `features update` says `Linked staged version <version>` | The image was already on disk. Updex repointed the link. Reboot to run the new version. |
+| You want the old version back | `updex --version` | Updex v2.0.6 has no rollback command. See [Roll back](#roll-back). |
 | `features check` shows `UPDATE=error` | The command output and the network | Check the network and the published manifest. The command exits non-zero. Do not read the row as up to date. |
 | `enable --now` exits non-zero after the download | The output shows `sysext refresh failed` | Run `sudo systemd-sysext refresh`, or reboot, then check `systemd-sysext status`. |
 | A service is not active after `enable --now` | `systemctl status <name>.service` and `systemd-sysext status` | Reboot, so that `reload-sysext.service` runs the setup, then check again. |
@@ -310,10 +370,12 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 
 ## Sources
 
-Reviewed 2026-10-22. snosi commit
+Reviewed 2026-10-23. snosi commit
 [`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b);
 Updex v2.0.5 commit
-[`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb).
+[`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb);
+Updex v2.0.6 commit
+[`c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93`](https://github.com/frostyard/updex/tree/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93).
 
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/adr/0004-sysext-authoring-rules.md)
@@ -353,3 +415,11 @@ Updex v2.0.5 commit
 - [Updex PR #128: decompressed target file names](https://github.com/frostyard/updex/pull/128)
 - [Updex PR #452: honour `--dry-run` in `daemon enable` and `daemon disable`](https://github.com/frostyard/updex/pull/452)
 - [Updex issue #453: `features disable` suggests an update that does nothing for a disabled feature](https://github.com/frostyard/updex/issues/453)
+- [Updex v2.0.6 release](https://github.com/frostyard/updex/releases/tag/v2.0.6)
+- [Updex PR #454: a true next-step hint for plain `features disable`](https://github.com/frostyard/updex/pull/454)
+- [Updex PR #456: report the linked sysext version as current](https://github.com/frostyard/updex/pull/456)
+- [`README.md` at v2.0.6](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [`docs/design/overview.md` at v2.0.6](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/docs/design/overview.md)
+- [`cmd/updex/features_run.go` at v2.0.6](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/cmd/updex/features_run.go)
+- [`updex/features.go` at v2.0.6](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/updex/features.go)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md) (planned behaviour)
