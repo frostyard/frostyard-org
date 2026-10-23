@@ -159,6 +159,11 @@ Some limits follow:
 
 ## Upgrade
 
+On Snow, Snowfield, and Sundog, the package updates with the image. On
+another system, download the newer `.deb` or `.rpm` package from the
+[intuneme releases](https://github.com/frostyard/intuneme/releases) and
+install it as in [Install](#install).
+
 After you upgrade the intuneme package, run `start`, even if the container
 already runs:
 
@@ -182,6 +187,23 @@ Packages and settings inside the container come from the new image. If
 `recreate` fails with `disk quota exceeded`, add `--tmp-dir /var/tmp`.
 `recreate` keeps your image channel. `--insiders` switches to the insiders
 image, and `--insiders=false` switches back.
+
+## Roll back
+
+On Snow, Snowfield, and Sundog, the intuneme package rolls back with the
+image. Follow [Roll back](/docs/images/install-update/#roll-back). Your
+enrollment and files in `~/Intune` stay, because they are not part of the
+image.
+
+The insiders image is a channel, not an earlier version. To go from the
+insiders image back to the stable image, run:
+
+```bash
+intuneme recreate --insiders=false
+intuneme start
+```
+
+Your enrollment, Edge profile, and downloads stay.
 
 ## Remove
 
@@ -238,7 +260,7 @@ covers Edge crashes, X authorization errors, and the rest.
 
 ## Sources
 
-Reviewed 2026-10-22.
+Reviewed 2026-10-23.
 
 - intuneme v0.20.4 commit [`aeed93d4e398da8aada4d854664828596594eea1`](https://github.com/frostyard/intuneme/tree/aeed93d4e398da8aada4d854664828596594eea1)
 - [`README.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/README.md)
@@ -256,4 +278,6 @@ Reviewed 2026-10-22.
 - [`site/troubleshooting.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/troubleshooting.md)
 - [`cmd/init.go`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/cmd/init.go)
 - [`cmd/destroy.go`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/cmd/destroy.go)
+- intuneme main commit [`f9b11984da3d6e1ca048be8109e41930b96b5d81`](https://github.com/frostyard/intuneme/tree/f9b11984da3d6e1ca048be8109e41930b96b5d81): [`site/getting-started/installation.md`](https://github.com/frostyard/intuneme/blob/f9b11984da3d6e1ca048be8109e41930b96b5d81/site/getting-started/installation.md), [`site/user-guide/upgrading.md`](https://github.com/frostyard/intuneme/blob/f9b11984da3d6e1ca048be8109e41930b96b5d81/site/user-guide/upgrading.md)
+- snosi commit [`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/packages/sundog/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.profiles/snowfield/mkosi.conf)
 - snosi commit [`79ccc63ea44ce9309a837b9428e9b5d44290fada`](https://github.com/frostyard/snosi/tree/79ccc63ea44ce9309a837b9428e9b5d44290fada): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/packages/sundog/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/composition/snow/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.profiles/snowfield/mkosi.conf)
