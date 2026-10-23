@@ -172,8 +172,8 @@ sudo updex --no-refresh features update
 Updex downloads, verifies, and links the image, and does not refresh. The row
 shows `downloaded`. With `--json`, the result has `next_action_message` set to
 `Reboot required to activate changes`. The new version runs after you reboot,
-or after the next `systemd-sysext refresh`. A refresh activates
-every staged update.
+or after the next `systemd-sysext refresh`. A refresh activates every
+extension whose link changed. That can include other extensions.
 
 `features check` compares the newest version with the version that the link
 `/var/lib/extensions/<name>.raw` points to. If the link still names an older
@@ -206,8 +206,11 @@ something. A dry run of a command that changes state still needs root.
 
 Updex v2.0.6 has no rollback command. A link that you change by hand lasts only
 until the next `updex features update`, which links the newest version again.
-Follow [Manage system extensions](/docs/sysexts/manage/#roll-back) for the
-steps.
+See [Manage system extensions](/docs/sysexts/manage/#roll-back) for the
+options that exist today.
+
+Updex v2.0.6 keeps the newest `InstancesMax` versions (default 2) and
+`ProtectVersion=`. Its vacuum does not know the linked or the merged version.
 
 To keep the version you run, stop future updates:
 
@@ -243,9 +246,9 @@ Updex writes `/etc/systemd/system/updex-update.timer` and
 The timer runs daily with a random delay of up to 1 hour. It runs
 `/usr/bin/updex features update --no-refresh`. New versions are downloaded and
 staged, and the link is updated. Nothing is activated until the next
-`systemd-sysext refresh` or reboot. A refresh activates every staged update:
-yours, or one that another Updex command runs, for example `features update` or
-`features enable --now`.
+`systemd-sysext refresh` or reboot. A refresh activates every extension whose
+link changed: the timer's, or one that another Updex command runs, for example
+`features update` or `features enable --now`.
 
 Check the timer:
 
@@ -280,8 +283,11 @@ units.
 Planned: the `frostyard-updex` package will ship `updex-update.timer` and
 `updex-update.service` in `/usr/lib/systemd/system/`, and Frostyard images will
 enable the timer. It will run `updex features update --no-refresh` every 6
-hours with a random delay of up to 1 hour, only on AC power. A new version will
-take effect at the next boot. To opt out of the whole host, run
+hours with a random delay of up to 1 hour. A host on battery will skip the
+run. A host without a battery will always run. A new version will take effect
+at the next boot. The package will not enable the units: on a system that is
+not a Frostyard image, the timer will stay off until you run
+`updex daemon enable`. To opt out of the whole host, run
 `systemctl mask updex-update.timer`. To opt out of one extension, run
 `updex features disable <name>`. Check a run with
 `journalctl -u updex-update.service` and `updex daemon status`.
