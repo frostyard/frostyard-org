@@ -15,7 +15,7 @@ type Extension = typeof extensionCatalog.extensions[number];
 const groupDefinitions: Array<[string, string[]]> = [
   ["Workstation", ["1password", "bitwarden", "claude-desktop", "edge", "vscode"]],
   ["Development", ["dev", "debdev", "nix", "podman", "docker"]],
-  ["Infrastructure", ["tailscale", "azurevpn", "incus", "coder", "code-server", "lemonade"]],
+  ["Infrastructure", ["tailscale", "incus", "coder", "code-server", "lemonade"]],
 ];
 const extensionGroups: Array<{ name: string; extensions: Extension[] }> = groupDefinitions.map(([name, members]) => ({
   name,
