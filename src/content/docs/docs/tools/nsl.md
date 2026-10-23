@@ -131,8 +131,12 @@ the machines too, remove them with nsl first.
 
 ## Roll back
 
-For a tarball install, install an older release. Set `base` to the release
-you want, replace `VERSION` with its number, and repeat the steps:
+Homebrew installs only the newest nsl. To roll back, run `nsl shutdown`,
+remove the cask with `brew uninstall --cask frostyard/tap/nsl`, and install
+the release you want from its tarball.
+
+For a tarball install, set `base` to the release you want, replace `VERSION`
+with its number, and repeat the steps:
 
 ```bash
 base=https://github.com/frostyard/nsl/releases/download/vVERSION
@@ -146,7 +150,16 @@ nsl version
 ```
 
 The check prints `nsl_linux_amd64.tar.gz: OK`, and `nsl version` shows the
-release you chose. Your machines and `nsl.conf` stay.
+release you chose.
+
+Roll back to v0.9.0 or later. Your machines and `nsl.conf` stay. v0.9.0
+changed the VM's data disk, so v0.8.0 and earlier releases cannot use machines
+that a newer release made. Before you roll back across a release, read its
+release notes for breaking changes.
+
+Machine images do not roll back. Inside a machine, go back with the distro's
+own package manager, or import an `nsl export` archive that you saved before.
+The VM image also moves only forward with `nsl update`.
 
 ## Igloo
 
@@ -182,5 +195,7 @@ Reviewed 2026-10-23.
 - [`site/content/guides/images.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/guides/images.md)
 - [`site/content/reference/limits.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/reference/limits.md)
 - nsl main commit [`b78a782f7f56eb1717afac16fa69d05a58cfd60e`](https://github.com/frostyard/nsl/tree/b78a782f7f56eb1717afac16fa69d05a58cfd60e): [`site/content/getting-started/install.md`](https://github.com/frostyard/nsl/blob/b78a782f7f56eb1717afac16fa69d05a58cfd60e/site/content/getting-started/install.md)
+- nsl main commit `b78a782f7f56eb1717afac16fa69d05a58cfd60e`: [`AGENTS.md`](https://github.com/frostyard/nsl/blob/b78a782f7f56eb1717afac16fa69d05a58cfd60e/AGENTS.md), [`site/content/guides/images.md`](https://github.com/frostyard/nsl/blob/b78a782f7f56eb1717afac16fa69d05a58cfd60e/site/content/guides/images.md)
+- [Duncan's review: nsl roll back (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
 - snosi commit [`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/sundog/mkosi.conf), [`shared/packages/floe/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/floe/mkosi.conf), [`shared/snow/tree/usr/lib/systemd/system/brew-setup.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/snow/tree/usr/lib/systemd/system/brew-setup.service), [`shared/floe/tree/usr/lib/systemd/system/brew-setup.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/floe/tree/usr/lib/systemd/system/brew-setup.service), [`shared/composition/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/composition/sundog/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.profiles/snowfield/mkosi.conf)
 - Firn commit [`313f576ab450cfb8e6858d06f342b77b401882ef`](https://github.com/frostyard/firn/tree/313f576ab450cfb8e6858d06f342b77b401882ef): [`internal/tui/catalog.go`](https://github.com/frostyard/firn/blob/313f576ab450cfb8e6858d06f342b77b401882ef/internal/tui/catalog.go)
