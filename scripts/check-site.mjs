@@ -563,7 +563,7 @@ for (const source of [
   "systemd/manager.go",
   "systemd/unit.go",
 ]) {
-  assert(updex.includes(`https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/${source}`), `/docs/tools/updex must cite ${source}.`);
+  assert(updex.includes(`https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/${source}`), `/docs/tools/updex must cite ${source}.`);
 }
 for (const source of [
   "mkosi.images/base/mkosi.conf",
@@ -580,8 +580,8 @@ assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name th
 assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
 assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
 assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
-assert(updexText.includes("This guide follows Updex v2.0.5"), "/docs/tools/updex must follow Updex v2.0.5.");
-assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.5"), "/docs/tools/updex must link the Updex v2.0.5 release.");
+assert(updexText.includes("This guide follows Updex v2.0.6"), "/docs/tools/updex must follow Updex v2.0.6.");
+assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.6"), "/docs/tools/updex must link the Updex v2.0.6 release.");
 assert(updexText.includes("sudo updex --dry-run daemon enable") && updexText.includes("Updex v2.0.4 and older ignore --dry-run here"), "/docs/tools/updex must explain the daemon dry run and its v2.0.4 limit (updex#452).");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
 
