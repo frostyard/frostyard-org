@@ -83,6 +83,7 @@ export default defineConfig({
           label: "Tools",
           items: [
             { label: "Updex", slug: "docs/tools/updex" },
+            { label: "APT repository", slug: "docs/tools/apt-repository" },
             { label: "nsl", slug: "docs/tools/nsl" },
             { label: "Igloo", slug: "docs/tools/igloo" },
             { label: "ChairLift", slug: "docs/tools/chairlift" },
