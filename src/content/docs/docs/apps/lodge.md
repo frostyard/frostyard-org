@@ -43,7 +43,7 @@ beside them as the companion. lodge and all four run together in trial use on
 one host.
 
 Not checked yet: lodge on a phone and in Chrome's PDF viewer, and the
-companion on your own devices.
+companion on a phone and a desktop.
 
 Not yet available: a release, a package, a Flatpak, and a system extension.
 Frostyard has a proposed plan to ship `lodge` and each app's daemon as a
@@ -137,6 +137,10 @@ TS_AUTHKEY=tskey-auth-…
 
 The first start reads `TS_AUTHKEY` and `TS_AUTHKEY_CONTENT` from this file.
 Never commit it.
+
+`lodge-content` uses `TS_AUTHKEY_CONTENT` when it is set, else `TS_AUTHKEY`.
+One key for both nodes must be reusable. With a one-off key, add a second
+one-off key as `TS_AUTHKEY_CONTENT`.
 
 Without a key, start lodge anyway and log each node in from the URL that
 `sudo lodgectl status` shows. Open that URL yourself, right away: it claims
@@ -378,6 +382,35 @@ as `sudo lodgectl …`. Add `--json` before the command for JSON output.
 If you lose a phone, remove it from your tailnet or run
 `sudo lodgectl disallow node NODE`. If a token ends up in the wrong hands, run
 `sudo lodgectl token revoke NAME`.
+
+## Remove
+
+These steps follow the install layout. They are not tested yet.
+
+Remove each app first: [Frostnotes](/docs/apps/frostnotes/),
+[Frostmail](/docs/apps/frostmail/), [frostread](/docs/apps/frostread/#remove),
+and [Porter](/docs/apps/porter/#remove). Then stop lodge and delete its files:
+
+```bash
+sudo systemctl disable --now lodge
+sudo rm /usr/bin/lodge /usr/bin/lodgectl
+sudo rm /usr/lib/systemd/system/lodge.service /usr/lib/sysusers.d/lodge.conf /usr/lib/tmpfiles.d/lodge.conf
+sudo rm -rf /usr/share/lodge /run/lodge
+```
+
+If you installed with `PREFIX=/opt/lodge`, the binaries are in
+`/opt/lodge/bin`, and the unit and the `sysusers.d` and `tmpfiles.d` entries
+are under `/etc`.
+
+Two directories stay. `/var/lib/lodge` holds the node keys, the tokens, and the
+sessions. `/etc/lodge` holds the configuration and `lodge.env`. Delete them only
+if you do not want them back.
+
+In your tailnet's admin console, delete the machines `lodge` and
+`lodge-content`.
+
+`systemd-sysusers` never deletes a user or a group. To remove the user, run
+`sudo userdel lodge`. This is optional.
 
 ## Limits
 

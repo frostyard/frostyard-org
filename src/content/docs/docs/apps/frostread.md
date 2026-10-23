@@ -181,8 +181,8 @@ sources in a column.
   conditional request and a backoff that grows after each failed poll. A failed
   poll shows its error on the source, and the app stays up.
 - Views: unread, starred, later, archive, and all. Press `j` and `k` to move,
-  `s` to star, `m` to toggle read, `e` to archive, `o` to open the original, and
-  `/` to search.
+  `s` to star, `m` to toggle read, `e` to archive, `o` to open the original,
+  `/` to search, and `Shift+A` to mark all read.
 - Read later: save a link from the app, with `readctl save URL`, or from an agent
   with a `read;write` token. Saving the same address twice gives the same item.
 - Articles: Read extracts the main content, sanitizes it, fetches the images
@@ -280,6 +280,40 @@ frostread keeps its data in `/var/lib/frostread`: the database
 `tokens/notes`. The database must be on a local disk. To back it up, stop
 `readd` and snapshot the directory, or snapshot it while `readd` runs. The sweep runs 10
 minutes after start and then every 24 hours.
+
+## Remove
+
+These steps follow the install layout. They are not tested yet.
+
+Stop frostread and revoke its token, and every token issued for `read`, such as
+Porter's `porter-read`:
+
+```bash
+sudo systemctl disable --now frostread.service frostread.socket
+sudo lodgectl tokens
+sudo lodgectl token revoke frostread-notes
+```
+
+`tokens` lists every token with its app. Revoke each one whose app is `read`
+the same way.
+
+Remove `frostread` from `agents` in `/etc/lodge/config.json`. Then delete the
+app's files and reload:
+
+```bash
+sudo rm -rf /usr/share/lodge/apps/read /etc/systemd/system/frostread.service.d
+sudo rm /usr/local/bin/readd /usr/local/bin/readctl /usr/lib/systemd/system/frostread.socket /usr/lib/systemd/system/frostread.service /usr/lib/sysusers.d/frostread.conf
+sudo systemctl daemon-reload
+sudo lodgectl reload
+```
+
+`read` no longer shows in `sudo lodgectl apps`.
+
+Your feeds and articles stay in `/var/lib/frostread`, and the configuration in
+`/etc/frostread`. To delete them, run
+`sudo rm -rf /var/lib/frostread /etc/frostread`. Notes you saved stay in your
+vault. `systemd-sysusers` never deletes a user; `sudo userdel frostread` is
+optional.
 
 ## Limits
 

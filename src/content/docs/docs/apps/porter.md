@@ -292,7 +292,8 @@ not the thread. Its inference requests are `background`.
 | Send, forward, or invite | never | never |
 | Save, mark read, or star in Read | never | never |
 
-The apps offer agents no delete tool, so Porter deletes nothing. A routine never
+The apps offer agents no delete tool, so Porter deletes nothing. When you ask,
+it can move mail to Trash, as any move. A routine never
 deletes, flags, moves, or completes anything on its own.
 
 An approval card shows the action with its full arguments. It runs, as your
@@ -302,6 +303,41 @@ Porter's tokens enforce the limits, and no prompt widens them. The apps refuse
 anything outside a token's scope. On top of that, Porter never offers a tool
 whose name says it sends, posts, forwards, or invites. In Read, it offers only
 the four read tools: `list_sources`, `list_unread`, `search`, and `read_item`.
+
+## Remove
+
+These steps follow the install layout. They are not tested yet.
+
+Stop Porter and revoke its tokens:
+
+```bash
+sudo systemctl disable --now frostporter.service frostporter.socket
+sudo lodgectl tokens
+sudo lodgectl token revoke porter-notes
+sudo lodgectl token revoke porter-mail
+sudo lodgectl token revoke porter-read
+```
+
+`tokens` lists every token, so you can check the names. Each `revoke` prints
+`revoked NAME`.
+
+Remove `frostporter` from `agents` in `/etc/lodge/config.json`. Then delete the
+app's files and reload:
+
+```bash
+sudo rm -rf /usr/share/lodge/apps/porter
+sudo rm /usr/local/bin/porterd /usr/lib/systemd/system/frostporter.socket /usr/lib/systemd/system/frostporter.service /usr/lib/sysusers.d/frostporter.conf
+sudo systemctl daemon-reload
+sudo lodgectl reload
+```
+
+`porter` no longer shows in `sudo lodgectl apps`.
+
+Porter's thread and tokens stay in `/var/lib/frostporter`, and its
+configuration in `/etc/porter`. To delete them, run
+`sudo rm -rf /var/lib/frostporter /etc/porter`. Your memory and routines are
+notes in your vault, and stay there. `systemd-sysusers` never deletes a user;
+`sudo userdel frostporter` is optional.
 
 ## Limits
 
