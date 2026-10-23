@@ -122,6 +122,30 @@ groups are off, and Help always stays. The
 [configuration reference](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/CONFIG.md)
 lists every page and group.
 
+## Update and roll back
+
+On Snow, Snowfield, and Sundog, ChairLift is part of the image. It updates
+with the image: see [Stage a system update](#stage-a-system-update). It rolls
+back with the image too. Follow
+[Roll back](/docs/images/install-update/#roll-back). ChairLift has no
+rollback control of its own. On a bootc install, its System page shows the
+rollback image. On a native A/B install, its Updates page shows the previous
+version.
+
+For a package you installed yourself, update it as in the next section.
+
+To roll a package back, download the older release from
+`https://github.com/frostyard/chairlift/releases/download/vX.Y.Z/`. Get the
+package and `checksums.txt`, and check the file as in the next section. Then
+install it:
+
+```bash
+sudo apt install --allow-downgrades ./frostyard-chairlift_X.Y.Z_amd64.deb
+```
+
+On Fedora or RHEL, run `sudo dnf downgrade ./frostyard-chairlift-X.Y.Z-1.x86_64.rpm`
+instead.
+
 ## Install on another system
 
 Each [ChairLift release](https://github.com/frostyard/chairlift/releases) has
@@ -152,6 +176,9 @@ dpkg-query -W frostyard-chairlift
 
 On Fedora or RHEL, run `rpm -q frostyard-chairlift` instead. ChairLift has no
 `--version` flag.
+
+To update the package, download the newer release package and
+`checksums.txt`, check the file, and install it with the command in the table.
 
 Do not install `frostyard-chairlift-system-integration` next to it. That
 package has no app. It exists for a system that gets the app another way, and
@@ -186,7 +213,7 @@ says the tool is unavailable.
 
 ## Sources
 
-Reviewed 2026-10-22.
+Reviewed 2026-10-23.
 
 - ChairLift v0.11.2 commit [`3505e9478287e56bef45d1ae1642e2c8e2a835d9`](https://github.com/frostyard/chairlift/tree/3505e9478287e56bef45d1ae1642e2c8e2a835d9)
 - [`README.md`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/README.md)
@@ -197,4 +224,8 @@ Reviewed 2026-10-22.
 - [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/docs/design/package-managers.md)
 - [`internal/views/updates_page.go`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/internal/views/updates_page.go)
 - [`internal/views/features_page.go`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/internal/views/features_page.go)
+- ChairLift main commit [`14e6bbd6381cc660b551b21b3e8a5f8de09eb354`](https://github.com/frostyard/chairlift/tree/14e6bbd6381cc660b551b21b3e8a5f8de09eb354): [`README.md`](https://github.com/frostyard/chairlift/blob/14e6bbd6381cc660b551b21b3e8a5f8de09eb354/README.md)
+- [`internal/views/updates_page.go`](https://github.com/frostyard/chairlift/blob/14e6bbd6381cc660b551b21b3e8a5f8de09eb354/internal/views/updates_page.go), [`internal/views/system_page.go`](https://github.com/frostyard/chairlift/blob/14e6bbd6381cc660b551b21b3e8a5f8de09eb354/internal/views/system_page.go)
+- [Duncan's review: package downgrade (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
+- snosi commit [`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/packages/sundog/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.profiles/snowfield/mkosi.conf)
 - snosi commit [`79ccc63ea44ce9309a837b9428e9b5d44290fada`](https://github.com/frostyard/snosi/tree/79ccc63ea44ce9309a837b9428e9b5d44290fada): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/packages/sundog/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/composition/snow/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.profiles/snowfield/mkosi.conf), [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
