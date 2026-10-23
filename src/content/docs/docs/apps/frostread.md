@@ -281,6 +281,62 @@ frostread keeps its data in `/var/lib/frostread`: the database
 `readd` and snapshot the directory, or snapshot it while `readd` runs. The sweep runs 10
 minutes after start and then every 24 hours.
 
+## Update
+
+frostread has no releases, so you move to a newer `main`. A running `readd`
+cannot be copied over, so stop it first. Back up the data before you copy,
+because a newer `readd` migrates the database when it starts, and an earlier one
+cannot open it:
+
+```bash
+sudo systemctl stop frostread.service
+```
+
+Snapshot `/var/lib/frostread`, with its `blobs/` directory, as in
+[Configuration](#configuration). Then pull, build, and copy, as in
+[Build and copy](#build-and-copy):
+
+```bash
+cd frostread
+git pull
+make web-build
+make lodge-package
+sudo rm -rf /usr/share/lodge/apps/read
+sudo cp -r build/lodge-root/usr/. /usr/
+sudo systemctl daemon-reload
+sudo systemctl start frostread.service
+sudo lodgectl reload
+```
+
+This keeps `/etc/frostread`, `/var/lib/frostread`, and the notes token.
+Check it:
+
+```bash
+sudo -u frostread readctl status
+sudo lodgectl apps
+```
+
+`status` prints `readd` and its new version. `read` is `up`.
+
+## Roll back
+
+Stop `readd`, and check out the earlier commit:
+
+```bash
+sudo systemctl stop frostread.service
+git checkout COMMIT
+```
+
+Build and copy with the update's steps, from `make web-build` on. Then restore
+the snapshot you took before the update. Restore `blobs/` from the same
+snapshot.
+
+`readd` refuses a database that is newer than itself, and stops with
+`database schema N is newer than this readd (M)`. So an earlier build needs the
+snapshot from before the update. After the grace period, the sweep removes the
+files that no row names, so a database restored without its own `blobs/` shows
+missing images and originals.
+
 ## Remove
 
 These steps follow the install layout. They are not tested yet.
@@ -360,3 +416,4 @@ Reviewed 2026-10-23.
 - No release: the repository's [releases page](https://github.com/frostyard/frostread/releases), checked 2026-10-23.
 - lodge commit [`b6aaa95d8d62840f21b17e77c820a976bee18032`](https://github.com/frostyard/lodge/tree/b6aaa95d8d62840f21b17e77c820a976bee18032): [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/b6aaa95d8d62840f21b17e77c820a976bee18032/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/b6aaa95d8d62840f21b17e77c820a976bee18032/docs/plans/0001-roadmap.md)
 - frostyard/core commit [`d55b259c57c636169e9a86f89ce808b075a1bf3c`](https://github.com/frostyard/core/tree/d55b259c57c636169e9a86f89ce808b075a1bf3c): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Proposed)
+- frostread commit [`cf3f0b6a7afa9f733d048adbb0cb93d50ec4ca83`](https://github.com/frostyard/frostread/tree/cf3f0b6a7afa9f733d048adbb0cb93d50ec4ca83) for the update and roll back steps: [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/cf3f0b6a7afa9f733d048adbb0cb93d50ec4ca83/internal/store/store.go), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/cf3f0b6a7afa9f733d048adbb0cb93d50ec4ca83/docs/design/overview.md), [`docs/adr/0007-a-daily-mark-and-scan-sweep-removes-orphaned-blobs-after-a-grace-period.md`](https://github.com/frostyard/frostread/blob/cf3f0b6a7afa9f733d048adbb0cb93d50ec4ca83/docs/adr/0007-a-daily-mark-and-scan-sweep-removes-orphaned-blobs-after-a-grace-period.md), [`packaging/lodge/stage.sh`](https://github.com/frostyard/frostread/blob/cf3f0b6a7afa9f733d048adbb0cb93d50ec4ca83/packaging/lodge/stage.sh)

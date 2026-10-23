@@ -304,6 +304,52 @@ anything outside a token's scope. On top of that, Porter never offers a tool
 whose name says it sends, posts, forwards, or invites. In Read, it offers only
 the four read tools: `list_sources`, `list_unread`, `search`, and `read_item`.
 
+## Update
+
+Porter has no releases, so you move to a newer `main`. A running `porterd`
+cannot be copied over, so stop it first. Then pull, build, and copy, as in
+[Install Porter](#install-porter):
+
+```bash
+sudo systemctl stop frostporter.service
+cd porter
+git pull
+make web-build
+make lodge-package
+sudo rm -rf /usr/share/lodge/apps/porter
+sudo cp -r build/lodge-root/usr/. /usr/
+sudo systemctl daemon-reload
+sudo systemctl start frostporter.service
+sudo lodgectl reload
+```
+
+This keeps `/etc/porter`, the tokens in `/var/lib/frostporter`, and the memory
+and routines in your vault. When it starts, `porterd` adds the column
+`last_success` to the `routines` table of an older thread database, and marks a
+reply that a stop left unfinished as done.
+
+Check it:
+
+```bash
+sudo lodgectl apps
+```
+
+`porter` is `up`, with its new version.
+
+## Roll back
+
+Stop `porterd`, and check out the earlier commit:
+
+```bash
+sudo systemctl stop frostporter.service
+git checkout COMMIT
+```
+
+Build and copy with the update's steps, from `make web-build` on.
+
+The thread database in `/var/lib/frostporter` keeps no schema version. Its one
+migration adds the `last_success` column, and nothing removes it.
+
 ## Remove
 
 These steps follow the install layout. They are not tested yet.
@@ -379,3 +425,4 @@ Reviewed 2026-10-23.
 - No release: the repository's [releases page](https://github.com/frostyard/porter/releases), checked 2026-10-23.
 - lodge commit [`b6aaa95d8d62840f21b17e77c820a976bee18032`](https://github.com/frostyard/lodge/tree/b6aaa95d8d62840f21b17e77c820a976bee18032): [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/b6aaa95d8d62840f21b17e77c820a976bee18032/docs/specs/app-contract.md), [`docs/specs/shell.md`](https://github.com/frostyard/lodge/blob/b6aaa95d8d62840f21b17e77c820a976bee18032/docs/specs/shell.md), [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/b6aaa95d8d62840f21b17e77c820a976bee18032/docs/design/overview.md)
 - frostyard/core commit [`d55b259c57c636169e9a86f89ce808b075a1bf3c`](https://github.com/frostyard/core/tree/d55b259c57c636169e9a86f89ce808b075a1bf3c): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Proposed)
+- porter commit [`ee5c558663791cf7a43a099fc227c8f2a4a14a80`](https://github.com/frostyard/porter/tree/ee5c558663791cf7a43a099fc227c8f2a4a14a80) for the update and roll back steps: [`packaging/lodge/stage.sh`](https://github.com/frostyard/porter/blob/ee5c558663791cf7a43a099fc227c8f2a4a14a80/packaging/lodge/stage.sh), [`internal/thread/store.go`](https://github.com/frostyard/porter/blob/ee5c558663791cf7a43a099fc227c8f2a4a14a80/internal/thread/store.go), [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/ee5c558663791cf7a43a099fc227c8f2a4a14a80/docs/design/overview.md)

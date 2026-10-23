@@ -243,6 +243,46 @@ To stage `maild`, its units, and the web build as a lodge app, run
 `build/lodge-root` unless you set `LODGE_DESTDIR`. Frostmail has no package for
 this yet, and lodge is pre-release too, so you set the rest up by hand.
 
+## Update
+
+Frostmail has no releases, so you move to a newer `main`. Go to your clone,
+pull, and run the install again. It is safe to repeat. It replaces the
+programs and the user service, restarts `maild`, and keeps your mail data:
+
+```bash
+cd frostmail
+git pull
+make install
+mailctl hello
+```
+
+`mailctl hello` prints `maild`, its version, and `(protocol 1)`. `maild`
+applies any new database migration when it starts.
+
+If you installed the desktop app, build and install it again:
+
+```bash
+make install-app
+```
+
+It ends with `installed org.frostyard.Frostmail; run it from the app menu or with frostmail`.
+It replaces the installed Flatpak.
+
+## Roll back
+
+Check out the earlier commit in your clone, then run the same install steps
+for `maild` and for the app:
+
+```bash
+git checkout COMMIT
+make install
+make install-app
+```
+
+`maild` refuses a database that is newer than itself, and stops with
+`database schema N is newer than this maild (M)`. So if the newer build changed
+the database, an earlier build cannot open it.
+
 ## Remove
 
 ```bash
@@ -293,3 +333,4 @@ Reviewed 2026-10-22.
 - No Flatpak and no cask: [`apps.json`](https://github.com/frostyard/flatpak-index/blob/404aa05424b42093eed3e33e823216cf5569c570/apps.json) in the Flatpak index at `404aa05424b42093eed3e33e823216cf5569c570`, and the tap's [`Casks`](https://github.com/frostyard/homebrew-tap/tree/7b7cd158e7e40599ff767f61a272435f84d2da41/Casks) at `7b7cd158e7e40599ff767f61a272435f84d2da41`.
 - No APT package: the Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-22. It lists `frostyard-chairlift`, `frostyard-chairlift-system-integration`, and `frostyard-intuneme`.
 - lodge commit [`c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00`](https://github.com/frostyard/lodge/tree/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00): [`README.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md)
+- frostmail commit [`be8120dba6f823a23d8e6601d8b9050b756741a2`](https://github.com/frostyard/frostmail/tree/be8120dba6f823a23d8e6601d8b9050b756741a2) for the update and roll back steps: [`Makefile`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/Makefile), [`packaging/flatpak/install.sh`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/flatpak/install.sh), [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/internal/store/store.go), [`docs/adr/0003-sqlite-store.md`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/docs/adr/0003-sqlite-store.md)

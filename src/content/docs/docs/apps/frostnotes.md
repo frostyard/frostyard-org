@@ -315,6 +315,61 @@ note. Then add the token to Claude Code, for your user only. Never use
 claude mcp add --transport http notes https://lodge.TAILNET.ts.net/mcp/notes --header "Authorization: Bearer TOKEN"
 ```
 
+## Update
+
+Frostnotes has no releases, so you move to a newer `main`. Stop `notesd` with
+Ctrl-C, then pull, build, and start it again:
+
+```bash
+cd frostnotes
+git pull
+make build
+build/notesd
+```
+
+In another terminal, check it:
+
+```bash
+build/notesctl hello
+```
+
+It prints `notesd`, its version, and `(protocol 1)`. `notesd` applies any new
+database migration when it starts. Your vault files do not change.
+
+While Frostnotes is pre-release, a change can edit the first migration,
+`0001_init.sql`, in place. Then `notesd` refuses to start on your old database
+and names the database and the migration. Move that database aside, with its
+`-wal` and `-shm` files, and start `notesd` again. It makes a new one. The new
+database has no local versions and no sync state. A synced vault syncs again
+from its hub, and your files stay.
+
+To update the web app in lodge, repeat `make web-build` and `make lodge-app`,
+and copy `build/lodge/apps/notes` over `/usr/share/lodge/apps/notes`. A new web
+build takes effect on the next page load. A changed manifest takes effect after
+`sudo lodgectl reload`. Update the `notesd` that serves the app and its web
+build together: the app's handshake, `rpc.hello`, catches a pair that does not
+match.
+
+To update the desktop app, run `make app-run` again.
+
+## Roll back
+
+Check out the earlier commit in your clone, then run the same build and start
+steps:
+
+```bash
+git checkout COMMIT
+make build
+build/notesd
+```
+
+`notesd` refuses a database that is newer than itself, and stops with
+`database schema N is newer than this notesd (M)`. So if the newer build changed
+the database, an earlier build cannot open it.
+
+To undo a change to one note, not to the software, see
+[Versions and revert](#versions-and-revert).
+
 ## Remove
 
 To forget a vault, run:
@@ -369,3 +424,5 @@ Reviewed 2026-10-22.
 - No Flatpak and no cask: [`apps.json`](https://github.com/frostyard/flatpak-index/blob/404aa05424b42093eed3e33e823216cf5569c570/apps.json) in the Flatpak index at `404aa05424b42093eed3e33e823216cf5569c570`, and the tap's [`Casks`](https://github.com/frostyard/homebrew-tap/tree/7b7cd158e7e40599ff767f61a272435f84d2da41/Casks) at `7b7cd158e7e40599ff767f61a272435f84d2da41`.
 - No APT package: the Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-22. It lists `frostyard-chairlift`, `frostyard-chairlift-system-integration`, and `frostyard-intuneme`.
 - lodge commit [`c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00`](https://github.com/frostyard/lodge/tree/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00): [`README.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md), [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/docs/specs/app-contract.md)
+- frostnotes commit [`4928e88ed6d5aa48be53ff7da6dbd16746a59fd0`](https://github.com/frostyard/frostnotes/tree/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0) for the update and roll back steps: [`Makefile`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/Makefile), [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/internal/store/store.go), [`docs/design/vault.md`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/docs/design/vault.md), [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/docs/specs/lodge-app.md), [`packaging/systemd/frostnotes.service`](https://github.com/frostyard/frostnotes/blob/4928e88ed6d5aa48be53ff7da6dbd16746a59fd0/packaging/systemd/frostnotes.service)
+- lodge commit [`399f46dbb3adedb37f09b53708b3dee855118297`](https://github.com/frostyard/lodge/tree/399f46dbb3adedb37f09b53708b3dee855118297) for the update steps: [`docs/adr/0007-lodge-serves-every-apps-web-build-from-disk.md`](https://github.com/frostyard/lodge/blob/399f46dbb3adedb37f09b53708b3dee855118297/docs/adr/0007-lodge-serves-every-apps-web-build-from-disk.md)
