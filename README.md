@@ -17,9 +17,12 @@ Use `npm run build` to produce the static site in `dist/client/`. Use
 `npm run build:check` to build from the committed extension snapshot without a
 network refresh. `npm run check` runs Astro diagnostics, and
 `npm run check:site` checks the built routes, docs navigation, source links, and
-existing route invariants. `npm run ci` runs all three in order.
+existing route invariants. `npm test` runs the unit tests in `scripts/test/`.
+`npm run ci` runs the tests, the prose check, and the three checks above, in order.
 
 The build refreshes the extension catalog from `https://repository.frostyard.org/ext/index`.
+For each extension, it takes the highest version in that extension's `SHA256SUMS`,
+in Debian version order (`scripts/extension-versions.mjs`).
 It uses the committed catalog snapshot if the published repository is unavailable.
 `build:check` deliberately skips the refresh so CI stays network-independent and
 does not rewrite `src/data/extensions.json`. Do not hand-edit that generated file.
@@ -104,8 +107,8 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/components/ExtensionSnapshot.astro` reads the checked
   `src/data/extensions.json` snapshot for the extension pages. It renders
   labels and versions as escaped text, shows the snapshot date and source, and
-  never derives a link from a catalog value. The snapshot version is a regex
-  match from `SHA256SUMS`, not a latest-version claim.
+  never derives a link from a catalog value. The snapshot version is the highest
+  version in `SHA256SUMS` when the snapshot was taken.
 - `src/components/ExtensionCatalog.astro` reads the same snapshot for the
   catalog page. It renders labels, component names, and versions as escaped
   text, builds no link from a catalog value, and links a guide only from the

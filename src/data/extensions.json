@@ -1,6 +1,6 @@
 {
   "source": "https://repository.frostyard.org/ext/index",
-  "updatedAt": "2026-10-23T14:57:29.122Z",
+  "updatedAt": "2026-10-23T17:32:12.276Z",
   "extensions": [
     {
       "name": "1password",
@@ -10,37 +10,32 @@
     {
       "name": "1password-cli",
       "label": "1Password CLI",
-      "version": "2.39.0-1"
-    },
-    {
-      "name": "azurevpn",
-      "label": "Azure VPN",
-      "version": "3.1.0"
+      "version": "2.41.1-1"
     },
     {
       "name": "bitwarden",
       "label": "Bitwarden",
-      "version": "2026.9.1+r1"
+      "version": "2026.10.0+r1"
     },
     {
       "name": "chatgpt",
       "label": "ChatGPT",
-      "version": "26.1002.51308+r1"
+      "version": "26.1016.61520+r1"
     },
     {
       "name": "claude-desktop",
       "label": "Claude Desktop",
-      "version": "1.30096.1"
+      "version": "3.6556.2+r1"
     },
     {
       "name": "code-server",
       "label": "code-server",
-      "version": "4.127.0"
+      "version": "4.141.0"
     },
     {
       "name": "coder",
       "label": "Coder",
-      "version": "2.35.1-1"
+      "version": "2.37.4-1+r2"
     },
     {
       "name": "debdev",
@@ -50,22 +45,17 @@
     {
       "name": "dev",
       "label": "Development tools",
-      "version": "12.12+r1"
+      "version": "12.12+r3"
     },
     {
       "name": "docker",
       "label": "Docker CE",
-      "version": "5+29.9.1-1~debian.13~trixie"
+      "version": "5+29.9.2-1~debian.13~trixie"
     },
     {
       "name": "edge",
       "label": "Microsoft Edge",
-      "version": "150.0.4078.48-1+r1"
-    },
-    {
-      "name": "emdash",
-      "label": "Emdash",
-      "version": "0.4.41"
+      "version": "155.0.4283.62-1+r2"
     },
     {
       "name": "gitdesktop",
@@ -75,27 +65,27 @@
     {
       "name": "github-copilot",
       "label": "GitHub Copilot",
-      "version": "1.1.19+r1"
+      "version": "1.1.30+r1"
     },
     {
       "name": "himmelblau",
       "label": "Himmelblau",
-      "version": "4.0.0-debian13~20260507"
+      "version": "4.0.7-debian13"
     },
     {
       "name": "incus",
       "label": "Incus",
-      "version": "1+7.5.1-debian13-202610032056+r4"
+      "version": "1+7.5.1-debian13-202610231610+r5"
     },
     {
       "name": "k3s",
       "label": "K3s",
-      "version": "1.36.5+k3s1"
+      "version": "1.36.5+k3s1+r1"
     },
     {
       "name": "lemonade",
       "label": "Lemonade",
-      "version": "2026.41.1~13"
+      "version": "2026.42.1~13"
     },
     {
       "name": "localsend",
@@ -105,12 +95,12 @@
     {
       "name": "moonlight",
       "label": "Moonlight",
-      "version": "6.1.0-frostyard20261022023051"
+      "version": "6.1.0-frostyard20261023154048"
     },
     {
       "name": "nix",
       "label": "Nix",
-      "version": "2.26.3+dfsg-1"
+      "version": "2.26.3+dfsg-1+r3"
     },
     {
       "name": "obsidian",
@@ -120,12 +110,12 @@
     {
       "name": "paseo",
       "label": "paseo",
-      "version": "0.9.1+r1"
+      "version": "0.12.0+r1"
     },
     {
       "name": "pilothouse",
       "label": "pilothouse",
-      "version": "0.8.0"
+      "version": "0.9.0"
     },
     {
       "name": "podman",
@@ -135,22 +125,22 @@
     {
       "name": "sunshine",
       "label": "Sunshine",
-      "version": "2026.516.143833+r1"
+      "version": "2026.914.233613-1+debiantrixie"
     },
     {
       "name": "tailscale",
       "label": "Tailscale",
-      "version": "1.98.3"
+      "version": "1.104.2"
     },
     {
       "name": "voxtype",
       "label": "Voxtype",
-      "version": "0.7.5-frostyard20260826144029"
+      "version": "0.7.5-frostyard20261023154051+r1"
     },
     {
       "name": "vscode",
       "label": "Visual Studio Code",
-      "version": "1.133.0-1786487972"
+      "version": "1.143.1-1792691907+r1"
     }
   ]
 }

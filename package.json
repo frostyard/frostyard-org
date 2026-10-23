@@ -11,7 +11,8 @@
     "build:check": "astro build",
     "check:site": "node scripts/check-site.mjs",
     "check:prose": "node scripts/check-prose.mjs",
-    "ci": "npm run check:prose && npm run check && npm run build:check && npm run check:site",
+    "test": "node --test 'scripts/test/*.test.mjs'",
+    "ci": "npm test && npm run check:prose && npm run check && npm run build:check && npm run check:site",
     "preview": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "cf-typegen": "wrangler types"

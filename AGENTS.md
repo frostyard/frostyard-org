@@ -7,9 +7,10 @@
 - Run Astro diagnostics with `npm run check`.
 - Build the production site with `npm run build`.
 - Build from the committed catalog snapshot with `npm run build:check`.
+- Run the unit tests in `scripts/test/` with `npm test`.
 - Run the complete local CI gate with `npm run ci`.
 
-This repository has no separate formatter, linter, or unit-test command.
+This repository has no separate formatter or linter.
 
 ## Generated files
 
