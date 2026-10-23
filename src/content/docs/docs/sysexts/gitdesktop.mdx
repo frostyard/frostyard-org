@@ -1,0 +1,106 @@
+---
+title: GitDesktop
+description: Enable, update, roll back, and remove the GitDesktop system extension on Frostyard bootc images.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The GitDesktop extension adds GitDesktop, a keyboard-first Git desktop client, to a Frostyard desktop image. Use it when you want a Git client on a desktop image. Every image ships the extension switched off.
+
+## Before you start
+
+You need:
+
+- A Frostyard desktop bootc image: Snow, Snowfield, or Sundog, not Floe.
+- Root access to enable, update, and remove the extension.
+- Network access to `https://repository.frostyard.org/ext/gitdesktop/`.
+- Free space in `/var` for the download and the installed image.
+
+The GitDesktop extension has no published test results on Frostyard images yet. Try it on a machine you can spare first.
+
+## Enable GitDesktop
+
+See what Updex found, then enable the feature and download it now:
+
+```bash
+updex features list --component=gitdesktop
+sudo updex features enable gitdesktop --now
+```
+
+`gitdesktop` appears as a component, with its feature disabled. The enable command downloads the image, checks its checksum and signature, links it, and refreshes the merge.
+
+Check the merge and the files that the extension adds:
+
+```bash
+systemd-sysext status
+command -v gitdesktop
+ls /usr/share/applications/GitDesktop.desktop
+```
+
+`systemd-sysext status` lists `gitdesktop`. `command -v` prints a path, and `ls` prints the launcher file.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the download worked but the merge did not. Run `sudo systemd-sysext refresh`, or reboot. Then run the checks above again.
+
+## Use GitDesktop
+
+Start GitDesktop from your applications, or run `gitdesktop`.
+
+GitDesktop needs `git`, which every image ships. It also needs the command line for your forge: `gh` for GitHub or `glab` for GitLab. The extension does not ship them. Install them for your own user.
+
+GitDesktop has its own updater. It cannot change a read-only extension, so decline its update prompts. New versions arrive through `updex features update`.
+
+## Update, roll back, and remove
+
+See whether a newer image exists, then update:
+
+```bash
+updex features check --component=gitdesktop
+sudo updex features update --component=gitdesktop
+```
+
+The update downloads the newest image and links it. A refresh replaces `/usr` under a running app, and a running app can fail. Close GitDesktop before you run `updex features update`, or update with `--no-refresh` and reboot. See [Manage system extensions](/docs/sysexts/manage/#update) for the check output and the update timer.
+
+Updex v2.0.6 has no rollback command. See [Manage system extensions](/docs/sysexts/manage/#roll-back) for your options and the planned `updex features rollback` command.
+
+Remove GitDesktop now:
+
+```bash
+sudo updex features disable gitdesktop --now --force
+```
+
+Updex unmerges all extensions on the host, deletes the GitDesktop image, and merges the rest again. Your repositories and GitDesktop settings stay in your home directory. Reboot when the command finishes. Without `--force`, Updex refuses while the image is merged.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Package requests | The GitDesktop `.deb` (a pinned download), plus `libayatana-appindicator3-1`, `libwebkit2gtk-4.1-0`, and `libgtk-3-0` |
+| Version | The image file name carries the `git-desktop` package version, plus a `+rN` snosi revision when one is set |
+| Command and launcher | `/usr/bin/gitdesktop` and `/usr/share/applications/GitDesktop.desktop` |
+| Services | None |
+| Image file | `gitdesktop_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/gitdesktop/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+
+<ExtensionSnapshot name="gitdesktop" />
+
+Each build checks that these paths are present: the `gitdesktop` binary, the launcher, and the 128-pixel icon. A build that is missing one fails.
+
+## See also
+
+- [System extension catalog](/docs/sysexts/)
+- [Manage system extensions](/docs/sysexts/manage/)
+
+## Sources
+
+Reviewed 2026-10-23. snosi commit
+[`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201);
+Updex v2.0.6 commit
+[`c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93`](https://github.com/frostyard/updex/tree/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93).
+
+- [`mkosi.images/gitdesktop/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/gitdesktop/mkosi.conf)
+- [`mkosi.images/gitdesktop/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/gitdesktop/mkosi.postinst.chroot)
+- [`mkosi.images/gitdesktop/required-paths.txt`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/gitdesktop/required-paths.txt)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.gitdesktop.d/gitdesktop.feature`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.gitdesktop.d/gitdesktop.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.gitdesktop.d/gitdesktop.transfer`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.gitdesktop.d/gitdesktop.transfer)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
+- [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)

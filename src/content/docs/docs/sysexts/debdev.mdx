@@ -1,0 +1,114 @@
+---
+title: Debian development
+description: Enable, update, roll back, and remove the Debian development system extension on Frostyard bootc images.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The Debian development extension adds `debootstrap`, `arch-test`, and the Debian and Ubuntu archive keyrings to a Frostyard bootc image. Use it to build Debian or Ubuntu root file systems. Every image ships the extension switched off.
+
+## Before you start
+
+You need:
+
+- A Frostyard bootc image. Every image built on Base has `systemd-sysext` and `frostyard-updex`.
+- Root access to enable, update, and remove the extension.
+- Network access to `https://repository.frostyard.org/ext/debdev/`.
+- Free space in `/var` for the image.
+
+Debian development has no published test results on Frostyard images yet. Try it on a machine you can spare first.
+
+## Enable Debian development
+
+See what Updex found, then enable the feature and download it now:
+
+```bash
+updex features list --component=debdev
+sudo updex features enable debdev --now
+```
+
+`debdev` appears as a component, with its feature disabled. The enable command
+downloads the image, checks its checksum and signature, links it, and refreshes
+the merge.
+
+Check the merge and the tools that the extension adds:
+
+```bash
+systemd-sysext status
+command -v debootstrap arch-test
+```
+
+`systemd-sysext status` lists `debdev`, and each name prints a path.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the checks above again.
+
+## Use Debian development
+
+Run `debootstrap` as root. The extension also carries `distro-info`, `wget`, `mount`, `binutils`, `debian-archive-keyring`, and `ubuntu-archive-keyring`. Where the base image already has a package, the extension does not carry a second copy.
+
+The build repoints every `/usr/bin` and `/usr/sbin` link that goes through `/etc/alternatives` to its real target. An extension cannot ship `/etc`, so such a link would dangle after a merge. You need no manual step.
+
+## Update, roll back, and remove
+
+Check for an update, then install it:
+
+```bash
+updex features check --component=debdev
+sudo updex features update --component=debdev
+```
+
+Updex downloads and verifies the new image, switches the link, deletes older versions, and refreshes the merge. See [Manage system extensions](/docs/sysexts/manage/#update) for `--no-vacuum`, `--dry-run`, and the update timer. The refresh swaps `/usr` under the running system.
+
+Updex v2.0.6 has no rollback command. See
+[Manage system extensions](/docs/sysexts/manage/#roll-back) for the options
+and the planned `updex features rollback` command.
+
+Remove Debian development:
+
+```bash
+sudo updex features disable debdev --now --force
+```
+
+Updex unmerges all extensions on the host, deletes the image, and merges the rest again. The tools this extension adds go. Root file systems you built stay where you put them. Reboot when the command finishes. Without `--force`, Updex refuses while the image is merged.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Package requests | `debootstrap`, `distro-info`, `wget`, `arch-test`, `debian-archive-keyring`, `mount`, `binutils`, `ubuntu-archive-keyring` |
+| Tools in the image | `/usr/sbin/debootstrap` and `/usr/bin/arch-test` |
+| Version | The image file name carries the `debootstrap` package version, plus a `+rN` snosi revision when one is set |
+| Image file | `debdev_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/debdev/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+| Services | None |
+
+<ExtensionSnapshot name="debdev" />
+
+Each build checks that `/usr/sbin/debootstrap` and `/usr/bin/arch-test` are present. A build that is missing one fails. The check runs against the image delta, so a package that the base image already supplies, such as `wget`, is not in the list.
+
+## See also
+
+- [System extension catalog](/docs/sysexts/)
+- [Manage system extensions](/docs/sysexts/manage/)
+- [Dev tools system extension](/docs/sysexts/dev/)
+
+## Sources
+
+Reviewed 2026-10-23. snosi commit
+[`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201);
+Updex v2.0.6 commit
+[`c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93`](https://github.com/frostyard/updex/tree/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93).
+
+- [`mkosi.images/debdev/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/debdev/mkosi.conf)
+- [`mkosi.images/debdev/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/debdev/mkosi.postinst.chroot)
+- [`mkosi.images/debdev/required-paths.txt`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/debdev/required-paths.txt)
+- [`mkosi.images/debdev/README.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/debdev/README.md)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.debdev.d/debdev.feature`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.debdev.d/debdev.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.debdev.d/debdev.transfer`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.debdev.d/debdev.transfer)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
+- [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/adr/0004-sysext-authoring-rules.md)
+
+- [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
