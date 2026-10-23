@@ -5,7 +5,7 @@ description: Enable, update, roll back, and remove the Podman + Distrobox system
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
-The Podman + Distrobox extension adds Podman, Buildah, and Distrobox, with the networking and storage tools they use, to a Frostyard bootc image. Use it to run and build containers without a daemon. Every image ships the extension switched off.
+The Podman + Distrobox extension puts its own copy of Podman, Buildah, and Distrobox, with the networking and storage tools they use, over the copy that a Frostyard bootc image already has. Snow, Snowfield, Sundog, and Floe already ship these tools and their helpers in the image, so you do not need the extension to run containers. Every image ships the extension switched off.
 
 ## Before you start
 
@@ -73,7 +73,7 @@ Remove Podman + Distrobox:
 sudo updex features disable podman --now --force
 ```
 
-Updex unmerges all extensions on the host, deletes the image, and merges the rest again. The three commands and their helpers go. Removal does not touch `/var` or your home directory. Reboot when the command finishes. Without `--force`, Updex refuses while the image is merged.
+Updex unmerges all extensions on the host, deletes the image, and merges the rest again. The extension's copy goes, and the image's copy stays. Removal does not touch `/var` or your home directory. Reboot when the command finishes. Without `--force`, Updex refuses while the image is merged.
 
 ## What ships
 
@@ -112,4 +112,5 @@ Updex v2.0.6 commit
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/adr/0004-sysext-authoring-rules.md)
 
 - [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

@@ -56,7 +56,9 @@ systemctl --user start app-dev.lizardbyte.app.Sunshine.service
 
 Nothing starts the user service for you. Frostyard adds no user preset and no boot-time drop-in for it.
 
-The extension also adds the `uhid` kernel module entry and the udev rules in `/usr/lib/udev/rules.d/60-sunshine.rules` for virtual input devices. udev reads its rules before the extension merges, so `snosi-sysext-udev-reload.service` loads them again after the merge. It starts at boot.
+Sunshine keeps the upstream defaults. Open the web UI at `https://localhost:47990`. Streaming uses TCP ports 47984, 47989, and 48010, and UDP ports 47998 to 48000.
+
+The extension also adds the `uhid` kernel module entry and the udev rules in `/usr/lib/udev/rules.d/60-sunshine.rules` for virtual input devices. udev reads its rules before the extension merges, so `snosi-sysext-udev-reload.service` loads them again after the merge. It runs at boot, and no test shows that it runs on a live merge. Reboot after `enable --now`.
 
 `/usr/bin/sunshine` carries the file capabilities `cap_sys_admin` and `cap_sys_nice`. The build fails if they differ.
 
@@ -123,4 +125,5 @@ Updex v2.0.6 commit
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/adr/0004-sysext-authoring-rules.md)
 
 - [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

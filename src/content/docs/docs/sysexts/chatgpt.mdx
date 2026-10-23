@@ -54,7 +54,7 @@ updex features check --component=chatgpt
 sudo updex features update --component=chatgpt
 ```
 
-The update downloads the newest image and links it. An update swaps `/usr` under the running system. See [Manage system extensions](/docs/sysexts/manage/#update) for the check output and the update timer.
+The update downloads the newest image and links it. A refresh replaces `/usr` under a running app, and a running app can fail. Close ChatGPT before you run `updex features update`, or update with `--no-refresh` and reboot. See [Manage system extensions](/docs/sysexts/manage/#update) for the check output and the update timer.
 
 Updex v2.0.6 has no rollback command. See [Manage system extensions](/docs/sysexts/manage/#roll-back) for your options and the planned `updex features rollback` command.
 

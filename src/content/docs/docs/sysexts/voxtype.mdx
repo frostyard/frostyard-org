@@ -40,6 +40,16 @@ command -v voxtype wtype ydotool ydotoold wl-copy wl-paste
 
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the download worked but the merge did not. Run `sudo systemd-sysext refresh`, or reboot. Then run the checks above again.
 
+Reboot after `enable --now`. `snosi-sysext-udev-reload.service` runs at boot, and no test shows that it runs on a live merge. The `uinput` module and the udev rule apply after the reboot.
+
+Add your user to the `input` group, because the udev rule gives that group access to `/dev/uinput` and no user is in it by default:
+
+```bash
+sudo usermod -aG input "$USER"
+```
+
+Then sign out and sign in again.
+
 ## Use Voxtype
 
 Run `voxtype` to dictate. Voxtype types the text with `wtype` on compositors that support it, or with `ydotool` on GNOME. When typing fails, it falls back to the clipboard through `wl-copy` and `wl-paste`.
@@ -67,7 +77,7 @@ updex features check --component=voxtype
 sudo updex features update --component=voxtype
 ```
 
-The update downloads the newest image and links it. An update swaps `/usr` under the running system. See [Manage system extensions](/docs/sysexts/manage/#update) for the check output and the update timer.
+The update downloads the newest image and links it. A refresh replaces `/usr` under a running app, and a running app can fail. Close Voxtype before you run `updex features update`, or update with `--no-refresh` and reboot. See [Manage system extensions](/docs/sysexts/manage/#update) for the check output and the update timer.
 
 Updex v2.0.6 has no rollback command. See [Manage system extensions](/docs/sysexts/manage/#roll-back) for your options and the planned `updex features rollback` command.
 
@@ -117,3 +127,4 @@ Updex v2.0.6 commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.voxtype.d/voxtype.transfer`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.voxtype.d/voxtype.transfer)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
 - [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)

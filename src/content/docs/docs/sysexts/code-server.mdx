@@ -46,7 +46,15 @@ reboot. Then run the checks above again.
 
 ## Use code-server
 
-Start code-server from a terminal with `code-server`. Frostyard adds no preset and no boot-time drop-in for it, so nothing starts it for you at boot.
+Start code-server as a user service, and keep it on at every login:
+
+```bash
+systemctl --user enable --now code-server
+```
+
+code-server listens on `127.0.0.1:8080`. On first start it writes `~/.config/code-server/config.yaml` with a generated password. Read the password there, then open `http://127.0.0.1:8080`.
+
+Frostyard adds no preset and no boot-time drop-in for code-server, so nothing starts it for you at boot. Do not enable `code-server@<user>.service` for boot. A `.wants` link to a unit inside an extension is dropped at boot, before the merge.
 
 The program is in `/usr/lib/code-server`. Your projects and settings stay outside `/usr`, so an update leaves them alone.
 
@@ -110,4 +118,5 @@ Updex v2.0.6 commit
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/adr/0004-sysext-authoring-rules.md)
 
 - [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

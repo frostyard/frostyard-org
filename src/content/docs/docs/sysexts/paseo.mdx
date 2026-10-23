@@ -5,13 +5,13 @@ description: Enable, update, roll back, and remove the paseo system extension on
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
-The paseo extension adds Paseo, a coding agent workspace desktop app, to a Frostyard bootc image. Use it when you want the app on your desktop. Every image ships the extension switched off.
+The paseo extension adds Paseo, a coding agent workspace desktop app, to a Frostyard desktop image. Use it when you want the app on your desktop. Every image ships the extension switched off.
 
 ## Before you start
 
 You need:
 
-- A Frostyard bootc image.
+- A Frostyard desktop image: Snow, Snowfield, or Sundog. The extension builds on Base, so it carries its own GUI libraries.
 - Root access to enable, update, and remove the extension.
 - Network access to `https://repository.frostyard.org/ext/paseo/`.
 - Free space in `/var` for the download and the installed image.
@@ -54,7 +54,7 @@ updex features check --component=paseo
 sudo updex features update --component=paseo
 ```
 
-The update downloads the newest image and links it. An update swaps `/usr` under the running system. See [Manage system extensions](/docs/sysexts/manage/#update) for the check output and the update timer.
+The update downloads the newest image and links it. A refresh replaces `/usr` under a running app, and a running app can fail. Close paseo before you run `updex features update`, or update with `--no-refresh` and reboot. See [Manage system extensions](/docs/sysexts/manage/#update) for the check output and the update timer.
 
 Updex v2.0.6 has no rollback command. See [Manage system extensions](/docs/sysexts/manage/#roll-back) for your options and the planned `updex features rollback` command.
 
@@ -104,3 +104,4 @@ Updex v2.0.6 commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.paseo.d/paseo.transfer`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.paseo.d/paseo.transfer)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
 - [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)

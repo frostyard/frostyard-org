@@ -97,7 +97,7 @@ klist
 
 A mapped local account keeps its username. Its local password no longer applies.
 
-At boot, `himmelblau-sysext-setup.service` adds `himmelblau` to `/etc/nsswitch.conf`, turns on the PAM profile with `pam-auth-update`, lets GDM's `pam_gnome_keyring` reuse the Hello PIN, and makes `/etc/krb5.conf` include `/etc/krb5.conf.d`. It only adds lines and never deletes. The tool runs the same step after it writes your configuration. `snosi-etc-diff` lists `nsswitch.conf` and `pam.d/common-*` as modified. That is expected.
+At boot, `himmelblau-sysext-setup.service` adds `himmelblau` to `/etc/nsswitch.conf`, turns on the PAM profile with `pam-auth-update`, lets GDM's `pam_gnome_keyring` reuse the Hello PIN, and makes `/etc/krb5.conf` include `/etc/krb5.conf.d`. It only adds lines and never deletes. The tool runs the same step after it writes your configuration. `sudo snosi-etc-diff` lists `nsswitch.conf` and `pam.d/common-*` as modified. That is expected.
 
 On first start, `himmelblau-hsm-pin-init.service` creates the HSM PIN and seals it with `systemd-creds`, bound to the TPM when one is available. `sudo aad-tool tpm` shows whether the PIN is TPM-bound.
 
@@ -131,7 +131,7 @@ Updex unmerges all extensions on the host, deletes the image, and merges the res
 The edits in `/etc` stay: the `himmelblau` entries in `/etc/nsswitch.conf` and the PAM profile. glibc and PAM ignore them when the modules are gone. To clean them up:
 
 ```bash
-snosi-etc-diff --restore /etc/nsswitch.conf
+sudo snosi-etc-diff --restore /etc/nsswitch.conf
 sudo pam-auth-update --remove himmelblau
 ```
 
@@ -198,4 +198,5 @@ Updex v2.0.6 commit
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/adr/0004-sysext-authoring-rules.md)
 
 - [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

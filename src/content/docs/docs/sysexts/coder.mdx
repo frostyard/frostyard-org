@@ -41,7 +41,7 @@ systemctl status coder-sysext-setup.service
 
 `systemd-sysext status` lists `coder`, `command -v coder` prints `/usr/bin/coder`, and `coder-sysext-setup.service` is active (exited).
 
-`coder.service` does not run yet. It waits for you to fill in its settings, as the next section shows.
+`coder.service` starts after the merge with the empty settings from the factory `coder.env`. Fill them in before you use Coder, as the next section shows.
 
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
 download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
@@ -49,16 +49,18 @@ reboot. Then run the checks above again.
 
 ## Configure and start Coder
 
-`coder.service` starts only when `/etc/coder.d/coder.env` is not empty. The merge places that file in `/etc/coder.d/` from `/usr/share/factory/etc/coder.d/`. Your edits are never overwritten. Fill in the settings the file reads, such as `CODER_ACCESS_URL`:
+`coder.service` starts after the merge with the empty settings from the factory `/etc/coder.d/coder.env`. The merge places that file in `/etc/coder.d/` from `/usr/share/factory/etc/coder.d/`, and your edits are never overwritten. Before you use Coder, fill in at least `CODER_ACCESS_URL`. It must be reachable from outside the machine. The factory file lists these keys, all empty: `CODER_ACCESS_URL`, `CODER_HTTP_ADDRESS`, `CODER_PG_CONNECTION_URL`, `CODER_TLS_CERT_FILE`, `CODER_TLS_ENABLE`, and `CODER_TLS_KEY_FILE`. Frostyard requires none of them.
+
+Edit the file:
 
 ```bash
 sudoedit /etc/coder.d/coder.env
 ```
 
-Then start the server, or reboot:
+Then restart the server:
 
 ```bash
-sudo systemctl start coder.service
+sudo systemctl restart coder.service
 systemctl status coder.service
 ```
 
@@ -102,7 +104,7 @@ Updex unmerges all extensions on the host, deletes the image, and merges the res
 | Version | The image file name carries the `coder` package version, plus a `+rN` snosi revision when one is set |
 | Image file | `coder_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
 | Download | From `https://repository.frostyard.org/ext/coder/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
-| Services | `coder.service` (started at boot through `coder-sysext-setup.service`, once `/etc/coder.d/coder.env` is not empty); `coder-workspace-proxy.service` (off) |
+| Services | `coder.service` (started at boot through `coder-sysext-setup.service`); `coder-workspace-proxy.service` (off) |
 
 <ExtensionSnapshot name="coder" />
 
@@ -139,4 +141,5 @@ Updex v2.0.6 commit
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/adr/0004-sysext-authoring-rules.md)
 
 - [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
