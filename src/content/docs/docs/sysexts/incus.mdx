@@ -140,22 +140,19 @@ updex daemon status
 sudo updex daemon disable
 ```
 
-The timer runs `updex features update --no-refresh` once a day. It downloads
-and stages, but never swaps the running system. The new version runs after
-your next refresh or reboot.
-
-Planned: a packaged timer that runs every 6 hours and takes effect at the
-next boot. See [Update](/docs/sysexts/manage/#update).
+The package ships the timer switched off. `daemon enable` turns it on. The timer runs
+`updex features update --no-refresh` every 6 hours, with a random delay of up
+to 1 hour. It downloads, verifies, and links the new version, and never swaps
+the running system. The new version runs after your next reboot. A host on
+battery skips a run. See
+[Automatic updates](/docs/sysexts/manage/#automatic-updates).
 
 To take one update at the next boot without the timer, run
 `sudo updex features update --no-refresh --component=incus`, then reboot.
 
 ## Roll back
 
-Updex v2.0.6 has no rollback command. To keep the version you run, stop
-updates as shown below. To remove the extension, use the remove command below.
-Your containers, virtual machines, and storage pools stay outside the extension either way. A rollback command is planned. See
-[Roll back](/docs/sysexts/manage/#roll-back).
+Roll back with `sudo updex features rollback incus`. It takes effect at the next boot. Updex then holds updates until a newer version is published. To keep the version you run instead, stop updates as shown below. To remove the extension, use the remove command below. Your containers, virtual machines, and storage pools stay outside the extension either way. See [Roll back](/docs/sysexts/manage/#roll-back).
 
 ## Stop updates or remove
 
@@ -290,14 +287,16 @@ match. The build check protects the build, not a host with a different Base.
 - [Tailscale system extension](/docs/sysexts/tailscale/)
 - [System extension model](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/docs/design/sysexts.md)
 - [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/docs/nbc-to-bootc-migration.md)
-- [Updex v2.0.3 command reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
+- [Updex v2.1.0 command reference](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
 
 ## Sources
 
-Reviewed 2026-10-23. snosi commit
+Reviewed 2026-10-24. snosi commit
 [`c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd`](https://github.com/frostyard/snosi/tree/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd);
 Updex v2.0.3 commit
-[`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d).
+[`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d);
+Updex v2.1.0 commit
+[`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3).
 
 - [`mkosi.images/incus/mkosi.conf`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.conf)
 - [`mkosi.images/incus/mkosi.finalize`](https://github.com/frostyard/snosi/blob/c0d6476ecda7124f8be86f3f991cc8b61fb0dbdd/mkosi.images/incus/mkosi.finalize)
@@ -330,5 +329,7 @@ Updex v2.0.3 commit
 - [Updex v2.0.3 configuration reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/config-reference.md)
 - [Updex v2.0.3 SDK reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/sdk-api.md)
 - [Updex v2.0.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/adr/0007-daemon-stages-never-activates.md)
+- [Updex v2.1.0 `README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
+- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

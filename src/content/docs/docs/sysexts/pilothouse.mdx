@@ -70,9 +70,7 @@ sudo updex features update --component=pilothouse
 
 Updex downloads and verifies the new image, switches the link, deletes older versions, and refreshes the merge. See [Manage system extensions](/docs/sysexts/manage/#update) for `--no-vacuum`, `--dry-run`, and the update timer. The refresh swaps `/usr` under the running system.
 
-Updex v2.0.6 has no rollback command. See
-[Manage system extensions](/docs/sysexts/manage/#roll-back) for the options
-and the planned `updex features rollback` command.
+Roll back with `sudo updex features rollback pilothouse`. It takes effect at the next boot. See [Roll back](/docs/sysexts/manage/#roll-back).
 
 Remove pilothouse:
 
@@ -111,10 +109,10 @@ Each build checks the two commands, both service units, the sysusers file, the f
 
 ## Sources
 
-Reviewed 2026-10-23. snosi commit
+Reviewed 2026-10-24. snosi commit
 [`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201);
-Updex v2.0.6 commit
-[`c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93`](https://github.com/frostyard/updex/tree/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93).
+Updex v2.1.0 commit
+[`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3).
 
 - [`mkosi.images/pilothouse/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/pilothouse/mkosi.conf)
 - [`mkosi.images/pilothouse/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/pilothouse/mkosi.postinst.chroot)
@@ -129,6 +127,7 @@ Updex v2.0.6 commit
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/adr/0004-sysext-authoring-rules.md)
 
-- [Updex v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md)
+- [Updex v2.1.0 `README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
+- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
 - [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
