@@ -252,7 +252,7 @@ for (const route of ["/docs/images/install-update/"]) {
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
 assert(docsLanding.includes("Updex v2.0.6"), "/docs must name the Updex v2.0.6 source pin.");
-assert(docsLanding.includes("https://github.com/frostyard/updex/pull/445"), "/docs must link Updex PR #445.");
+assert(docsLanding.includes("https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md"), "/docs must cite the pinned Updex v2.0.6 README.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
 
 const snow = await readRoute("/docs/images/snow");
