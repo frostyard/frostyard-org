@@ -75,6 +75,7 @@ const docsRoutes = [
   "/docs/sysexts/vscode",
   "/docs/sysexts/manage",
   "/docs/tools/apt-repository",
+  "/docs/get-software",
   "/docs/sysexts/1password",
   "/docs/sysexts/1password-cli",
   "/docs/sysexts/bitwarden",
@@ -175,6 +176,7 @@ for (const route of docsRoutes) {
 
   for (const href of [
     "/docs/",
+    "/docs/get-software/",
     "/docs/images/snow/",
     "/docs/images/snowfield/",
     "/docs/images/sundog/",
