@@ -7,8 +7,9 @@ import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
 The Incus extension adds the Incus daemon, CLI, and web UI to a Frostyard
 bootc image, with its own QEMU for virtual machines. Use it to run system
-containers and virtual machines on the host. Every Frostyard bootc image ships
-it switched off; you turn it on with one command.
+containers and virtual machines on the host. Every image carries the
+extension's definition, switched off. The extension itself is not in the image:
+Updex turns it on and downloads it with one command.
 
 ## Before you start
 

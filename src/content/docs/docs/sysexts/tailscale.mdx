@@ -7,8 +7,9 @@ import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
 The Tailscale extension adds the Tailscale daemon and CLI to a Frostyard
 bootc image, so the host itself can join your tailnet. The node identity lives
-in `/var`, so it survives updates. Every Frostyard bootc image ships the
-extension switched off; you turn it on with one command.
+in `/var`, so it survives updates. Every image carries the extension's
+definition, switched off. The extension itself is not in the image: Updex turns
+it on and downloads it with one command.
 
 ## Before you start
 

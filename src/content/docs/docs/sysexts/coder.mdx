@@ -5,7 +5,7 @@ description: Enable, update, roll back, and remove the Coder system extension on
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
-The Coder extension adds the Coder server, a self-hosted development workspaces server, to a Frostyard bootc image. Use it to run Coder on this machine. Every image ships the extension switched off.
+The Coder extension adds the Coder server, a self-hosted development workspaces server, to a Frostyard bootc image. Use it to run Coder on this machine. Every image carries the extension's definition, switched off. The extension itself is not in the image: Updex turns it on and downloads it.
 
 ## Before you start
 

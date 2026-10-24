@@ -5,7 +5,7 @@ description: Enable, update, roll back, and remove the Debian development system
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
-The Debian development extension adds `debootstrap`, `arch-test`, and the Debian and Ubuntu archive keyrings to a Frostyard bootc image. Use it to build Debian or Ubuntu root file systems. Every image ships the extension switched off.
+The Debian development extension adds `debootstrap`, `arch-test`, and the Debian and Ubuntu archive keyrings to a Frostyard bootc image. Use it to build Debian or Ubuntu root file systems. Every image carries the extension's definition, switched off. The extension itself is not in the image: Updex turns it on and downloads it.
 
 ## Before you start
 

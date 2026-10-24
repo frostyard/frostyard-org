@@ -7,8 +7,9 @@ import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
 The Docker extension adds Docker Engine, the Docker CLI, containerd, Buildx,
 and Compose to a Frostyard bootc image. Use it when a workload needs Docker
-or Docker Compose. Every Frostyard bootc image ships it switched off; you turn
-it on with one command.
+or Docker Compose. Every image carries the extension's definition, switched
+off. The extension itself is not in the image: Updex turns it on and downloads
+it with one command.
 
 ## Before you start
 

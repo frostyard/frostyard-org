@@ -5,7 +5,7 @@ description: Enable, update, roll back, and remove the pilothouse system extensi
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
-The pilothouse extension adds Pilothouse, a web administration console, to a Frostyard bootc image. It manages the machine through Updex and the container engines it finds. Use it when you want a browser view of extensions and containers. Every image ships the extension switched off.
+The pilothouse extension adds Pilothouse, a web administration console, to a Frostyard bootc image. It manages the machine through Updex and the container engines it finds. Use it when you want a browser view of extensions and containers. Every image carries the extension's definition, switched off. The extension itself is not in the image: Updex turns it on and downloads it.
 
 ## Before you start
 
