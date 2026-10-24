@@ -105,10 +105,7 @@ image is merged.
 
 ### Roll back
 
-Updex v2.0.6 has no rollback command. To keep the version you run, stop
-updates with `sudo updex features disable vscode`. To remove the extension, use
-the command above. The extension keeps no state of its own. A rollback command is planned. See
-[Roll back](/docs/sysexts/manage/#roll-back).
+Roll back with `sudo updex features rollback vscode`. It takes effect at the next boot. Updex then holds updates until a newer version is published. To stop future updates instead, run `sudo updex features disable vscode`. The extension keeps no state of its own. See [Roll back](/docs/sysexts/manage/#roll-back).
 
 See [Manage system extensions](/docs/sysexts/manage/) for the update check, the
 timer, and plain `disable`.
@@ -157,14 +154,16 @@ have. A later Base can break an older Visual Studio Code image.
 - [Dev tools system extension](/docs/sysexts/dev/)
 - [Manage system extensions](/docs/sysexts/manage/)
 - [Desktop applications in sysexts](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
-- [Updex v2.0.5 command reference](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
+- [Updex v2.1.0 command reference](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
 
 ## Sources
 
-Reviewed 2026-10-23. snosi commit
+Reviewed 2026-10-24. snosi commit
 [`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b);
 Updex v2.0.5 commit
-[`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb).
+[`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb);
+Updex v2.1.0 commit
+[`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3).
 
 - [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/vscode/mkosi.conf)
 - [`mkosi.images/vscode/required-paths.txt`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/vscode/required-paths.txt)
@@ -176,6 +175,8 @@ Updex v2.0.5 commit
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
 - [Updex v2.0.5 `README.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
 - [Updex v2.0.5 `updex/features.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/features.go)
+- [Updex v2.1.0 `README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
+- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
 - [Murbella's live check on a merged host (frostyard-org#21 review)](https://github.com/frostyard/frostyard-org/pull/21#pullrequestreview-5619934232)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

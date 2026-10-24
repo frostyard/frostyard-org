@@ -282,9 +282,11 @@ hourly run records `published image equals the rollback deployment` in
 applied. The updater stages the next published image as usual.
 
 `bootc rollback` does not change your system extensions. They stay in `/var`
-and merge again on the older image. The next `updex features update` links the
-newest version again. An extension built for a newer image can fail on an older
-one. If it does, stop its updates or remove it, as in
+and merge again on the older image. `bootc rollback` creates no extension
+rollback hold. Enabled extensions keep their normal updates, subject to their
+own rollback holds and to the image requirement. An extension
+built for a newer image can fail on an older one. If it does, roll it back,
+stop its updates, or remove it, as in
 [Roll back an extension](/docs/sysexts/manage/#roll-back).
 
 ## Move from an nbc or A/B install
@@ -418,5 +420,5 @@ Reviewed 2026-10-23 against snosi commit
 - [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-notify`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-notify)
 - [`mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged)
 - [snosi `docs/design/sysexts.md` at `9db7cde8`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
-- [Updex ADR-0016](https://github.com/frostyard/updex/blob/a4603c026ca77eb02e82baf07a80466c053d7e3c/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [Updex ADR-0016](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
 - [Murbella's review: extensions after `bootc rollback` (frostyard-org#27)](https://github.com/frostyard/frostyard-org/pull/27#pullrequestreview-5630385504)

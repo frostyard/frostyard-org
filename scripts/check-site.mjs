@@ -253,8 +253,8 @@ for (const route of ["/docs/images/install-update/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
-assert(docsLanding.includes("Updex v2.0.6"), "/docs must name the Updex v2.0.6 source pin.");
-assert(docsLanding.includes("https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md"), "/docs must cite the pinned Updex v2.0.6 README.");
+assert(docsLanding.includes("Updex v2.1.0"), "/docs must name the Updex v2.1.0 source pin.");
+assert(docsLanding.includes("https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md"), "/docs must cite the pinned Updex v2.1.0 README.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
 
 const snow = await readRoute("/docs/images/snow");
@@ -531,13 +531,13 @@ const updex = await readRoute("/docs/tools/updex");
 const updexText = textOf(updex);
 for (const heading of [
   "check-your-version",
-  "features-and-components",
-  "enable-a-feature",
-  "check-and-update",
+  "everyday-commands",
   "automatic-updates",
+  "roll-back-an-extension",
   "stop-updates-or-remove",
+  "install-updex-on-another-system",
   "catalogs",
-  "global-flags",
+  "reference",
   "troubleshooting",
   "see-also",
   "sources",
@@ -546,28 +546,22 @@ for (const heading of [
 }
 for (const source of [
   "README.md",
-  "docs/specs/config-reference.md",
   "docs/design/overview.md",
-  "docs/adr/0003-catalog-ownership-marker.md",
-  "docs/adr/0004-single-updex-drop-in.md",
   "docs/adr/0007-daemon-stages-never-activates.md",
   "docs/adr/0014-local-catalog-signature-policy.md",
   "docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md",
-  "cmd/updex/root.go",
+  "docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md",
   "cmd/updex/features.go",
-  "cmd/updex/components.go",
+  "cmd/updex/features_run.go",
   "cmd/updex/daemon.go",
   "cmd/updex/catalog.go",
-  "cmd/updex/features_run.go",
   "updex/features.go",
   "updex/install.go",
-  "updex/catalog.go",
+  "updex/rollback.go",
   "updex/daemon.go",
-  "sysext/manager.go",
-  "systemd/manager.go",
-  "systemd/unit.go",
+  "updex/catalog.go",
 ]) {
-  assert(updex.includes(`https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/${source}`), `/docs/tools/updex must cite ${source}.`);
+  assert(updex.includes(`https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/${source}`), `/docs/tools/updex must cite ${source}.`);
 }
 for (const source of [
   "mkosi.images/base/mkosi.conf",
@@ -584,10 +578,13 @@ assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name th
 assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
 assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
 assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
-assert(updexText.includes("This guide follows Updex v2.0.6"), "/docs/tools/updex must follow Updex v2.0.6.");
-assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.6"), "/docs/tools/updex must link the Updex v2.0.6 release.");
-assert(updexText.includes("sudo updex --dry-run daemon enable") && updexText.includes("Updex v2.0.4 and older ignore --dry-run here"), "/docs/tools/updex must explain the daemon dry run and its v2.0.4 limit (updex#452).");
+assert(updexText.includes("This guide follows Updex v2.1.0"), "/docs/tools/updex must follow Updex v2.1.0.");
+assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.1.0"), "/docs/tools/updex must link the Updex v2.1.0 release.");
+assert(updexText.includes("sudo updex --dry-run daemon enable"), "/docs/tools/updex must explain the daemon dry run.");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
+assert(updexText.includes("updex features rollback"), "/docs/tools/updex must give the rollback command.");
+assert(updexText.includes("sudo updex daemon enable"), "/docs/tools/updex must tell the reader how to turn the timer on.");
+assert(updexText.includes("PENDING REBOOT:"), "/docs/tools/updex must explain the PENDING REBOOT line.");
 
 for (const route of ["/docs/apps/frostmail/", "/docs/apps/frostnotes/", "/docs/apps/lodge/", "/docs/apps/frostread/", "/docs/apps/porter/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
@@ -1082,7 +1079,7 @@ for (const page of sysextPages) {
   assert(text.includes("they remove the extension at once"), `${page.route} must state that older Updex removes a merged extension at once.`);
   assert(text.includes("updex catalog remove has it"), `${page.route} must cover the catalog remove guard.`);
   assert(text.includes("only sets Enabled=false"), `${page.route} must explain plain disable.`);
-  assert(text.includes("keeps running"), `${page.route} must state that plain disable leaves the daemon running.`);
+  assert(text.includes("The next boot merges the version that the link names"), `${page.route} must state that plain disable leaves the link, and the next boot merges the linked version.`);
   assert(text.includes("one row for each enabled feature"), `${page.route} must describe features check.`);
   assert(text.includes("has no row") && text.includes("a missing row does not mean"), `${page.route} must explain the disabled-feature no-row result.`);
   if (page.route === "/docs/sysexts/docker") {
@@ -1205,6 +1202,13 @@ for (const page of commandPages) {
   }
 }
 
+for (const route of ["/docs/tools/updex", "/docs/sysexts", "/docs/sysexts/manage", "/docs/sysexts/docker", "/docs/sysexts/incus", "/docs/sysexts/tailscale", "/docs/sysexts/dev", "/docs/sysexts/k3s", "/docs/sysexts/nix", "/docs/sysexts/vscode", "/docs/sysexts/himmelblau"]) {
+  const stale = textOf(await readRoute(route));
+  assert(!stale.includes("Planned:"), `${route} must not carry a "Planned:" paragraph: Updex v2.1.0 ships rollback, the packaged timer, and the RUNNING and LINKED columns.`);
+  assert(!stale.includes("has no rollback command"), `${route} must not say that Updex has no rollback command.`);
+  assert(!stale.includes("once a day") && !stale.includes("daily timer"), `${route} must not describe the old daily timer.`);
+}
+
 const manage = await readRoute("/docs/sysexts/manage");
 const manageText = textOf(manage);
 for (const heading of [
@@ -1213,6 +1217,8 @@ for (const heading of [
   "enable-an-extension",
   "check-that-it-works",
   "update",
+  "automatic-updates",
+  "roll-back",
   "stop-updates-or-remove",
   "how-extensions-are-built",
   "troubleshooting",
@@ -1240,24 +1246,35 @@ for (const source of [
   "docs/specs/config-reference.md",
   "docs/adr/0007-daemon-stages-never-activates.md",
   "docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md",
+  "docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md",
   "cmd/updex/features_run.go",
   "cmd/updex/daemon.go",
   "updex/features.go",
   "updex/install.go",
+  "updex/rollback.go",
   "updex/daemon.go",
   "updex/list.go",
   "manifest/gpg.go",
   "sysext/manager.go",
   "systemd/unit.go",
 ]) {
-  assert(manage.includes(`https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/${source}`), `/docs/sysexts/manage must cite ${source}.`);
+  assert(manage.includes(`https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/${source}`), `/docs/sysexts/manage must cite ${source}.`);
 }
-assert(manageText.includes("This guide follows Updex v2.0.6"), "/docs/sysexts/manage must follow Updex v2.0.6.");
+assert(manageText.includes("This guide follows Updex v2.1.0"), "/docs/sysexts/manage must follow Updex v2.1.0.");
+assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.1.0"), "/docs/sysexts/manage must link the Updex v2.1.0 release.");
 assert(manage.includes('id="roll-back"'), "/docs/sysexts/manage must render the roll back section.");
-assert(manageText.includes("Updex v2.0.6 has no rollback command"), "/docs/sysexts/manage must state that Updex v2.0.6 has no rollback command.");
+assert(manageText.includes("sudo updex features rollback"), "/docs/sysexts/manage must give the rollback command.");
+assert(manageText.includes("sudo updex features rollback --clear"), "/docs/sysexts/manage must give the rollback --clear command.");
+assert(manageText.includes("/var/lib/updex/rollback/"), "/docs/sysexts/manage must name the rollback record.");
+assert(manageText.includes("held by rollback: rejected"), "/docs/sysexts/manage must show the rollback hold message.");
+assert(manageText.includes("An image rollback with bootc rollback does not roll back extensions"), "/docs/sysexts/manage must keep the bootc rollback note.");
+assert(manageText.includes("not linked: needs image &gt;="), "/docs/sysexts/manage must show the minimum-image message.");
+assert(manageText.includes("PENDING REBOOT:") && manageText.includes("RUNNING") && manageText.includes("LINKED"), "/docs/sysexts/manage must explain RUNNING, LINKED, and PENDING REBOOT.");
+assert(manageText.includes("another updex operation is running"), "/docs/sysexts/manage must show the operation-lock message.");
+assert(manageText.includes("updex-update.timer") && manageText.includes("sudo updex daemon enable"), "/docs/sysexts/manage must name the timer and how to turn it on.");
+assert(manageText.includes("sudo systemctl mask updex-update.timer"), "/docs/sysexts/manage must give the host-wide opt-out.");
 assert(manageText.includes("(version &lt;version&gt;) is active. Removing requires --force and a reboot to take effect."), "/docs/sysexts/manage must show the exact removal refusal message.");
-assert(manageText.includes("Updex v2.0.4 and later refuse to remove a merged extension"), "/docs/sysexts/manage must state the removal guard version.");
-assert(manageText.includes("In Updex v2.0.3 the check did not fire on a Frostyard host"), "/docs/sysexts/manage must state the v2.0.3 limit.");
+assert(manageText.includes("Updex refuses to remove a merged extension without --force"), "/docs/sysexts/manage must state the removal guard.");
 assert(manageText.includes("It never activates"), "/docs/sysexts/manage must state that the timer never activates.");
 assert(manageText.includes("--no-refresh"), "/docs/sysexts/manage must name the timer's --no-refresh command.");
 assert(manageText.includes("Updex unmerges all extensions on the host"), "/docs/sysexts/manage must warn that removal unmerges all extensions.");
