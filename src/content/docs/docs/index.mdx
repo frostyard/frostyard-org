@@ -1,21 +1,21 @@
 ---
 title: Frostyard documentation
-description: Install and run Frostyard bootc images, and add Dev tools, Docker, Incus, K3s, Nix, Tailscale, or Visual Studio Code as system extensions.
+description: Install and run Frostyard bootc images, and add system extensions, apps, and tools.
 ---
 
 import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 
 Frostyard makes bootc images and `/usr` system extensions, built with
 [snosi](https://github.com/frostyard/snosi). These guides cover each Frostyard
-image and seven extensions you can turn on: Dev tools, Docker, Incus, K3s,
-Nix, Tailscale, and Visual Studio Code. Each page lists its sources at the
-bottom.
+image, every extension in the catalog, the apps, and the tools. Each page lists
+its sources at the bottom.
 
 :::caution[Support boundary]
 Secure Boot, signed updates, and signed rollback are not production-ready yet.
-Fresh-install test results for Snow, Floe, and Sundog are still pending. See
-[Snow](/docs/images/snow/) and the snosi
-[Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md).
+Snow and Floe passed a fresh install in a virtual machine in a lab run on
+2026-10-24. That is not a hardware test. Sundog's run failed, and its result
+is still pending. See [Snow](/docs/images/snow/) and the snosi
+[Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/bootc-secure-operations.md).
 :::
 
 ## Start here
@@ -30,6 +30,7 @@ Fresh-install test results for Snow, Floe, and Sundog are still pending. See
   <LinkCard title="System extension catalog" href="/docs/sysexts/" description="See every extension in the catalog, and enable or update one." />
   <LinkCard title="Manage extensions" href="/docs/sysexts/manage/" description="Find, enable, check, update, and remove any extension." />
   <LinkCard title="Updex" href="/docs/tools/updex/" description="Manage system extensions: enable, update, and remove them." />
+  <LinkCard title="APT repository" href="/docs/tools/apt-repository/" description="Add the Frostyard APT repository to a plain Debian 13 host." />
   <LinkCard title="Frostmail" href="/docs/apps/frostmail/" description="A mail client with a daemon, a desktop app, and a CLI. Pre-release: build it from source." />
   <LinkCard title="Frostnotes" href="/docs/apps/frostnotes/" description="Markdown notes with sync, a desktop app, and MCP for agents. Pre-release: build it from source." />
   <LinkCard title="lodge" href="/docs/apps/lodge/" description="The tailnet web shell that runs Frostyard's apps. Pre-release: build it from source." />
@@ -55,7 +56,7 @@ Each image has its own guide:
 
 Snowfield is untested on representative Surface hardware. The installer
 offers the four bootc products; Base is not one of them. The snosi
-[installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md)
+[installation guide](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/installing.md)
 has the full table.
 
 ## Install and first boot
@@ -68,7 +69,11 @@ warning, first boot, and MOK enrollment.
 Every image checks for updates hourly, stages a new version, and starts it at
 your next normal reboot. It never forces a reboot.
 [Install, update, and roll back](/docs/images/install-update/) takes you from
-the download to a rollback, and covers the move off an nbc or A/B install.
+the download to a rollback.
+
+Old nbc and native A/B installs got no new images or updates after
+2026-09-30. They cannot convert in place: back up, install fresh, and restore.
+See [Move from an nbc or A/B install](/docs/images/install-update/#move-from-an-nbc-or-ab-install).
 
 ## How a Frostyard system is built
 
@@ -85,30 +90,29 @@ A Frostyard system has three layers:
 Every image ships each extension switched off. You turn one on with
 [Updex](/docs/tools/updex/); each extension page has the steps.
 
-Each extension page shows the version the catalog listed on its last sync.
-The sync takes a pattern match, not a maximum, so it is not always the newest
-version. Run `updex features check` to see what you can update to.
+Each extension page shows the newest version the catalog listed at its last
+sync. Run `updex features check` to see what you can update to.
 
 ## Not covered yet
 
-The APT repository and per-application migrations have no guide here yet.
-Extensions other than Dev tools, Docker, Incus, K3s, Nix, Tailscale, and
-Visual Studio Code have no guide of their own yet; the
-[catalog](/docs/sysexts/) lists every extension.
+Snow's first-setup app (`snow-first-setup`) and the hotedge and Logo Menu
+GNOME extensions have no guide of their own. The [Snow](/docs/images/snow/)
+page lists them.
 
-Old nbc and native A/B installs get no new images or updates after
-2026-09-30. They cannot convert in place: back up, install fresh, and restore.
-See the snosi
-[migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md).
+Repogen, the tool that builds Frostyard's package repositories, has no guide
+here. Read its [README](https://github.com/frostyard/repogen/blob/0aa4d6892cfa22b212c7023796d1023649e60e90/README.md).
 
 ## Sources
 
-- Website catalog snapshot: [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json), reviewed 2026-10-22.
-- snosi product and support status: [`README.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/README.md).
-- Installation and update flow: [`docs/installing.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md).
-- Secure-path limits: [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md).
-- Legacy host migration: [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md).
-- System extension model: [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md).
-- Updex v2.0.3 release: [tag v2.0.3](https://github.com/frostyard/updex/releases/tag/v2.0.3).
-- Updex lifecycle commands: [v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md).
-- [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)
+- Website catalog snapshot: [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/d05c13022617e3645848d76117be88707601d037/src/data/extensions.json), reviewed 2026-10-24.
+- snosi product and support status: [`README.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/README.md).
+- Installation and update flow: [`docs/installing.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/installing.md).
+- Secure-path limits: [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/bootc-secure-operations.md).
+- Legacy host migration: [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/nbc-to-bootc-migration.md).
+- System extension model: [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/design/sysexts.md).
+- Updex v2.0.6: tag `v2.0.6`, commit [`c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93`](https://github.com/frostyard/updex/tree/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93).
+- Updex lifecycle commands: [v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md).
+- Newest version in each `SHA256SUMS`: frostyard-org [`scripts/extension-versions.mjs`](https://github.com/frostyard/frostyard-org/blob/2f1441572b86501d571f380a79c0a1126382ff75/scripts/extension-versions.mjs).
+- Snow first-setup app: snosi [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/packages/snow/mkosi.conf).
+- Snow GNOME extensions: snosi [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/composition/snow/mkosi.conf).
+- Repogen: [`README.md`](https://github.com/frostyard/repogen/blob/0aa4d6892cfa22b212c7023796d1023649e60e90/README.md).
