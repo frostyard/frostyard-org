@@ -96,14 +96,12 @@ Frostyard tools carry the `frostyard-` prefix, for example `frostyard-updex`
 repository also carries other applications, and Frostyard builds of `bootc`,
 `libostree-1-1`, and `incus`. Those builds are for Frostyard images.
 
-Frostyard proposes to move its builds of packages that Debian also has
-(`bootc`, `libostree-1-1`, and the `incus` packages) to a separate component,
-`image`, that only image builds enable
-([core ADR-0059](https://github.com/frostyard/core/pull/162), not accepted
-yet). A plain host would then no longer get them. That is a side effect, not
-support for plain hosts. A host that already has one of these builds would keep
-it, with no more updates for it from Frostyard. Keep the pin until this page
-changes.
+Frostyard proposes to move these image builds (`bootc`, `libostree-1-1`, and
+the `incus` packages) to a separate component, `image`, that only image builds
+enable. With that change, a plain host no longer gets them. That is a side
+effect, not support for plain hosts. A host that already has one of these
+builds keeps it, with no more updates for it from Frostyard. The change is not
+accepted yet: keep the pin until this page changes.
 
 On arm64, the repository has fewer packages. Check with
 `apt-cache policy <package>`.
