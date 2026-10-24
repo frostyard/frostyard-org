@@ -154,6 +154,11 @@ To take one update at the next boot without the timer, run
 
 Roll back with `sudo updex features rollback incus`. It takes effect at the next boot. Updex then holds updates until a newer version is published. To stop future updates instead, see below. To remove the extension, use the remove command below. Your containers, virtual machines, and storage pools stay outside the extension either way. See [Roll back](/docs/sysexts/manage/#roll-back).
 
+A rollback to an older Incus release can break Incus. After an upgrade, Incus
+updates its database, and an older Incus can treat that database as invalid.
+Read [Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus)
+before you roll back.
+
 ## Stop updates or remove
 
 Stop future updates:
@@ -334,3 +339,4 @@ Updex v2.1.0 commit
 - [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)
 - [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- Incus database after an upgrade: [Incus, Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus), read 2026-10-24; [Ben Sherman's review of core#162](https://github.com/frostyard/core/pull/162#issuecomment-6388139358).

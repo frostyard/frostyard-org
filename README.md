@@ -89,8 +89,8 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/content/docs/docs/tools/updex.md` covers Updex: features, components,
   updates, the daemon, catalogs, and removal.
 - `src/content/docs/docs/tools/apt-repository.md` covers the Frostyard APT
-  repository for plain Debian 13 hosts: add it, install, update, roll back, and
-  remove.
+  repository, which feeds Frostyard image builds, and its unsupported use on
+  plain Debian 13 hosts: add it, install, update, roll back, and remove.
 - `src/content/docs/docs/apps/frostmail.md` covers Frostmail: building it from source, accounts, the app, and lodge.
 - `src/content/docs/docs/apps/frostnotes.md` covers Frostnotes: building it from source, vaults, sync, the app, and MCP.
 - `src/content/docs/docs/apps/lodge.md` covers lodge: building it from source, installing it on a host, adding apps, agent tokens, and inference providers.

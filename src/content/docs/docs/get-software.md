@@ -124,9 +124,9 @@ distrobox enter NAME
 You are now in the container, and its package manager works there. Read
 [distrobox.it](https://distrobox.it/) for the rest.
 
-For a whole Linux machine, use [nsl](/docs/tools/nsl/). The Frostyard APT
-repository is for plain Debian 13 hosts, not for Frostyard images. See
-[APT repository](/docs/tools/apt-repository/).
+For a whole Linux machine, use [nsl](/docs/tools/nsl/). Images are built
+from the Frostyard [APT repository](/docs/tools/apt-repository/) and update as
+a whole: you do not add it to an image.
 
 ## Sources
 
@@ -152,3 +152,4 @@ repository is for plain Debian 13 hosts, not for Frostyard images. See
 - Bazaar automatic updates, default `false`: bazaar [`data/io.github.kolunmi.Bazaar.gschema.xml`](https://github.com/kolunmi/bazaar/blob/3d347d5d0fb828a0ff6ff0c1dcd356b26ddfdd33/data/io.github.kolunmi.Bazaar.gschema.xml) (`auto-update`).
 - Discover automatic updates, default `false`: discover [`kcm/updatessettings.kcfg`](https://github.com/KDE/discover/blob/4c44f74f1eff31ec7b2a455a4b6b481f7be3625f/kcm/updatessettings.kcfg) (`UseUnattendedUpdates`).
 - ChairLift bundles come from `/usr/share/snow/bundles` by default: chairlift [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/14e6bbd6381cc660b551b21b3e8a5f8de09eb354/CONFIG.md) (`bundles_paths`).
+- Images are built from the APT repository and carry no Frostyard APT source: core ADR-0059 (accepted 2026-10-24), Context, at [`4220e6e`](https://github.com/frostyard/core/blob/4220e6ec601812d594d1847d01c66f7c45880f35/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md); owner decision, Brian, 2026-10-24.

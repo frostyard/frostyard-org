@@ -1,18 +1,19 @@
 ---
 title: APT repository
-description: "Add the Frostyard APT repository to a Debian 13 host, install Frostyard packages, update them, and roll them back."
+description: "The Frostyard APT repository feeds Frostyard image builds. It also works on Debian 13, without support: add it, install, update, roll back."
 ---
 
-The Frostyard APT repository serves Frostyard `.deb` packages. Debian 13
-(trixie) is supported, on amd64 and arm64. Use the repository to install tools
-such as Updex on a plain Debian 13 host.
+The Frostyard APT repository serves the `.deb` packages that Frostyard images
+are built from. An installed image has no Frostyard APT source and needs none:
+it updates as a whole.
+
+The repository also works on a plain Debian 13 (trixie) host, on amd64 and
+arm64, for example to install Updex. This page shows how. That use is not
+supported.
 
 This page covers Debian 13 only. The repository also publishes `forky`
-(Debian 14), but this page makes no promise for it.
-
-Frostyard images already have their packages, so this page is for plain
-Debian 13 hosts. System extensions do not work on plain Debian: use the `.deb` packages
-there.
+(Debian 14). System extensions do not work on plain Debian: use the `.deb`
+packages there.
 
 ## Add the repository
 
@@ -57,7 +58,8 @@ Signed-By: /etc/apt/keyrings/frostyard.gpg
 EOF
 ```
 
-Give Debian's own packages priority:
+Give Debian's own packages priority. Frostyard advises this pin on every
+plain Debian host:
 
 ```bash
 sudo tee /etc/apt/preferences.d/frostyard.pref <<'EOF'
@@ -92,8 +94,14 @@ Frostyard tools carry the `frostyard-` prefix, for example `frostyard-updex`
 ([Updex](/docs/tools/updex/)) and `frostyard-chairlift`
 ([ChairLift](/docs/tools/chairlift/)). The binary keeps the bare name. The
 repository also carries other applications, and Frostyard builds of `bootc`,
-`libostree-1-1`, and `incus`. Those builds are for Frostyard images. They are
-not supported on plain Debian hosts.
+`libostree-1-1`, and `incus`. Those builds are for Frostyard images.
+
+Frostyard will move these image builds (`bootc`, `libostree-1-1`, and the
+`incus` packages) to a separate component, `image`, that only image builds
+enable. After the move, a plain host no longer gets them. That is a side
+effect, not support for plain hosts. A host that already has one of these
+builds keeps it, with no more updates for it from Frostyard. The move has not
+happened yet: keep the pin until this page changes.
 
 On arm64, the repository has fewer packages. Check with
 `apt-cache policy <package>`.
@@ -137,9 +145,9 @@ sudo apt install --only-upgrade <package>
 ```
 
 With the pin from [Add the repository](#add-the-repository), a package that
-Debian also has stays with Debian. If a host already got a Frostyard build of
-a Debian package, go back to Debian's version with
-`sudo apt install <package>=<Debian version>`.
+Debian also has stays with Debian. The pin does not move a Frostyard build
+that is already installed back to Debian's version, and there is no supported
+way back.
 
 ## Roll back a package
 
@@ -157,6 +165,11 @@ sudo apt install <package>=<version>
 
 apt shows the package as a downgrade and asks you to confirm. Use the version
 string exactly as `apt-cache policy` prints it, including a `~deb13` marker when it has one.
+
+A rollback of `incus` can break Incus. After an upgrade, Incus updates its
+database, and an older Incus can treat that database as invalid. Read
+[Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus)
+first.
 
 Stop `apt upgrade` from replacing it:
 
@@ -197,8 +210,11 @@ The Frostyard lines no longer appear in the output.
 
 ## Sources
 
-Reviewed 2026-10-23.
+Reviewed 2026-10-24.
 
+- Owner decision, Brian, 2026-10-24: the repository is for Frostyard images and their builds. Plain Debian 13 hosts are not a supported use. Installed images have no Frostyard APT source: core ADR-0059, Context.
+- `image` component: core ADR-0059, accepted by Brian on 2026-10-24 (core#162, merged as [`4220e6e`](https://github.com/frostyard/core/blob/4220e6ec601812d594d1847d01c66f7c45880f35/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md); the file's status line still reads Proposed), and [Ben Sherman's review](https://github.com/frostyard/core/pull/162#issuecomment-6388139358): protection of plain hosts is a side effect, not a commitment, and no Incus downgrade advice.
+- Incus database after an upgrade: [Incus, Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus), read 2026-10-24.
 - core commit [`d55b259c57c636169e9a86f89ce808b075a1bf3c`](https://github.com/frostyard/core/tree/d55b259c57c636169e9a86f89ce808b075a1bf3c)
 - [`docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md)
 - [`docs/adr/0011-frostyard-prefixed-package-names.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/adr/0011-frostyard-prefixed-package-names.md)
