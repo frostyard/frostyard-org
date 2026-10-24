@@ -1291,4 +1291,11 @@ const pagefindEnglish = pagefindEntry.languages?.en;
 assert(pagefindEnglish, "The Pagefind index must contain an English language entry.");
 assert(pagefindEnglish.page_count === docsRoutes.length, `The Pagefind index must contain all ${docsRoutes.length} docs pages.`);
 
+for (const name of ["1password-cli", "1password", "bitwarden", "chatgpt", "claude-desktop", "code-server", "coder", "debdev", "edge", "gitdesktop", "github-copilot", "lemonade", "localsend", "moonlight", "obsidian", "paseo", "pilothouse", "podman", "sunshine", "voxtype"]) {
+  const route = `/docs/sysexts/${name}`;
+  const text = textOf(await readRoute(route));
+  assert(!text.includes("has no rollback command") && !text.includes("planned `updex features rollback`") && !text.includes("planned updex features rollback"), `${route} must not say that Updex has no rollback command: Updex v2.1.0 ships it.`);
+  assert(text.includes(`sudo updex features rollback ${name}`), `${route} must give the rollback command.`);
+}
+
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);
