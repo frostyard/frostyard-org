@@ -8,7 +8,8 @@ import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 The Dev tools extension adds a build toolchain to a Frostyard bootc image:
 CMake and Ninja, the autotools, GDB, Python tooling, and the GTK4 and WebKitGTK
 development headers. Use it where you build software, not just where you run
-it. Every image ships the extension switched off.
+it. Every image carries the extension's definition, switched off. The extension
+itself is not in the image: Updex turns it on and downloads it.
 
 ## Before you start
 

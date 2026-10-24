@@ -7,7 +7,9 @@ import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
 The Nix extension adds the Nix package manager and its multi-user daemon to a
 Frostyard bootc image. Use it when you want Nix packages and profiles next to
-the software the image ships. Every image ships it switched off.
+the software the image ships. Every image carries the extension's definition,
+switched off. The extension itself is not in the image: Updex turns it on and
+downloads it.
 
 ## Before you start
 

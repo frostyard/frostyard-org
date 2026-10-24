@@ -4,9 +4,10 @@ description: "Find, enable, check, update, roll back, and remove a system extens
 ---
 
 A system extension is an EROFS image that adds files to `/usr` only. Every
-Frostyard bootc image ships each extension switched off, and Updex turns one
-on. This guide covers the whole lifecycle of one extension: find it, enable
-it, check it, update it, roll it back, and remove it.
+Frostyard bootc image carries a definition for each extension in the catalog,
+switched off. The extension itself is not in the image: Updex turns it on and
+downloads it. This guide covers the whole lifecycle of one extension: find it,
+enable it, check it, update it, roll it back, and remove it.
 
 ## Before you start
 

@@ -8,8 +8,9 @@ import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 import ExtensionCatalog from "../../../../components/ExtensionCatalog.astro";
 
 A system extension adds software to the read-only `/usr` of a Frostyard bootc
-image. Every image ships each extension switched off. You turn one on with
-Updex.
+image. Every Frostyard bootc image carries a definition for each extension in
+the catalog, switched off. The extension itself is not in the image: Updex
+turns it on and downloads it.
 
 ## Find an extension
 

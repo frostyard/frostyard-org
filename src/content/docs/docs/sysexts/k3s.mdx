@@ -7,7 +7,9 @@ import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
 The k3s extension adds a single-binary Kubernetes node to a Frostyard bootc
 image. Use it when the host must be a Kubernetes server, or must join an
-existing cluster as an agent. Every image ships the extension switched off.
+existing cluster as an agent. Every image carries the extension's definition,
+switched off. The extension itself is not in the image: Updex turns it on and
+downloads it.
 
 ## Before you start
 

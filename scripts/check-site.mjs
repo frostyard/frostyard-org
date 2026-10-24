@@ -350,7 +350,7 @@ assert(floeText.includes("systemd-vmspawn"), "/docs/images/floe must name the se
 assert(floeText.includes("turns off the APT daily update and upgrade timers"), "/docs/images/floe must state that the APT daily timers are off.");
 assert(!floeText.includes("A rollback also changes the image") && floeText.includes("It waits for the next published image"), "/docs/images/floe must describe the rollback hold correctly.");
 assert(floeText.includes("twice the image size"), "/docs/images/floe must state the update space requirement.");
-assert(floeText.includes("Every image ships each system extension switched off"), "/docs/images/floe must state that extensions start switched off.");
+assert(floeText.includes("Every image carries a definition for each system extension, switched off"), "/docs/images/floe must state that extensions start switched off.");
 assert(floeText.includes("Homebrew"), "/docs/images/floe must cover the Homebrew units.");
 
 const snowfield = await readRoute("/docs/images/snowfield");

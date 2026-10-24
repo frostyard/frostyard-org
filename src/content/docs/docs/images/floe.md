@@ -156,8 +156,9 @@ Podman, Distrobox, and Buildah are in the image. `systemd-container` adds
 `systemd-nspawn` and `systemd-vmspawn`, and Base ships the QEMU runtime that
 `systemd-vmspawn` uses.
 
-Every image ships each system extension switched off. Floe creates
-`/var/lib/extensions` for merged extensions. The
+Every image carries a definition for each system extension, switched off. The
+extension itself is not in the image: Updex turns it on and downloads it.
+Floe creates `/var/lib/extensions` for merged extensions. The
 [extension catalog](/docs/sysexts/) lists every extension and the Updex steps.
 Three extensions have a guide:
 
@@ -242,3 +243,4 @@ Reviewed 2026-10-22 against snosi commit
 - [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/nbc-to-bootc-migration.md)
 - [`docs/design/overview.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/design/overview.md)
 - [`docs/design/testing.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/design/testing.md)
+- Extension definitions in the image, each with `Enabled=false` (snosi commit `260cf973e332fa8d2bad15163eeae68b17fc8bfb`): [`mkosi.images/base/mkosi.extra/usr/lib/`](https://github.com/frostyard/snosi/tree/260cf973e332fa8d2bad15163eeae68b17fc8bfb/mkosi.images/base/mkosi.extra/usr/lib), for example [`sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/260cf973e332fa8d2bad15163eeae68b17fc8bfb/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)

@@ -5,7 +5,7 @@ description: Enable, update, roll back, and remove the Podman + Distrobox system
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
 
-The Podman + Distrobox extension puts its own copy of Podman, Buildah, and Distrobox, with the networking and storage tools they use, over the copy that a Frostyard bootc image already has. Snow, Snowfield, Sundog, and Floe already ship these tools and their helpers in the image, so you do not need the extension to run containers. Every image ships the extension switched off.
+The Podman + Distrobox extension puts its own copy of Podman, Buildah, and Distrobox, with the networking and storage tools they use, over the copy that a Frostyard bootc image already has. Snow, Snowfield, Sundog, and Floe already ship these tools and their helpers in the image, so you do not need the extension to run containers. Every image carries the extension's definition, switched off. The extension itself is not in the image: Updex turns it on and downloads it.
 
 ## Before you start
 
