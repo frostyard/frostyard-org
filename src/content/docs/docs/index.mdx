@@ -88,8 +88,9 @@ A Frostyard system has three layers:
    write `/etc` or `/var`. An extension keeps its default configuration in
    `/usr/share/factory/etc`, and `tmpfiles.d` copies it into `/etc` at boot.
 
-Every image ships each extension switched off. You turn one on with
-[Updex](/docs/tools/updex/); each extension page has the steps.
+Every image carries a definition for each extension in the catalog, switched
+off. The extension itself is not in the image: you turn it on, and download
+it, with [Updex](/docs/tools/updex/). Each extension page has the steps.
 
 Each extension page shows the newest version the catalog listed at its last
 sync. Run `updex features check` to see what you can update to.
@@ -110,6 +111,7 @@ here. Read its [README](https://github.com/frostyard/repogen/blob/0aa4d6892cfa22
 - Installation and update flow: [`docs/installing.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/installing.md).
 - Secure-path limits: [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/bootc-secure-operations.md).
 - Legacy host migration: [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/nbc-to-bootc-migration.md).
+- Extension definitions in the image, each with `Enabled=false`: snosi [`mkosi.images/base/mkosi.extra/usr/lib/`](https://github.com/frostyard/snosi/tree/82c45014c62d27428cec14292fadc9ee28ea1119/mkosi.images/base/mkosi.extra/usr/lib).
 - System extension model: [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/docs/design/sysexts.md).
 - Updex v2.0.6: tag `v2.0.6`, commit [`c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93`](https://github.com/frostyard/updex/tree/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93).
 - Updex lifecycle commands: [v2.0.6 `README.md`](https://github.com/frostyard/updex/blob/c8c16f61ef0076dc4ba12fd96163bfde6f4a9c93/README.md).

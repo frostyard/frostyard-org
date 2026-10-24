@@ -35,12 +35,17 @@ Check that it is there:
 flatpak list --app
 ```
 
-The app is in the list. Update your Flatpak apps with `flatpak update`, or use
-[ChairLift](/docs/tools/chairlift/). On Sundog, Discover lists Flatpak
-applications too.
+The app is in the list.
+
+Flatpak apps do not update by themselves unless you turn that on. Update them
+with `flatpak update`, [ChairLift](/docs/tools/chairlift/), Bazaar (Snow,
+Snowfield), or Discover (Sundog). Bazaar and Discover each have an automatic
+update setting, which is off by default.
 
 - Snow, Snowfield, and Sundog carry Bazaar, an app store, in their core
   Flatpak set. Firn installs the set only if your install recipe includes it.
+  On Sundog, the app store is Discover: Sundog turns off Bazaar's background
+  service.
 - Frostyard's own Flatpak remote has one app: Igloo. See
   [Igloo](/docs/tools/igloo/) for the steps.
 - [Frostmail](/docs/apps/frostmail/) and [Frostnotes](/docs/apps/frostnotes/)
@@ -54,7 +59,8 @@ applications too.
 
 Use Homebrew for command-line tools. Snow, Snowfield, Sundog, and Floe include
 it. At first boot, `brew-setup.service` unpacks it into `/var/home/linuxbrew`.
-Homebrew belongs to the first user you create.
+The service runs only while `/var/home/linuxbrew/.linuxbrew` does not exist,
+and it gives Homebrew to UID 1000. That is the first user you create.
 
 Check that your shell finds it:
 
@@ -77,9 +83,9 @@ brew install NAME
 brew list
 ```
 
-Homebrew updates itself. `brew update` runs 10 minutes after boot and then
-every 6 hours. `brew upgrade` runs 30 minutes after boot and then every 8
-hours. ChairLift updates Homebrew too.
+Homebrew updates itself. `brew update` runs 10 minutes after boot, then about
+every 6 hours. `brew upgrade` runs 30 minutes after boot, then about every 8
+hours. On Snow, Snowfield, and Sundog, ChairLift updates Homebrew too.
 
 The images ship Brewfile bundles of recommended tools:
 
@@ -89,8 +95,8 @@ The images ship Brewfile bundles of recommended tools:
 
 Sundog has no bundle file.
 
-Install one with `brew bundle --file=PATH`. ChairLift can also install curated
-bundles.
+Install one with `brew bundle --file=PATH`. On Snow and Snowfield, ChairLift
+can also install curated bundles.
 
 Frostyard's Homebrew tap, `frostyard/tap`, has 2 casks: `nsl` and `chairlift`.
 The [nsl](/docs/tools/nsl/) page uses it to install the nsl CLI.
@@ -99,7 +105,8 @@ The [nsl](/docs/tools/nsl/) page uses it to install the nsl CLI.
 
 Use a system extension for a service, a daemon, or a tool that must be in
 `/usr` or run as root. Docker, Incus, and Tailscale are examples. Every image
-ships each extension switched off, and Updex turns one on.
+carries a definition for each extension in the catalog, switched off. The
+extension itself is not in the image: Updex turns it on and downloads it.
 
 Start with [Manage extensions](/docs/sysexts/manage/). The
 [catalog](/docs/sysexts/) lists every extension.
@@ -139,3 +146,9 @@ repository is for plain Debian 13 hosts, not for Frostyard images. See
 - APT timers off in the image: snosi [`00-apt.preset`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-apt.preset).
 - Flatpak commands: flatpak [`doc/flatpak-search.xml`](https://github.com/flatpak/flatpak/blob/ed425ed0c9d23d3fe69110386929f8d34c928490/doc/flatpak-search.xml), [`doc/flatpak-install.xml`](https://github.com/flatpak/flatpak/blob/ed425ed0c9d23d3fe69110386929f8d34c928490/doc/flatpak-install.xml), [`doc/flatpak-list.xml`](https://github.com/flatpak/flatpak/blob/ed425ed0c9d23d3fe69110386929f8d34c928490/doc/flatpak-list.xml) (`--app`), and [`doc/flatpak-update.xml`](https://github.com/flatpak/flatpak/blob/ed425ed0c9d23d3fe69110386929f8d34c928490/doc/flatpak-update.xml).
 - Distrobox commands: distrobox [`docs/usage/distrobox-create.md`](https://github.com/89luca89/distrobox/blob/24035a6dd11d0ec2f88ee46a8a4b89876d62c56b/docs/usage/distrobox-create.md) (`--image`, `--name`) and [`docs/usage/distrobox-enter.md`](https://github.com/89luca89/distrobox/blob/24035a6dd11d0ec2f88ee46a8a4b89876d62c56b/docs/usage/distrobox-enter.md).
+- Extension definitions, each with `Enabled=false`: snosi [`mkosi.images/base/mkosi.extra/usr/lib/`](https://github.com/frostyard/snosi/tree/82c45014c62d27428cec14292fadc9ee28ea1119/mkosi.images/base/mkosi.extra/usr/lib) (`sysupdate.<name>.d/<name>.feature`), for example [`docker.feature`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature).
+- ChairLift on Snow, Snowfield, and Sundog only: `frostyard-chairlift` in snosi [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/packages/snow/mkosi.conf) and [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/packages/sundog/mkosi.conf), not in [`shared/packages/floe/mkosi.conf`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/packages/floe/mkosi.conf).
+- Sundog turns off Bazaar's service: snosi [`shared/sundog/tree/usr/lib/systemd/user-preset/90-sundog.preset`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/sundog/tree/usr/lib/systemd/user-preset/90-sundog.preset).
+- Bazaar automatic updates, default `false`: bazaar [`data/io.github.kolunmi.Bazaar.gschema.xml`](https://github.com/kolunmi/bazaar/blob/3d347d5d0fb828a0ff6ff0c1dcd356b26ddfdd33/data/io.github.kolunmi.Bazaar.gschema.xml) (`auto-update`).
+- Discover automatic updates, default `false`: discover [`kcm/updatessettings.kcfg`](https://github.com/KDE/discover/blob/4c44f74f1eff31ec7b2a455a4b6b481f7be3625f/kcm/updatessettings.kcfg) (`UseUnattendedUpdates`).
+- ChairLift bundles come from `/usr/share/snow/bundles` by default: chairlift [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/14e6bbd6381cc660b551b21b3e8a5f8de09eb354/CONFIG.md) (`bundles_paths`).
