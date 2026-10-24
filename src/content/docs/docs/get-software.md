@@ -39,8 +39,8 @@ The app is in the list. Update your Flatpak apps with `flatpak update`, or use
 [ChairLift](/docs/tools/chairlift/). On Sundog, Discover lists Flatpak
 applications too.
 
-- Snow and Sundog carry Bazaar, an app store, in their core Flatpak set. Firn
-  installs the set only if your install recipe includes it.
+- Snow, Snowfield, and Sundog carry Bazaar, an app store, in their core
+  Flatpak set. Firn installs the set only if your install recipe includes it.
 - Frostyard's own Flatpak remote has one app: Igloo. See
   [Igloo](/docs/tools/igloo/) for the steps.
 - [Frostmail](/docs/apps/frostmail/) and [Frostnotes](/docs/apps/frostnotes/)
@@ -90,10 +90,7 @@ The images ship Brewfile bundles of recommended tools:
 Install one with `brew bundle --file PATH`. ChairLift can also install curated
 bundles.
 
-Frostyard keeps a Homebrew tap, `frostyard/tap`, for a few casks that do not
-work well as Flatpaks, such as IDEs and hardware tools. Most people do not
-need it. Read the
-[tap README](https://github.com/frostyard/homebrew-tap/blob/f96abc1cbdc9e6b7de1494c0241eb5a3f43aec84/README.md).
+Frostyard's Homebrew tap, `frostyard/tap`, has 2 casks: `nsl` and `chairlift`.
 The [nsl](/docs/tools/nsl/) page uses it to install the nsl CLI.
 
 ## System extensions
@@ -136,5 +133,5 @@ repository is for plain Debian 13 hosts, not for Frostyard images. See
 - Homebrew update timers: snosi [`brew-update.timer`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/snow/tree/usr/lib/systemd/system/brew-update.timer), [`brew-update.service`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/snow/tree/usr/lib/systemd/system/brew-update.service), [`brew-upgrade.timer`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/snow/tree/usr/lib/systemd/system/brew-upgrade.timer), [`brew-upgrade.service`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/snow/tree/usr/lib/systemd/system/brew-upgrade.service), and [`01-homebrew.preset`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/snow/tree/usr/lib/systemd/system-preset/01-homebrew.preset).
 - fish setup for Homebrew: snosi [`ublue-brew.fish`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/mkosi.images/base/mkosi.extra/usr/share/fish/vendor_conf.d/ublue-brew.fish).
 - Brewfile bundles: snosi [`shared/snow/tree/usr/share/snow/bundles/cli.Brewfile`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/snow/tree/usr/share/snow/bundles/cli.Brewfile), [`fonts.Brewfile`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/snow/tree/usr/share/snow/bundles/fonts.Brewfile), and [`shared/floe/tree/usr/share/floe/bundles/cli.Brewfile`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/shared/floe/tree/usr/share/floe/bundles/cli.Brewfile).
-- Frostyard Homebrew tap: homebrew-tap [`README.md`](https://github.com/frostyard/homebrew-tap/blob/f96abc1cbdc9e6b7de1494c0241eb5a3f43aec84/README.md).
+- Frostyard Homebrew tap casks: homebrew-tap [`Casks/`](https://github.com/frostyard/homebrew-tap/tree/f96abc1cbdc9e6b7de1494c0241eb5a3f43aec84/Casks).
 - APT timers off in the image: snosi [`00-apt.preset`](https://github.com/frostyard/snosi/blob/82c45014c62d27428cec14292fadc9ee28ea1119/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-apt.preset).
