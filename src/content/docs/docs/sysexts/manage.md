@@ -144,7 +144,7 @@ current version, the running and linked versions, the newest version, and
   Do not read an error row as `no`.
 - `needs image >= <value>`: a staged revision needs a newer base image. See
   [An extension that needs a newer image](#an-extension-that-needs-a-newer-image).
-- `held (rejected <version>)` or `held (by rollback of <feature>)`: a rollback
+- `held (rejected <version>)` or `held (by rollback of <feature>: <reason>)`: a rollback
   holds the extension. See [Roll back](#roll-back).
 
 The current version is the one that the link
@@ -171,8 +171,10 @@ Updex downloads nothing. It repoints the link and prints
 `Linked staged version <version>`. The row shows `linked`, and the refresh
 then activates the version. With `--no-refresh`, or when the refresh fails,
 the new version runs after the next reboot. If Updex prints
-`refresh skipped: ...`, the revision needs a newer running image. Reboot. Do
-not run `systemd-sysext refresh` by hand. With `--json`, the result has
+`refresh skipped: ...`, it could not refresh safely, and the output says why:
+a revision needs a newer running image, or Updex cannot check one. The links
+stay, and the change takes effect at the next boot. Do not run
+`systemd-sysext refresh` by hand. With `--json`, the result has
 `next_action_message`: `Reboot required to activate changes`. See
 [Features and components](https://github.com/frostyard/updex/blob/v2.1.0/README.md#features-and-components)
 for the refresh rules.
