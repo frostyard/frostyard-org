@@ -149,19 +149,20 @@ To take one update at the next boot without the timer, run
 
 ## Roll back
 
-Roll back with `sudo updex features rollback tailscale`. It takes effect at the next boot. Updex then holds updates until a newer version is published. To keep the version you run instead, stop updates as shown below. To remove the extension, use the remove command below. The node identity in `/var/lib/tailscale` stays either way. See [Roll back](/docs/sysexts/manage/#roll-back).
+Roll back with `sudo updex features rollback tailscale`. It takes effect at the next boot. Updex then holds updates until a newer version is published. To stop future updates instead, see below. To remove the extension, use the remove command below. The node identity in `/var/lib/tailscale` stays either way. See [Roll back](/docs/sysexts/manage/#roll-back).
 
 ## Stop updates or remove
 
-Stop updates and keep the current version:
+Stop future updates:
 
 ```bash
 sudo updex features disable tailscale
 ```
 
-This only sets `Enabled=false`. The link `/var/lib/extensions/tailscale.raw`
-stays, so Tailscale keeps running and the host stays on the tailnet, now and
-after every reboot. Updex and the timer skip it from now on.
+This only sets `Enabled=false`. Tailscale stays merged, the host stays on the
+tailnet, and the link `/var/lib/extensions/tailscale.raw` stays. The next boot merges the version that the link names. `LINKED` in
+`updex features list` shows it. To go back to the version you run now, roll
+back first. Updex and the timer skip it from now on.
 
 Remove Tailscale now:
 

@@ -124,7 +124,7 @@ delete it yourself.
 
 ### Roll back
 
-Roll back with `sudo updex features rollback k3s`. It takes effect at the next boot. Updex then holds updates until a newer version is published. To keep the version you run instead, stop updates with `sudo updex features disable k3s`. `/var/lib/rancher` stays either way. See [Roll back](/docs/sysexts/manage/#roll-back).
+Roll back with `sudo updex features rollback k3s`. It takes effect at the next boot. Updex then holds updates until a newer version is published. To stop future updates instead, run `sudo updex features disable k3s`. `/var/lib/rancher` stays either way. See [Roll back](/docs/sysexts/manage/#roll-back).
 
 See [Manage system extensions](/docs/sysexts/manage/) for the update check, the
 timer, and plain `disable`.

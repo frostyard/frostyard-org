@@ -282,8 +282,9 @@ hourly run records `published image equals the rollback deployment` in
 applied. The updater stages the next published image as usual.
 
 `bootc rollback` does not change your system extensions. They stay in `/var`
-and merge again on the older image. The next `updex features update` links the
-newest version again, unless that version needs a newer image. An extension
+and merge again on the older image. `bootc rollback` creates no extension
+rollback hold. Enabled extensions keep their normal updates, subject to their
+own rollback holds and to the image requirement. An extension
 built for a newer image can fail on an older one. If it does, roll it back,
 stop its updates, or remove it, as in
 [Roll back an extension](/docs/sysexts/manage/#roll-back).

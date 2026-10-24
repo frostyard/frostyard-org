@@ -138,13 +138,18 @@ updex features check
 
 The table has a row for each enabled feature that has transfers, with the
 current version, the running and linked versions, the newest version, and
-`UPDATE`. `UPDATE` shows `yes`, `no`, or `error`. An `error` row means Updex
-could not fetch or verify the manifest, and the command exits non-zero. Do not
-read an error row as `no`.
+`UPDATE`. `UPDATE` normally shows `yes` or `no`. It can also show:
+
+- `error`: Updex could not check that component. The command exits non-zero.
+  Do not read an error row as `no`.
+- `needs image >= <value>`: a staged revision needs a newer base image. See
+  [An extension that needs a newer image](#an-extension-that-needs-a-newer-image).
+- `held (rejected <version>)` or `held (by rollback of <feature>)`: a rollback
+  holds the extension. See [Roll back](#roll-back).
 
 The current version is the one that the link
 `/var/lib/extensions/<name>.raw` points to. If the newest image is already on
-disk but the link names an older one, `UPDATE` shows `yes`.
+disk but the link names an older one, `UPDATE` normally shows `yes`.
 
 `RUNNING` is the version merged now. `LINKED` is the version that the next
 boot merges. `features list` shows both columns too. When they differ, the
@@ -163,10 +168,14 @@ the merge.
 
 If the newest image is already on disk and only the link names an older one,
 Updex downloads nothing. It repoints the link and prints
-`Linked staged version <version>`. The row shows `linked`. The host now has a
-newer version linked than the one it runs. Reboot to run it, or run
-`sudo systemd-sysext refresh`. With `--json`, the result has
-`next_action_message`: `Reboot required to activate changes`.
+`Linked staged version <version>`. The row shows `linked`, and the refresh
+then activates the version. With `--no-refresh`, or when the refresh fails,
+the new version runs after the next reboot. If Updex prints
+`refresh skipped: ...`, the revision needs a newer running image. Reboot. Do
+not run `systemd-sysext refresh` by hand. With `--json`, the result has
+`next_action_message`: `Reboot required to activate changes`. See
+[Features and components](https://github.com/frostyard/updex/blob/v2.1.0/README.md#features-and-components)
+for the refresh rules.
 
 Take the update at the next boot instead of now:
 
@@ -316,16 +325,17 @@ unlinked.
 
 ## Stop updates or remove
 
-Stop future updates and keep the extension merged:
+Stop future updates and leave the extension merged:
 
 ```bash
 sudo updex features disable <name>
 ```
 
 The output says `Feature '<name>' disabled.` Updex writes `Enabled=false` in
-the drop-in. It does not unmerge the extension. The image and the link stay, so
-the extension keeps running, now and after every reboot. The output also
-says `Its extensions stay installed and merged. Run 'updex features disable <name> --now' to remove them.`
+the drop-in. It does not unmerge the extension. The image and the link stay. The
+next boot merges the version that the link names. `LINKED` in
+`updex features list` shows it. To go back to the version you run now, roll
+back first. The output also says `Its extensions stay installed and merged. Run 'updex features disable <name> --now' to remove them.`
 
 Remove the extension now:
 
@@ -391,7 +401,7 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 | Symptom | Check | Fix |
 | --- | --- | --- |
 | `updex features list` shows no features | `updex components` | If no component is listed, Updex found no definition files. Check that your image ships `/usr/lib/sysupdate.<name>.d/`. |
-| `features check` shows `UPDATE=yes` but `features update` downloads nothing | The output of `features update` says `Linked staged version <version>` | The image was already on disk. Updex repointed the link. Reboot to run the new version. |
+| `features check` shows `UPDATE=yes` but `features update` downloads nothing | The output of `features update` says `Linked staged version <version>` | The image was already on disk. Updex repointed the link and refreshed. If the output says `refresh skipped`, or you used `--no-refresh`, reboot to run the new version. |
 | You want the old version back | `ls /var/lib/extensions.d/` | Run `sudo updex features rollback <name>`, then reboot. See [Roll back](#roll-back). |
 | `features rollback` fails with `version <version> of <name> is not on disk` | `ls /var/lib/extensions.d/` | Updex rolls back only to a staged image. Pick a version from the list with `--to`, or remove the extension. |
 | `features update` shows `held by rollback: rejected <version>` | `ls /var/lib/updex/rollback/` | A rollback holds the extension until a newer version is published. To update now, run `sudo updex features rollback --clear <name>`. |

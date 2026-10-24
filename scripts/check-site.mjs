@@ -1079,7 +1079,7 @@ for (const page of sysextPages) {
   assert(text.includes("they remove the extension at once"), `${page.route} must state that older Updex removes a merged extension at once.`);
   assert(text.includes("updex catalog remove has it"), `${page.route} must cover the catalog remove guard.`);
   assert(text.includes("only sets Enabled=false"), `${page.route} must explain plain disable.`);
-  assert(text.includes("keeps running"), `${page.route} must state that plain disable leaves the daemon running.`);
+  assert(text.includes("The next boot merges the version that the link names"), `${page.route} must state that plain disable leaves the link, and the next boot merges the linked version.`);
   assert(text.includes("one row for each enabled feature"), `${page.route} must describe features check.`);
   assert(text.includes("has no row") && text.includes("a missing row does not mean"), `${page.route} must explain the disabled-feature no-row result.`);
   if (page.route === "/docs/sysexts/docker") {
