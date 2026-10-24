@@ -1202,7 +1202,7 @@ for (const page of commandPages) {
   }
 }
 
-for (const route of docsRoutes.filter(route => route.startsWith("/docs/sysexts") || route === "/docs/tools/updex")) {
+for (const route of ["/docs/tools/updex", "/docs/sysexts", "/docs/sysexts/manage", "/docs/sysexts/docker", "/docs/sysexts/incus", "/docs/sysexts/tailscale", "/docs/sysexts/dev", "/docs/sysexts/k3s", "/docs/sysexts/nix", "/docs/sysexts/vscode", "/docs/sysexts/himmelblau"]) {
   const stale = textOf(await readRoute(route));
   assert(!stale.includes("Planned:"), `${route} must not carry a "Planned:" paragraph: Updex v2.1.0 ships rollback, the packaged timer, and the RUNNING and LINKED columns.`);
   assert(!stale.includes("has no rollback command"), `${route} must not say that Updex has no rollback command.`);
