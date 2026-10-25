@@ -716,7 +716,7 @@ for (const page of lightPages) {
   }
   assert(!html.includes("data-code="), `${path} must not carry copied command blocks.`);
 }
-assert(lightHtml.lodge.text.includes("Install lodge on a Debian 13 host, not on a Frostyard image."), "/docs/apps/lodge must state the /usr limit.");
+assert(lightHtml.lodge.text.includes("Install lodge on a systemd host, such as Debian 13, not on a Frostyard image."), "/docs/apps/lodge must state the /usr limit.");
 assert(lightHtml.frostread.text.includes("lodge shows it as the app Read"), "/docs/apps/frostread must say that lodge shows it as Read.");
 assert(!/repository (is|stays) private|private for now|pre-release, private/i.test(lightHtml.frostread.text), "/docs/apps/frostread must not call the repository private.");
 assert(frostmail.includes('href="/docs/apps/lodge/"') && frostnotes.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
