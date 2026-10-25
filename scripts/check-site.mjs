@@ -817,15 +817,17 @@ for (const source of [
   "README.md",
   "site/content/getting-started/install.md",
   "site/content/getting-started/first-machine.md",
+  "site/content/reference/machine-images.md",
   "site/content/reference/limits.md",
 ]) {
-  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/${source}`), `/docs/tools/nsl must cite ${source}.`);
+  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/${source}`), `/docs/tools/nsl must cite ${source}.`);
 }
 for (const source of ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"]) {
   assert(nsl.includes(`https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/${source}`), `/docs/tools/nsl must cite snosi ${source}.`);
 }
 assert(nsl.includes("https://github.com/frostyard/firn/blob/313f576ab450cfb8e6858d06f342b77b401882ef/internal/tui/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
-assert(nslText.includes("This guide follows nsl v0.10.0"), "/docs/tools/nsl must follow nsl v0.10.0.");
+assert(nslText.includes("This guide follows nsl v0.11.0"), "/docs/tools/nsl must follow nsl v0.11.0.");
+assert(nsl.includes('href="https://frostyard.github.io/nsl/reference/machine-images/"'), "/docs/tools/nsl must link the nsl machine images reference.");
 assert(nslText.includes("Firn does not add your user to it"), "/docs/tools/nsl must state that Firn does not add the user to kvm.");
 assert(nsl.includes('data-code="sudo usermod -aG kvm'), "/docs/tools/nsl must give the kvm group command.");
 assert(nsl.includes("brew install --cask frostyard/tap/nsl"), "/docs/tools/nsl must give the Homebrew install command.");

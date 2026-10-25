@@ -7,7 +7,7 @@ nsl gives you WSL-style Linux machines on Linux: a systemd-nspawn container
 inside a systemd-vmspawn VM, with its own packages, services, and home. Use it
 when a project needs `apt`, `dnf`, or `pacman` and your host `/usr` is
 read-only. nsl is pre-release: commands and defaults can change between
-releases. This guide follows nsl v0.10.0; the full documentation is at
+releases. This guide follows nsl v0.11.0; the full documentation is at
 [frostyard.github.io/nsl](https://frostyard.github.io/nsl/).
 
 ## Before you start
@@ -65,6 +65,11 @@ nsl downloads the signed image catalogue, checks that both images came from the
 Frostyard publishing workflow, and caches them. It starts the shared VM and
 creates the machine. The first machine becomes the default, and the command
 ends with `Created debian from BUILD_ID`.
+
+For another distro, change the `--distro` selector. Run `nsl images` to see
+what the current catalogue offers. The
+[machine images reference](https://frostyard.github.io/nsl/reference/machine-images/)
+lists every selector and its distro notes.
 
 Open a shell in it from your project directory:
 
@@ -182,20 +187,20 @@ Install it from the Frostyard Flatpak remote: [Igloo](/docs/tools/igloo/).
 
 ## Sources
 
-Reviewed 2026-10-23.
+Reviewed 2026-10-24.
 
-- nsl v0.10.0 commit [`684facbb51468ad9790d7c5539a869b4d69776eb`](https://github.com/frostyard/nsl/tree/684facbb51468ad9790d7c5539a869b4d69776eb)
-- [`README.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/README.md)
-- [`site/content/getting-started/install.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/getting-started/install.md)
-- [`site/content/getting-started/first-machine.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/getting-started/first-machine.md)
-- [`site/content/guides/machines.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/guides/machines.md)
-- [`site/content/guides/ports.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/guides/ports.md)
-- [`site/content/guides/editors.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/guides/editors.md)
-- [`site/content/guides/export-import.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/guides/export-import.md)
-- [`site/content/guides/images.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/guides/images.md)
-- [`site/content/reference/limits.md`](https://github.com/frostyard/nsl/blob/684facbb51468ad9790d7c5539a869b4d69776eb/site/content/reference/limits.md)
-- nsl main commit [`b78a782f7f56eb1717afac16fa69d05a58cfd60e`](https://github.com/frostyard/nsl/tree/b78a782f7f56eb1717afac16fa69d05a58cfd60e): [`site/content/getting-started/install.md`](https://github.com/frostyard/nsl/blob/b78a782f7f56eb1717afac16fa69d05a58cfd60e/site/content/getting-started/install.md)
-- nsl main commit `b78a782f7f56eb1717afac16fa69d05a58cfd60e`: [`AGENTS.md`](https://github.com/frostyard/nsl/blob/b78a782f7f56eb1717afac16fa69d05a58cfd60e/AGENTS.md), [`site/content/guides/images.md`](https://github.com/frostyard/nsl/blob/b78a782f7f56eb1717afac16fa69d05a58cfd60e/site/content/guides/images.md)
+- nsl v0.11.0 commit [`436167b05af0e7389f1a257425ef96038b54d5d2`](https://github.com/frostyard/nsl/tree/436167b05af0e7389f1a257425ef96038b54d5d2)
+- [`README.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/README.md)
+- [`AGENTS.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/AGENTS.md)
+- [`site/content/getting-started/install.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/getting-started/install.md)
+- [`site/content/getting-started/first-machine.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/getting-started/first-machine.md)
+- [`site/content/guides/machines.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/guides/machines.md)
+- [`site/content/guides/ports.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/guides/ports.md)
+- [`site/content/guides/editors.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/guides/editors.md)
+- [`site/content/guides/export-import.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/guides/export-import.md)
+- [`site/content/guides/images.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/guides/images.md)
+- [`site/content/reference/machine-images.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/reference/machine-images.md)
+- [`site/content/reference/limits.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/reference/limits.md)
 - [Duncan's review: nsl roll back (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
 - snosi commit [`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/sundog/mkosi.conf), [`shared/packages/floe/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/floe/mkosi.conf), [`shared/snow/tree/usr/lib/systemd/system/brew-setup.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/snow/tree/usr/lib/systemd/system/brew-setup.service), [`shared/floe/tree/usr/lib/systemd/system/brew-setup.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/floe/tree/usr/lib/systemd/system/brew-setup.service), [`shared/composition/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/composition/sundog/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.profiles/snowfield/mkosi.conf)
 - Firn commit [`313f576ab450cfb8e6858d06f342b77b401882ef`](https://github.com/frostyard/firn/tree/313f576ab450cfb8e6858d06f342b77b401882ef): [`internal/tui/catalog.go`](https://github.com/frostyard/firn/blob/313f576ab450cfb8e6858d06f342b77b401882ef/internal/tui/catalog.go)
