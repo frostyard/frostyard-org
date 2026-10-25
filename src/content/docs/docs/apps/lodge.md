@@ -6,7 +6,8 @@ description: "lodge is the tailnet-only web shell that opens Notes, Mail, Read, 
 lodge is a web shell for Frostyard's own apps. One address on your tailnet
 opens Notes, Mail, Read, and the assistant [Porter](/docs/apps/porter/). A
 quick switcher moves between them, and each app stays loaded in its frame.
-You need it if you want to run those apps.
+You need it to use those apps in a browser on your tailnet, and to run Read
+and Porter.
 
 - lodge is the only process on the network. It joins your tailnet as a node
   of its own, `lodge`, and signs browsers in by their tailnet identity.
@@ -34,13 +35,12 @@ extensions. It is not built.
 
 ## Install
 
-Install lodge on a Debian 13 host, not on a Frostyard image. The install
-layout fixes `/usr/share/lodge`, and `/usr` is read-only on a Frostyard
-image.
+Install lodge on a systemd host, such as Debian 13, not on a Frostyard image.
+The install layout fixes `/usr/share/lodge`, and `/usr` is read-only on a
+Frostyard image.
 
-lodge needs a host with systemd. The apps it serves share that host, because
-they meet lodge on Unix sockets. You build the shell in an [nsl](/docs/tools/nsl/)
-machine. The
+The apps lodge serves share its host, because they meet lodge on Unix
+sockets. You build the shell in an [nsl](/docs/tools/nsl/) machine. The
 [packaging README](https://github.com/frostyard/lodge/blob/main/packaging/README.md)
 has the build, the install, the first start, and the allow-lists.
 
@@ -59,7 +59,7 @@ has the build, the install, the first start, and the allow-lists.
 ## Limits
 
 lodge applies database migrations at start and refuses a database that is
-newer than itself. Back up `/var/lib/lodge` before you build a newer `main`.
+newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 ## See also
 
@@ -80,4 +80,5 @@ Reviewed 2026-10-25.
 - [`internal/store/store.go`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/internal/store/store.go)
 - [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/specs/app-contract.md), [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/specs/lodge-http.md), [`docs/specs/inference.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/specs/inference.md)
 - [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/plans/0001-roadmap.md)
-- core commit [`e783a9acc3ba9aa767233a4620588252fc2c732f`](https://github.com/frostyard/core/tree/e783a9acc3ba9aa767233a4620588252fc2c732f): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/e783a9acc3ba9aa767233a4620588252fc2c732f/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Proposed)
+- core commit [`e783a9acc3ba9aa767233a4620588252fc2c732f`](https://github.com/frostyard/core/tree/e783a9acc3ba9aa767233a4620588252fc2c732f): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/e783a9acc3ba9aa767233a4620588252fc2c732f/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Proposed), Context
+- frostmail commit [`d04963c366a30a4806e266a0fdaa48c1cbb7b609`](https://github.com/frostyard/frostmail/tree/d04963c366a30a4806e266a0fdaa48c1cbb7b609): [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/plans/0011-m8-mail-in-lodge.md)
