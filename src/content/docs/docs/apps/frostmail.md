@@ -1,391 +1,82 @@
 ---
 title: Frostmail
-description: "Build Frostmail from source, run its daemon and CLI, and add a mail account. Pre-release: there is no installer yet."
+description: "Frostmail is a mail client that works like Apple Mail.app, for Linux and Windows, with a daemon, an app, and a CLI. Pre-release: there is no package yet."
 ---
 
-Frostmail is a mail client that works like Apple Mail.app. It has three
-parts: `maild`, a per-user daemon that syncs your accounts and keeps a local
-search index; the desktop app, a Tauri window; and `mailctl`, a command-line
-client of the same daemon. The daemon can also serve a browser or a phone as
-the mail app of [lodge](https://github.com/frostyard/lodge).
+Frostmail is a mail client that works like Apple Mail.app. It runs on Linux
+and on Windows. It keeps your mail, contacts, calendars, and tasks in a
+daemon on your machine, and the app and the command line talk to it.
 
-Frostmail is pre-release. The repository has no release, and Frostmail is not
-in the Frostyard APT repository, the Frostyard Flatpak remote, or the
-Frostyard Homebrew tap. You build it from source with the steps below.
+- `maild` is a per-user Go daemon. It syncs your mail, keeps a SQLite cache
+  with full-text search, and serves a JSON-RPC socket.
+- The app is Tauri v2 with a React UI. It uses WebKitGTK on Linux and
+  WebView2 on Windows.
+- `mailctl` is a command-line client of the same socket.
+- The daemon can also serve a phone and any browser on your tailnet, as the
+  mail app of [lodge](/docs/apps/lodge/).
+- Mail: sync, read, search, and send for generic IMAP, Gmail, iCloud, and
+  Outlook.com accounts.
+- Contacts, calendars, and tasks over CardDAV, CalDAV, Google Tasks, and
+  Microsoft Graph. You answer invitations from the reader, and you edit
+  events and contacts in place. A To-Do bar sits beside the inbox.
+- Rules, smart mailboxes, VIPs, Send Later, and Remind Me.
 
 ## Status
 
-Working now:
-
-- Sync, read, search, and send for generic IMAP, Gmail, iCloud, and
-  Outlook.com accounts.
-- Contacts, calendars, and tasks over CardDAV, CalDAV, Google Tasks, and
-  Microsoft Graph. You can answer invitations from the reader, edit events and
-  contacts in place, and keep a To-Do bar beside the inbox.
-- Rules, smart mailboxes, VIPs, Send Later, and Remind Me.
-
-In progress: mail inside lodge. The web build, the agent endpoint, and the
-desktop app's remote mode are built, and in trial use on one host.
-
-Planned: packaging, which means a Flatpak built in the SDK and Google and
-Microsoft verification of Frostmail's sign-in clients.
-
-## Before you start
-
-You need:
-
-- Go 1.27, `make`, and `git`.
-- A Linux session with systemd user services, so `maild` can run in the
-  background.
-- For the desktop app: an x86-64 host with [nsl](/docs/tools/nsl/), and Flatpak
-  with the GNOME 51 runtime. The app is built inside an nsl machine and then
-  wrapped in a local Flatpak.
-
-## Install maild and mailctl
-
-Frostmail has no release tags, so you build `main`. If a step fails, read the
-repository's README: `main` can change.
-
-Clone the repository and install:
-
-```bash
-git clone https://github.com/frostyard/frostmail
-cd frostmail
-make install
-```
-
-`make install` builds both programs, copies them to `~/.local/bin`, installs
-`maild.service` as a systemd user service, and enables and restarts it.
-`~/.local/bin` must be on your `PATH`.
-
-Check that the daemon runs:
-
-```bash
-mailctl hello
-```
-
-It prints `maild`, its version, and `(protocol 1)`.
-
-Your mail data stays in `$XDG_DATA_HOME/frostmail` and its cache in
-`$XDG_CACHE_HOME/frostmail`. The daemon's socket is
-`$XDG_RUNTIME_DIR/frostmail/maild.sock`.
-
-## Add an account
-
-Connect an account by its address. This example uses a password and marks the
-account read-only, so Frostmail never changes anything on the server while you
-try it:
-
-```bash
-read -rs PASSWORD && printf '%s\n' "$PASSWORD" | mailctl account connect you@example.com --password-stdin --read-only; unset PASSWORD
-```
-
-`mailctl` finds the servers for the address and prints `added account` with
-the account's ID, then `password stored`.
-
-If it prints `no servers found`, give the servers yourself:
-
-```bash
-mailctl account add you@example.com --imap mail.example.com:993 --smtp mail.example.com:465 --password-stdin
-```
-
-It prints `added account` and the account's ID. A port other than 993, 465, 143, 587, or 25
-needs a mode: `host:port/tls`, `host:port/starttls`, or `host:port/insecure`.
-
-For Gmail, iCloud, and Outlook.com, see [Accounts](#accounts).
-
-Sync and look at the mailboxes:
-
-```bash
-mailctl sync --wait
-mailctl mailboxes
-```
-
-`sync --wait` returns when every account is up to date. `mailboxes` lists each
-mailbox with an ID, its role, and its counts.
-
-Read from a mailbox, using an ID from that list:
-
-```bash
-mailctl ls MAILBOX_ID
-mailctl show MESSAGE_ID
-```
-
-`ls` lists the newest messages first, and `show` prints one message. Other
-commands include `mailctl search TERMS`, `mailctl send`, and
-`mailctl verify`, which compares the stored mail with the server and changes
-nothing. `mailctl --help` lists them all, including calendar, contacts, tasks,
-and rules.
-
-To keep only recent mail, add `--sync-days N` to `account connect`. This is
-useful for a large Gmail account, since Gmail limits IMAP downloads to
-2,500 MB a day. Without it, Frostmail keeps every message.
-
-## Install the desktop app
-
-The app runs from a local Flatpak that you build yourself. You build it in an
-nsl machine, because an image-based host cannot install the WebKitGTK
-development packages.
-
-Create the build machine, from the repository root:
-
-```bash
-nsl create frostmail --distro debian:13
-nsl run -m frostmail --root bash dev/nsl/provision.sh "$(id -un)"
-```
-
-The script installs the Node, Go, and Rust toolchains and the WebKitGTK
-development packages in the machine. Re-running it is safe.
-
-Install the Flatpak runtime if you do not have it:
-
-```bash
-flatpak --user install flathub org.gnome.Platform//51
-```
-
-Build and install the app:
-
-```bash
-make install-app
-```
-
-It ends with `installed org.frostyard.Frostmail; run it from the app menu or with frostmail`.
-
-Start it from the app menu, or run `frostmail`. The app talks to the `maild`
-you installed above. It is a single-instance app: a second launch focuses the
-first window. `maild` keeps syncing and sending mail while the app is closed,
-and a click on a new-mail notification opens that message.
-
-## Accounts
-
-| Account | Sign-in | What you need |
-| --- | --- | --- |
-| Generic IMAP | Password | The address. Servers come from autoconfig, the Thunderbird ISPDB, or SRV records, or you enter them. |
-| Gmail | OAuth, or an app password | Your own Google OAuth client. See below. |
-| iCloud | App-specific password | An app-specific password from account.apple.com, under Sign-In and Security. |
-| Outlook.com and Hotmail | OAuth | Nothing. Frostmail's own sign-in client is built in. |
-
-### Gmail
-
-Frostmail has no verified Google client yet, so you register your own once:
-
-1. In the Google Cloud console, create a project and enable the Gmail API.
-2. Set up the OAuth consent screen with audience External and the scope
-   `https://mail.google.com/`. Publish the app so its status is In production.
-   In Testing, refresh tokens expire after 7 days. The app stays unverified, so
-   Google shows a warning screen at sign-in. Accept it for your own client.
-3. Create an OAuth client ID of type Desktop app.
-4. Give the client ID and secret to `maild`:
-
-   ```bash
-   mailctl oauth set-client google --client-id CLIENT_ID --secret-stdin
-   ```
-
-   Type or paste the client secret, then press Enter. The command prints
-   `google client set with its secret`.
-
-Then sign in:
-
-```bash
-mailctl account connect you@gmail.com --oauth
-```
-
-`mailctl` prints an address to open in your browser. After you approve, it
-prints `signed in`. It waits 5 minutes by default.
-
-For a password instead, turn on 2-Step Verification, create an app password at
-myaccount.google.com/apppasswords, and use `--password-stdin` as in the first
-example.
-
-### Outlook.com and Hotmail
-
-```bash
-mailctl account connect you@outlook.com --oauth
-```
-
-The command works as for Gmail. For Microsoft accounts, calendars and contacts
-sync over Microsoft Graph.
-
-## Frostmail and lodge
-
-[lodge](https://github.com/frostyard/lodge) is Frostyard's web shell for its
-own apps. It is the only process on your tailnet. When `maild` runs as lodge's
-`mail` app, one daemon serves your phone, your browsers, the desktop app, and
-agents.
-
-In that mode:
-
-- `maild --lodge` runs as the system user `frostmail`. It listens on
-  `/run/lodge/apps/mail.sock`, which only lodge can open. Secrets go to
-  a file in `/var/lib/frostmail`, because a system service has no Secret
-  Service.
-- lodge serves the web build at `/app/mail/`. You build it with
-  `make web-build`.
-- The desktop app can use that daemon instead of a local one. You set
-  `{"lodge": "https://lodge.<tailnet>.ts.net"}` in
-  `$XDG_CONFIG_HOME/frostmail/app.json`, or choose it in Settings, in the
-  Server pane. For the Flatpak, the file is
-  `~/.var/app/org.frostyard.Frostmail/config/frostmail/app.json`.
-- Agents reach mail at lodge's `/mcp/mail` with a scoped token. A read scope
-  gives `list_mailboxes`, `search_messages`, and `read_thread`. Adding
-  `;write` allows flags, moves, drafts, tasks, and Remind Me. Adding `;send`
-  allows sending a draft after your undo delay. No agent tool deletes mail.
-- Run `mailctl` on that machine as the `frostmail` user, and name the socket,
-  because `sudo` does not pass `XDG_RUNTIME_DIR`:
-  `sudo -u frostmail mailctl --socket /run/frostmail/maild.sock hello`. It
-  prints `maild`, its version, and `(protocol 1)`.
-- When a sign-in cannot reach `maild`'s loopback address, as behind lodge,
-  finish it with the address your browser was sent to:
-  `sudo -u frostmail mailctl --socket /run/frostmail/maild.sock account finish-signin URL`.
-
-To stage `maild`, its units, and the web build as a lodge app, run
-`make web-build` and then `make lodge-package`. The staged tree goes under
-`build/lodge-root` unless you set `LODGE_DESTDIR`. Frostmail has no package for
-this yet, and lodge is pre-release too, so you set the rest up by hand.
-
-## Update
-
-Frostmail has no releases, so you move to a newer `main`. Back up the database
-first, because `maild` applies new migrations when it starts, and an earlier
-build cannot open the result. Stop the daemon, then copy the database with its
-`-wal` and `-shm` files:
-
-```bash
-systemctl --user stop maild.service
-mkdir -p ~/frostmail-backup
-cp "${XDG_DATA_HOME:-$HOME/.local/share}"/frostmail/frostmail.db* ~/frostmail-backup/
-```
-
-The copy holds `frostmail.db`, `frostmail.db-wal`, and `frostmail.db-shm`.
-
-Go to your clone, pull, and run the install again. It is safe to repeat. It
-replaces the programs and the user service, restarts `maild`, and keeps your
-mail data:
-
-```bash
-cd frostmail
-git pull
-make install
-mailctl hello
-```
-
-`mailctl hello` prints `maild`, its version, and `(protocol 1)`. `maild`
-applies the pending migrations in order when it starts.
-
-If you installed the desktop app, build and install it again:
-
-```bash
-make install-app
-```
-
-It ends with `installed org.frostyard.Frostmail; run it from the app menu or with frostmail`.
-It replaces the installed Flatpak.
-
-### As a lodge app
-
-If `maild` runs as lodge's `mail` app, stop its socket and service, and back up
-`/var/lib/frostmail`:
-
-```bash
-sudo systemctl stop frostmail.socket frostmail.service
-```
-
-Copy `frostmail.db` and its `-wal` and `-shm` files out of `/var/lib/frostmail`.
-Then pull, build, and copy:
-
-```bash
-cd frostmail
-git pull
-make web-build
-make lodge-package
-sudo rm -rf /usr/share/lodge/apps/mail
-sudo cp -r build/lodge-root/usr/. /usr/
-sudo systemctl daemon-reload
-sudo systemctl start frostmail.socket frostmail.service
-sudo lodgectl reload
-```
-
-lodge shows `mail` as `down` while it is stopped. The binaries go to
-`/usr/local/bin`.
-
-## Roll back
-
-A database downgrade is not supported. To roll back across a migration, restore
-the copy you made before the update. Changes after that copy are lost.
-
-Check out the earlier commit in your clone, then run the same install steps
-for `maild` and for the app:
-
-```bash
-git checkout COMMIT
-make install
-make install-app
-```
-
-Restore the copy with `maild` stopped, then start it:
-
-```bash
-systemctl --user stop maild.service
-cp ~/frostmail-backup/frostmail.db* "${XDG_DATA_HOME:-$HOME/.local/share}"/frostmail/
-systemctl --user start maild.service
-```
-
-`maild` stops on a database that is newer than itself, with
-`database schema N is newer than this maild (M)`.
-
-Without a copy, the only fallback is to move the database aside. `maild` then
-syncs your mail again from the server. You must add your accounts again, and
-local-only state, such as the outbox, is lost.
-
-## Remove
-
-```bash
-make uninstall
-flatpak --user uninstall org.frostyard.Frostmail
-rm ~/.local/bin/frostmail
-```
-
-`make uninstall` stops and removes `maild`, `mailctl`, and the user service,
-and keeps your mail data. The last two commands remove the app and its
-launcher.
+Frostmail is pre-release. The repository has no release. Frostmail is not in
+the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard
+Homebrew tap.
+
+Mail in lodge is built and still in progress. Its last step, the move of a
+real mail store to lodge's host, has not run yet. Calendar, task, and
+contact tools for agents are built. A Flatpak with portals, and Google and
+Microsoft verification, are planned.
+
+## Install
+
+On your Linux host, Frostmail runs for one user and needs no root.
+`make install` puts `maild` and `mailctl` in `~/.local/bin` with a systemd
+user service. The app is a local Flatpak that you build in an
+[nsl](/docs/tools/nsl/) machine. Behind [lodge](/docs/apps/lodge/), `maild`
+runs as the system user `frostmail` on lodge's host. The
+[install steps](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#installing-for-one-user)
+for one user are the canonical ones.
+
+## Documentation
+
+- [README](https://github.com/frostyard/frostmail/blob/main/README.md): what Frostmail is and what works now.
+- [Installing for one user](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#installing-for-one-user): `make install`, the app Flatpak, and where the data lives.
+- [Accounts, sign-in and providers](https://github.com/frostyard/frostmail/blob/main/docs/design/accounts.md): how to add an account, and what each provider needs.
+- [A personal Google client](https://github.com/frostyard/frostmail/blob/main/docs/design/accounts.md#setting-up-a-personal-google-client): the Google Cloud steps for Gmail sign-in.
+- [On a maild behind lodge](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#on-a-maild-behind-lodge): how the desktop app reaches lodge's `maild`.
+- [Mail in lodge](https://github.com/frostyard/frostmail/blob/main/docs/specs/lodge-app.md): the app contract, the user, the socket, and the agent tools.
+- [Windows](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#windows): the Windows build and how it starts at sign-in.
+- [Search](https://github.com/frostyard/frostmail/blob/main/docs/specs/search.md): the search language.
+- [Roadmap](https://github.com/frostyard/frostmail/blob/main/docs/plans/0002-roadmap.md): what is built and what comes next.
 
 ## Limits
 
-- Gmail needs your own Google OAuth client until Frostmail has a verified one.
-- Microsoft work and school accounts are not supported yet. Outlook.com and
-  Hotmail are.
-- Frostmail also has a Windows build. This page covers Linux.
+- Gmail OAuth sign-in needs your own Google client until Frostmail has a
+  verified one. A Gmail app password works without one.
+- Microsoft work and school accounts are not supported.
+- `maild` applies database migrations at start and refuses a newer database.
+  Back up `$XDG_DATA_HOME/frostmail` before you build a newer `main`.
 
 ## See also
 
-- [nsl](/docs/tools/nsl/): the machine that builds the app
-- [Frostnotes](/docs/apps/frostnotes/): the notes app from the same project
-- [Frostmail repository](https://github.com/frostyard/frostmail)
 - [lodge](/docs/apps/lodge/)
+- [Frostnotes](/docs/apps/frostnotes/)
+- [Porter](/docs/apps/porter/)
+- [nsl](/docs/tools/nsl/)
 
 ## Sources
 
-Reviewed 2026-10-22.
+Reviewed 2026-10-26.
 
-- Frostmail commit [`c713a5a0bb8daa411c27f0647755fed9b5efff47`](https://github.com/frostyard/frostmail/tree/c713a5a0bb8daa411c27f0647755fed9b5efff47) on `main`. There is no release.
-- [`README.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/README.md)
-- [`Makefile`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/Makefile)
-- [`docs/README.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/README.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/design/overview.md)
-- [`docs/design/accounts.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/design/accounts.md)
-- [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/design/desktop.md)
-- [`docs/adr/0013-app-as-a-local-flatpak.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/adr/0013-app-as-a-local-flatpak.md)
-- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/plans/0002-roadmap.md)
-- [`docs/plans/0010-m7-microsoft-and-windows.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/plans/0010-m7-microsoft-and-windows.md)
-- [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/plans/0011-m8-mail-in-lodge.md)
-- [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/docs/specs/lodge-app.md)
-- [`packaging/systemd/maild.service`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/packaging/systemd/maild.service)
-- [`packaging/flatpak/install.sh`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/packaging/flatpak/install.sh)
-- [`packaging/lodge/app.json`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/packaging/lodge/app.json), [`packaging/lodge/frostmail.service`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/packaging/lodge/frostmail.service), [`packaging/lodge/frostmail.socket`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/packaging/lodge/frostmail.socket), [`packaging/lodge/stage.sh`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/packaging/lodge/stage.sh)
-- [`dev/nsl/provision.sh`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/dev/nsl/provision.sh)
-- [`cmd/mailctl/account.go`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/cmd/mailctl/account.go), [`cmd/mailctl/signin.go`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/cmd/mailctl/signin.go), [`cmd/mailctl/show.go`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/cmd/mailctl/show.go), [`cmd/mailctl/list.go`](https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/cmd/mailctl/list.go)
-- No Flatpak and no cask: [`apps.json`](https://github.com/frostyard/flatpak-index/blob/404aa05424b42093eed3e33e823216cf5569c570/apps.json) in the Flatpak index at `404aa05424b42093eed3e33e823216cf5569c570`, and the tap's [`Casks`](https://github.com/frostyard/homebrew-tap/tree/7b7cd158e7e40599ff767f61a272435f84d2da41/Casks) at `7b7cd158e7e40599ff767f61a272435f84d2da41`.
-- No APT package: the Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-22. It lists `frostyard-chairlift`, `frostyard-chairlift-system-integration`, and `frostyard-intuneme`.
-- lodge commit [`c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00`](https://github.com/frostyard/lodge/tree/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00): [`README.md`](https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md)
-- frostmail commit [`be8120dba6f823a23d8e6601d8b9050b756741a2`](https://github.com/frostyard/frostmail/tree/be8120dba6f823a23d8e6601d8b9050b756741a2) for the update and roll back steps: [`Makefile`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/Makefile), [`packaging/flatpak/install.sh`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/flatpak/install.sh), [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/internal/store/store.go), [`docs/adr/0003-sqlite-store.md`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/docs/adr/0003-sqlite-store.md)
-- Frostmail `packaging/lodge/stage.sh`, `packaging/lodge/frostmail.socket`, and `packaging/lodge/frostmail.service` at the same commit: [`packaging/lodge/stage.sh`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/lodge/stage.sh), [`packaging/lodge/frostmail.socket`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/lodge/frostmail.socket), [`packaging/lodge/frostmail.service`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/packaging/lodge/frostmail.service), [`docs/design/storage.md`](https://github.com/frostyard/frostmail/blob/be8120dba6f823a23d8e6601d8b9050b756741a2/docs/design/storage.md)
+- Frostmail commit [`d04963c366a30a4806e266a0fdaa48c1cbb7b609`](https://github.com/frostyard/frostmail/tree/d04963c366a30a4806e266a0fdaa48c1cbb7b609) on `main`. There is no release.
+- [`README.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/README.md)
+- [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/design/desktop.md), [`docs/design/accounts.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/design/accounts.md), [`docs/design/overview.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/design/overview.md)
+- [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/specs/lodge-app.md), [`docs/specs/search.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/specs/search.md)
+- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/plans/0002-roadmap.md), [`docs/plans/0010-m7-microsoft-and-windows.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/plans/0010-m7-microsoft-and-windows.md), [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/plans/0011-m8-mail-in-lodge.md)
+- [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/internal/store/store.go)
+- No package: the Flatpak index [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ce9f016860ed19d8e532facb605b7b9635f380cd/apps.json) at `ce9f016860ed19d8e532facb605b7b9635f380cd` has no entry, and the Homebrew tap [`Casks`](https://github.com/frostyard/homebrew-tap/tree/afd829de04b62b37f20a97d2a67fdfe4b477606f/Casks) at `afd829de04b62b37f20a97d2a67fdfe4b477606f` holds only `chairlift.rb` and `nsl.rb`. The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-26, lists no package.

@@ -91,8 +91,8 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/content/docs/docs/tools/apt-repository.md` covers the Frostyard APT
   repository, which feeds Frostyard image builds, and its unsupported use on
   plain Debian 13 hosts: add it, install, update, roll back, and remove.
-- `src/content/docs/docs/apps/frostmail.md` covers Frostmail: building it from source, accounts, the app, and lodge.
-- `src/content/docs/docs/apps/frostnotes.md` covers Frostnotes: building it from source, vaults, sync, the app, and MCP.
+- `src/content/docs/docs/apps/frostmail.md` covers Frostmail: where it runs, what works now, its limits, and deep links to its docs.
+- `src/content/docs/docs/apps/frostnotes.md` covers Frostnotes: where it runs, what is built, its limits, and deep links to its docs.
 - `src/content/docs/docs/apps/lodge.md` covers lodge: building it from source, installing it on a host, adding apps, agent tokens, and inference providers.
 - `src/content/docs/docs/apps/frostread.md` covers frostread: installing it on lodge's host, feeds, read later, saving a note, `readctl`, and agents.
 - `src/content/docs/docs/apps/porter.md` covers Porter: installing it on lodge's host, chat, routines, and what it can and cannot do.

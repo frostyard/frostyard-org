@@ -590,86 +590,6 @@ for (const route of ["/docs/apps/frostmail/", "/docs/apps/frostnotes/", "/docs/a
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 
-const frostmail = await readRoute("/docs/apps/frostmail");
-const frostmailText = textOf(frostmail);
-for (const heading of [
-  "status",
-  "before-you-start",
-  "install-maild-and-mailctl",
-  "add-an-account",
-  "install-the-desktop-app",
-  "accounts",
-  "gmail",
-  "frostmail-and-lodge",
-  "remove",
-  "limits",
-  "see-also",
-  "sources",
-]) {
-  assert(frostmail.includes(`id="${heading}"`), `/docs/apps/frostmail must render the "${heading}" section.`);
-}
-for (const source of [
-  "README.md",
-  "Makefile",
-  "docs/design/accounts.md",
-  "docs/design/desktop.md",
-  "docs/specs/lodge-app.md",
-  "packaging/systemd/maild.service",
-  "packaging/flatpak/install.sh",
-]) {
-  assert(frostmail.includes(`https://github.com/frostyard/frostmail/blob/c713a5a0bb8daa411c27f0647755fed9b5efff47/${source}`), `/docs/apps/frostmail must cite ${source}.`);
-}
-assert(frostmail.includes("https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md"), "/docs/apps/frostmail must cite the lodge README.");
-assert(frostmailText.includes("Frostmail is pre-release"), "/docs/apps/frostmail must say that Frostmail is pre-release.");
-assert(frostmailText.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), "/docs/apps/frostmail must say that there is no published install path.");
-assert(frostmail.includes('data-code="git clone https://github.com/frostyard/frostmail'), "/docs/apps/frostmail must give the clone command.");
-assert(frostmail.includes('data-code="make install-app"'), "/docs/apps/frostmail must give the app install command.");
-assert(frostmail.includes('data-code="mailctl hello"'), "/docs/apps/frostmail must give the daemon check.");
-assert(frostmail.includes('data-code="mailctl oauth set-client google'), "/docs/apps/frostmail must give the Google client command.");
-assert(frostmail.includes('href="/docs/tools/nsl/"') && frostmail.includes('href="/docs/apps/frostnotes/"'), "/docs/apps/frostmail must link the nsl and Frostnotes pages.");
-
-const frostnotes = await readRoute("/docs/apps/frostnotes");
-const frostnotesText = textOf(frostnotes);
-for (const heading of [
-  "status",
-  "before-you-start",
-  "build-and-start-notesd",
-  "register-a-vault",
-  "open-an-obsidian-vault",
-  "versions-and-revert",
-  "sync-with-a-hub",
-  "the-desktop-app",
-  "the-web-app-in-lodge",
-  "agents-over-mcp",
-  "remove",
-  "limits",
-  "see-also",
-  "sources",
-]) {
-  assert(frostnotes.includes(`id="${heading}"`), `/docs/apps/frostnotes must render the "${heading}" section.`);
-}
-for (const source of [
-  "README.md",
-  "Makefile",
-  "docs/design/vault.md",
-  "docs/design/sync.md",
-  "docs/design/hub.md",
-  "docs/specs/mcp.md",
-  "packaging/systemd/frostnotes.service",
-  "scripts/dev-app.sh",
-]) {
-  assert(frostnotes.includes(`https://github.com/frostyard/frostnotes/blob/1b63ff73c0d91e121000e38ca718b58adfe7b930/${source}`), `/docs/apps/frostnotes must cite ${source}.`);
-}
-assert(frostnotes.includes("https://github.com/frostyard/lodge/blob/c3c37b4fcf9880ae4f5f1ea365e89b8bc0b6cf00/README.md"), "/docs/apps/frostnotes must cite the lodge README.");
-assert(frostnotesText.includes("Frostnotes is pre-release"), "/docs/apps/frostnotes must say that Frostnotes is pre-release.");
-assert(frostnotesText.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), "/docs/apps/frostnotes must say that there is no published install path.");
-assert(frostnotes.includes('data-code="git clone https://github.com/frostyard/frostnotes'), "/docs/apps/frostnotes must give the clone command.");
-assert(frostnotes.includes('data-code="build/notesctl vault add ~/Notes"'), "/docs/apps/frostnotes must give the vault command.");
-assert(frostnotes.includes("build/notesctl revert Projects/plan.md VERSION --base HASH"), "/docs/apps/frostnotes must give the revert command.");
-assert(frostnotes.includes('data-code="nsl create frostnotes --distro debian:13'), "/docs/apps/frostnotes must give the nsl machine commands.");
-assert(frostnotes.includes('data-code="claude mcp add frostnotes'), "/docs/apps/frostnotes must give the MCP command.");
-assert(frostnotes.includes('href="/docs/tools/nsl/"') && frostnotes.includes('href="/docs/apps/frostmail/"'), "/docs/apps/frostnotes must link the nsl and Frostmail pages.");
-
 const lightPages = [
   {
     route: "lodge",
@@ -698,6 +618,24 @@ const lightPages = [
     sentence: "Porter is pre-release",
     links: ["/docs/apps/lodge/", "/docs/apps/frostread/", "/docs/apps/frostnotes/", "/docs/apps/frostmail/", "/docs/tools/nsl/"],
   },
+  {
+    route: "frostmail",
+    repo: "frostmail",
+    sha: "d04963c366a30a4806e266a0fdaa48c1cbb7b609",
+    install: "install",
+    canonical: "docs/design/desktop.md#installing-for-one-user",
+    sentence: "Frostmail is pre-release",
+    links: ["/docs/apps/lodge/", "/docs/apps/frostnotes/", "/docs/apps/porter/", "/docs/tools/nsl/"],
+  },
+  {
+    route: "frostnotes",
+    repo: "frostnotes",
+    sha: "5d27c70e438b6ae2facd0f65fb82a7caef52a002",
+    install: "install",
+    canonical: "README.md#try-it",
+    sentence: "Frostnotes is pre-release",
+    links: ["/docs/apps/lodge/", "/docs/apps/frostmail/", "/docs/apps/porter/", "/docs/apps/frostread/", "/docs/tools/nsl/"],
+  },
 ];
 const lightHtml = {};
 for (const page of lightPages) {
@@ -719,7 +657,11 @@ for (const page of lightPages) {
 assert(lightHtml.lodge.text.includes("Install lodge on a systemd host, such as Debian 13, not on a Frostyard image."), "/docs/apps/lodge must state the /usr limit.");
 assert(lightHtml.frostread.text.includes("lodge shows it as the app Read"), "/docs/apps/frostread must say that lodge shows it as Read.");
 assert(!/repository (is|stays) private|private for now|pre-release, private/i.test(lightHtml.frostread.text), "/docs/apps/frostread must not call the repository private.");
-assert(frostmail.includes('href="/docs/apps/lodge/"') && frostnotes.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
+assert(lightHtml.frostmail.html.includes('href="/docs/apps/lodge/"') && lightHtml.frostnotes.html.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
+assert(lightHtml.frostnotes.text.includes("moving behind lodge"), "/docs/apps/frostnotes must say that the hub is moving behind lodge.");
+for (const route of ["frostmail", "frostnotes"]) {
+  assert(lightHtml[route].text.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), `/docs/apps/${route} must say that there is no published install path.`);
+}
 
 const nsl = await readRoute("/docs/tools/nsl");
 const nslText = textOf(nsl);
