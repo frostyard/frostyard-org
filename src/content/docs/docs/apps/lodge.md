@@ -30,8 +30,8 @@ package. lodge v1 and its inference layer are built.
 [frostread](/docs/apps/frostread/) runs behind it as Read, since 2026-10-21.
 [Porter](/docs/apps/porter/) runs beside them, since 2026-10-20.
 
-Frostyard has a proposed plan to ship lodge and the app daemons as system
-extensions. It is not built.
+Frostyard plans to ship lodge and the app daemons as system extensions for
+Frostyard images. It is not built, and lodge's own host stays hand-installed.
 
 ## Install
 
@@ -48,6 +48,7 @@ has the build, the install, the first start, and the allow-lists.
 
 - [README](https://github.com/frostyard/lodge/blob/main/README.md): what lodge is and the current status.
 - [Packaging](https://github.com/frostyard/lodge/blob/main/packaging/README.md): build, install, first start, allow-lists, and agents on the host.
+- [Update](https://github.com/frostyard/lodge/blob/main/packaging/README.md#update) and [roll back](https://github.com/frostyard/lodge/blob/main/packaging/README.md#roll-back): a rollback archive first, then the new build, and how to go back.
 - [Install layout](https://github.com/frostyard/lodge/blob/main/docs/specs/app-contract.md#install-layout): where an app's files go.
 - [MCP tokens and scope](https://github.com/frostyard/lodge/blob/main/docs/specs/app-contract.md#mcp-tokens-and-scope): what a token for an app lets an agent do.
 - [The agent socket](https://github.com/frostyard/lodge/blob/main/docs/specs/lodge-http.md#the-agent-socket): how agents on lodge's host connect.
@@ -71,14 +72,14 @@ newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 ## Sources
 
-Reviewed 2026-10-25.
+Reviewed 2026-10-26.
 
-- lodge commit [`ecded651e597faddd58cb1670099d11439e2e895`](https://github.com/frostyard/lodge/tree/ecded651e597faddd58cb1670099d11439e2e895) on `main`. There is no release.
-- [`README.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/README.md)
-- [`packaging/README.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/packaging/README.md), [`packaging/install.sh`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/packaging/install.sh), [`packaging/tmpfiles.d/lodge.conf`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/packaging/tmpfiles.d/lodge.conf)
-- [`Makefile`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/Makefile)
-- [`internal/store/store.go`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/internal/store/store.go)
-- [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/specs/app-contract.md), [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/specs/lodge-http.md), [`docs/specs/inference.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/specs/inference.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/docs/plans/0001-roadmap.md)
-- core commit [`e783a9acc3ba9aa767233a4620588252fc2c732f`](https://github.com/frostyard/core/tree/e783a9acc3ba9aa767233a4620588252fc2c732f): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/e783a9acc3ba9aa767233a4620588252fc2c732f/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Proposed), Context
+- lodge commit [`57203300b0d1a109554ab15fd3ae354af41edb55`](https://github.com/frostyard/lodge/tree/57203300b0d1a109554ab15fd3ae354af41edb55) on `main`. There is no release.
+- [`README.md`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/README.md)
+- [`packaging/README.md`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/packaging/README.md), [`packaging/install.sh`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/packaging/install.sh), [`packaging/tmpfiles.d/lodge.conf`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/packaging/tmpfiles.d/lodge.conf)
+- [`Makefile`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/Makefile)
+- [`internal/store/store.go`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/internal/store/store.go)
+- [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/docs/specs/app-contract.md), [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/docs/specs/lodge-http.md), [`docs/specs/inference.md`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/docs/specs/inference.md)
+- [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/57203300b0d1a109554ab15fd3ae354af41edb55/docs/plans/0001-roadmap.md)
+- core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Accepted, 2026-10-26), [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/plans/0010-suite-packaging.md) (Phase 3; Phase 4 deferred 2026-10-23)
 - frostmail commit [`d04963c366a30a4806e266a0fdaa48c1cbb7b609`](https://github.com/frostyard/frostmail/tree/d04963c366a30a4806e266a0fdaa48c1cbb7b609): [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/plans/0011-m8-mail-in-lodge.md)

@@ -594,7 +594,7 @@ const lightPages = [
   {
     route: "lodge",
     repo: "lodge",
-    sha: "ecded651e597faddd58cb1670099d11439e2e895",
+    sha: "57203300b0d1a109554ab15fd3ae354af41edb55",
     install: "install",
     canonical: "packaging/README.md",
     sentence: "lodge is pre-release",
@@ -603,7 +603,7 @@ const lightPages = [
   {
     route: "frostread",
     repo: "frostread",
-    sha: "a1dad6bd9d29b3de6ca8e1d84e2541385e1f50ec",
+    sha: "511cc819e78875fda4e6d507594d912600dcdeea",
     install: "install",
     canonical: "README.md#install-on-lodges-host",
     sentence: "frostread is pre-release",
@@ -612,7 +612,7 @@ const lightPages = [
   {
     route: "porter",
     repo: "porter",
-    sha: "275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe",
+    sha: "247f932effe012cf3664b4612c067fb986735476",
     install: "install",
     canonical: "docs/design/overview.md#operational-notes",
     sentence: "Porter is pre-release",
@@ -660,6 +660,17 @@ assert(!/repository (is|stays) private|private for now|pre-release, private/i.te
 assert(lightHtml.frostmail.html.includes('href="/docs/apps/lodge/"') && lightHtml.frostnotes.html.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
 assert(lightHtml.frostnotes.text.includes("The hub moved behind lodge on 2026-10-26"), "/docs/apps/frostnotes must say that the hub moved behind lodge.");
 assert(!lightHtml.frostnotes.text.includes("moving behind lodge"), "/docs/apps/frostnotes must not say that the hub is still moving behind lodge.");
+for (const [route, doc] of [
+  ["lodge", "lodge/blob/main/packaging/README.md"],
+  ["porter", "porter/blob/main/README.md"],
+  ["frostread", "frostread/blob/main/README.md"],
+]) {
+  for (const section of ["update", "roll-back"]) {
+    assert(lightHtml[route].html.includes(`https://github.com/frostyard/${doc}#${section}`), `/docs/apps/${route} must link the canonical ${section} section of ${doc}.`);
+  }
+}
+assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
+assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
 for (const route of ["frostmail", "frostnotes"]) {
   assert(lightHtml[route].text.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), `/docs/apps/${route} must say that there is no published install path.`);
 }
