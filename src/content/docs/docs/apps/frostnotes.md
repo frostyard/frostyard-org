@@ -25,9 +25,10 @@ in the Frostyard APT repository, the Frostyard Flatpak remote, or the
 Frostyard Homebrew tap.
 
 The vault, sync, and the desktop app are done. Notes inside lodge is in
-progress: `notesd` runs as lodge's `notes` app, and the hub is moving behind
-lodge. Graph and queries (Obsidian Bases) are planned, then packaging: a
-Flatpak, a hub container image and systemd unit, and Frostyard APT packages.
+progress: `notesd` runs as lodge's `notes` app. The hub moved behind lodge
+on 2026-10-26, and devices now sync through lodge. Graph and queries
+(Obsidian Bases) are planned, then packaging: a Flatpak, a hub container
+image and systemd unit, and Frostyard APT packages.
 Windows and macOS builds, Canvas, and a mobile app come later.
 
 ## Install
@@ -72,10 +73,11 @@ in the README are the canonical ones.
 
 Reviewed 2026-10-26.
 
-- Frostnotes commit [`5d27c70e438b6ae2facd0f65fb82a7caef52a002`](https://github.com/frostyard/frostnotes/tree/5d27c70e438b6ae2facd0f65fb82a7caef52a002) on `main`. There is no release.
-- [`README.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/README.md)
-- [`docs/design/vault.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/docs/design/vault.md), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/docs/design/sync.md), [`docs/design/hub.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/docs/design/hub.md), [`docs/design/overview.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/docs/design/overview.md)
-- [`docs/specs/mcp.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/docs/specs/mcp.md), [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/docs/specs/lodge-app.md)
-- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/docs/plans/0002-roadmap.md), [`docs/plans/0006-m4-notes-inside-lodge.md`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/docs/plans/0006-m4-notes-inside-lodge.md)
-- [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/5d27c70e438b6ae2facd0f65fb82a7caef52a002/internal/store/store.go)
+- Frostnotes commit [`ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4`](https://github.com/frostyard/frostnotes/tree/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4), the head of [frostnotes#93](https://github.com/frostyard/frostnotes/pull/93), which records the hub's move behind lodge. There is no release.
+- [`README.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/README.md)
+- [`docs/design/vault.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/docs/design/vault.md), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/docs/design/sync.md), [`docs/design/hub.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/docs/design/hub.md), [`docs/design/overview.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/docs/design/overview.md)
+- [`docs/specs/mcp.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/docs/specs/mcp.md), [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/docs/specs/lodge-app.md)
+- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/docs/plans/0002-roadmap.md), [`docs/plans/0006-m4-notes-inside-lodge.md`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/docs/plans/0006-m4-notes-inside-lodge.md)
+- [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4/internal/store/store.go)
+- lodge commit [`ecded651e597faddd58cb1670099d11439e2e895`](https://github.com/frostyard/lodge/tree/ecded651e597faddd58cb1670099d11439e2e895) on `main`: [`README.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/README.md)
 - No package: the Flatpak index [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ce9f016860ed19d8e532facb605b7b9635f380cd/apps.json) at `ce9f016860ed19d8e532facb605b7b9635f380cd` has no entry, and the Homebrew tap [`Casks`](https://github.com/frostyard/homebrew-tap/tree/afd829de04b62b37f20a97d2a67fdfe4b477606f/Casks) at `afd829de04b62b37f20a97d2a67fdfe4b477606f` holds only `chairlift.rb` and `nsl.rb`. The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-26, lists no package.
