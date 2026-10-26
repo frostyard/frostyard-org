@@ -630,7 +630,7 @@ const lightPages = [
   {
     route: "frostnotes",
     repo: "frostnotes",
-    sha: "ee48f492c2cc128b5f198c3c9bbdb2d0b5f1ccc4",
+    sha: "01a6ef3e541aed5e800e93b07157a11c8145f8c5",
     install: "install",
     canonical: "README.md#try-it",
     sentence: "Frostnotes is pre-release",
