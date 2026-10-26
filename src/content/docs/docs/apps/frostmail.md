@@ -9,7 +9,8 @@ daemon on your machine, and the app and the command line talk to it.
 
 - `maild` is a per-user Go daemon. It syncs your mail, keeps a SQLite cache
   with full-text search, and serves a JSON-RPC socket.
-- The app is Tauri v2 with a React UI in the system WebKitGTK.
+- The app is Tauri v2 with a React UI. It uses WebKitGTK on Linux and
+  WebView2 on Windows.
 - `mailctl` is a command-line client of the same socket.
 - The daemon can also serve a phone and any browser on your tailnet, as the
   mail app of [lodge](/docs/apps/lodge/).
@@ -55,8 +56,8 @@ for one user are the canonical ones.
 
 ## Limits
 
-- Gmail sign-in needs your own Google client until Frostmail has a verified
-  one.
+- Gmail OAuth sign-in needs your own Google client until Frostmail has a
+  verified one. A Gmail app password works without one.
 - Microsoft work and school accounts are not supported.
 - `maild` applies database migrations at start and refuses a newer database.
   Back up `$XDG_DATA_HOME/frostmail` before you build a newer `main`.
