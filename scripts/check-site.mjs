@@ -630,7 +630,7 @@ const lightPages = [
   {
     route: "frostnotes",
     repo: "frostnotes",
-    sha: "5d27c70e438b6ae2facd0f65fb82a7caef52a002",
+    sha: "01a6ef3e541aed5e800e93b07157a11c8145f8c5",
     install: "install",
     canonical: "README.md#try-it",
     sentence: "Frostnotes is pre-release",
@@ -658,7 +658,8 @@ assert(lightHtml.lodge.text.includes("Install lodge on a systemd host, such as D
 assert(lightHtml.frostread.text.includes("lodge shows it as the app Read"), "/docs/apps/frostread must say that lodge shows it as Read.");
 assert(!/repository (is|stays) private|private for now|pre-release, private/i.test(lightHtml.frostread.text), "/docs/apps/frostread must not call the repository private.");
 assert(lightHtml.frostmail.html.includes('href="/docs/apps/lodge/"') && lightHtml.frostnotes.html.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
-assert(lightHtml.frostnotes.text.includes("moving behind lodge"), "/docs/apps/frostnotes must say that the hub is moving behind lodge.");
+assert(lightHtml.frostnotes.text.includes("The hub moved behind lodge on 2026-10-26"), "/docs/apps/frostnotes must say that the hub moved behind lodge.");
+assert(!lightHtml.frostnotes.text.includes("moving behind lodge"), "/docs/apps/frostnotes must not say that the hub is still moving behind lodge.");
 for (const route of ["frostmail", "frostnotes"]) {
   assert(lightHtml[route].text.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), `/docs/apps/${route} must say that there is no published install path.`);
 }
