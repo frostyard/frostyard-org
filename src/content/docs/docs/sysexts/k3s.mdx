@@ -139,7 +139,7 @@ timer, and plain `disable`.
 | No k3s unit runs | `systemctl status k3s.service k3s-agent.service` | If `/etc/default/k3s-agent` exists but is empty, both conditions fail. Put `K3S_URL=` and `K3S_TOKEN=` in it, or delete it. |
 | The node runs as a server, but it must join a cluster | `systemctl status k3s.service` and `ls /etc/default/k3s-agent` | Create the file with `K3S_URL=` and `K3S_TOKEN=`, then start `k3s-agent.service` and stop `k3s.service`. |
 | `ctr` is missing, or belongs to another extension | `command -v ctr` | The extension ships no `ctr` link. Use `k3s ctr`. |
-| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| `enable --now` exits non-zero after the download | The output shows `Error: sysext refresh failed` (`refresh_error` with `--json`) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
 
 ## What ships
 

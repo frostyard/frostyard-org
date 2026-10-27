@@ -156,7 +156,6 @@ workloads first, and reboot when the command finishes.
 
 Without `--force`, Updex refuses while Docker is merged:
 `Extension docker (version ...) is active. Removing requires --force and a reboot to take effect.`
-`updex catalog remove` has the same check.
 
 Removal does not touch `/var`. Images, containers, volumes, and bind-mounted
 data stay; only the engine and its units go. Enabling Docker again does not
@@ -184,7 +183,7 @@ unless you have tested that combination.
 | Symptom | Check | Fix |
 | --- | --- | --- |
 | Docker is not listed | `updex features list --component=docker` and `updex components` | If `docker` is listed but disabled, enable it. If it is missing, the image may be older than named components. |
-| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| `enable --now` exits non-zero after the download | The output shows `Error: sysext refresh failed` (`refresh_error` with `--json`) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
 | The engine does not answer | `systemctl status docker.socket containerd.service` | Start with the socket and containerd. Docker starts through the socket, not `docker.service`. |
 | A signature or manifest check fails | The command output, and `updex features check --component=docker` | Check the network and the published manifest. Never turn verification off. |
 | An update stopped containers | The journal shows the engine restart after the `/usr` refresh | Drain workloads before you update by hand. Back up volumes. |

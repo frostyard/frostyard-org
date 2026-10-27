@@ -168,7 +168,6 @@ workloads, and reboot when the command finishes.
 
 Without `--force`, Updex refuses while Tailscale is merged:
 `Extension tailscale (version ...) is active. Removing requires --force and a reboot to take effect.`
-`updex catalog remove` has the same check.
 
 Removal takes away the daemon and the CLI, and the host leaves the tailnet.
 The node identity in `/var/lib/tailscale` stays. Keep it or delete it on
@@ -206,7 +205,7 @@ Set them up as separate choices, and review them before you expose the host.
 | Symptom | Check | Fix |
 | --- | --- | --- |
 | Tailscale is not listed | `updex features list --component=tailscale` and `updex components` | If `tailscale` is listed but disabled, enable it. If it is missing, the image may be older than named components. |
-| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| `enable --now` exits non-zero after the download | The output shows `Error: sysext refresh failed` (`refresh_error` with `--json`) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
 | The daemon does not start | `systemctl status tailscaled.service` and its journal | Check that `/etc/default/tailscaled` exists. The daemon needs it. |
 | The host is not on the tailnet | `systemctl status tailscaled.service` | Check the service first. If the node key expired or an administrator removed the node, run `sudo tailscale up` and authorize the host again. |
 | A manifest or signature check fails | `updex features check --component=tailscale` | Check the network and the published manifest. Never turn verification off. |
