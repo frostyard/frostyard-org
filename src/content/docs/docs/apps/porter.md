@@ -41,7 +41,7 @@ covers agents on lodge's host.
 - [README](https://github.com/frostyard/porter/blob/main/README.md): what Porter is and what is built.
 - [Design overview](https://github.com/frostyard/porter/blob/main/docs/design/overview.md): how Porter works and what it reaches.
 - [Operational notes](https://github.com/frostyard/porter/blob/main/docs/design/overview.md#operational-notes): configuration, tokens, dependencies, and logs.
-- [Update and roll back](https://github.com/frostyard/porter/blob/main/README.md#update): the steps for lodge's host, with the archive to take first.
+- [Update](https://github.com/frostyard/porter/blob/main/README.md#update) and [roll back](https://github.com/frostyard/porter/blob/main/README.md#roll-back): the steps for lodge's host, with the archive to take first.
 - [Limits](https://github.com/frostyard/porter/blob/main/README.md#limits): what Porter does not do, and what can go wrong.
 - [Routines](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md): how to write a routine.
 - [ADR-0004](https://github.com/frostyard/porter/blob/main/docs/adr/0004-porter-drafts-and-the-owner-sends.md): Porter drafts and the owner sends.
