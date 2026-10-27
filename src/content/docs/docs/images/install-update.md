@@ -10,10 +10,11 @@ page.
 
 :::caution[Secure Boot is not production-ready yet]
 Firn can install with Secure Boot on, but Frostyard does not yet claim
-production Secure Boot support, signed updates, or signed rollback. Fresh-install
-test results for Snow, Floe, and Sundog are still pending, and a normal Firn
-install does not change that. An existing install cannot convert to the secure
-layout in place.
+production Secure Boot support, signed updates, or signed rollback. Snow,
+Floe, and Sundog have passed fresh installs in a lab VM, but that is not
+hardware qualification. A normal Firn install does not make Secure Boot
+production-ready. An existing install cannot convert to the secure layout in
+place.
 :::
 
 ## Choose an image
@@ -28,8 +29,9 @@ ships. [Base](/docs/images/base/) is the shared foundation, not a choice. The
 
 Firn needs UEFI and erases the disk you pick. Use a target disk of at least
 30 GiB, and a larger one if you can: applications, containers, Flatpaks,
-homes, and updates all use disk space. Back up what you need, and read the
-backup from another machine before you boot the installer.
+homes, and updates all use disk space. The installer runs from RAM and needs
+at least 4.5 GiB of memory. Back up what you need, and read the backup from
+another machine before you boot the installer.
 
 1. Download the installer ISO:
 
@@ -117,11 +119,16 @@ a partition such as `/dev/sdb1`.
 3. Reboot and open the firmware's one-time boot menu. Pick the UEFI entry for
    the USB drive, not the disk you will install onto.
 
-   Firn starts on its own as a terminal wizard.
+   The boot menu waits 5 seconds, then starts the default entry,
+   **Install snosi (console)**. It runs Firn as a terminal wizard. Pick
+   **Install snosi (graphical)** for Firn's graphical installer. It falls
+   back to the terminal wizard when the machine has no usable display.
 
 ## Install with Firn
 
-Firn runs on the local display and on the serial console.
+Firn runs on the local display. The terminal wizard also runs on the serial
+console (`ttyS0`), so you can install a headless machine over serial. Run only
+one installation at a time.
 
 1. Pick the image you chose.
 2. If the image or the optional applications must be downloaded, connect the
@@ -237,6 +244,14 @@ You get the same news in two other places:
 
 The check result lives in `/run/snosi`, so a reboot clears it until the next
 run.
+
+### System extension updates
+
+Enabled extensions update on their own: a new version is staged and starts at the next boot. See [Automatic updates](/docs/sysexts/manage/#automatic-updates). To stop the automatic updates on a machine, run:
+
+```bash
+sudo systemctl mask --now updex-update.timer
+```
 
 ## Update now by hand
 
@@ -395,30 +410,30 @@ Podman services, and the merged extensions.
 - [Floe](/docs/images/floe/)
 - [Base](/docs/images/base/)
 - [Updex](/docs/tools/updex/)
-- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/docs/nbc-to-bootc-migration.md)
-- [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/docs/bootc-secure-operations.md)
+- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/bootc-secure-operations.md)
 
 ## Sources
 
-Reviewed 2026-10-23 against snosi commit
-[`79ccc63ea44ce9309a837b9428e9b5d44290fada`](https://github.com/frostyard/snosi/tree/79ccc63ea44ce9309a837b9428e9b5d44290fada)
-(tag `2026-10-22.4`).
+Reviewed 2026-10-27 against snosi commit
+[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9)
+(tag `2026-10-26.7`).
 
-- [`README.md`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/README.md)
-- [`docs/installing.md`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/docs/installing.md)
-- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/docs/nbc-to-bootc-migration.md)
-- [`docs/2026-07-03-bootc-migration-record.md`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/docs/2026-07-03-bootc-migration-record.md)
-- [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/docs/bootc-secure-operations.md)
-- [`docs/adr/0015-retire-native-ab-images-and-nbc-installs.md`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/docs/adr/0015-retire-native-ab-images-and-nbc-installs.md)
-- [`docs/adr/0018-remove-native-ab-and-nbc-lanes.md`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/docs/adr/0018-remove-native-ab-and-nbc-lanes.md)
-- [`shared/native-ab/keys/import-pubring.gpg`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/native-ab/keys/import-pubring.gpg)
-- [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset)
-- [`mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status)
-- [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-notify`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-notify)
-- [`mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged)
-- [snosi `docs/design/sysexts.md` at `9db7cde8`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/docs/design/sysexts.md)
-- [Updex ADR-0016](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`README.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/README.md)
+- [`docs/installing.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/installing.md)
+- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [`docs/2026-07-03-bootc-migration-record.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/2026-07-03-bootc-migration-record.md)
+- [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/bootc-secure-operations.md)
+- [`docs/adr/0015-retire-native-ab-images-and-nbc-installs.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/adr/0015-retire-native-ab-images-and-nbc-installs.md)
+- [`docs/adr/0018-remove-native-ab-and-nbc-lanes.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/adr/0018-remove-native-ab-and-nbc-lanes.md)
+- [`shared/native-ab/keys/import-pubring.gpg`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/native-ab/keys/import-pubring.gpg)
+- [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset)
+- [`mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status)
+- [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-notify`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-notify)
+- [`mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged)
+- [snosi `docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [Updex ADR-0016](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
 - [Murbella's review: extensions after `bootc rollback` (frostyard-org#27)](https://github.com/frostyard/frostyard-org/pull/27#pullrequestreview-5630385504)

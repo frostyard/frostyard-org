@@ -46,7 +46,9 @@ not. Run `sudo systemd-sysext refresh`, or reboot.
 ## Update, roll back, and remove
 
 Updex also checks for updates, installs them, and removes an extension again.
-The Updex timer can download and stage new versions without activating them.
+Enabled extensions update on their own: new versions are staged and become
+active at the next boot. See
+[Automatic updates](/docs/sysexts/manage/#automatic-updates).
 To go back to the previous version, run `sudo updex features rollback <name>`.
 It takes effect at the next boot. See
 [Roll back](/docs/sysexts/manage/#roll-back) and
@@ -79,20 +81,17 @@ update to.
 
 ## Sources
 
-Reviewed 2026-10-24. snosi commit
-[`96d663b3c7025fbbeeda5987cc521b524fd1721c`](https://github.com/frostyard/snosi/tree/96d663b3c7025fbbeeda5987cc521b524fd1721c);
-Updex v2.0.4 commit
-[`992b3d53151b73c227a871cb8e742d841b00fd6c`](https://github.com/frostyard/updex/tree/992b3d53151b73c227a871cb8e742d841b00fd6c);
-Updex v2.1.0 commit
-[`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3).
+Reviewed 2026-10-27. snosi commit
+[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
+Updex v2.1.2 commit
+[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
 
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/design/sysexts.md)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
-- [Updex v2.0.4 release](https://github.com/frostyard/updex/releases/tag/v2.0.4)
-- [Updex v2.0.4 `README.md`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/README.md)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
+- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
 - [Updex PR #445: detect merged extensions for the removal guard](https://github.com/frostyard/updex/pull/445)
-- [Updex v2.1.0 `README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
-- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
+- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
 - [`scripts/sync-extensions.mjs`](https://github.com/frostyard/frostyard-org/blob/main/scripts/sync-extensions.mjs)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

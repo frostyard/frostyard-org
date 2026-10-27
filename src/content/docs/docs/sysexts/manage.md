@@ -18,7 +18,7 @@ You need:
 - Network access to `https://repository.frostyard.org/ext/`.
 - Free space in `/var` for the download and the installed image.
 
-This guide follows Updex v2.1.0. Check your version:
+This guide follows Updex v2.1.2. Check your version:
 
 ```bash
 updex --version
@@ -101,14 +101,17 @@ systemctl status <name>.service
 ```
 
 The unit is active. The extension ships a preset that enables the service and a
-`multi-user.target.d/10-<name>.conf` drop-in with `Upholds=`. The drop-in is
-new to systemd after the post-merge `daemon-reload`, so it starts the service
-when `multi-user.target` activates. A preset alone would not work: at boot, PID
+`multi-user.target.d/10-<name>.conf` drop-in with `Upholds=`. Some extensions
+uphold a small setup unit that starts the service, for example
+`k3s-sysext-setup.service`, because a unit with a start condition must not be
+upheld directly. The drop-in is new to systemd after the post-merge
+`daemon-reload`, so it starts the unit when `multi-user.target` activates. A preset alone would not work: at boot, PID
 1 scans unit files before the extension is merged.
 
 A merge does not prove that setup completed. At boot, `reload-sysext.service`
-runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, and
-`systemctl daemon-reload` after the merge. After an interactive `--now` merge,
+runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, a
+`systemd-sysctl` replay of the inotify, `fs.aio-max-nr`, and `kernel.keys`
+limits, and `systemctl daemon-reload` after the merge. After an interactive `--now` merge,
 they may not have run yet. If a user, a group, or a file in `/etc` is missing,
 reboot and check again.
 
@@ -176,7 +179,7 @@ a revision needs a newer running image, or Updex cannot check one. The links
 stay, and the change takes effect at the next boot. Do not run
 `systemd-sysext refresh` by hand. With `--json`, the result has
 `next_action_message`: `Reboot required to activate changes`. See
-[Features and components](https://github.com/frostyard/updex/blob/v2.1.0/README.md#features-and-components)
+[Features and components](https://github.com/frostyard/updex/blob/v2.1.2/README.md#features-and-components)
 for the refresh rules.
 
 Take the update at the next boot instead of now:
@@ -222,35 +225,21 @@ exits 0.
 Update the image. [Install and update an image](/docs/images/install-update/)
 has the steps. The next Updex run links the staged revision. After a queued
 `bootc rollback`, Updex checks the revision against the rollback image.
-See [Minimum image version](https://github.com/frostyard/updex/blob/v2.1.0/docs/design/overview.md#minimum-image-version-adr-0016)
+See [Minimum image version](https://github.com/frostyard/updex/blob/v2.1.2/docs/design/overview.md#minimum-image-version-adr-0016)
 for the rules.
 
 ### Automatic updates
 
-The `frostyard-updex` package ships `updex-update.timer` and
-`updex-update.service` in `/usr/lib/systemd/system`, switched off. Turn the
-timer on:
-
-```bash
-sudo updex daemon enable
-```
-
-With the packaged units, Updex writes no unit file. It enables and starts the
-timer. The output says `Auto-update daemon enabled.`,
-`Using the units shipped by the package; no unit file was written.`, and
-`Reboot required to activate downloaded extensions.`
+Every Frostyard image enables `updex-update.timer`. A new install runs it from
+the first boot. A host that already runs Frostyard gets it from the second boot
+of the first image that carries the change.
 
 The timer runs `updex features update --no-refresh` every 6 hours, with a
 random delay of up to 1 hour. A run missed while the host was off happens at
 the next boot. A run downloads, verifies, and links the new version. It never
-activates it: the new version runs after the next reboot. The service skips a
-run while the host is on battery. A host without a battery always runs.
-
-Preview the change first. Nothing changes:
-
-```bash
-sudo updex --dry-run daemon enable
-```
+activates it: the new version runs after the next reboot, and nothing reboots
+the host for you. The service skips a run while the host is on battery. A host
+without a battery always runs.
 
 Check the timer:
 
@@ -265,25 +254,38 @@ The output shows `Enabled`, `Active`, `Source`, `Schedule`, `Next run`, and
 journalctl -u updex-update.service
 ```
 
-A run on an offline host fails, and the unit shows `failed` until the next
-good run.
+A run on an offline host, where no update source answers, logs
+`updex: no update source is reachable; skipping this run` and exits 0. The unit
+stays successful. A run fails when only some sources answer, when a source
+answers with an error, or when a download or check fails. The unit then shows
+`failed` until the next good run.
 
-Turn the timer off:
-
-```bash
-sudo updex daemon disable
-```
-
-The output says `Auto-update daemon disabled.` The package keeps its units, and
-an image update can enable the timer again. To keep the whole host from
-updating on a schedule, mask the timer. The mask survives image updates:
+Turn the timer off for the whole host. `--now` also stops the timer that runs
+now, and the mask survives image updates:
 
 ```bash
-sudo systemctl mask updex-update.timer
+sudo systemctl mask --now updex-update.timer
 ```
 
-To stop one extension, run `sudo updex features disable <name>`. See [Automatic
-updates](https://github.com/frostyard/updex/blob/v2.1.0/README.md#automatic-updates) for the schedule, the lock, and the
+`sudo updex daemon disable` also stops the timer. The output says
+`Auto-update daemon disabled.` An image update can enable the timer again, so
+use the mask to keep it off. `updex daemon disable` does not remove a mask.
+
+Turn the timer on again after a mask:
+
+```bash
+sudo systemctl unmask updex-update.timer
+sudo updex daemon enable
+```
+
+With the packaged units, Updex writes no unit file. It enables and starts the
+timer. The output says `Auto-update daemon enabled.`,
+`Using the units shipped by the package; no unit file was written.`, and
+`Reboot required to activate downloaded extensions.` To preview the change,
+run `sudo updex --dry-run daemon enable`. Nothing changes.
+
+To stop updates of one extension, run `sudo updex features disable <name>`. See [Automatic
+updates](https://github.com/frostyard/updex/blob/v2.1.2/README.md#automatic-updates) for the schedule, the lock, and the
 other details.
 
 ## Roll back
@@ -314,7 +316,7 @@ sudo updex features rollback --clear <name>
 The command changes no link. By default Updex keeps the two newest versions on
 disk (`InstancesMax`), plus the linked, the merged, and the rejected version.
 `--no-vacuum` keeps all of them. Your data in `/var` stays. See
-[Rollback](https://github.com/frostyard/updex/blob/v2.1.0/docs/design/overview.md#rollback-adr-0016) for the rules.
+[Rollback](https://github.com/frostyard/updex/blob/v2.1.2/docs/design/overview.md#rollback-adr-0016) for the rules.
 
 An image rollback with `bootc rollback` does not roll back extensions. The
 links and the images are in `/var`, which every image version shares, so the
@@ -396,7 +398,8 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 - Each build checks the paths in `mkosi.images/<name>/required-paths.txt`. A
   build that is missing one fails.
 - Each build also fails if the payload has files under `/opt`, a private key,
-  or a file that Base owns.
+  or a file that Base owns. It also fails if an `Upholds=` drop-in names a unit
+  with a start condition that is not a `RemainAfterExit` oneshot.
 
 ## Troubleshooting
 
@@ -415,7 +418,7 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 | `disable --now` refuses with `is active` | The refusal names the extension and its version | Add `--force`, then reboot. |
 | A signature check fails | The command output | Check the network and the published manifest. The publisher must provide `SHA256SUMS.gpg`. Never turn verification off. |
 | Every Frostyard download fails verification | `ls /etc/systemd/import-pubring.gpg` | If the file exists, Updex uses it instead of the image's key. Add the Frostyard key to it, or remove it. |
-| `updex-update.service` shows `failed` | `journalctl -u updex-update.service` | A run on an offline host fails. The unit stays `failed` until the next good run. |
+| `updex-update.service` shows `failed` | `journalctl -u updex-update.service` | A download or check failed, a source answered with an error, or only some sources answered. The unit stays `failed` until the next good run. A run where no source answers is skipped and does not fail. |
 | The timer never runs | `updex daemon status` | If it shows `Masked: yes`, run `sudo systemctl unmask updex-update.timer`. If `Enabled` is false, run `sudo updex daemon enable`. |
 
 ## See also
@@ -428,46 +431,49 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 
 ## Sources
 
-Reviewed 2026-10-24. snosi commit
-[`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b);
-Updex v2.1.0 commit
-[`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3).
+Reviewed 2026-10-27. snosi commit
+[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
+Updex v2.1.2 commit
+[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
 
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
-- [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/adr/0004-sysext-authoring-rules.md)
-- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.conf)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
-- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf)
-- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset)
-- [`mkosi.images/docker/required-paths.txt`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/docker/required-paths.txt)
-- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/postoutput/sysext-postoutput.sh)
-- [`shared/sysext/finalize/sysext-required-paths.sh`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/finalize/sysext-required-paths.sh)
-- [`README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/design/overview.md)
-- [`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/specs/config-reference.md)
-- [`docs/adr/0007-daemon-stages-never-activates.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0007-daemon-stages-never-activates.md)
-- [`docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
-- [`cmd/updex/components.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/cmd/updex/components.go)
-- [`cmd/updex/features.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/cmd/updex/features.go)
-- [`cmd/updex/features_run.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/cmd/updex/features_run.go)
-- [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/cmd/updex/daemon.go)
-- [`updex/features.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/features.go)
-- [`updex/install.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/install.go)
-- [`updex/rollback.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/rollback.go)
-- [`updex/daemon.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/daemon.go)
-- [`updex/list.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/list.go)
-- [`manifest/gpg.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/manifest/gpg.go)
-- [`sysext/manager.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/sysext/manager.go)
-- [`systemd/unit.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/systemd/unit.go)
-- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
-- [`mkosi.images/gui-base/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/gui-base/mkosi.conf)
-- [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/vscode/mkosi.conf)
-- [`shared/sysext/finalize/sysext-usr-only.sh`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/finalize/sysext-usr-only.sh)
-- [`shared/sysext/finalize/sysext-no-private-keys.sh`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/finalize/sysext-no-private-keys.sh)
-- [`shared/sysext/finalize/sysext-no-base-owned.sh`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/finalize/sysext-no-base-owned.sh)
-- [`shared/sysext/base-owned-paths.txt`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sysext/base-owned-paths.txt)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/adr/0004-sysext-authoring-rules.md)
+- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset)
+- [`mkosi.images/docker/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/required-paths.txt)
+- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/postoutput/sysext-postoutput.sh)
+- [`shared/sysext/finalize/sysext-required-paths.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-required-paths.sh)
+- [`README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
+- [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/design/overview.md)
+- [`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/specs/config-reference.md)
+- [`docs/adr/0007-daemon-stages-never-activates.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0007-daemon-stages-never-activates.md)
+- [`docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
+- [`docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md)
+- [`shared/sysext/finalize/sysext-upholds-guard.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-upholds-guard.sh)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`cmd/updex/components.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/components.go)
+- [`cmd/updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/features.go)
+- [`cmd/updex/features_run.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/features_run.go)
+- [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/daemon.go)
+- [`updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/features.go)
+- [`updex/install.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/install.go)
+- [`updex/rollback.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/rollback.go)
+- [`updex/daemon.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/daemon.go)
+- [`updex/list.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/list.go)
+- [`manifest/gpg.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/manifest/gpg.go)
+- [`sysext/manager.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/sysext/manager.go)
+- [`systemd/unit.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/systemd/unit.go)
+- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
+- [`mkosi.images/gui-base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/gui-base/mkosi.conf)
+- [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/vscode/mkosi.conf)
+- [`shared/sysext/finalize/sysext-usr-only.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-usr-only.sh)
+- [`shared/sysext/finalize/sysext-no-private-keys.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-no-private-keys.sh)
+- [`shared/sysext/finalize/sysext-no-base-owned.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-no-base-owned.sh)
+- [`shared/sysext/base-owned-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/base-owned-paths.txt)
 - [Updex PR #128: decompressed target file names](https://github.com/frostyard/updex/pull/128)
 - [Murbella's review: extensions after `bootc rollback` (frostyard-org#27)](https://github.com/frostyard/frostyard-org/pull/27#pullrequestreview-5630385504)
