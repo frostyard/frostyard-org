@@ -52,9 +52,11 @@ systemctl status k3s.service k3s-agent.service
 
 `systemd-sysext status` lists `k3s`. On a fresh node `k3s.service` is active and
 `k3s-agent.service` is inactive. If neither unit runs yet, reboot: at boot,
-`multi-user.target` starts the one that matches the role.
+`multi-user.target` starts `k3s-sysext-setup.service`, which pulls in the unit
+that matches the role.
 
-The two units select the role at start time. Both are enabled and upheld:
+The two units select the role at start time. Both are enabled.
+`k3s-sysext-setup.service` pulls in both, and their conditions pick one:
 
 - `k3s.service` runs unless `/etc/default/k3s-agent` exists.
 - `k3s-agent.service` runs when `/etc/default/k3s-agent` is not empty.
@@ -83,9 +85,10 @@ EOF
 
 `K3S_TOKEN_FILE=` also works in place of `K3S_TOKEN=`.
 
-From now on the file keeps `k3s.service` from starting. The running server
-does not stop by itself. Reboot, and the node starts as an agent. Or stop the
-server and start the agent by hand:
+From now on the file keeps `k3s.service` from starting. Nothing switches the
+role on a running node by itself, and the running server does not stop.
+Reboot, and the node starts as an agent. Or stop the server and start the
+agent by hand:
 
 ```bash
 sudo systemctl stop k3s
@@ -133,7 +136,6 @@ timer, and plain `disable`.
 
 | Symptom | Check | Fix |
 | --- | --- | --- |
-| The journal fills with `k3s-agent.service` ... `Will retry later` | Expected on a server node until [snosi#1100](https://github.com/frostyard/snosi/issues/1100) is fixed: the boot drop-in upholds both units, and one always has an unmet condition | None needed. |
 | No k3s unit runs | `systemctl status k3s.service k3s-agent.service` | If `/etc/default/k3s-agent` exists but is empty, both conditions fail. Put `K3S_URL=` and `K3S_TOKEN=` in it, or delete it. |
 | The node runs as a server, but it must join a cluster | `systemctl status k3s.service` and `ls /etc/default/k3s-agent` | Create the file with `K3S_URL=` and `K3S_TOKEN=`, then start `k3s-agent.service` and stop `k3s.service`. |
 | `ctr` is missing, or belongs to another extension | `command -v ctr` | The extension ships no `ctr` link. Use `k3s ctr`. |
@@ -148,7 +150,7 @@ timer, and plain `disable`.
 | Image file | `k3s_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
 | Download | From `https://repository.frostyard.org/ext/k3s/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
 | Commands | `/usr/bin/k3s`, with `/usr/bin/kubectl` and `/usr/bin/crictl` as links |
-| Services | `k3s.service` for a server and `k3s-agent.service` for an agent, enabled by `40-k3s.preset` and started at boot by `10-k3s.conf` |
+| Services | `k3s.service` for a server and `k3s-agent.service` for an agent, enabled by `40-k3s.preset`. `10-k3s.conf` upholds only `k3s-sysext-setup.service`, which pulls in the role units at boot |
 | State | `/var/lib/rancher` |
 | Configuration | None shipped: you write `/etc/rancher/k3s/config.yaml`, `/etc/default/k3s`, or `/etc/default/k3s-agent` |
 
@@ -157,42 +159,40 @@ timer, and plain `disable`.
 The build downloads the release binary and checks its SHA256. The version check
 follows the k3s stable channel, not GitHub's latest release.
 
-Each build checks that the binary, both links, both units, the preset, and the
-boot drop-in are present. A build that is missing one fails. The image is an
+Each build checks that the binary, both links, both units, the setup unit, the
+preset, and the boot drop-in are present. A build that is missing one fails. The image is an
 overlay, so a later Base can break an older k3s image.
 
 ## See also
 
 - [Docker system extension](/docs/sysexts/docker/)
 - [Manage system extensions](/docs/sysexts/manage/)
-- [System extension model](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
-- [Updex v2.1.0 command reference](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
+- [System extension model](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [Updex v2.1.2 command reference](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
 
 ## Sources
 
-Reviewed 2026-10-24. snosi commit
-[`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b);
-Updex v2.0.5 commit
-[`983b81fc835c4f762b88d267e63e66cf822aadbb`](https://github.com/frostyard/updex/tree/983b81fc835c4f762b88d267e63e66cf822aadbb);
-Updex v2.1.0 commit
-[`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3).
+Reviewed 2026-10-27. snosi commit
+[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
+Updex v2.1.2 commit
+[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
 
-- [`mkosi.images/k3s/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/k3s/mkosi.conf)
-- [`mkosi.images/k3s/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/k3s/mkosi.postinst.chroot)
-- [`mkosi.images/k3s/required-paths.txt`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/k3s/required-paths.txt)
-- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s.service)
-- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s-agent.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s-agent.service)
-- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-k3s.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-k3s.conf)
-- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system-preset/40-k3s.preset`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system-preset/40-k3s.preset)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.feature`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.feature)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.transfer`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.transfer)
-- [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/download/sysext-checksums.json)
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
-- [Updex v2.0.5 `README.md`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/README.md)
-- [Updex v2.0.5 `updex/features.go`](https://github.com/frostyard/updex/blob/983b81fc835c4f762b88d267e63e66cf822aadbb/updex/features.go)
-- [Updex v2.1.0 `README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
-- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
+- [`mkosi.images/k3s/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.conf)
+- [`mkosi.images/k3s/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.postinst.chroot)
+- [`mkosi.images/k3s/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/required-paths.txt)
+- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s.service)
+- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s-agent.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s-agent.service)
+- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s-sysext-setup.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/k3s-sysext-setup.service)
+- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-k3s.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-k3s.conf)
+- [`mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system-preset/40-k3s.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.extra/usr/lib/systemd/system-preset/40-k3s.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.transfer)
+- [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/download/sysext-checksums.json)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
+- [Updex v2.1.2 `updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/features.go)
+- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
 - [snosi issue #1100: k3s upholds a unit whose condition always fails](https://github.com/frostyard/snosi/issues/1100)
 - [Murbella's live check of the role switch (frostyard-org#21 review)](https://github.com/frostyard/frostyard-org/pull/21#pullrequestreview-5619934232)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

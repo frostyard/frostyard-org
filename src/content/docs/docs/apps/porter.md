@@ -1,6 +1,6 @@
 ---
 title: Porter
-description: "Porter is the owner's assistant inside lodge: a chat panel that reads your apps and drafts but never sends. Pre-release: there is no package yet."
+description: "Porter is the owner's assistant inside lodge: a chat panel that reads your apps and drafts but never sends. Pre-release: the only package is a `.deb` of the daemon for lodge."
 ---
 
 Porter is a personal assistant that runs inside [lodge](/docs/apps/lodge/).
@@ -17,8 +17,9 @@ you run lodge and want an assistant that works across your apps.
 
 ## Status
 
-Porter is pre-release. The repository has no release, and there is no
-package. Chat, routines, and reading from frostread are built and run on
+Porter is pre-release. The latest release is v0.1.0. Each release attaches
+one package, `frostyard-porterd_X.Y.Z_amd64.deb`, for lodge's host. Snosi picks
+the `.deb` up later. Chat, routines, and reading from frostread are built and run on
 lodge's host, as lodge's `porter` app. The GitHub manager, the next planned
 phase, is not built.
 
@@ -27,7 +28,9 @@ phase, is not built.
 Porter runs as lodge's `porter` app, on lodge's host. You need
 [lodge](/docs/apps/lodge/), an inference alias that lodge routes to a model,
 and the apps Porter reads. The web bundle builds in an
-[nsl](/docs/tools/nsl/) machine, and `make lodge-package` stages the app. The
+[nsl](/docs/tools/nsl/) machine, and `make lodge-package` stages the app, with
+`porterd` in `usr/bin`. lodge's own host keeps `porterd` in `/opt/lodge/bin`, so
+do not extract the staged tree onto `/` there. The
 [operational notes](https://github.com/frostyard/porter/blob/main/docs/design/overview.md#operational-notes)
 cover the configuration, the tokens, and the agent socket. Step 5 of lodge's
 [packaging README](https://github.com/frostyard/lodge/blob/main/packaging/README.md)
@@ -38,6 +41,8 @@ covers agents on lodge's host.
 - [README](https://github.com/frostyard/porter/blob/main/README.md): what Porter is and what is built.
 - [Design overview](https://github.com/frostyard/porter/blob/main/docs/design/overview.md): how Porter works and what it reaches.
 - [Operational notes](https://github.com/frostyard/porter/blob/main/docs/design/overview.md#operational-notes): configuration, tokens, dependencies, and logs.
+- [Update and roll back](https://github.com/frostyard/porter/blob/main/README.md#update): the steps for lodge's host, with the archive to take first.
+- [Limits](https://github.com/frostyard/porter/blob/main/README.md#limits): what Porter does not do, and what can go wrong.
 - [Routines](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md): how to write a routine.
 - [ADR-0004](https://github.com/frostyard/porter/blob/main/docs/adr/0004-porter-drafts-and-the-owner-sends.md): Porter drafts and the owner sends.
 - [ADR-0005](https://github.com/frostyard/porter/blob/main/docs/adr/0005-memory-and-routines-live-in-the-vault.md): memory and routines live in the vault.
@@ -55,10 +60,10 @@ covers agents on lodge's host.
 
 ## Sources
 
-Reviewed 2026-10-25.
+Reviewed 2026-10-27.
 
-- Porter commit [`275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe`](https://github.com/frostyard/porter/tree/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe) on `main`. There is no release.
-- [`README.md`](https://github.com/frostyard/porter/blob/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe/README.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe/docs/plans/0001-roadmap.md), [`docs/specs/routines.md`](https://github.com/frostyard/porter/blob/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe/docs/specs/routines.md)
-- [`docs/adr/0004-porter-drafts-and-the-owner-sends.md`](https://github.com/frostyard/porter/blob/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe/docs/adr/0004-porter-drafts-and-the-owner-sends.md), [`docs/adr/0005-memory-and-routines-live-in-the-vault.md`](https://github.com/frostyard/porter/blob/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe/docs/adr/0005-memory-and-routines-live-in-the-vault.md), [`docs/adr/0006-one-continuous-thread.md`](https://github.com/frostyard/porter/blob/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe/docs/adr/0006-one-continuous-thread.md), [`docs/adr/0007-porter-reads-frostread-read-only.md`](https://github.com/frostyard/porter/blob/275b5aa25d0ffc0e99101c18f2d9b71efa27a5fe/docs/adr/0007-porter-reads-frostread-read-only.md)
-- lodge commit [`ecded651e597faddd58cb1670099d11439e2e895`](https://github.com/frostyard/lodge/tree/ecded651e597faddd58cb1670099d11439e2e895): [`packaging/README.md`](https://github.com/frostyard/lodge/blob/ecded651e597faddd58cb1670099d11439e2e895/packaging/README.md)
+- Porter v0.1.0 commit [`a56337d0f2cec26f660b651fa3c8003ed19d22bd`](https://github.com/frostyard/porter/tree/a56337d0f2cec26f660b651fa3c8003ed19d22bd)
+- [`README.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/README.md)
+- [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/plans/0001-roadmap.md), [`docs/specs/routines.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/specs/routines.md)
+- [`docs/adr/0004-porter-drafts-and-the-owner-sends.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0004-porter-drafts-and-the-owner-sends.md), [`docs/adr/0005-memory-and-routines-live-in-the-vault.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0005-memory-and-routines-live-in-the-vault.md), [`docs/adr/0006-one-continuous-thread.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0006-one-continuous-thread.md), [`docs/adr/0007-porter-reads-frostread-read-only.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0007-porter-reads-frostread-read-only.md)
+- lodge commit [`a43d3be1de45704e0514d51da4c4b32d575f7c6c`](https://github.com/frostyard/lodge/tree/a43d3be1de45704e0514d51da4c4b32d575f7c6c): [`packaging/README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/README.md)

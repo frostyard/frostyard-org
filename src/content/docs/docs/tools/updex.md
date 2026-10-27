@@ -5,7 +5,7 @@ description: "Manage Frostyard system extensions with Updex: list, enable, updat
 
 Updex downloads, verifies, installs, updates, rolls back, and removes system
 extension images. Every Frostyard bootc image ships it as the
-`frostyard-updex` package. This guide follows Updex v2.1.0.
+`frostyard-updex` package. This guide follows Updex v2.1.2.
 
 ## Check your version
 
@@ -29,7 +29,7 @@ image.
 | Install the newest versions | `sudo updex features update` | [Update](/docs/sysexts/manage/#update) |
 | Go back to the previous version | `sudo updex features rollback <name>` | [Roll back](/docs/sysexts/manage/#roll-back) |
 | Stop updates, or remove an extension | `sudo updex features disable <name>` | [Stop updates or remove](/docs/sysexts/manage/#stop-updates-or-remove) |
-| Update on a schedule | `sudo updex daemon enable` | [Automatic updates](#automatic-updates) |
+| Turn off automatic updates | `sudo systemctl mask updex-update.timer` | [Automatic updates](#automatic-updates) |
 
 `features check` and `features list` show a `RUNNING` and a `LINKED` version.
 `RUNNING` is the version merged now. `LINKED` is the version the next boot
@@ -41,32 +41,18 @@ one extension with `--component=<name>`.
 
 ## Automatic updates
 
-The `frostyard-updex` package ships `updex-update.timer` and
-`updex-update.service` in `/usr/lib/systemd/system`, switched off. Turn the
-timer on:
+A Frostyard image enables `updex-update.timer`. It runs
+`updex features update --no-refresh`, which downloads, verifies, and links new
+versions. They take effect at the next boot. To turn automatic updates off on
+the whole host, and keep them off across image updates, run
+`sudo systemctl mask updex-update.timer`. To stop one extension, run
+`sudo updex features disable <name>`. See
+[Automatic updates](/docs/sysexts/manage/#automatic-updates) for the schedule
+and the checks.
 
-```bash
-sudo updex daemon enable
-```
-
-With the packaged units, Updex writes no unit file. It enables and starts the
-timer. The timer runs `updex features update --no-refresh` every 6 hours,
-with a random delay of up to 1 hour. A run downloads, verifies, and links the
-new version. The new version takes effect at the next boot. A host on battery
-skips a run.
-
-Preview the change first with `sudo updex --dry-run daemon enable`. Nothing
-changes. Check the timer and its runs:
-
-```bash
-updex daemon status
-journalctl -u updex-update.service
-```
-
-Turn the timer off with `sudo updex daemon disable`. To keep it off on the
-whole host across image updates, run `sudo systemctl mask updex-update.timer`.
-To stop one extension, run `sudo updex features disable <name>`. See
-[Automatic updates](/docs/sysexts/manage/#automatic-updates) for the steps.
+On a system without the Frostyard image, the package ships the timer switched
+off. Turn it on with `sudo updex daemon enable`. Preview the change first with
+`sudo updex --dry-run daemon enable`.
 
 ## Roll back an extension
 
@@ -105,6 +91,9 @@ Updex v2.0.4 and later refuse to remove a merged extension without `--force`:
 Extension docker (version 5+29.9.1-1~debian.13~trixie) is active. Removing requires --force and a reboot to take effect.
 ```
 
+When another enabled feature still needs a transfer, `disable --now` keeps it
+and prints `kept: still active through feature(s) <name>`.
+
 ## Install Updex on another system
 
 On a Frostyard image, Updex is already installed. It updates and rolls back
@@ -112,7 +101,7 @@ with the image. Follow [Install and update an image](/docs/images/install-update
 
 On another system, download the package for your system from the [Updex
 releases page](https://github.com/frostyard/updex/releases/latest), and check
-it before you install it. The [Updex README](https://github.com/frostyard/updex/blob/v2.1.0/README.md#installation) lists
+it before you install it. The [Updex README](https://github.com/frostyard/updex/blob/v2.1.2/README.md#installation) lists
 the artifacts and the checks. The host needs systemd with `systemd-sysext`,
 and commands that change the system need root.
 
@@ -127,27 +116,27 @@ Add a catalog with a `.catalog` file in `/etc/updex/catalogs.d/`, then run
 `updex catalog list` and `sudo updex catalog add <repo>/<name>`. A catalog
 sysext needs a GPG-signed `SHA256SUMS` by default. `AllowUnsigned=yes` in one
 `.catalog` file lets that catalog's own `Verify=` decide. See [Sysext
-catalogs](https://github.com/frostyard/updex/blob/v2.1.0/README.md#sysext-catalogs) and [Unsigned
-catalogs](https://github.com/frostyard/updex/blob/v2.1.0/README.md#unsigned-catalogs) for the file format, the checks,
+catalogs](https://github.com/frostyard/updex/blob/v2.1.2/README.md#sysext-catalogs) and [Unsigned
+catalogs](https://github.com/frostyard/updex/blob/v2.1.2/README.md#unsigned-catalogs) for the file format, the checks,
 and the upgrade notes.
 
 ## Reference
 
-- [Features and components](https://github.com/frostyard/updex/blob/v2.1.0/README.md#features-and-components): every
+- [Features and components](https://github.com/frostyard/updex/blob/v2.1.2/README.md#features-and-components): every
   `features` command, the refresh warning, the minimum image version, and the
   operation lock.
-- [Automatic updates](https://github.com/frostyard/updex/blob/v2.1.0/README.md#automatic-updates): the timer, its
+- [Automatic updates](https://github.com/frostyard/updex/blob/v2.1.2/README.md#automatic-updates): the timer, its
   schedule, and its status output.
-- [Global flags](https://github.com/frostyard/updex/blob/v2.1.0/README.md#global-flags): `--json`, `--dry-run`,
+- [Global flags](https://github.com/frostyard/updex/blob/v2.1.2/README.md#global-flags): `--json`, `--dry-run`,
   `--no-refresh`, and the others.
-- [JSON output](https://github.com/frostyard/updex/blob/v2.1.0/README.md#json-output): the result format for scripts.
-- [Rollback](https://github.com/frostyard/updex/blob/v2.1.0/docs/design/overview.md#rollback-adr-0016): the record, the
+- [JSON output](https://github.com/frostyard/updex/blob/v2.1.2/README.md#json-output): the result format for scripts.
+- [Rollback](https://github.com/frostyard/updex/blob/v2.1.2/docs/design/overview.md#rollback-adr-0016): the record, the
   hold, and the vacuum.
-- [Minimum image version](https://github.com/frostyard/updex/blob/v2.1.0/docs/design/overview.md#minimum-image-version-adr-0016):
+- [Minimum image version](https://github.com/frostyard/updex/blob/v2.1.2/docs/design/overview.md#minimum-image-version-adr-0016):
   how a revision that needs a newer image stays unlinked.
-- [Running and linked versions](https://github.com/frostyard/updex/blob/v2.1.0/docs/design/overview.md#status-running-and-linked-adr-0016):
+- [Running and linked versions](https://github.com/frostyard/updex/blob/v2.1.2/docs/design/overview.md#status-running-and-linked-adr-0016):
   the `RUNNING` and `LINKED` columns.
-- [Auto-update daemon](https://github.com/frostyard/updex/blob/v2.1.0/docs/design/overview.md#auto-update-daemon): the
+- [Auto-update daemon](https://github.com/frostyard/updex/blob/v2.1.2/docs/design/overview.md#auto-update-daemon): the
   units and the daemon commands.
 
 ## Troubleshooting
@@ -157,7 +146,7 @@ and the upgrade notes.
 | `updex features list` shows no features | `updex components` | If no component is listed and `/etc/sysupdate.d/` is empty, Updex found no definition files. Check the image version. |
 | `features check` shows `UPDATE=error` | The command output and the network | Check the network and the published manifest. The command exits non-zero. Do not read the row as up to date. |
 | `another updex operation is running` | Another `updex` command or the timer | Wait, then run the command again. Only one Updex operation that changes state runs at a time. |
-| `updex-update.service` shows `failed` | `journalctl -u updex-update.service` | A run on an offline host fails. The unit stays `failed` until the next good run. |
+| `updex-update.service` shows `failed` | `journalctl -u updex-update.service` | A run that no update source answered exits 0 and logs `no update source is reachable; skipping this run`. A partial failure, a source that answered with an error, or a verification failure fails the unit until the next good run. |
 | A catalog command says no catalogs are configured | `ls /etc/updex/catalogs.d/` | Create a `<name>.catalog` file with `SiteURL`. |
 
 See [Manage system extensions](/docs/sysexts/manage/#troubleshooting) for the
@@ -174,26 +163,27 @@ rollback, hold, and image-version rows.
 
 ## Sources
 
-Reviewed 2026-10-24.
+Reviewed 2026-10-27.
 
-- Updex v2.1.0 commit [`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3)
-- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
-- [`README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/design/overview.md)
-- [`docs/adr/0007-daemon-stages-never-activates.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0007-daemon-stages-never-activates.md)
-- [`docs/adr/0014-local-catalog-signature-policy.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0014-local-catalog-signature-policy.md)
-- [`docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
-- [`cmd/updex/features.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/cmd/updex/features.go)
-- [`cmd/updex/features_run.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/cmd/updex/features_run.go)
-- [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/cmd/updex/daemon.go)
-- [`cmd/updex/catalog.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/cmd/updex/catalog.go)
-- [`updex/features.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/features.go)
-- [`updex/install.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/install.go)
-- [`updex/rollback.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/rollback.go)
-- [`updex/daemon.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/daemon.go)
-- [`updex/catalog.go`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/updex/catalog.go)
+- Updex v2.1.2 commit [`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e)
+- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
+- [`README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
+- [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/design/overview.md)
+- [`docs/adr/0007-daemon-stages-never-activates.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0007-daemon-stages-never-activates.md)
+- [`docs/adr/0014-local-catalog-signature-policy.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0014-local-catalog-signature-policy.md)
+- [`docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`docs/adr/0017-apply-the-feature-activation-rule-in-every-feature-path.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0017-apply-the-feature-activation-rule-in-every-feature-path.md)
+- [`docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md)
+- [`cmd/updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/features.go)
+- [`cmd/updex/features_run.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/features_run.go)
+- [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/daemon.go)
+- [`cmd/updex/catalog.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/catalog.go)
+- [`updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/features.go)
+- [`updex/install.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/install.go)
+- [`updex/rollback.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/rollback.go)
+- [`updex/daemon.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/daemon.go)
+- [`updex/catalog.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/catalog.go)
 - [Updex v2.0.4 release](https://github.com/frostyard/updex/releases/tag/v2.0.4)
 - [Updex PR #445: detect merged images from systemd-sysext hierarchy metadata](https://github.com/frostyard/updex/pull/445)
-- snosi commit [`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.images/base/mkosi.conf)
-- snosi commit [`96d663b3c7025fbbeeda5987cc521b524fd1721c`](https://github.com/frostyard/snosi/tree/96d663b3c7025fbbeeda5987cc521b524fd1721c): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.conf), [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature), [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/96d663b3c7025fbbeeda5987cc521b524fd1721c/docs/design/sysexts.md)
+- snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.conf), [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset), [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature), [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)

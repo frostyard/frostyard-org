@@ -1,6 +1,6 @@
 ---
 title: Frostmail
-description: "Frostmail is a mail client that works like Apple Mail.app, for Linux and Windows, with a daemon, an app, and a CLI. Pre-release: there is no package yet."
+description: "Frostmail is a mail client that works like Apple Mail.app, for Linux and Windows, with a daemon, an app, and a CLI. Pre-release: the only package is a `.deb` of the daemon for lodge."
 ---
 
 Frostmail is a mail client that works like Apple Mail.app. It runs on Linux
@@ -23,9 +23,12 @@ daemon on your machine, and the app and the command line talk to it.
 
 ## Status
 
-Frostmail is pre-release. The repository has no release. Frostmail is not in
-the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard
-Homebrew tap.
+Frostmail is pre-release. The latest release is v0.1.0. Each release attaches
+one package, `frostyard-maild_X.Y.Z_amd64.deb`, for lodge's host. It holds
+`maild`, `mailctl`, the units, the `frostmail` user, and the web build for
+lodge's mail app. The desktop app has no package. Frostmail is not in the
+Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard
+Homebrew tap. Snosi picks the `.deb` up later.
 
 Mail in lodge is built and still in progress. Its last step, the move of a
 real mail store to lodge's host, has not run yet. Calendar, task, and
@@ -38,8 +41,10 @@ On your Linux host, Frostmail runs for one user and needs no root.
 `make install` puts `maild` and `mailctl` in `~/.local/bin` with a systemd
 user service. The app is a local Flatpak that you build in an
 [nsl](/docs/tools/nsl/) machine. Behind [lodge](/docs/apps/lodge/), `maild`
-runs as the system user `frostmail` on lodge's host. The
-[install steps](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#installing-for-one-user)
+runs as the system user `frostmail` on lodge's host. To check the release
+`.deb` before you install it, run
+`gh attestation verify frostyard-maild_X.Y.Z_amd64.deb --repo frostyard/frostmail`.
+The [install steps](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#installing-for-one-user)
 for one user are the canonical ones.
 
 ## Documentation
@@ -71,12 +76,12 @@ for one user are the canonical ones.
 
 ## Sources
 
-Reviewed 2026-10-26.
+Reviewed 2026-10-27.
 
-- Frostmail commit [`d04963c366a30a4806e266a0fdaa48c1cbb7b609`](https://github.com/frostyard/frostmail/tree/d04963c366a30a4806e266a0fdaa48c1cbb7b609) on `main`. There is no release.
-- [`README.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/README.md)
-- [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/design/desktop.md), [`docs/design/accounts.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/design/accounts.md), [`docs/design/overview.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/design/overview.md)
-- [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/specs/lodge-app.md), [`docs/specs/search.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/specs/search.md)
-- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/plans/0002-roadmap.md), [`docs/plans/0010-m7-microsoft-and-windows.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/plans/0010-m7-microsoft-and-windows.md), [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/docs/plans/0011-m8-mail-in-lodge.md)
-- [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/d04963c366a30a4806e266a0fdaa48c1cbb7b609/internal/store/store.go)
+- Frostmail v0.1.0 commit [`df106558209fad29c63983710a1a646557064dd4`](https://github.com/frostyard/frostmail/tree/df106558209fad29c63983710a1a646557064dd4)
+- [`README.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/README.md)
+- [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/design/desktop.md), [`docs/design/accounts.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/design/accounts.md), [`docs/design/overview.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/design/overview.md)
+- [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/specs/lodge-app.md), [`docs/specs/search.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/specs/search.md)
+- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0002-roadmap.md), [`docs/plans/0010-m7-microsoft-and-windows.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0010-m7-microsoft-and-windows.md), [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0011-m8-mail-in-lodge.md)
+- [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/internal/store/store.go)
 - No package: the Flatpak index [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ce9f016860ed19d8e532facb605b7b9635f380cd/apps.json) at `ce9f016860ed19d8e532facb605b7b9635f380cd` has no entry, and the Homebrew tap [`Casks`](https://github.com/frostyard/homebrew-tap/tree/afd829de04b62b37f20a97d2a67fdfe4b477606f/Casks) at `afd829de04b62b37f20a97d2a67fdfe4b477606f` holds only `chairlift.rb` and `nsl.rb`. The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-26, lists no package.

@@ -153,35 +153,35 @@ The image is a revised build: it carries `SYSEXT_REVISION=3`, so its file name h
 
 ## Sources
 
-Reviewed 2026-10-24. snosi commit
-[`f9a49d74abfda22c675e12e9c699de78f05a2a10`](https://github.com/frostyard/snosi/tree/f9a49d74abfda22c675e12e9c699de78f05a2a10);
-Updex v2.1.0 commit
-[`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3).
+Reviewed 2026-10-27. snosi commit
+[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
+Updex v2.1.2 commit
+[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
 
-- [`mkosi.images/coder/mkosi.conf`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.conf)
-- [`mkosi.images/coder/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.postinst.chroot)
-- [`mkosi.images/coder/mkosi.finalize`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.finalize)
-- [`mkosi.images/coder/required-paths.txt`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/required-paths.txt)
-- [`mkosi.images/coder/mkosi.extra/usr/lib/systemd/system-preset/40-coder.preset`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.extra/usr/lib/systemd/system-preset/40-coder.preset)
-- [`mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/coder-sysext-setup.service`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/coder-sysext-setup.service)
-- [`mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-coder.conf`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-coder.conf)
-- [`mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/coder.service.d/10-snosi-configured.conf`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/coder.service.d/10-snosi-configured.conf)
-- [`mkosi.images/coder/mkosi.extra/usr/lib/coder-sysext/coder-configured`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.extra/usr/lib/coder-sysext/coder-configured)
-- [`test/coder-sysext-test.sh`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/test/coder-sysext-test.sh)
-- [`mkosi.images/coder/mkosi.extra/usr/lib/sysusers.d/coder.conf`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.extra/usr/lib/sysusers.d/coder.conf)
-- [`mkosi.images/coder/mkosi.extra/usr/lib/tmpfiles.d/coder.conf`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/coder/mkosi.extra/usr/lib/tmpfiles.d/coder.conf)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.coder.d/coder.feature`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.coder.d/coder.feature)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.coder.d/coder.transfer`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.coder.d/coder.transfer)
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/docs/design/sysexts.md)
-- [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/f9a49d74abfda22c675e12e9c699de78f05a2a10/docs/adr/0004-sysext-authoring-rules.md)
+- [`mkosi.images/coder/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.conf)
+- [`mkosi.images/coder/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.postinst.chroot)
+- [`mkosi.images/coder/mkosi.finalize`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.finalize)
+- [`mkosi.images/coder/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/required-paths.txt)
+- [`mkosi.images/coder/mkosi.extra/usr/lib/systemd/system-preset/40-coder.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.extra/usr/lib/systemd/system-preset/40-coder.preset)
+- [`mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/coder-sysext-setup.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/coder-sysext-setup.service)
+- [`mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-coder.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-coder.conf)
+- [`mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/coder.service.d/10-snosi-configured.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.extra/usr/lib/systemd/system/coder.service.d/10-snosi-configured.conf)
+- [`mkosi.images/coder/mkosi.extra/usr/lib/coder-sysext/coder-configured`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.extra/usr/lib/coder-sysext/coder-configured)
+- [`test/coder-sysext-test.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/test/coder-sysext-test.sh)
+- [`mkosi.images/coder/mkosi.extra/usr/lib/sysusers.d/coder.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.extra/usr/lib/sysusers.d/coder.conf)
+- [`mkosi.images/coder/mkosi.extra/usr/lib/tmpfiles.d/coder.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.extra/usr/lib/tmpfiles.d/coder.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.coder.d/coder.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.coder.d/coder.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.coder.d/coder.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.coder.d/coder.transfer)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/adr/0004-sysext-authoring-rules.md)
 
 - [snosi#1119: skip `coder.service` until `CODER_ACCESS_URL` is set](https://github.com/frostyard/snosi/pull/1119)
 - [snosi#1120: the empty `CODER_HTTP_ADDRESS` makes `coder.service` fail and restart](https://github.com/frostyard/snosi/issues/1120)
 - [snosi#1121: require a bind address and stop restart loops (r3)](https://github.com/frostyard/snosi/pull/1121)
 - [Coder v2.37.4 `cli/server.go`](https://github.com/coder/coder/blob/v2.37.4/cli/server.go)
 
-- [Updex v2.1.0 `README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
-- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
+- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
+- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
 - [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [Murbella's review (frostyard-org#33)](https://github.com/frostyard/frostyard-org/pull/33#pullrequestreview-5632123106)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

@@ -210,17 +210,17 @@ The Frostyard lines no longer appear in the output.
 
 ## Sources
 
-Reviewed 2026-10-24.
+Reviewed 2026-10-27.
 
 - Owner decision, Brian, 2026-10-24: the repository is for Frostyard images and their builds. Plain Debian 13 hosts are not a supported use. Installed images have no Frostyard APT source: core ADR-0059, Context.
-- `image` component: core ADR-0059, accepted by Brian on 2026-10-24 (core#162, merged as [`4220e6e`](https://github.com/frostyard/core/blob/4220e6ec601812d594d1847d01c66f7c45880f35/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md); the file's status line still reads Proposed), and [Ben Sherman's review](https://github.com/frostyard/core/pull/162#issuecomment-6388139358): protection of plain hosts is a side effect, not a commitment, and no Incus downgrade advice.
+- `image` component: core ADR-0059, accepted by Brian on 2026-10-24 (core#162, accepted in core#163; [ADR-0059](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md) is amended by ADR-0061: the first publication run adds `image`), and [Ben Sherman's review](https://github.com/frostyard/core/pull/162#issuecomment-6388139358): protection of plain hosts is a side effect, not a commitment, and no Incus downgrade advice.
 - Incus database after an upgrade: [Incus, Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus), read 2026-10-24.
-- core commit [`d55b259c57c636169e9a86f89ce808b075a1bf3c`](https://github.com/frostyard/core/tree/d55b259c57c636169e9a86f89ce808b075a1bf3c)
-- [`docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md)
-- [`docs/adr/0011-frostyard-prefixed-package-names.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/adr/0011-frostyard-prefixed-package-names.md)
-- [`docs/design/debian-publication.md`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/docs/design/debian-publication.md)
-- [`.github/stable-repository.json`](https://github.com/frostyard/core/blob/d55b259c57c636169e9a86f89ce808b075a1bf3c/.github/stable-repository.json)
-- snosi commit [`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201): [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources), [`shared/sysext/keys/README.md`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/sysext/keys/README.md)
+- core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5)
+- [`docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md)
+- [`docs/adr/0011-frostyard-prefixed-package-names.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0011-frostyard-prefixed-package-names.md)
+- [`docs/design/debian-publication.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/design/debian-publication.md)
+- [`.github/stable-repository.json`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/.github/stable-repository.json)
+- snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources), [`shared/sysext/keys/README.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/keys/README.md)
 - [`dists/trixie/InRelease`](https://repository.frostyard.org/debian/dists/trixie/InRelease), read 2026-10-23: `Origin: Frostyard`, `Architectures: all amd64 arm64`
 - The steps on this page were run in a `debian:trixie` container on 2026-10-23.
 - [Lucilla's review of frostyard-org#32: the pin, arm64, and withdrawal](https://github.com/frostyard/frostyard-org/pull/32#pullrequestreview-5630777947)

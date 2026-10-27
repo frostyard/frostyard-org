@@ -40,7 +40,7 @@ flatpak run io.github.frostyard.Igloo
 ```
 
 The terminal opens. To
-build Igloo yourself, see the [README](https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/README.md).
+build Igloo yourself, see the [README](https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd/README.md).
 
 ## Use Igloo
 
@@ -95,7 +95,7 @@ This keeps your Igloo settings in `~/.var/app/io.github.frostyard.Igloo/`. Add
 
 ## Roll back
 
-Igloo has no roll back. The Frostyard remote serves only the newest release.
+Igloo has no roll back. The Frostyard remote serves only the newest tagged release.
 
 ## Troubleshooting
 
@@ -116,18 +116,18 @@ its installation guide.
 - [nsl documentation](https://frostyard.github.io/nsl/)
 - [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis)
 - [Frostyard Flatpak remote](https://github.com/frostyard/flatpak-index)
-- [Igloo README](https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/README.md)
+- [Igloo README](https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd/README.md)
 
 ## Sources
 
-Reviewed 2026-10-23.
+Reviewed 2026-10-27.
 
-- Igloo commit [`cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b`](https://github.com/frostyard/igloo/tree/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b)
-- [`README.md`](https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/README.md)
-- [`io.github.frostyard.Igloo.json`](https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/io.github.frostyard.Igloo.json)
-- [`meson.build`](https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/meson.build)
-- [`agent/ptyxis-nsl.c`](https://github.com/frostyard/igloo/blob/cf315cb3fcdb43c07ab6ca24e4d45c0e43aa670b/agent/ptyxis-nsl.c)
+- Igloo commit [`38d98cd171d4ffbbe4adfaa55818f503206866dd`](https://github.com/frostyard/igloo/tree/38d98cd171d4ffbbe4adfaa55818f503206866dd)
+- [`README.md`](https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd/README.md)
+- [`io.github.frostyard.Igloo.json`](https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd/io.github.frostyard.Igloo.json)
+- [`meson.build`](https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd/meson.build)
+- [`agent/ptyxis-nsl.c`](https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd/agent/ptyxis-nsl.c)
 - [Duncan's review: Igloo roll back (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
-- snosi commit [`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b): [`shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo), [`shared/sundog/scripts/postinstall/sundog.postinst.chroot`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/sundog/scripts/postinstall/sundog.postinst.chroot), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.profiles/snowfield/mkosi.conf)
-- nsl v0.11.0 [`site/content/reference/machine-images.md`](https://github.com/frostyard/nsl/blob/436167b05af0e7389f1a257425ef96038b54d5d2/site/content/reference/machine-images.md)
+- snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo), [`shared/sundog/scripts/postinstall/sundog.postinst.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sundog/scripts/postinstall/sundog.postinst.chroot), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf)
+- nsl main [`site/content/reference/machine-images.md`](https://github.com/frostyard/nsl/blob/b78a782f7f56eb1717afac16fa69d05a58cfd60e/site/content/reference/machine-images.md)
 - [Duncan's review: the OSC 7 image date and the uninstall behaviour (frostyard-org#22)](https://github.com/frostyard/frostyard-org/pull/22#pullrequestreview-5620027150)

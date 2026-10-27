@@ -15,9 +15,9 @@ under `/var`.
 :::caution[Secure Boot is not production-ready yet]
 Firn can install with Secure Boot on, but Frostyard does not yet claim
 production Secure Boot support, signed updates, or signed rollback.
-Fresh-install test results for Snow, Floe, and Sundog are still pending. A
-normal Firn install does not change that, and neither does a working
-`bootc rollback`. The secure layout
+Snow, Floe, and Sundog have passed fresh installs in a lab VM, but that is
+not hardware qualification. A normal Firn install does not make Secure Boot
+production-ready, and neither does a working `bootc rollback`. The secure layout
 also needs signed secure N/N+1/N+2 release images and hardware test results
 that are not published yet. An existing install cannot convert to the secure
 layout in place.
@@ -28,7 +28,8 @@ layout in place.
 Firn is the installer. It needs UEFI and erases the disk you pick. It works
 with or without Secure Boot, TPM 2.0, and disk encryption, and asks you about
 each one. Use a disk of at least 30 GiB, and more if you plan to keep
-Flatpaks, containers, and several updates.
+Flatpaks, containers, and several updates. The installer runs from RAM and
+needs at least 4.5 GiB of memory.
 
 1. Download the installer and its checksums:
    - [Installer ISO](https://repository.frostyard.org/isos/native/v1/snosi-installer-latest-x86-64.iso)
@@ -36,7 +37,7 @@ Flatpaks, containers, and several updates.
    - [SHA256SUMS.gpg](https://repository.frostyard.org/isos/native/v1/SHA256SUMS.gpg)
 2. Check the signing key's fingerprint and the ISO, then write the ISO to a
    USB stick. The
-   [installation guide](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md)
+   [installation guide](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/installing.md)
    has the exact `gpgv` and `sha256sum` commands and the commands to write the
    stick. Read its warning on picking the right device.
 3. Boot the stick. In Firn, pick the bootc Snow product, review the recipe
@@ -78,6 +79,8 @@ The package lists in the build are not a package manager you can add to.
 Updates are automatic. Every hour, `bootc-update-stage.timer` checks for a
 new image, pulls it with Podman, and stages it. The new version starts at your
 next normal reboot. The stager does not force a reboot.
+
+Enabled [system extensions](/docs/sysexts/) update on their own. A new version is staged and starts at the next boot. See [Automatic updates](/docs/sysexts/manage/#automatic-updates).
 
 The stager runs the bootc commands itself. You do not need to run them. On
 the first staged update, while the host does not yet follow the image from
@@ -151,7 +154,7 @@ exists yet.
 | `bootc status` shows `spec.image: null` | The host is not managed by bootc. It is most likely an old nbc or native A/B install. | See [Moving from an nbc or A/B install](#moving-from-an-nbc-or-ab-install). |
 | No update is staged | `systemctl list-timers bootc-update-stage.timer` and `journalctl -u bootc-update-stage.service` | Wait for the hourly run. Check the network and the free space in `/var`. |
 | Staging fails for lack of space | Compare the free space in `/var` with the image size | Free space or grow the disk. The updater needs room for the download, the new version, and the previous one. |
-| Secure Boot or TPM does not behave as you expect | `bootc status` and the firmware settings | Check the firmware settings, then read the [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md). Secure Boot is not production-ready yet. |
+| Secure Boot or TPM does not behave as you expect | `bootc status` and the firmware settings | Check the firmware settings, then read the [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/bootc-secure-operations.md). Secure Boot is not production-ready yet. |
 | You need to know how Snowfield behaves on a Surface | The Snowfield page and installer notes | Snowfield is a different image and is untested on Surface hardware. Snow results do not carry over. |
 
 ## Moving from an nbc or A/B install
@@ -161,7 +164,7 @@ Old nbc and native A/B installs get no new images or updates after
 Firn, and restore your data.
 
 The
-[migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
+[migration runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
 lists what to save: your `/etc` changes, homes, Podman volumes, and
 `/var/lib/tailscale` if you use Tailscale. Check the backup from another
 machine before you erase the disk.
@@ -173,25 +176,27 @@ machine before you erase the disk.
 - [Docker system extension](/docs/sysexts/docker/)
 - [Incus system extension](/docs/sysexts/incus/)
 - [Tailscale system extension](/docs/sysexts/tailscale/)
-- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
-- [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md)
+- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/bootc-secure-operations.md)
 
 ## Sources
 
-Reviewed 2026-10-22 against snosi commit
-[`5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5`](https://github.com/frostyard/snosi/tree/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5).
+Reviewed 2026-10-27 against snosi commit
+[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9).
 
-- [`README.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/README.md)
-- [`mkosi.profiles/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.profiles/snow/mkosi.conf)
-- [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/composition/snow/mkosi.conf)
-- [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/snow/mkosi.conf)
-- [`shared/packages/bootc/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/packages/bootc/mkosi.conf)
-- [`shared/kernel/backports/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/kernel/backports/mkosi.conf)
-- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.conf)
-- [`flatpaks/snow.json`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/flatpaks/snow.json)
-- [`flatpaks/core-flatpaks.py`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/flatpaks/core-flatpaks.py)
-- [`shared/composition/core-flatpaks.postoutput`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/composition/core-flatpaks.postoutput)
-- [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
-- [`docs/installing.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/installing.md)
-- [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/bootc-secure-operations.md)
-- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
+- [`README.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/README.md)
+- [`mkosi.profiles/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snow/mkosi.conf)
+- [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf)
+- [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf)
+- [`shared/packages/bootc/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/bootc/mkosi.conf)
+- [`shared/kernel/backports/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/kernel/backports/mkosi.conf)
+- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.conf)
+- [`flatpaks/snow.json`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/flatpaks/snow.json)
+- [`flatpaks/core-flatpaks.py`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/flatpaks/core-flatpaks.py)
+- [`shared/composition/core-flatpaks.postoutput`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/core-flatpaks.postoutput)
+- [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
+- [`docs/installing.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/installing.md)
+- [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/bootc-secure-operations.md)
+- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
