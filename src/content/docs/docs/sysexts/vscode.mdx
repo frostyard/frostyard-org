@@ -116,7 +116,7 @@ timer, and plain `disable`.
 | --- | --- | --- |
 | `code` or the launcher is missing | `systemd-sysext status`, `command -v code`, and `ls /usr/share/applications/com.microsoft.VSCode.desktop` | Check that the image is merged. If it is, run `sudo systemd-sysext refresh` or reboot. |
 | The icon is the generic application icon | The icon in the application grid after a new login | A running GNOME session does not always rescan icons from a merge. Icons are reliable from the next session start. |
-| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| `enable --now` exits non-zero after the download | The output shows `Error: sysext refresh failed` (`refresh_error` with `--json`) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
 
 Do not repair the extension with `apt`. If a merged image is missing files, the
 fix is a corrected extension build.

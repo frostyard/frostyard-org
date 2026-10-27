@@ -946,7 +946,7 @@ for (const page of sysextPages) {
   assert(!text.includes("Updex v2.0.4 and later have this check") && !text.includes("Updex v2.0.3 and older do not"), `${page.route} must not carry the superseded Updex v2.0.3 and v2.0.4 removal-guard limit.`);
   assert(text.includes("Removing requires --force and a reboot to take effect"), `${page.route} must quote the refusal message for a merged extension.`);
   assert(!text.includes("they remove the extension at once"), `${page.route} must not carry the superseded older-Updex removal text.`);
-  assert(text.includes("updex catalog remove has the same check"), `${page.route} must cover the catalog remove guard.`);
+  assert(!text.includes("updex catalog remove has the same check"), `${page.route} must not claim the catalog remove guard for an image feature.`);
   assert(text.includes("only sets Enabled=false"), `${page.route} must explain plain disable.`);
   assert(text.includes("The next boot merges the version that the link names"), `${page.route} must state that plain disable leaves the link, and the next boot merges the linked version.`);
   assert(text.includes("one row for each enabled feature"), `${page.route} must describe features check.`);

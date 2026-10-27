@@ -103,8 +103,9 @@ systemctl status <name>.service
 The unit is active. The extension ships a preset that enables the service and a
 `multi-user.target.d/10-<name>.conf` drop-in with `Upholds=`. Some extensions
 uphold a small setup unit that starts the service, for example
-`k3s-sysext-setup.service`, because a unit with a start condition must not be
-upheld directly. The drop-in is new to systemd after the post-merge
+`k3s-sysext-setup.service`, because systemd retries an upheld unit whose start
+condition fails. Only a `Type=oneshot` unit with `RemainAfterExit=yes` can carry
+a condition and be upheld. The drop-in is new to systemd after the post-merge
 `daemon-reload`, so it starts the unit when `multi-user.target` activates. A preset alone would not work: at boot, PID
 1 scans unit files before the extension is merged.
 
@@ -177,8 +178,8 @@ the new version runs after the next reboot. If Updex prints
 `refresh skipped: ...`, it could not refresh safely, and the output says why:
 a revision needs a newer running image, or Updex cannot check one. The links
 stay, and the change takes effect at the next boot. Do not run
-`systemd-sysext refresh` by hand. With `--json`, the result has
-`next_action_message`: `Reboot required to activate changes`. See
+`systemd-sysext refresh` by hand. With `--json`, each feature result has
+`refresh_skipped` with this reason. See
 [Features and components](https://github.com/frostyard/updex/blob/v2.1.2/README.md#features-and-components)
 for the refresh rules.
 
@@ -280,7 +281,8 @@ sudo updex daemon enable
 
 With the packaged units, Updex writes no unit file. It enables and starts the
 timer. The output says `Auto-update daemon enabled.`,
-`Using the units shipped by the package; no unit file was written.`, and
+`Using the units shipped by the package; no unit file was written.`,
+`Updates run every 6 hours while on AC power and download new versions.`, and
 `Reboot required to activate downloaded extensions.` To preview the change,
 run `sudo updex --dry-run daemon enable`. Nothing changes.
 
@@ -304,7 +306,8 @@ changes nothing.
 
 Updex records the rejected version in `/var/lib/updex/rollback/<name>`. While
 the record exists, `updex features update` and the timer leave the extension
-alone. The row shows `held by rollback: rejected <version>`, and the command
+alone. The row shows `held by rollback: rejected <version>` or
+`held by rollback of <feature>: <reason>`, and the command
 exits 0. When a newer version is published, the next update links it and
 deletes the record. To let updates link the newest version again now, delete
 the record:
@@ -409,7 +412,7 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 | `features check` shows `UPDATE=yes` but `features update` downloads nothing | The output of `features update` says `Linked staged version <version>` | The image was already on disk. Updex repointed the link and refreshed. If the output says `refresh skipped`, or you used `--no-refresh`, reboot to run the new version. |
 | You want the old version back | `ls /var/lib/extensions.d/` | Run `sudo updex features rollback <name>`, then reboot. See [Roll back](#roll-back). |
 | `features rollback` fails with `version <version> of <name> is not on disk` | `ls /var/lib/extensions.d/` | Updex rolls back only to a staged image. Pick a version from the list with `--to`, or remove the extension. |
-| `features update` shows `held by rollback: rejected <version>` | `ls /var/lib/updex/rollback/` | A rollback holds the extension until a newer version is published. To update now, run `sudo updex features rollback --clear <name>`. |
+| `features update` shows `held by rollback: rejected <version>` or `held by rollback of <feature>: <reason>` | `ls /var/lib/updex/rollback/` | A rollback holds the extension until a newer version is published. To update now, run `sudo updex features rollback --clear <name>`. |
 | `features update` shows `not linked: needs image >= <value>` | `bootc status` | The revision needs a newer base image. Update the image. The next run links it. |
 | `another updex operation is running` | Another `updex` command or the timer | Wait, then run the command again. Only one operation that changes state runs at a time. |
 | `features check` shows `UPDATE=error` | The command output and the network | Check the network and the published manifest. The command exits non-zero. Do not read the row as up to date. |

@@ -143,7 +143,7 @@ and the upgrade notes.
 
 | Symptom | Check | Fix |
 | --- | --- | --- |
-| `updex features list` shows no features | `updex components` | If no component is listed and `/etc/sysupdate.d/` is empty, Updex found no definition files. Check the image version. |
+| `updex features list` shows no features | `updex components` | If no component is listed and no `sysupdate.d/` directory in `/etc`, `/run`, `/usr/local/lib`, or `/usr/lib` has definition files, Updex found none. Check the image version. |
 | `features check` shows `UPDATE=error` | The command output and the network | Check the network and the published manifest. The command exits non-zero. Do not read the row as up to date. |
 | `another updex operation is running` | Another `updex` command or the timer | Wait, then run the command again. Only one Updex operation that changes state runs at a time. |
 | `updex-update.service` shows `failed` | `journalctl -u updex-update.service` | A run that no update source answered exits 0 and logs `no update source is reachable; skipping this run`. A partial failure, a source that answered with an error, or a verification failure fails the unit until the next good run. |

@@ -122,7 +122,7 @@ timer, and plain `disable`.
 | The daemon is not running | `systemctl status nix.mount nix-daemon.service` | The daemon is bound to `nix.mount`. Check the mount and `/var/lib/nix`, then start `nix.mount`. |
 | `/nix/store` is empty or missing | `systemctl status nix.mount` | The bind mount is not active. Start `nix.mount`, or reboot. |
 | `/etc/nix` is missing | `ls /etc/nix` | The copy runs at boot. Reboot after the merge and check again. |
-| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| `enable --now` exits non-zero after the download | The output shows `Error: sysext refresh failed` (`refresh_error` with `--json`) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
 
 ## What ships
 

@@ -175,7 +175,6 @@ Stop or migrate your workloads first, and reboot when the command finishes.
 
 Without `--force`, Updex refuses while Incus is merged:
 `Extension incus (version ...) is active. Removing requires --force and a reboot to take effect.`
-`updex catalog remove` has the same check.
 
 Removal takes away the daemon, the CLI, the web UI, and their units. Your
 containers, virtual machines, storage pools, and other data in `/var` stay.
@@ -212,7 +211,7 @@ change to the host's `qemu-system-x86_64` to affect Incus.
 | The bundled QEMU fails with a missing shared library | `LD_LIBRARY_PATH=/usr/incus/lib/ ldd /usr/incus/bin/qemu-system-x86_64` | This extension build does not match your Base. Install a corrected extension. Do not patch `/usr` by hand. |
 | The setup service did not run | `systemctl status incus-sysext-setup.service` and its journal | The service runs once per boot and skips when `/run/incus-sysext-setup.done` exists. Check that file. |
 | `incus.socket` is inactive | `systemctl status incus.socket` and `systemd-sysext status` | Check that the extension is merged and the preset applied. After a staged update, refresh or reboot. |
-| `enable --now` exits non-zero after the download | The output shows `refresh_error` | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| `enable --now` exits non-zero after the download | The output shows `Error: sysext refresh failed` (`refresh_error` with `--json`) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
 | A manifest or signature check fails | `updex features check --component=incus` | Check the network and the published manifest. Never turn verification off. |
 | Containers or VMs stopped during an update | The journal shows the daemon restart after the `/usr` refresh | Drain or migrate workloads before you update by hand. Back up storage first. |
 
