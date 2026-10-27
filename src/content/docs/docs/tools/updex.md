@@ -29,7 +29,7 @@ image.
 | Install the newest versions | `sudo updex features update` | [Update](/docs/sysexts/manage/#update) |
 | Go back to the previous version | `sudo updex features rollback <name>` | [Roll back](/docs/sysexts/manage/#roll-back) |
 | Stop updates, or remove an extension | `sudo updex features disable <name>` | [Stop updates or remove](/docs/sysexts/manage/#stop-updates-or-remove) |
-| Turn off automatic updates | `sudo systemctl mask updex-update.timer` | [Automatic updates](#automatic-updates) |
+| Turn off automatic updates | `sudo systemctl mask --now updex-update.timer` | [Automatic updates](#automatic-updates) |
 
 `features check` and `features list` show a `RUNNING` and a `LINKED` version.
 `RUNNING` is the version merged now. `LINKED` is the version the next boot
@@ -45,7 +45,7 @@ A Frostyard image enables `updex-update.timer`. It runs
 `updex features update --no-refresh`, which downloads, verifies, and links new
 versions. They take effect at the next boot. To turn automatic updates off on
 the whole host, and keep them off across image updates, run
-`sudo systemctl mask updex-update.timer`. To stop one extension, run
+`sudo systemctl mask --now updex-update.timer`. To stop one extension, run
 `sudo updex features disable <name>`. See
 [Automatic updates](/docs/sysexts/manage/#automatic-updates) for the schedule
 and the checks.

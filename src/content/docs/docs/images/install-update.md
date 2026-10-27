@@ -250,7 +250,7 @@ run.
 Enabled extensions update on their own: a new version is staged and starts at the next boot. See [Automatic updates](/docs/sysexts/manage/#automatic-updates). To stop the automatic updates on a machine, run:
 
 ```bash
-sudo systemctl mask updex-update.timer
+sudo systemctl mask --now updex-update.timer
 ```
 
 ## Update now by hand

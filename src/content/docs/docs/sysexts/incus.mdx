@@ -135,7 +135,7 @@ them up. Check your storage pool configuration to see where they are.
 
 Once you enable Incus, it updates on its own: new versions are staged and become
 active at the next boot. To opt out for the whole host, run
-`sudo systemctl mask updex-update.timer`. See
+`sudo systemctl mask --now updex-update.timer`. See
 [Automatic updates](/docs/sysexts/manage/#automatic-updates).
 
 To take one update at the next boot without the timer, run

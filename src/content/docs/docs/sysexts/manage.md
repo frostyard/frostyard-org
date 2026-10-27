@@ -260,10 +260,11 @@ stays successful. A run fails when only some sources answer, when a source
 answers with an error, or when a download or check fails. The unit then shows
 `failed` until the next good run.
 
-Turn the timer off for the whole host. The mask survives image updates:
+Turn the timer off for the whole host. `--now` also stops the timer that runs
+now, and the mask survives image updates:
 
 ```bash
-sudo systemctl mask updex-update.timer
+sudo systemctl mask --now updex-update.timer
 ```
 
 `sudo updex daemon disable` also stops the timer. The output says

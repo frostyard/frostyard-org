@@ -881,7 +881,7 @@ for (const page of sysextPages) {
   assert(html.includes("refresh_error"), `${page.route} must explain a failed refresh.`);
   assert(html.includes("features check"), `${page.route} must explain read-only update checks.`);
   assert(html.includes("--no-refresh") && html.includes('href="/docs/sysexts/manage/#automatic-updates"'), `${page.route} must distinguish timer staging from interactive refresh and link the automatic updates section.`);
-  assert(text.includes("sudo systemctl mask updex-update.timer"), `${page.route} must give the host-wide timer opt-out.`);
+  assert(text.includes("sudo systemctl mask --now updex-update.timer"), `${page.route} must give the host-wide timer opt-out.`);
   assert(!text.includes("sudo updex daemon enable") && !text.includes("switched off. `daemon enable`") && !text.includes("The package ships the timer switched off"), `${page.route} must not repeat the timer commands or say that the timer is off by default.`);
   assert(html.includes('class="copy"'), `${page.route} must render copyable code blocks.`);
   assert(text.includes("%w") && text.includes("%a"), `${page.route} must explain the %w and %a transfer matching.`);
@@ -1142,7 +1142,7 @@ assert(manageText.includes("not linked: needs image &gt;="), "/docs/sysexts/mana
 assert(manageText.includes("PENDING REBOOT:") && manageText.includes("RUNNING") && manageText.includes("LINKED"), "/docs/sysexts/manage must explain RUNNING, LINKED, and PENDING REBOOT.");
 assert(manageText.includes("another updex operation is running"), "/docs/sysexts/manage must show the operation-lock message.");
 assert(manageText.includes("updex-update.timer") && manageText.includes("sudo updex daemon enable"), "/docs/sysexts/manage must name the timer and how to turn it on.");
-assert(manageText.includes("sudo systemctl mask updex-update.timer"), "/docs/sysexts/manage must give the host-wide opt-out.");
+assert(manageText.includes("sudo systemctl mask --now updex-update.timer"), "/docs/sysexts/manage must give the host-wide opt-out.");
 assert(manageText.includes("Every Frostyard image enables updex-update.timer"), "/docs/sysexts/manage must state that the base image enables the update timer.");
 assert(manageText.includes("updex: no update source is reachable; skipping this run"), "/docs/sysexts/manage must state that a run with no reachable source is skipped and exits 0.");
 assert(manageText.includes("(version &lt;version&gt;) is active. Removing requires --force and a reboot to take effect."), "/docs/sysexts/manage must show the exact removal refusal message.");
