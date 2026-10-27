@@ -15,7 +15,8 @@ on a server.
 :::caution[Secure Boot is not production-ready yet]
 Base carries the update tools that every image uses, but Frostyard does not
 yet claim production Secure Boot support, signed updates, or signed rollback.
-Fresh-install test results for Snow, Floe, and Sundog are still pending. An
+Snow, Floe, and Sundog have passed fresh installs in a lab VM. That is not
+hardware qualification, and it does not cover encrypted disks or updates. An
 existing install cannot convert to the secure layout in place.
 :::
 
@@ -93,24 +94,28 @@ Every extension starts switched off. Turn one on with
 [Updex](/docs/tools/updex/); the [catalog](/docs/sysexts/) lists every
 extension.
 
+The preset `05-updex.preset` enables `updex-update.timer` on every image. Enabled extensions update on their own: a new version is staged and starts at the next boot. See [Automatic updates](/docs/sysexts/manage/#automatic-updates).
+
 After `systemd-sysext.service` merges the enabled extensions,
-`reload-sysext.service` runs `systemd-sysusers`, `systemd-tmpfiles`, and
+`reload-sysext.service` runs `systemd-sysusers` and `systemd-tmpfiles`. It
+then reapplies the kernel limits for `fs.aio-max-nr`, inotify, and
+`kernel.keys` from the merged configuration, and runs
 `systemctl daemon-reload`.
 
 ## What ships
 
 | Group | What it includes |
 | --- | --- |
-| Userspace | Debian Trixie, systemd, `dracut`, `sudo`, `systemd-cryptsetup`, `tpm2-tools`, `efibootmgr`, and `shim-signed` |
-| Updates | `bootc-update-stage.timer`, the stager, `snosi-update-status`, and `frostyard-updex` |
+| Userspace | Debian Trixie, systemd, `dracut`, `sudo`, `systemd-cryptsetup`, `systemd-zram-generator`, `tpm2-tools`, `efibootmgr`, and `shim-signed` |
+| Updates | `bootc-update-stage.timer`, the stager, `snosi-update-status`, `frostyard-updex`, and `updex-update.timer` |
 | Extensions | The definitions under `/usr/lib/sysupdate.*.d/` and `reload-sysext.service` |
 | Firmware and microcode | `amd64-microcode`, `intel-microcode`, `fwupd`, and `wireless-regdb` |
 | Network | `network-manager`, `wpasupplicant`, `openssh-server`, and `systemd-resolved` |
 | Tools | `git`, `curl`, `rsync`, `vim`, `jq`, `gcc`, `make`, `skopeo`, and `qemu-system-x86` |
 
-The presets start NetworkManager, `reload-sysext.service`, and
-`bootc-update-stage.timer`. They turn off the APT daily update and upgrade
-timers, `bootc-fetch-apply-updates.timer`, and `rsync.service`.
+The presets start NetworkManager, `reload-sysext.service`,
+`bootc-update-stage.timer`, and `updex-update.timer`. They turn off the APT
+daily update and upgrade timers, `bootc-fetch-apply-updates.timer`, and `rsync.service`.
 
 ## What Base does not include
 
@@ -141,40 +146,42 @@ Snowfield is untested on representative Surface hardware. The
 - [Snow image](/docs/images/snow/)
 - [System extension catalog](/docs/sysexts/)
 - [Updex](/docs/tools/updex/)
-- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/nbc-to-bootc-migration.md)
-- [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/bootc-secure-operations.md)
+- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [Bootc Secure Operations runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/bootc-secure-operations.md)
 
 ## Sources
 
-Reviewed 2026-10-22 against snosi commit
-[`e5d0597f5b53ddddfa7a35ff6f706b094f20f76b`](https://github.com/frostyard/snosi/tree/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b).
+Reviewed 2026-10-27 against snosi commit
+[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9).
 
-- [`README.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/README.md)
-- [`mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.conf)
-- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.conf)
-- [`shared/packages/bootc/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/packages/bootc/mkosi.conf)
-- [`shared/bootc-secure/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/bootc-secure/mkosi.conf)
-- [`shared/outformat/image/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/outformat/image/mkosi.conf)
-- [`shared/kernel/backports/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/kernel/backports/mkosi.conf)
-- [`shared/kernel/surface/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/kernel/surface/mkosi.conf)
-- [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.profiles/snowfield/mkosi.conf)
-- [`flatpaks/core-flatpaks.py`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/flatpaks/core-flatpaks.py)
-- [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
-- [`mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
-- [`mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-apt.preset`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-apt.preset)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-network.preset`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-network.preset)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/03-core.preset`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/03-core.preset)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature)
-- [`shared/firn-installer/catalog.json`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/shared/firn-installer/catalog.json)
-- [`docs/installing.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/installing.md)
-- [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/bootc-secure-operations.md)
-- [`docs/adr/0002-ship-no-enablement-symlinks-in-etc.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/adr/0002-ship-no-enablement-symlinks-in-etc.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/overview.md)
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e5d0597f5b53ddddfa7a35ff6f706b094f20f76b/docs/design/sysexts.md)
+- [`README.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/README.md)
+- [`mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.conf)
+- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.conf)
+- [`shared/packages/bootc/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/bootc/mkosi.conf)
+- [`shared/bootc-secure/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/bootc-secure/mkosi.conf)
+- [`shared/outformat/image/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/outformat/image/mkosi.conf)
+- [`shared/kernel/backports/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/kernel/backports/mkosi.conf)
+- [`shared/kernel/surface/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/kernel/surface/mkosi.conf)
+- [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf)
+- [`flatpaks/core-flatpaks.py`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/flatpaks/core-flatpaks.py)
+- [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
+- [`mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/etc/update-motd.d/86-bootc-update-staged)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-apt.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-apt.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-network.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/00-network.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/03-core.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/03-core.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/04-bootc-update.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature)
+- [`shared/firn-installer/catalog.json`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/firn-installer/catalog.json)
+- [`docs/installing.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/installing.md)
+- [`docs/bootc-secure-operations.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/bootc-secure-operations.md)
+- [`docs/adr/0002-ship-no-enablement-symlinks-in-etc.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/adr/0002-ship-no-enablement-symlinks-in-etc.md)
+- [`docs/design/overview.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/overview.md)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/zram-generator.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/zram-generator.conf)

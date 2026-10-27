@@ -77,8 +77,9 @@ not start `docker.service` yourself: `docker.socket` starts it and hands
 `dockerd` its sockets.
 
 A merge does not prove that setup completed. At boot, `reload-sysext.service`
-runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, and
-`systemctl daemon-reload` after the merge. After an interactive `--now` merge,
+runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, a
+`systemd-sysctl` replay of the inotify, `fs.aio-max-nr`, and `kernel.keys`
+limits, and `systemctl daemon-reload` after the merge. After an interactive `--now` merge,
 they may not have run yet. If the `docker` group, the files in `/etc/docker`,
 or the sockets are missing, reboot and check again.
 
@@ -118,19 +119,9 @@ restart. Stop or drain containers first if a restart would hurt them. Images,
 containers, and volumes live in `/var`. An update does not touch them, and it
 does not back them up.
 
-To download updates automatically, turn on the Updex timer:
-
-```bash
-sudo updex daemon enable
-updex daemon status
-sudo updex daemon disable
-```
-
-The package ships the timer switched off. `daemon enable` turns it on. The timer runs
-`updex features update --no-refresh` every 6 hours, with a random delay of up
-to 1 hour. It downloads, verifies, and links the new version, and never swaps
-the running system. The new version runs after your next reboot. A host on
-battery skips a run. See
+Once you enable Docker, it updates on its own: new versions are staged and become
+active at the next boot. To opt out for the whole host, run
+`sudo systemctl mask --now updex-update.timer`. See
 [Automatic updates](/docs/sysexts/manage/#automatic-updates).
 
 To take one update at the next boot without the timer, run
@@ -165,9 +156,7 @@ workloads first, and reboot when the command finishes.
 
 Without `--force`, Updex refuses while Docker is merged:
 `Extension docker (version ...) is active. Removing requires --force and a reboot to take effect.`
-Updex v2.0.4 and later have this check, and `updex catalog remove` has it
-too. Updex v2.0.3 and older do not: they remove the extension at once, with
-or without `--force`. Run `updex --version` to see yours.
+`updex catalog remove` has the same check.
 
 Removal does not touch `/var`. Images, containers, volumes, and bind-mounted
 data stay; only the engine and its units go. Enabling Docker again does not
@@ -242,44 +231,39 @@ build that is missing one fails.
 - [Snow image](/docs/images/snow/)
 - [Incus system extension](/docs/sysexts/incus/)
 - [Tailscale system extension](/docs/sysexts/tailscale/)
-- [System extension model](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
-- [Updex v2.1.0 command reference](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
+- [System extension model](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [Updex v2.1.2 command reference](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
 
 ## Sources
 
-Reviewed 2026-10-24. snosi commit
-[`5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5`](https://github.com/frostyard/snosi/tree/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5);
-Updex v2.0.3 commit
-[`a76548350995ecbe80371e57a24d7d844ceb408d`](https://github.com/frostyard/updex/tree/a76548350995ecbe80371e57a24d7d844ceb408d);
-Updex v2.1.0 commit
-[`37523f85816cb61d116cc33f2dcdaf32fb8ee1e3`](https://github.com/frostyard/updex/tree/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3).
+Reviewed 2026-10-27. snosi commit
+[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
+Updex v2.1.2 commit
+[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
 
-- [`mkosi.images/docker/mkosi.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.conf)
-- [`mkosi.images/docker/mkosi.finalize`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.finalize)
-- [`mkosi.images/docker/required-paths.txt`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/required-paths.txt)
-- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset)
-- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf)
-- [`mkosi.images/docker/mkosi.extra/usr/lib/tmpfiles.d/docker.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.extra/usr/lib/tmpfiles.d/docker.conf)
-- [`mkosi.images/docker/mkosi.extra/usr/lib/sysusers.d/docker.conf`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/docker/mkosi.extra/usr/lib/sysusers.d/docker.conf)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/30-docker.preset`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/30-docker.preset)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
-- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/shared/sysext/postoutput/sysext-postoutput.sh)
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/design/sysexts.md)
-- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/5b610e3db1017e0ccc9a5dabc10b841e80c1d2e5/docs/nbc-to-bootc-migration.md)
-- [Updex v2.0.3 release](https://github.com/frostyard/updex/releases/tag/v2.0.3)
+- [`mkosi.images/docker/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/mkosi.conf)
+- [`mkosi.images/docker/mkosi.finalize`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/mkosi.finalize)
+- [`mkosi.images/docker/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/required-paths.txt)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system-preset/20-docker.preset)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-docker.conf)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/tmpfiles.d/docker.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/mkosi.extra/usr/lib/tmpfiles.d/docker.conf)
+- [`mkosi.images/docker/mkosi.extra/usr/lib/sysusers.d/docker.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/mkosi.extra/usr/lib/sysusers.d/docker.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/30-docker.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/30-docker.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/postoutput/sysext-postoutput.sh)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
 - [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)
-- [Updex v2.0.4 release](https://github.com/frostyard/updex/releases/tag/v2.0.4)
-- [Updex v2.0.4 `updex/features.go`](https://github.com/frostyard/updex/blob/992b3d53151b73c227a871cb8e742d841b00fd6c/updex/features.go)
-- [Updex v2.0.3 `README.md`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/README.md)
-- [Updex v2.0.3 `updex/install.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/install.go)
-- [Updex v2.0.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/sysext/manager.go)
-- [Updex v2.0.3 `updex/features.go`](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/updex/features.go)
-- [Updex v2.0.3 configuration reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/config-reference.md)
-- [Updex v2.0.3 SDK reference](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/specs/sdk-api.md)
-- [Updex v2.0.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/a76548350995ecbe80371e57a24d7d844ceb408d/docs/adr/0007-daemon-stages-never-activates.md)
-- [Updex v2.1.0 `README.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/README.md)
-- [Updex v2.1.0 release](https://github.com/frostyard/updex/releases/tag/v2.1.0)
-- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/21eb1f3219d1e9d56343953a3a44eb2eed3a5954/src/data/extensions.json)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/37523f85816cb61d116cc33f2dcdaf32fb8ee1e3/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [Updex v2.1.2 `updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/features.go)
+- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
+- [Updex v2.1.2 `updex/install.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/install.go)
+- [Updex v2.1.2 `sysext/manager.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/sysext/manager.go)
+- [Updex v2.1.2 configuration reference](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/specs/config-reference.md)
+- [Updex v2.1.2 SDK reference](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/specs/sdk-api.md)
+- [Updex v2.1.2 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0007-daemon-stages-never-activates.md)
+- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/cb31aaf3bb5f31dd2969341ae0ace6325f3ca810/src/data/extensions.json)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

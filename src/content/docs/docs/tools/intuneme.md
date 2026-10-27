@@ -7,7 +7,7 @@ intuneme runs Microsoft Intune, the Microsoft Identity Broker, and Microsoft
 Edge in a systemd-nspawn container on an immutable host. You need it when your
 employer manages your device with Intune and the host `/usr` is read-only.
 The host stays almost unchanged, and your enrollment lives in `~/Intune`. This
-guide follows intuneme v0.20.4; the full documentation is at
+guide follows intuneme v0.21.0; the full documentation is at
 [frostyard.github.io/intuneme](https://frostyard.github.io/intuneme/).
 
 Snow, Snowfield, and Sundog already include the `frostyard-intuneme` package.
@@ -130,6 +130,8 @@ Each of these is optional. The guides are on the intuneme site.
 | --- | --- | --- |
 | Let host apps such as Edge and VS Code sign in through the container's enrollment | `intuneme config broker-proxy enable`, then `intuneme stop` and `intuneme start` | [Broker proxy](https://frostyard.github.io/intuneme/user-guide/broker-proxy/) |
 | Run an MCP server inside the container, for a second tenant | `intuneme mcp` | [MCP servers](https://frostyard.github.io/intuneme/user-guide/mcp-servers/) |
+| Show container notifications on the host, such as Outlook mail and calendar reminders | `intuneme config notify-proxy enable`, then `intuneme stop` and `intuneme start` | [Desktop notifications](https://frostyard.github.io/intuneme/user-guide/notifications/) |
+| Share a screen or window from Edge in the container, such as in Teams | `intuneme config screencast-proxy enable`, then `intuneme stop` and `intuneme start` | [Screen sharing](https://frostyard.github.io/intuneme/user-guide/screen-sharing/) |
 | Use a YubiKey or webcam in the container | Automatic while the container runs | [Device hotplug](https://frostyard.github.io/intuneme/user-guide/device-hotplug/) |
 | Start and stop from GNOME Quick Settings | `intuneme extension install`, then log out and back in | [GNOME extension](https://frostyard.github.io/intuneme/user-guide/gnome-extension/) |
 | Launch Edge and Intune Portal from the application grid | `bash scripts/install-desktop-items.sh` from the intuneme repository | [Desktop shortcuts](https://frostyard.github.io/intuneme/user-guide/desktop-shortcuts/) |
@@ -264,11 +266,13 @@ On Fedora or RHEL, run `sudo rpm -e frostyard-intuneme` instead.
 | Symptom | Check | Fix |
 | --- | --- | --- |
 | `intuneme init` fails with `disk quota exceeded` | `/tmp` is a small tmpfs | Run `intuneme init --tmp-dir /var/tmp`. |
+| `intuneme init` fails with `SELinux policy setup failed` | `semanage` is missing or the policy store is unreadable | Install `policycoreutils-python-utils`, fix any policy error in the message, then run `intuneme init --force`. `init` did not save `config.toml`. |
 | `intune-portal` shows error 1001 or `UI web navigation failed` | In `intuneme shell`: `systemctl --user status microsoft-identity-broker` and `sudo systemctl status microsoft-identity-device-broker` | Restart the service that failed with `systemctl restart`. |
 | The compliance check fails | In `intuneme shell`: `systemctl --user status intune-agent.timer` | Run `systemctl --user start intune-agent.timer`, then `/opt/microsoft/intune/bin/intune-agent` to see the error. |
 | No sound in Edge | `ls /run/user/$UID/pipewire-0` on the host | Start PipeWire on the host: `systemctl --user start pipewire pipewire-pulse`. |
 | A YubiKey or webcam is missing in the container | `ls /etc/udev/rules.d/70-intuneme-*.rules` | Run `intuneme udev install`, then check `journalctl -t intuneme-hotplug`. |
 | `intuneme start` says `broker proxy failed to start within 5 seconds` | `echo $DBUS_SESSION_BUS_ADDRESS` | Run from a desktop session, or run `intuneme config broker-proxy disable`, then `intuneme stop` and `intuneme start`. |
+| `intuneme status` shows the broker proxy as `not running (bus name owned by ...)` | The process that `status` names | Stop or disable that process, or run `intuneme config broker-proxy disable` if you do not need the proxy. If an old `intuneme broker-proxy` owns it, run `intuneme config broker-proxy enable` again. |
 | Commands fail with a `config.toml` parse error | `~/.local/share/intuneme/config.toml` | Fix the TOML syntax. To rebuild the file, run `intuneme init --force`. Your `~/Intune` stays, but settings such as the broker proxy return to their defaults. |
 
 The [troubleshooting page](https://frostyard.github.io/intuneme/troubleshooting/)
@@ -281,26 +285,24 @@ covers Edge crashes, X authorization errors, and the rest.
 
 ## Sources
 
-Reviewed 2026-10-23.
+Reviewed 2026-10-27.
 
-- intuneme v0.20.4 commit [`aeed93d4e398da8aada4d854664828596594eea1`](https://github.com/frostyard/intuneme/tree/aeed93d4e398da8aada4d854664828596594eea1)
-- [`README.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/README.md)
-- [`SECURITY.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/SECURITY.md)
-- [`site/getting-started/prerequisites.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/getting-started/prerequisites.md)
-- [`site/getting-started/installation.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/getting-started/installation.md)
-- [`site/getting-started/quick-start.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/getting-started/quick-start.md)
-- [`site/user-guide/daily-workflow.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/user-guide/daily-workflow.md)
-- [`site/user-guide/broker-proxy.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/user-guide/broker-proxy.md)
-- [`site/user-guide/mcp-servers.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/user-guide/mcp-servers.md)
-- [`site/user-guide/device-hotplug.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/user-guide/device-hotplug.md)
-- [`site/user-guide/gnome-extension.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/user-guide/gnome-extension.md)
-- [`site/user-guide/desktop-shortcuts.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/user-guide/desktop-shortcuts.md)
-- [`site/user-guide/upgrading.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/user-guide/upgrading.md)
-- [`site/troubleshooting.md`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/site/troubleshooting.md)
-- [`cmd/init.go`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/cmd/init.go)
-- [`cmd/destroy.go`](https://github.com/frostyard/intuneme/blob/aeed93d4e398da8aada4d854664828596594eea1/cmd/destroy.go)
-- intuneme main commit [`f9b11984da3d6e1ca048be8109e41930b96b5d81`](https://github.com/frostyard/intuneme/tree/f9b11984da3d6e1ca048be8109e41930b96b5d81): [`site/getting-started/installation.md`](https://github.com/frostyard/intuneme/blob/f9b11984da3d6e1ca048be8109e41930b96b5d81/site/getting-started/installation.md), [`site/user-guide/upgrading.md`](https://github.com/frostyard/intuneme/blob/f9b11984da3d6e1ca048be8109e41930b96b5d81/site/user-guide/upgrading.md)
-- [`internal/version/version.go`](https://github.com/frostyard/intuneme/blob/f9b11984da3d6e1ca048be8109e41930b96b5d81/internal/version/version.go)
+- intuneme v0.21.0 commit [`2cde560c5559470aa5ca9ae2baa28edc875dc68f`](https://github.com/frostyard/intuneme/tree/2cde560c5559470aa5ca9ae2baa28edc875dc68f)
+- [`README.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/README.md)
+- [`SECURITY.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/SECURITY.md)
+- [`site/getting-started/prerequisites.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/getting-started/prerequisites.md)
+- [`site/getting-started/installation.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/getting-started/installation.md)
+- [`site/getting-started/quick-start.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/getting-started/quick-start.md)
+- [`site/user-guide/daily-workflow.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/user-guide/daily-workflow.md)
+- [`site/user-guide/broker-proxy.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/user-guide/broker-proxy.md)
+- [`site/user-guide/mcp-servers.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/user-guide/mcp-servers.md)
+- [`site/user-guide/device-hotplug.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/user-guide/device-hotplug.md)
+- [`site/user-guide/gnome-extension.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/user-guide/gnome-extension.md)
+- [`site/user-guide/desktop-shortcuts.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/user-guide/desktop-shortcuts.md)
+- [`site/user-guide/upgrading.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/user-guide/upgrading.md)
+- [`site/troubleshooting.md`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/site/troubleshooting.md)
+- [`cmd/init.go`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/cmd/init.go)
+- [`cmd/destroy.go`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/cmd/destroy.go)
+- [`internal/version/version.go`](https://github.com/frostyard/intuneme/blob/2cde560c5559470aa5ca9ae2baa28edc875dc68f/internal/version/version.go)
 - [Duncan's review: intuneme roll back (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
-- snosi commit [`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/packages/sundog/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.profiles/snowfield/mkosi.conf)
-- snosi commit [`79ccc63ea44ce9309a837b9428e9b5d44290fada`](https://github.com/frostyard/snosi/tree/79ccc63ea44ce9309a837b9428e9b5d44290fada): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/packages/sundog/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/composition/snow/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.profiles/snowfield/mkosi.conf)
+- snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf)

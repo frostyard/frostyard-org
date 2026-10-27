@@ -119,7 +119,7 @@ applications_page:
 
 Restart ChairLift. The Brew Search group is gone. A page disappears when all of its
 groups are off, and Help always stays. The
-[configuration reference](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/CONFIG.md)
+[configuration reference](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/CONFIG.md)
 lists every page and group.
 
 ## Update and roll back
@@ -209,23 +209,21 @@ says the tool is unavailable.
 - [Updex](/docs/tools/updex/)
 - [Manage system extensions](/docs/sysexts/manage/)
 - [Snow](/docs/images/snow/)
-- [ChairLift README](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/README.md)
+- [ChairLift README](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/README.md)
 
 ## Sources
 
-Reviewed 2026-10-23.
+Reviewed 2026-10-27.
 
-- ChairLift v0.11.2 commit [`3505e9478287e56bef45d1ae1642e2c8e2a835d9`](https://github.com/frostyard/chairlift/tree/3505e9478287e56bef45d1ae1642e2c8e2a835d9)
-- [`README.md`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/README.md)
-- [`docs/index.md`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/docs/index.md)
-- [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/docs/reference.md)
-- [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/CONFIG.md)
-- [`config.yml`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/config.yml)
-- [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/docs/design/package-managers.md)
-- [`internal/views/updates_page.go`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/internal/views/updates_page.go)
-- [`internal/views/features_page.go`](https://github.com/frostyard/chairlift/blob/3505e9478287e56bef45d1ae1642e2c8e2a835d9/internal/views/features_page.go)
-- ChairLift main commit [`14e6bbd6381cc660b551b21b3e8a5f8de09eb354`](https://github.com/frostyard/chairlift/tree/14e6bbd6381cc660b551b21b3e8a5f8de09eb354): [`README.md`](https://github.com/frostyard/chairlift/blob/14e6bbd6381cc660b551b21b3e8a5f8de09eb354/README.md)
-- [`internal/views/updates_page.go`](https://github.com/frostyard/chairlift/blob/14e6bbd6381cc660b551b21b3e8a5f8de09eb354/internal/views/updates_page.go), [`internal/views/system_page.go`](https://github.com/frostyard/chairlift/blob/14e6bbd6381cc660b551b21b3e8a5f8de09eb354/internal/views/system_page.go)
+- ChairLift main commit [`2ee787eafc52d687b036c67a769099d58b8f7065`](https://github.com/frostyard/chairlift/tree/2ee787eafc52d687b036c67a769099d58b8f7065) (latest release: v0.11.2; none of the files below changed since it)
+- [`README.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/README.md)
+- [`docs/index.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/docs/index.md)
+- [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/docs/reference.md)
+- [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/CONFIG.md)
+- [`config.yml`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/config.yml)
+- [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/docs/design/package-managers.md)
+- [`internal/views/updates_page.go`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/internal/views/updates_page.go)
+- [`internal/views/features_page.go`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/internal/views/features_page.go)
+- [`internal/views/system_page.go`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/internal/views/system_page.go)
 - [Duncan's review: package downgrade (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
-- snosi commit [`9db7cde83454b92972887d3b1cf27a144a283201`](https://github.com/frostyard/snosi/tree/9db7cde83454b92972887d3b1cf27a144a283201): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/shared/packages/sundog/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/9db7cde83454b92972887d3b1cf27a144a283201/mkosi.profiles/snowfield/mkosi.conf)
-- snosi commit [`79ccc63ea44ce9309a837b9428e9b5d44290fada`](https://github.com/frostyard/snosi/tree/79ccc63ea44ce9309a837b9428e9b5d44290fada): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/packages/sundog/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/shared/composition/snow/mkosi.conf), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.profiles/snowfield/mkosi.conf), [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/79ccc63ea44ce9309a837b9428e9b5d44290fada/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage)
+- snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf)

@@ -1,6 +1,6 @@
 ---
 title: frostread
-description: "frostread is a tailnet-only feed reader and read-later list that runs behind lodge as Read. Pre-release: there is no package yet."
+description: "frostread is a tailnet-only feed reader and read-later list that runs behind lodge as Read. Pre-release: the only package is a `.deb` for lodge's host."
 ---
 
 frostread is a feed reader and a read-later list that only your tailnet can
@@ -23,22 +23,25 @@ articles to read later.
 
 ## Status
 
-frostread is pre-release. The repository has no release, and there is no
-package. The daemon, its API, `readctl`, MCP, save-as-note, the web app,
+frostread is pre-release. The latest release is v0.1.0. Each release attaches
+one package, `frostyard-readd_X.Y.Z_amd64.deb`, for lodge's host. Snosi picks
+the `.deb` up later. The daemon, its API, `readctl`, MCP, save-as-note, the web app,
 save from the phone, and the blob sweep are built.
 
 ## Install
 
 frostread runs as lodge's `read` app, beside lodge and Notes, on lodge's
-host. The web bundle builds in an [nsl](/docs/tools/nsl/) machine. The
-[install steps](https://github.com/frostyard/frostread/blob/main/README.md#install-on-lodges-host)
+host. The web bundle builds in an [nsl](/docs/tools/nsl/) machine, and
+`readd` and `readctl` install to `/usr/bin`. To check a release `.deb`, run
+`gh attestation verify frostyard-readd_X.Y.Z_amd64.deb --repo frostyard/frostread`.
+The [install steps](https://github.com/frostyard/frostread/blob/main/README.md#install-on-lodges-host)
 in the README are the canonical ones.
 
 ## Documentation
 
 - [README](https://github.com/frostyard/frostread/blob/main/README.md): what frostread is and how it runs behind lodge.
 - [Install on lodge's host](https://github.com/frostyard/frostread/blob/main/README.md#install-on-lodges-host): the 6 install steps.
-- [Update](https://github.com/frostyard/frostread/blob/main/README.md#update) and [roll back](https://github.com/frostyard/frostread/blob/main/README.md#roll-back): a rollback archive first, then the new commit, and how to go back.
+- [Update](https://github.com/frostyard/frostread/blob/main/README.md#update) and [Roll back](https://github.com/frostyard/frostread/blob/main/README.md#roll-back): stop frostread, take a rollback archive, copy the new build, and check the version.
 - [API spec](https://github.com/frostyard/frostread/blob/main/docs/specs/api.md): the API, `readctl`, the configuration, and the state layout.
 - [Design overview](https://github.com/frostyard/frostread/blob/main/docs/design/overview.md): the parts and how they fit.
 - [ADR-0003](https://github.com/frostyard/frostread/blob/main/docs/adr/0003-the-fetcher-reaches-only-public-addresses.md): the fetcher reaches only public addresses.
@@ -62,10 +65,10 @@ in the README are the canonical ones.
 
 ## Sources
 
-Reviewed 2026-10-26.
+Reviewed 2026-10-27.
 
-- frostread commit [`511cc819e78875fda4e6d507594d912600dcdeea`](https://github.com/frostyard/frostread/tree/511cc819e78875fda4e6d507594d912600dcdeea) on `main`. There is no release.
-- [`README.md`](https://github.com/frostyard/frostread/blob/511cc819e78875fda4e6d507594d912600dcdeea/README.md)
-- [`docs/specs/api.md`](https://github.com/frostyard/frostread/blob/511cc819e78875fda4e6d507594d912600dcdeea/docs/specs/api.md), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/511cc819e78875fda4e6d507594d912600dcdeea/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/frostread/blob/511cc819e78875fda4e6d507594d912600dcdeea/docs/plans/0001-roadmap.md)
-- [`docs/adr/0003-the-fetcher-reaches-only-public-addresses.md`](https://github.com/frostyard/frostread/blob/511cc819e78875fda4e6d507594d912600dcdeea/docs/adr/0003-the-fetcher-reaches-only-public-addresses.md), [`docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md`](https://github.com/frostyard/frostread/blob/511cc819e78875fda4e6d507594d912600dcdeea/docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md)
-- [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/511cc819e78875fda4e6d507594d912600dcdeea/internal/store/store.go)
+- frostread v0.1.0 commit [`3dc30c605f750d671e04465ef8b52810bc52ff2c`](https://github.com/frostyard/frostread/tree/3dc30c605f750d671e04465ef8b52810bc52ff2c) 
+- [`README.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/README.md)
+- [`docs/specs/api.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/specs/api.md), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/plans/0001-roadmap.md)
+- [`docs/adr/0003-the-fetcher-reaches-only-public-addresses.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/adr/0003-the-fetcher-reaches-only-public-addresses.md), [`docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md)
+- [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/internal/store/store.go)
