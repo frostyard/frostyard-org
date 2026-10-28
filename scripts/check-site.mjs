@@ -1223,12 +1223,19 @@ for (const [name, marker] of [
 ]) {
   const route = `/docs/sysexts/${name}`;
   const html = await readRoute(route);
-  const text = textOf(html);
-  assert(html.includes('id="update-roll-back-and-remove"'), `${route} must render the "update-roll-back-and-remove" section.`);
-  assert(text.includes("Updex v2.1.3"), `${route} must name Updex v2.1.3.`);
-  assert(text.includes("systemctl mask --now"), `${route} must mask the units while the state is copied.`);
-  assert(text.includes("keeps its old binary until it restarts"), `${route} must say that the running daemon keeps its old binary until it restarts.`);
-  assert(text.includes(marker), `${route} must give the failure message "${marker}".`);
+  const start = html.indexOf('id="update-roll-back-and-remove"');
+  const end = html.indexOf('id="what-ships"', start + 1);
+  assert(start !== -1, `${route} must render the "update-roll-back-and-remove" section.`);
+  assert(end !== -1, `${route} must render the "what-ships" section after it.`);
+  assert(end > start, `${route} must render "what-ships" after "update-roll-back-and-remove".`);
+  const section = html.slice(start, end);
+  const sectionText = textOf(section);
+  assert(sectionText.includes("Updex v2.1.3"), `${route} must name Updex v2.1.3 in the update section.`);
+  assert(sectionText.includes("systemctl mask --now"), `${route} must mask the units while the state is copied.`);
+  assert(sectionText.includes("keeps its old binary until it restarts"), `${route} must say that the running daemon keeps its old binary until it restarts.`);
+  assert(sectionText.includes(marker), `${route} must give the failure message "${marker}".`);
+  assert(sectionText.indexOf("older than v2.1.3") !== -1 && sectionText.indexOf("older than v2.1.3") < sectionText.indexOf("To run the new version now"), `${route} must give the older-Updex commands before the restart step.`);
+  assert(textOf(html).includes("activation did not finish"), `${route} must explain the "activation did not finish" message.`);
 }
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);
