@@ -79,8 +79,20 @@ refresh reloads systemd's unit files.
 
 `frostporter.service` runs `/usr/bin/porterd` as the user `frostporter`, with
 the groups `lodge-apps` and `lodge-agents`. It listens on no network, only on
-Unix sockets. Its state is in `/var/lib/frostporter`, and each app's token is in
-`/var/lib/frostporter/tokens`; set one with `porterd token set APP`.
+Unix sockets. Its state is in `/var/lib/frostporter`, mode `0700`, and each
+app's token is in `/var/lib/frostporter/tokens`.
+
+Porter needs a token for each app it reaches. Issue one with
+`sudo lodgectl token issue NAME --app APP --scope SCOPE --agent frostporter`,
+and save it in a file. Set it as the user `frostporter`, then restart Porter:
+porterd reads the tokens only when it starts.
+
+```bash
+sudo -u frostporter porterd token set <app> < <token-file>
+sudo systemctl restart frostporter.service
+```
+
+`porterd` prints that the app's token is set.
 
 The configuration belongs to you, and the extension ships no file in `/etc`:
 `/etc/porter/porter.json`.
@@ -185,7 +197,8 @@ Updex v2.1.2 commit
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/design/sysexts.md)
 - [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28, merge commit `0ede646cd878f82e91b891d9c3f6eba77227573b`)
 - core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md)
-- porter [`packaging/lodge/frostporter.service`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/frostporter.service), [`packaging/lodge/frostporter.socket`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/frostporter.socket), [`packaging/lodge/sysusers.d-frostporter.conf`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/sysusers.d-frostporter.conf)
+- porter [`packaging/lodge/frostporter.service`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/frostporter.service), [`packaging/lodge/frostporter.socket`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/frostporter.socket), [`packaging/lodge/sysusers.d-frostporter.conf`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/sysusers.d-frostporter.conf), [`cmd/porterd/main.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/cmd/porterd/main.go) (`token set`), [`internal/config/config.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/internal/config/config.go) (state directory and token path)
+- lodge v0.1.0 [`packaging/README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/README.md) (`lodgectl token issue`)
 - [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
 - [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
