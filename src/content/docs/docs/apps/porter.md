@@ -15,6 +15,10 @@ you run lodge and want an assistant that works across your apps.
 - It reads [frostread](/docs/apps/frostread/) read-only, and it keeps one
   continuous thread.
 
+Porter has no desktop app, and none is planned. No Porter Flatpak ships. Porter
+works only behind lodge: you need lodge, Tailscale, and the other apps on
+lodge.
+
 ## Status
 
 Porter is pre-release. The latest release is v0.1.0. Each release attaches
@@ -60,10 +64,11 @@ covers agents on lodge's host.
 
 ## Sources
 
-Reviewed 2026-10-27.
+Reviewed 2026-10-28.
 
 - Porter v0.1.0 commit [`a56337d0f2cec26f660b651fa3c8003ed19d22bd`](https://github.com/frostyard/porter/tree/a56337d0f2cec26f660b651fa3c8003ed19d22bd)
 - [`README.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/README.md)
 - [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/plans/0001-roadmap.md), [`docs/specs/routines.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/specs/routines.md)
 - [`docs/adr/0004-porter-drafts-and-the-owner-sends.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0004-porter-drafts-and-the-owner-sends.md), [`docs/adr/0005-memory-and-routines-live-in-the-vault.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0005-memory-and-routines-live-in-the-vault.md), [`docs/adr/0006-one-continuous-thread.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0006-one-continuous-thread.md), [`docs/adr/0007-porter-reads-frostread-read-only.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0007-porter-reads-frostread-read-only.md)
 - lodge commit [`a43d3be1de45704e0514d51da4c4b32d575f7c6c`](https://github.com/frostyard/lodge/tree/a43d3be1de45704e0514d51da4c4b32d575f7c6c): [`packaging/README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/README.md)
+- Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.

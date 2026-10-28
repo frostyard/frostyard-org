@@ -31,6 +31,12 @@ from the tarball that `make dist` builds. lodge v1 and its inference layer are b
 [frostread](/docs/apps/frostread/) runs behind it as Read, since 2026-10-21.
 [Porter](/docs/apps/porter/) runs beside them, since 2026-10-20.
 
+lodge is optional for the desktop apps. Frostnotes works on its own as a
+Flatpak. Frostmail and frostread follow the same rule when their Flatpaks
+ship. You opt into lodge for each app, and nothing turns it on for you.
+Frostnotes can sync with the hub in lodge. Frostmail can use the `maild`
+behind lodge as its backend. The server side stays as this page says.
+
 Frostyard plans to ship lodge and the app daemons as system extensions for
 Snosi images. The plan is accepted. It is not built, and lodge's own host stays
 hand-installed.
@@ -77,7 +83,7 @@ newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 ## Sources
 
-Reviewed 2026-10-27.
+Reviewed 2026-10-28.
 
 - lodge v0.1.0 commit [`a43d3be1de45704e0514d51da4c4b32d575f7c6c`](https://github.com/frostyard/lodge/tree/a43d3be1de45704e0514d51da4c4b32d575f7c6c) on `main`.
 - [`README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/README.md)
@@ -88,3 +94,4 @@ Reviewed 2026-10-27.
 - [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/plans/0001-roadmap.md)
 - core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Accepted), Context; [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/plans/0010-suite-packaging.md) (Phase 3; Phase 4, lodge's host on Floe, is deferred)
 - frostmail commit [`df106558209fad29c63983710a1a646557064dd4`](https://github.com/frostyard/frostmail/tree/df106558209fad29c63983710a1a646557064dd4): [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0011-m8-mail-in-lodge.md)
+- Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
