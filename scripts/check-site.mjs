@@ -685,6 +685,14 @@ for (const [route, doc] of [
     assert(lightHtml[route].html.includes(`https://github.com/frostyard/${doc}#${section}`), `/docs/apps/${route} must link the canonical ${section} section of ${doc}.`);
   }
 }
+const extensionForApp = { lodge: "lodge", porter: "porterd", frostread: "readd" };
+for (const [route, extension] of Object.entries(extensionForApp)) {
+  const path = `/docs/apps/${route}`;
+  const page = lightHtml[route];
+  assert(page.html.includes('id="update-and-roll-back"'), `${path} must render the "update-and-roll-back" section.`);
+  assert(page.html.includes(`href="/docs/sysexts/${extension}/#update-roll-back-and-remove"`), `${path} must link /docs/sysexts/${extension}/#update-roll-back-and-remove.`);
+  assert(page.text.includes("not in the Frostyard APT repository"), `${path} must say that the release .deb is not in the Frostyard APT repository.`);
+}
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
 assert(lightHtml.frostmail.text.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), "/docs/apps/frostmail must say that there is no published install path.");
@@ -1205,6 +1213,22 @@ for (const name of ["notesd", "maild", "lodge", "readd", "porterd"]) {
   assert(text.includes("Upholds="), `${route} must explain the Upholds= drop-in that restarts the units.`);
   assert(text.includes("sudo systemd-sysusers"), `${route} must give the sysusers command for a start without a reboot.`);
   assert(!text.includes("RequisiteFeatures"), `${route} must not describe a RequisiteFeatures dependency.`);
+}
+
+// The update sections of the suite guides that back lodge's apps.
+for (const [name, marker] of [
+  ["lodge", "the database is at version N, newer than this lodge's M"],
+  ["readd", "database schema N is newer than this readd"],
+  ["porterd", "open thread database:"],
+]) {
+  const route = `/docs/sysexts/${name}`;
+  const html = await readRoute(route);
+  const text = textOf(html);
+  assert(html.includes('id="update-roll-back-and-remove"'), `${route} must render the "update-roll-back-and-remove" section.`);
+  assert(text.includes("Updex v2.1.3"), `${route} must name Updex v2.1.3.`);
+  assert(text.includes("systemctl mask --now"), `${route} must mask the units while the state is copied.`);
+  assert(text.includes("keeps its old binary until it restarts"), `${route} must say that the running daemon keeps its old binary until it restarts.`);
+  assert(text.includes(marker), `${route} must give the failure message "${marker}".`);
 }
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);

@@ -42,11 +42,23 @@ host. The web bundle builds in an [nsl](/docs/tools/nsl/) machine, and
 The [install steps](https://github.com/frostyard/frostread/blob/main/README.md#install-on-lodges-host)
 in the README are the canonical ones.
 
+## Update and roll back
+
+On a Frostyard image, Updex updates and rolls back the readd system extension.
+[Update, roll back, and remove](/docs/sysexts/readd/#update-roll-back-and-remove)
+has the steps, with the backup to take first. The release `.deb` is built for
+that extension, and it is not in the Frostyard APT repository.
+
+On a host installed by hand from source, follow
+[Update](https://github.com/frostyard/frostread/blob/main/README.md#update) and
+[Roll back](https://github.com/frostyard/frostread/blob/main/README.md#roll-back)
+in the README. The Update steps take a rollback archive before the new build
+goes in.
+
 ## Documentation
 
 - [README](https://github.com/frostyard/frostread/blob/main/README.md): what frostread is and how it runs behind lodge.
 - [Install on lodge's host](https://github.com/frostyard/frostread/blob/main/README.md#install-on-lodges-host): the 6 install steps.
-- [Update](https://github.com/frostyard/frostread/blob/main/README.md#update) and [Roll back](https://github.com/frostyard/frostread/blob/main/README.md#roll-back): stop frostread, take a rollback archive, copy the new build, and check the version.
 - [API spec](https://github.com/frostyard/frostread/blob/main/docs/specs/api.md): the API, `readctl`, the configuration, and the state layout.
 - [Design overview](https://github.com/frostyard/frostread/blob/main/docs/design/overview.md): the parts and how they fit.
 - [ADR-0008](https://github.com/frostyard/frostread/blob/main/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md): the proposed design of the desktop Flatpak. Its lodge mode is still an open question.
@@ -81,3 +93,5 @@ Reviewed 2026-10-28.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`: frostread's lodge mode is "not decided: sync or connection".
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28, adds the lodge, readd, and porterd extensions.
 - [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/internal/store/store.go)
+- core commit [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a): [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/plans/0010-suite-packaging.md) (Phase 2: the `.deb` is not registered with apt-publisher)
+- [`packaging/nfpm.yaml`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/packaging/nfpm.yaml) (the description says "Built for Snosi's sysext")
