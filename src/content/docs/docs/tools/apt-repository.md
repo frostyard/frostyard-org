@@ -17,7 +17,7 @@ packages there.
 
 ## Add the repository
 
-Install the tools that fetch and convert the key:
+Install the tools that fetch the key and check its fingerprint:
 
 ```bash
 sudo apt install curl gpg
@@ -32,7 +32,7 @@ sudo install -d -m 0755 /etc/apt/keyrings
 Download the signing key:
 
 ```bash
-curl -fsSL https://repository.frostyard.org/public.key | sudo gpg --dearmor -o /etc/apt/keyrings/frostyard.gpg
+sudo curl -fsSL -o /etc/apt/keyrings/frostyard.gpg https://repository.frostyard.org/debian/frostyard.gpg
 ```
 
 Check the key:
@@ -58,21 +58,12 @@ Signed-By: /etc/apt/keyrings/frostyard.gpg
 EOF
 ```
 
-Give Debian's own packages priority. Frostyard advises this pin on every
-plain Debian host:
+If you added `/etc/apt/preferences.d/frostyard.pref` from an earlier version
+of this page, you no longer need it. Remove it:
 
 ```bash
-sudo tee /etc/apt/preferences.d/frostyard.pref <<'EOF'
-Package: *
-Pin: release o=Frostyard
-Pin-Priority: 100
-EOF
+sudo rm -f /etc/apt/preferences.d/frostyard.pref
 ```
-
-The pin keeps a package that Debian also has, such as `libostree-1-1` or
-`incus`, on Debian's version, so that `apt upgrade` does not replace it and
-Debian's security updates keep installing. A package that only Frostyard has
-still installs and upgrades.
 
 Refresh the package lists:
 
@@ -81,6 +72,30 @@ sudo apt update
 ```
 
 The output includes `https://repository.frostyard.org/debian trixie InRelease`.
+
+## The `image` component
+
+Each codename (`trixie`, `forky`) publishes 2 components: `main` and `image`.
+`main` holds the packages for general use. `image` holds the builds that
+Frostyard images need instead of Debian's packages of the same name: `bootc`,
+`libostree-1-1`, `incus`, `incus-base`, `incus-client`, `incus-extra`, and
+`incus-ui-canonical`. `image` has these packages for amd64 only. Frostyard
+image builds enable both components. Installed images have no Frostyard APT
+source and update as a whole.
+
+Do not add `image` to a plain Debian host. A host that enables it by hand gets
+these builds without support.
+
+`main` has no package that Debian also ships for the same codename. A plain
+host that uses only `main` therefore keeps Debian's versions of these packages
+and Debian's security updates, with no pin. That is a side effect, not support
+for plain hosts.
+
+A host that already installed a Frostyard `libostree-1-1`, `bootc`, or
+`incus*` build keeps it and gets no more updates for it from Frostyard. There
+is no supported way back to Debian's version. An older Incus can refuse a
+database that a newer Incus upgraded. Read
+[Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus).
 
 ## Find and install packages
 
@@ -93,15 +108,9 @@ apt list '?origin(Frostyard)'
 Frostyard tools carry the `frostyard-` prefix, for example `frostyard-updex`
 ([Updex](/docs/tools/updex/)) and `frostyard-chairlift`
 ([ChairLift](/docs/tools/chairlift/)). The binary keeps the bare name. The
-repository also carries other applications, and Frostyard builds of `bootc`,
-`libostree-1-1`, and `incus`. Those builds are for Frostyard images.
-
-Frostyard will move these image builds (`bootc`, `libostree-1-1`, and the
-`incus` packages) to a separate component, `image`, that only image builds
-enable. After the move, a plain host no longer gets them. That is a side
-effect, not support for plain hosts. A host that already has one of these
-builds keeps it, with no more updates for it from Frostyard. The move has not
-happened yet: keep the pin until this page changes.
+repository also carries other applications. The Frostyard builds of `bootc`,
+`libostree-1-1`, and the `incus` packages are in `image`, not in `main`. See
+[The `image` component](#the-image-component).
 
 On arm64, the repository has fewer packages. Check with
 `apt-cache policy <package>`.
@@ -144,10 +153,8 @@ Upgrade one package:
 sudo apt install --only-upgrade <package>
 ```
 
-With the pin from [Add the repository](#add-the-repository), a package that
-Debian also has stays with Debian. The pin does not move a Frostyard build
-that is already installed back to Debian's version, and there is no supported
-way back.
+A package that Debian also ships stays with Debian, because `main` does not
+carry it.
 
 ## Roll back a package
 
@@ -166,10 +173,9 @@ sudo apt install <package>=<version>
 apt shows the package as a downgrade and asks you to confirm. Use the version
 string exactly as `apt-cache policy` prints it, including a `~deb13` marker when it has one.
 
-A rollback of `incus` can break Incus. After an upgrade, Incus updates its
-database, and an older Incus can treat that database as invalid. Read
-[Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus)
-first.
+You can roll back only the packages in `main`. The builds of `bootc`,
+`libostree-1-1`, and `incus*` are not for plain hosts: see
+[The `image` component](#the-image-component).
 
 Stop `apt upgrade` from replacing it:
 
@@ -192,15 +198,17 @@ Remove a package:
 sudo apt remove <package>
 ```
 
-Remove the repository: delete the sources file, the pin, and the key, then refresh the
+Remove the repository: delete the sources file and the key, then refresh the
 lists:
 
 ```bash
-sudo rm /etc/apt/sources.list.d/frostyard.sources /etc/apt/preferences.d/frostyard.pref /etc/apt/keyrings/frostyard.gpg
+sudo rm /etc/apt/sources.list.d/frostyard.sources /etc/apt/keyrings/frostyard.gpg
 sudo apt update
 ```
 
-The Frostyard lines no longer appear in the output.
+The Frostyard lines no longer appear in the output. If you added the pin
+file from an earlier version of this page, remove it too:
+`sudo rm -f /etc/apt/preferences.d/frostyard.pref`.
 
 ## See also
 
@@ -210,19 +218,21 @@ The Frostyard lines no longer appear in the output.
 
 ## Sources
 
-Reviewed 2026-10-27.
+Reviewed 2026-10-28.
 
 - Owner decision, Brian, 2026-10-24: the repository is for Frostyard images and their builds. Plain Debian 13 hosts are not a supported use. Installed images have no Frostyard APT source: core ADR-0059, Context.
-- `image` component: core ADR-0059, accepted by Brian on 2026-10-24 (core#162, accepted in core#163; [ADR-0059](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md) is amended by ADR-0061: the first publication run adds `image`), and [Ben Sherman's review](https://github.com/frostyard/core/pull/162#issuecomment-6388139358): protection of plain hosts is a side effect, not a commitment, and no Incus downgrade advice.
+- `image` component: [ADR-0059](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md), accepted by Brian on 2026-10-24 (core#162, accepted in core#163): the rule for `image`, the 7 packages, and step 6 (key URL, no pin, caveat for plain hosts). [ADR-0061](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0061-add-the-image-apt-component-on-the-first-publication-run.md) amends it: the first publication run adds `image`.
+- [Ben Sherman's review of core#162](https://github.com/frostyard/core/pull/162#issuecomment-6388139358): protection of plain hosts is a side effect, not a commitment, and no Incus downgrade advice.
+- apt-publisher commit [`d9337550b9a34e1246099c18747ee0080e84cbac`](https://github.com/frostyard/apt-publisher/tree/d9337550b9a34e1246099c18747ee0080e84cbac): [`docs/adr/0002-two-components-per-codename.md`](https://github.com/frostyard/apt-publisher/blob/d9337550b9a34e1246099c18747ee0080e84cbac/docs/adr/0002-two-components-per-codename.md), [`config/producers.tsv`](https://github.com/frostyard/apt-publisher/blob/d9337550b9a34e1246099c18747ee0080e84cbac/config/producers.tsv)
+- snosi commit [`90074e6db6cf59ac551db8637126c5feaa512866`](https://github.com/frostyard/snosi/tree/90074e6db6cf59ac551db8637126c5feaa512866): [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/90074e6db6cf59ac551db8637126c5feaa512866/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources) reads `Components: main image` after [snosi#1165](https://github.com/frostyard/snosi/pull/1165), merged 2026-10-27.
+- Live reads, 2026-10-28: [`dists/trixie/InRelease`](https://repository.frostyard.org/debian/dists/trixie/InRelease) (`Date: Wed, 28 Oct 2026 09:36:46 UTC`, `Components: image main`, `Origin: Frostyard`); `main` lists none of the 7 packages; `image` has them for amd64 only and is empty for arm64; [`debian/frostyard.gpg`](https://repository.frostyard.org/debian/frostyard.gpg) is a binary keyring with SHA256 `7c270b81dfc4084753c9aacadffe436c23f066301e2e0c371261889ee3e3557f` and fingerprint `432C 452C D2B7 F4FF 1B5D  2326 4DE6 A201 6E62 2F97`. `/public.key` still works.
 - Incus database after an upgrade: [Incus, Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus), read 2026-10-24.
-- core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5)
-- [`docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md)
-- [`docs/adr/0011-frostyard-prefixed-package-names.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0011-frostyard-prefixed-package-names.md)
-- [`docs/design/debian-publication.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/design/debian-publication.md)
-- [`.github/stable-repository.json`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/.github/stable-repository.json)
-- snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources), [`shared/sysext/keys/README.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/keys/README.md)
-- [`dists/trixie/InRelease`](https://repository.frostyard.org/debian/dists/trixie/InRelease), read 2026-10-23: `Origin: Frostyard`, `Architectures: all amd64 arm64`
-- The steps on this page were run in a `debian:trixie` container on 2026-10-23.
+- core commit [`4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`](https://github.com/frostyard/core/tree/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c)
+- [`docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md)
+- [`docs/adr/0011-frostyard-prefixed-package-names.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0011-frostyard-prefixed-package-names.md)
+- [`docs/design/debian-publication.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/design/debian-publication.md)
+- [`.github/stable-repository.json`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/.github/stable-repository.json)
+- The steps on this page were run in a `debian:trixie` container on 2026-10-28.
 - [Lucilla's review of frostyard-org#32: the pin, arm64, and withdrawal](https://github.com/frostyard/frostyard-org/pull/32#pullrequestreview-5630777947)
 - [Lucilla's review of frostyard-org#29](https://github.com/frostyard/frostyard-org/pull/29#pullrequestreview-5630350205)
 - Owner statement, Murbella, 2026-10-23: system extensions are not supported on plain Debian.
