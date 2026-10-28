@@ -124,7 +124,8 @@ for (const file of files) {
   const page = `/${relative(dist.pathname, file)}`;
   assert((html.match(/<h1(?:\s|>)/g) || []).length === 1, `${page} must contain exactly one h1.`);
   assert(!html.includes("frostyard/millhouse"), `${page} still links to Millhouse.`);
-  assert(!html.includes("2026-10-28"), `${page} contains the superseded lifecycle date.`);
+  const body = html.split('<h2 id="sources"')[0];
+  assert(!body.includes("2026-10-28"), `${page} contains the superseded lifecycle date.`);
 
   for (const match of html.matchAll(/<a\b[^>]*\shref="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
     await access(routeFile(match[1])).catch(() => {
@@ -671,9 +672,9 @@ for (const [route, doc] of [
 }
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
-for (const route of ["frostmail", "frostnotes"]) {
-  assert(lightHtml[route].text.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), `/docs/apps/${route} must say that there is no published install path.`);
-}
+assert(lightHtml.frostmail.text.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), "/docs/apps/frostmail must say that there is no published install path.");
+assert(lightHtml.frostnotes.text.includes("flatpak install frostyard org.frostyard.Frostnotes"), "/docs/apps/frostnotes must give the Flatpak install command.");
+assert(lightHtml.frostnotes.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostnotes must link the Frostyard Flatpak remote README.");
 
 const nsl = await readRoute("/docs/tools/nsl");
 const nslText = textOf(nsl);

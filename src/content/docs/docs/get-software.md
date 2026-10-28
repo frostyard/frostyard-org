@@ -46,11 +46,12 @@ update setting, which is off by default.
   Flatpak set. Firn installs the set only if your install recipe includes it.
   On Sundog, the app store is Discover: Sundog turns off Bazaar's background
   service.
-- Frostyard's own Flatpak remote has one app: Igloo. See
-  [Igloo](/docs/tools/igloo/) for the steps.
-- [Frostmail](/docs/apps/frostmail/) and [Frostnotes](/docs/apps/frostnotes/)
-  have no published Flatpak yet. Frostyard has decided to ship them as
-  Flatpaks. Build them from source today.
+- Frostyard's own Flatpak remote has 2 apps: [Igloo](/docs/tools/igloo/) and
+  [Frostnotes](/docs/apps/frostnotes/). Each page has the steps. Their
+  runtimes come from Flathub.
+- A Flatpak for [Frostmail](/docs/apps/frostmail/) is coming. A desktop app
+  for [frostread](/docs/apps/frostread/) is planned. Frostnotes works on its
+  own, without lodge. You opt into lodge for each app.
 - Some desktop apps are system extensions in the catalog instead, for example
   Visual Studio Code and 1Password. See the
   [catalog](/docs/sysexts/).
@@ -136,7 +137,8 @@ a whole: you do not add it to an image.
 - Flatpak, Podman, and Distrobox packages: snosi [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf), and [`shared/packages/floe/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/floe/mkosi.conf).
 - Snowfield includes the Snow composition: snosi [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf).
 - Core Flatpak sets: snosi [`flatpaks/snow.json`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/flatpaks/snow.json) and [`flatpaks/sundog.json`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/flatpaks/sundog.json).
-- Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ce9f016860ed19d8e532facb605b7b9635f380cd/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ce9f016860ed19d8e532facb605b7b9635f380cd/apps.json).
+- Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82`.
+- Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - Homebrew in each image: snosi [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/composition/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/sundog/mkosi.conf), [`shared/composition/floe/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/floe/mkosi.conf), and [`shared/scripts/build/brew.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/scripts/build/brew.chroot).
 - Homebrew first-boot setup: snosi [`shared/snow/tree/usr/lib/systemd/system/brew-setup.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/usr/lib/systemd/system/brew-setup.service). Floe and Sundog use the files under `shared/floe/tree/`.
 - Homebrew update timers: snosi [`brew-update.timer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/usr/lib/systemd/system/brew-update.timer), [`brew-update.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/usr/lib/systemd/system/brew-update.service), [`brew-upgrade.timer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/usr/lib/systemd/system/brew-upgrade.timer), [`brew-upgrade.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/usr/lib/systemd/system/brew-upgrade.service), and [`01-homebrew.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/usr/lib/systemd/system-preset/01-homebrew.preset).
