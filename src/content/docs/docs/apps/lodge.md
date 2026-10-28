@@ -58,11 +58,25 @@ install writes only under `/usr`. Make the configuration directory yourself:
 [packaging README](https://github.com/frostyard/lodge/blob/main/packaging/README.md)
 has the build, the install, the first start, and the allow-lists.
 
+## Update and roll back
+
+On a Frostyard image, Updex updates and rolls back the lodge system extension.
+[Update, roll back, and remove](/docs/sysexts/lodge/#update-roll-back-and-remove)
+has the steps, with the backup to take first. The release `.deb` is built for
+that extension, and it is not in the Frostyard APT repository. To check a
+download, run
+`gh attestation verify frostyard-lodge_X.Y.Z_amd64.deb --repo frostyard/lodge`.
+
+On a host installed by hand with `PREFIX=/opt/lodge`, follow
+[Update](https://github.com/frostyard/lodge/blob/main/packaging/README.md#update)
+and [Roll back](https://github.com/frostyard/lodge/blob/main/packaging/README.md#roll-back)
+in the packaging README. The Update steps take a rollback archive before the
+new build goes in.
+
 ## Documentation
 
 - [README](https://github.com/frostyard/lodge/blob/main/README.md): what lodge is and the current status.
 - [Packaging](https://github.com/frostyard/lodge/blob/main/packaging/README.md): build, install, first start, allow-lists, and agents on the host.
-- [Update](https://github.com/frostyard/lodge/blob/main/packaging/README.md#update) and [roll back](https://github.com/frostyard/lodge/blob/main/packaging/README.md#roll-back): for a host installed by hand with `PREFIX=/opt/lodge`.
 - [Install layout](https://github.com/frostyard/lodge/blob/main/docs/specs/app-contract.md#install-layout): where an app's files go.
 - [MCP tokens and scope](https://github.com/frostyard/lodge/blob/main/docs/specs/app-contract.md#mcp-tokens-and-scope): what a token for an app lets an agent do.
 - [The agent socket](https://github.com/frostyard/lodge/blob/main/docs/specs/lodge-http.md#the-agent-socket): how agents on lodge's host connect.
@@ -100,3 +114,5 @@ Reviewed 2026-10-28.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28 (merge commit [`0ede646cd878f82e91b891d9c3f6eba77227573b`](https://github.com/frostyard/snosi/tree/0ede646cd878f82e91b891d9c3f6eba77227573b)), adds the lodge, readd, and porterd extensions.
+- core commit [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a): [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/plans/0010-suite-packaging.md) (Phase 2: the `.deb` is not registered with apt-publisher)
+- [`packaging/nfpm.yaml`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/nfpm.yaml) (the description says "Built for Snosi's sysext")

@@ -685,6 +685,14 @@ for (const [route, doc] of [
     assert(lightHtml[route].html.includes(`https://github.com/frostyard/${doc}#${section}`), `/docs/apps/${route} must link the canonical ${section} section of ${doc}.`);
   }
 }
+const extensionForApp = { lodge: "lodge", porter: "porterd", frostread: "readd" };
+for (const [route, extension] of Object.entries(extensionForApp)) {
+  const path = `/docs/apps/${route}`;
+  const page = lightHtml[route];
+  assert(page.html.includes('id="update-and-roll-back"'), `${path} must render the "update-and-roll-back" section.`);
+  assert(page.html.includes(`href="/docs/sysexts/${extension}/#update-roll-back-and-remove"`), `${path} must link /docs/sysexts/${extension}/#update-roll-back-and-remove.`);
+  assert(page.text.includes("not in the Frostyard APT repository"), `${path} must say that the release .deb is not in the Frostyard APT repository.`);
+}
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
 assert(lightHtml.frostmail.text.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), "/docs/apps/frostmail must say that there is no published install path.");
@@ -1205,6 +1213,35 @@ for (const name of ["notesd", "maild", "lodge", "readd", "porterd"]) {
   assert(text.includes("Upholds="), `${route} must explain the Upholds= drop-in that restarts the units.`);
   assert(text.includes("sudo systemd-sysusers"), `${route} must give the sysusers command for a start without a reboot.`);
   assert(!text.includes("RequisiteFeatures"), `${route} must not describe a RequisiteFeatures dependency.`);
+}
+
+// The update sections of the suite guides that back lodge's apps.
+for (const [name, marker] of [
+  ["lodge", "the database is at version N, newer than this lodge's M"],
+  ["readd", "database schema N is newer than this readd"],
+  ["porterd", "open thread database:"],
+]) {
+  const route = `/docs/sysexts/${name}`;
+  const html = await readRoute(route);
+  const start = html.indexOf('id="update-roll-back-and-remove"');
+  const end = html.indexOf('id="what-ships"', start + 1);
+  assert(start !== -1, `${route} must render the "update-roll-back-and-remove" section.`);
+  assert(end !== -1, `${route} must render the "what-ships" section after it.`);
+  assert(end > start, `${route} must render "what-ships" after "update-roll-back-and-remove".`);
+  const section = html.slice(start, end);
+  const sectionText = textOf(section);
+  assert(sectionText.includes("Updex v2.1.3"), `${route} must name Updex v2.1.3 in the update section.`);
+  assert(sectionText.includes("systemctl mask --now"), `${route} must mask the units while the state is copied.`);
+  assert(sectionText.includes("keeps its old binary until it restarts"), `${route} must say that the running daemon keeps its old binary until it restarts.`);
+  assert(sectionText.includes(marker), `${route} must give the failure message "${marker}".`);
+  if (name === "lodge") assert(sectionText.includes("provider keys and sign-ins") && sectionText.includes("lodgectl provider login"), `${route} must say that a restore loses provider keys and can need a new codex sign-in.`);
+  if (name === "porterd") assert(sectionText.includes("add routines.last_success:") && sectionText.includes("fill routines.last_success:"), `${route} must list every thread database error.`);
+  assert(sectionText.indexOf("older than v2.1.3") !== -1 && sectionText.indexOf("older than v2.1.3") < sectionText.indexOf("To run the new version now"), `${route} must give the older-Updex commands before the restart step.`);
+  const beforeRuns = html.indexOf('id="what-runs"');
+  assert(beforeRuns !== -1, `${route} must render the "what-runs" section.`);
+  const enableText = textOf(html.slice(0, beforeRuns));
+  assert(enableText.includes("activation did not finish"), `${route} must explain the "activation did not finish" message in the enable section.`);
+  assert(enableText.includes("can be missing: reboot"), `${route} must say that users and groups can be missing until a reboot.`);
 }
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);
