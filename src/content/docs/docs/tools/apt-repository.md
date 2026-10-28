@@ -77,9 +77,11 @@ The output includes `https://repository.frostyard.org/debian trixie InRelease`.
 
 Each codename (`trixie`, `forky`) publishes 2 components: `main` and `image`.
 `main` holds the packages for general use. `image` holds the builds that
-Frostyard images need instead of Debian's packages of the same name: `bootc`,
-`libostree-1-1`, `incus`, `incus-base`, `incus-client`, `incus-extra`, and
-`incus-ui-canonical`. `image` has these packages for amd64 only. Frostyard
+Frostyard images need. Some replace a Debian package of the same name:
+`libostree-1-1`, `incus`, `incus-base`, `incus-client`, and `incus-extra`.
+Others depend on one of them: `bootc` links against that `libostree-1-1`, and
+`incus-ui-canonical` depends on `incus`. In `trixie`, `image` has these
+packages for amd64 only. In `forky`, `image` is empty. Frostyard
 image builds enable both components. Installed images have no Frostyard APT
 source and update as a whole.
 
@@ -225,7 +227,7 @@ Reviewed 2026-10-28.
 - [Ben Sherman's review of core#162](https://github.com/frostyard/core/pull/162#issuecomment-6388139358): protection of plain hosts is a side effect, not a commitment, and no Incus downgrade advice.
 - apt-publisher commit [`d9337550b9a34e1246099c18747ee0080e84cbac`](https://github.com/frostyard/apt-publisher/tree/d9337550b9a34e1246099c18747ee0080e84cbac): [`docs/adr/0002-two-components-per-codename.md`](https://github.com/frostyard/apt-publisher/blob/d9337550b9a34e1246099c18747ee0080e84cbac/docs/adr/0002-two-components-per-codename.md), [`config/producers.tsv`](https://github.com/frostyard/apt-publisher/blob/d9337550b9a34e1246099c18747ee0080e84cbac/config/producers.tsv)
 - snosi commit [`90074e6db6cf59ac551db8637126c5feaa512866`](https://github.com/frostyard/snosi/tree/90074e6db6cf59ac551db8637126c5feaa512866): [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/90074e6db6cf59ac551db8637126c5feaa512866/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources) reads `Components: main image` after [snosi#1165](https://github.com/frostyard/snosi/pull/1165), merged 2026-10-27.
-- Live reads, 2026-10-28: [`dists/trixie/InRelease`](https://repository.frostyard.org/debian/dists/trixie/InRelease) (`Date: Wed, 28 Oct 2026 09:36:46 UTC`, `Components: image main`, `Origin: Frostyard`); `main` lists none of the 7 packages; `image` has them for amd64 only and is empty for arm64; [`debian/frostyard.gpg`](https://repository.frostyard.org/debian/frostyard.gpg) is a binary keyring with SHA256 `7c270b81dfc4084753c9aacadffe436c23f066301e2e0c371261889ee3e3557f` and fingerprint `432C 452C D2B7 F4FF 1B5D  2326 4DE6 A201 6E62 2F97`. `/public.key` still works.
+- Live reads, 2026-10-28: [`dists/trixie/InRelease`](https://repository.frostyard.org/debian/dists/trixie/InRelease) (`Date: Wed, 28 Oct 2026 09:36:46 UTC`, `Components: image main`, `Origin: Frostyard`); `main` lists none of the 7 packages; `image` has them for amd64 only and is empty for arm64; [`dists/forky/InRelease`](https://repository.frostyard.org/debian/dists/forky/InRelease) (`Date: Mon, 26 Oct 2026 18:31:42 UTC`, `Components: image main`) with an empty `image` for every architecture; in `trixie/image/binary-amd64/Packages`, `bootc` has `Depends: libostree-1-1` and `incus-ui-canonical` has `Depends: incus`; [`debian/frostyard.gpg`](https://repository.frostyard.org/debian/frostyard.gpg) is a binary keyring with SHA256 `7c270b81dfc4084753c9aacadffe436c23f066301e2e0c371261889ee3e3557f` and fingerprint `432C 452C D2B7 F4FF 1B5D  2326 4DE6 A201 6E62 2F97`. `/public.key` still works.
 - Incus database after an upgrade: [Incus, Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus), read 2026-10-24.
 - core commit [`4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`](https://github.com/frostyard/core/tree/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c)
 - [`docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md)
@@ -233,6 +235,7 @@ Reviewed 2026-10-28.
 - [`docs/design/debian-publication.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/design/debian-publication.md)
 - [`.github/stable-repository.json`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/.github/stable-repository.json)
 - The steps on this page were run in a `debian:trixie` container on 2026-10-28.
+- Lucilla's owner review of frostyard-org#55, 2026-10-28: the `image` package roles, `forky`, and the live reads.
 - [Lucilla's review of frostyard-org#32: the pin, arm64, and withdrawal](https://github.com/frostyard/frostyard-org/pull/32#pullrequestreview-5630777947)
 - [Lucilla's review of frostyard-org#29](https://github.com/frostyard/frostyard-org/pull/29#pullrequestreview-5630350205)
 - Owner statement, Murbella, 2026-10-23: system extensions are not supported on plain Debian.

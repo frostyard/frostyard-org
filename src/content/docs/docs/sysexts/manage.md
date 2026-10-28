@@ -258,6 +258,8 @@ The output is `enabled`. To see the next run:
 systemctl list-timers updex-update.timer
 ```
 
+The table shows the next scheduled run of `updex-update.timer`.
+
 Show the timer and the last run:
 
 ```bash
@@ -278,12 +280,15 @@ Auto-update daemon: installed
 ```
 
 There is one `Unit file` line for each unit. On a Frostyard image, `Source` is
-`packaged` and the unit files are under `/usr/lib/systemd/system/`. `<result>`
-is the result of `updex-update.service`, for example `success`. A masked timer
-adds `Masked: yes`. With no run recorded since boot, the last line reads
+`packaged` and the unit files are under `/usr/lib/systemd/system/`. A masked
+timer shows `Source: etc`, `Masked: yes`, the mask
+`/etc/systemd/system/updex-update.timer` as its `Unit file`, `Schedule: -`,
+and `Next run: none scheduled`. `<result>` is the result of
+`updex-update.service`, for example `success`. With no run recorded since boot, the last line reads
 `Last run: none recorded since boot`. With no timer scheduled, `Next run`
 reads `none scheduled`. With no timer unit, the output is
-`Auto-update daemon: not installed`. The run log is in the journal:
+`Auto-update daemon: not installed`, then
+`Run 'updex daemon enable' to enable automatic updates.` The run log is in the journal:
 
 ```bash
 journalctl -u updex-update.service
@@ -497,8 +502,9 @@ Updex v2.1.2 commit
 
 - [`docs/integration-contracts.md`](https://github.com/frostyard/snosi/blob/90074e6db6cf59ac551db8637126c5feaa512866/docs/integration-contracts.md) (snosi `90074e6db6cf59ac551db8637126c5feaa512866`): `bootc-update-notify` reads `/run/snosi/` files from the image stager.
 - [`docs/plans/0001-automatic-sysext-updates.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/plans/0001-automatic-sysext-updates.md): Phase 8, the host check.
+- Masked timer status: updex [`updex/daemon.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/daemon.go) (`daemonUnitFileInUse` reads `/etc/systemd/system/` first; `DaemonStatus` reads no schedule for a mask) and [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/daemon.go) (`runDaemonStatus`).
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/user/bootc-update-notify.path`](https://github.com/frostyard/snosi/blob/90074e6db6cf59ac551db8637126c5feaa512866/mkosi.images/base/mkosi.extra/usr/lib/systemd/user/bootc-update-notify.path) (snosi `90074e6`): the notice watches `/run/snosi/update-staged` only.
-- Host check: updex Plan 0001 Phase 8 passed on the test host `framework`, 2026-10-27 (task record, 2026-10-28).
+- Host check: the Plan 0001 Phase 8 steps ran on `framework`, 2026-10-27 (task record, 2026-10-28).
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/adr/0004-sysext-authoring-rules.md)
 - [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.conf)
