@@ -4,7 +4,7 @@ import { newestVersion } from "./extension-versions.mjs";
 const indexUrl = "https://repository.frostyard.org/ext/index";
 const output = new URL("../src/data/extensions.json", import.meta.url);
 const labels = {
-  "1password": "1Password desktop", "1password-cli": "1Password CLI", bitwarden: "Bitwarden", chatgpt: "ChatGPT", "claude-desktop": "Claude Desktop", "code-server": "code-server", coder: "Coder", debdev: "Debian development", dev: "Development tools", docker: "Docker CE", edge: "Microsoft Edge", gitdesktop: "GitDesktop", "github-copilot": "GitHub Copilot", himmelblau: "Himmelblau", incus: "Incus", k3s: "K3s", lemonade: "Lemonade", localsend: "LocalSend", moonlight: "Moonlight", nix: "Nix", obsidian: "Obsidian", podman: "Podman + Distrobox", sunshine: "Sunshine", tailscale: "Tailscale", vscode: "Visual Studio Code", voxtype: "Voxtype"
+  "1password": "1Password desktop", "1password-cli": "1Password CLI", bitwarden: "Bitwarden", chatgpt: "ChatGPT", "claude-desktop": "Claude Desktop", "code-server": "code-server", coder: "Coder", debdev: "Debian development", dev: "Development tools", docker: "Docker CE", edge: "Microsoft Edge", gitdesktop: "GitDesktop", "github-copilot": "GitHub Copilot", himmelblau: "Himmelblau", incus: "Incus", k3s: "K3s", lemonade: "Lemonade", localsend: "LocalSend", lodge: "lodge", maild: "Frostmail maild", moonlight: "Moonlight", nix: "Nix", notesd: "Frostnotes notesd", obsidian: "Obsidian", podman: "Podman + Distrobox", porterd: "Porter porterd", readd: "frostread readd", sunshine: "Sunshine", tailscale: "Tailscale", vscode: "Visual Studio Code", voxtype: "Voxtype"
 };
 
 async function publishedExtensions() {

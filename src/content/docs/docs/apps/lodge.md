@@ -24,8 +24,9 @@ and Porter.
 ## Status
 
 lodge is pre-release. The latest release is v0.1.0. Each release attaches
-`frostyard-lodge_X.Y.Z_amd64.deb`, which Snosi picks up later. You install lodge
-from the tarball that `make dist` builds. lodge v1 and its inference layer are built.
+`frostyard-lodge_X.Y.Z_amd64.deb`, which the lodge system extension installs.
+On another host, you install lodge from the tarball that `make dist` builds. lodge v1 and its
+inference layer are built.
 [Frostnotes](/docs/apps/frostnotes/) as Notes and
 [Frostmail](/docs/apps/frostmail/) as Mail run behind it.
 [frostread](/docs/apps/frostread/) runs behind it as Read, since 2026-10-21.
@@ -37,15 +38,17 @@ ship. You opt into lodge for each app, and nothing turns it on for you.
 Frostnotes can sync with the hub in lodge. Frostmail can use the `maild`
 behind lodge as its backend. The server side stays as this page says.
 
-Frostyard plans to ship lodge and the app daemons as system extensions for
-Snosi images. The plan is accepted. It is not built, and lodge's own host stays
-hand-installed.
+Frostyard ships lodge and its app daemons as system extensions for Frostyard
+images: [lodge](/docs/sysexts/lodge/), [notesd](/docs/sysexts/notesd/),
+[maild](/docs/sysexts/maild/), [readd](/docs/sysexts/readd/), and
+[porterd](/docs/sysexts/porterd/).
 
 ## Install
 
-Install lodge on a systemd host, such as Debian 13, not on a Frostyard image.
-The install layout fixes `/usr/share/lodge`, and `/usr` is read-only on a
-Frostyard image.
+On a Frostyard image, enable the
+[lodge system extension](/docs/sysexts/lodge/). On another systemd host, such
+as Debian 13, install it from the tarball. The install layout fixes
+`/usr/share/lodge`, and `/usr` is read-only on a Frostyard image.
 
 The apps lodge serves share its host, because they meet lodge on Unix
 sockets. You build the shell in an [nsl](/docs/tools/nsl/) machine. The
@@ -95,3 +98,5 @@ Reviewed 2026-10-28.
 - core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Accepted), Context; [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/plans/0010-suite-packaging.md) (Phase 3; Phase 4, lodge's host on Floe, is deferred)
 - frostmail commit [`df106558209fad29c63983710a1a646557064dd4`](https://github.com/frostyard/frostmail/tree/df106558209fad29c63983710a1a646557064dd4): [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0011-m8-mail-in-lodge.md)
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
+- snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
+- snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28 (merge commit [`0ede646cd878f82e91b891d9c3f6eba77227573b`](https://github.com/frostyard/snosi/tree/0ede646cd878f82e91b891d9c3f6eba77227573b)), adds the lodge, readd, and porterd extensions.

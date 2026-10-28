@@ -90,11 +90,16 @@ const docsRoutes = [
   "/docs/sysexts/himmelblau",
   "/docs/sysexts/lemonade",
   "/docs/sysexts/localsend",
+  "/docs/sysexts/lodge",
+  "/docs/sysexts/maild",
   "/docs/sysexts/moonlight",
+  "/docs/sysexts/notesd",
   "/docs/sysexts/obsidian",
   "/docs/sysexts/paseo",
   "/docs/sysexts/pilothouse",
   "/docs/sysexts/podman",
+  "/docs/sysexts/porterd",
+  "/docs/sysexts/readd",
   "/docs/sysexts/sunshine",
   "/docs/sysexts/voxtype",
   "/docs/tools/updex",
@@ -124,7 +129,12 @@ for (const file of files) {
   const page = `/${relative(dist.pathname, file)}`;
   assert((html.match(/<h1(?:\s|>)/g) || []).length === 1, `${page} must contain exactly one h1.`);
   assert(!html.includes("frostyard/millhouse"), `${page} still links to Millhouse.`);
-  const body = html.split('<h2 id="sources"')[0];
+  // The superseded lifecycle date must not come back in page prose. The catalog
+  // snapshot and catalog cards show the snapshot's own date, which is today's
+  // date on a fresh sync, so their time elements are not prose.
+  const body = html
+    .split('<h2 id="sources"')[0]
+    .replace(/<time\b[^>]*>[\s\S]*?<\/time>/g, " ");
   assert(!body.includes("2026-10-28"), `${page} contains the superseded lifecycle date.`);
 
   for (const match of html.matchAll(/<a\b[^>]*\shref="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
@@ -207,11 +217,16 @@ for (const route of docsRoutes) {
     "/docs/sysexts/himmelblau/",
     "/docs/sysexts/lemonade/",
     "/docs/sysexts/localsend/",
+    "/docs/sysexts/lodge/",
+    "/docs/sysexts/maild/",
     "/docs/sysexts/moonlight/",
+    "/docs/sysexts/notesd/",
     "/docs/sysexts/obsidian/",
     "/docs/sysexts/paseo/",
     "/docs/sysexts/pilothouse/",
     "/docs/sysexts/podman/",
+    "/docs/sysexts/porterd/",
+    "/docs/sysexts/readd/",
     "/docs/sysexts/sunshine/",
     "/docs/sysexts/voxtype/",
     "/docs/tools/updex/",
@@ -655,7 +670,7 @@ for (const page of lightPages) {
   }
   assert(!html.includes("data-code="), `${path} must not carry copied command blocks.`);
 }
-assert(lightHtml.lodge.text.includes("Install lodge on a systemd host, such as Debian 13, not on a Frostyard image."), "/docs/apps/lodge must state the /usr limit.");
+assert(lightHtml.lodge.text.includes("On a Frostyard image, enable the lodge system extension") && lightHtml.lodge.text.includes("/usr is read-only on a Frostyard image."), "/docs/apps/lodge must state the lodge extension and the /usr limit.");
 assert(lightHtml.frostread.text.includes("lodge shows it as the app Read"), "/docs/apps/frostread must say that lodge shows it as Read.");
 assert(!/repository (is|stays) private|private for now|pre-release, private/i.test(lightHtml.frostread.text), "/docs/apps/frostread must not call the repository private.");
 assert(lightHtml.frostmail.html.includes('href="/docs/apps/lodge/"') && lightHtml.frostnotes.html.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
@@ -1175,11 +1190,21 @@ const pagefindEnglish = pagefindEntry.languages?.en;
 assert(pagefindEnglish, "The Pagefind index must contain an English language entry.");
 assert(pagefindEnglish.page_count === docsRoutes.length, `The Pagefind index must contain all ${docsRoutes.length} docs pages.`);
 
-for (const name of ["1password-cli", "1password", "bitwarden", "chatgpt", "claude-desktop", "code-server", "coder", "debdev", "edge", "gitdesktop", "github-copilot", "lemonade", "localsend", "moonlight", "obsidian", "paseo", "pilothouse", "podman", "sunshine", "voxtype"]) {
+for (const name of ["1password-cli", "1password", "bitwarden", "chatgpt", "claude-desktop", "code-server", "coder", "debdev", "edge", "gitdesktop", "github-copilot", "lemonade", "localsend", "lodge", "maild", "moonlight", "notesd", "obsidian", "paseo", "pilothouse", "podman", "porterd", "readd", "sunshine", "voxtype"]) {
   const route = `/docs/sysexts/${name}`;
   const text = textOf(await readRoute(route));
   assert(!text.includes("has no rollback command") && !text.includes("planned `updex features rollback`") && !text.includes("planned updex features rollback"), `${route} must not say that Updex has no rollback command: Updex v2.1.2 ships it.`);
   assert(text.includes(`sudo updex features rollback ${name}`), `${route} must give the rollback command.`);
+}
+
+// The suite service guides use the current enable syntax and start their units at boot.
+for (const name of ["notesd", "maild", "lodge", "readd", "porterd"]) {
+  const route = `/docs/sysexts/${name}`;
+  const text = textOf(await readRoute(route));
+  assert(text.includes(`sudo updex features enable ${name} --now`), `${route} must use the current Updex enable syntax.`);
+  assert(text.includes("Upholds="), `${route} must explain the Upholds= drop-in that restarts the units.`);
+  assert(text.includes("sudo systemd-sysusers"), `${route} must give the sysusers command for a start without a reboot.`);
+  assert(!text.includes("RequisiteFeatures"), `${route} must not describe a RequisiteFeatures dependency.`);
 }
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);

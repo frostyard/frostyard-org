@@ -1,0 +1,200 @@
+---
+title: Frostmail maild
+description: Enable, update, roll back, and remove the Frostmail maild system extension on Frostyard bootc images.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The maild extension adds `maild`, the Frostmail mail engine, to a Frostyard bootc image. It runs as lodge's Mail app, with the app id `mail`. A server that runs the suite's services runs [Floe](/docs/images/floe/). Frostmail's own app page is [Frostmail](/docs/apps/frostmail/). Every image carries the extension's definition, switched off. The extension itself is not in the image: Updex turns it on and downloads it.
+
+## Before you start
+
+You need:
+
+- A Frostyard bootc image built on Base.
+- Root access to enable, update, and remove the extension.
+- Network access to `https://repository.frostyard.org/ext/maild/`.
+- Free space in `/var` for the image.
+
+maild has no published test results on Frostyard images yet. Try it on a machine you can spare first.
+
+You reach Mail in a browser through [lodge](/docs/sysexts/lodge/). Enable lodge first. Enabling maild does not enable lodge: Updex features have no dependencies.
+
+## Enable maild
+
+See what Updex found, then enable the feature and download it now:
+
+```bash
+updex features list --component=maild
+sudo updex features enable maild --now
+```
+
+`maild` appears as a component, with its feature disabled. The enable command
+downloads the image, checks its checksum and signature, links it, and refreshes
+the merge.
+
+If `updex features list` does not show the feature, the image is older than the
+extension. [Update the image](/docs/images/install-update/) first.
+
+Start maild:
+
+Reboot. At boot the image merges the extensions, runs `systemd-sysusers` and
+`systemd-tmpfiles --create`, reloads systemd, and `Upholds=` starts the units.
+
+To start without a reboot:
+
+```bash
+sudo systemd-sysusers
+sudo systemd-tmpfiles --create
+sudo systemctl start frostmail.socket frostmail.service
+```
+
+Without the first two commands, the socket fails on its group.
+
+Check the merge and the units:
+
+```bash
+systemd-sysext status
+systemctl status frostmail.socket frostmail.service
+sudo -u frostmail mailctl --socket /run/frostmail/maild.sock hello
+```
+
+`systemd-sysext status` lists `maild`, `systemctl status` shows both units
+active, and `hello` prints maild's identity and protocol. `hello` exits
+non-zero when maild does not answer.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the checks above again.
+
+## What runs
+
+`frostmail.socket` and `frostmail.service` run on the host. maild's rules and
+Send Later run without a client, so the service is upheld too.
+
+The drop-in `/usr/lib/systemd/system/multi-user.target.d/10-maild.conf` has
+`Upholds=` for both units, and the preset
+`/usr/lib/systemd/system-preset/40-maild.preset` enables both. Both start at
+boot. If one stops, even with exit status 0, systemd starts it again. To stop it
+for longer, remove the extension or mask the unit.
+
+`extension-release.maild` sets `EXTENSION_RELOAD_MANAGER=1`, so a merge or
+refresh reloads systemd's unit files.
+
+`frostmail.service` runs `/usr/bin/maild --lodge` as the system user
+`frostmail`. Its data is in `/var/lib/frostmail`, its cache in
+`/var/cache/frostmail`, and `mailctl` reaches it on the private socket
+`/run/frostmail/maild.sock`.
+
+`frostmail.socket` listens on `/run/lodge/apps/mail.sock` as owner `frostmail`,
+group `lodge`, mode `0660`.
+
+At first start, `frostmail-secrets-key.service` makes the key that seals maild's
+secrets, `/etc/credstore.encrypted/frostmail-secrets-key`, with
+`systemd-creds encrypt --with-key=auto`. It skips when the key exists, and never
+replaces a key. `frostmail.service` pulls it with `Requires=` and `After=`. The
+unit is not upheld and not in the preset. maild refuses a missing or wrong key.
+The key is in `/etc`; the extension never ships it.
+
+The sysusers file `/usr/lib/sysusers.d/frostmail.conf` creates the user
+`frostmail` and the groups `lodge` and `lodge-apps`, with `frostmail` in
+`lodge-apps`. The user is never in group `lodge`.
+
+The files are `/usr/bin/maild`, `/usr/bin/mailctl`,
+`/usr/libexec/frostmail/make-secrets-key`, and
+`frostmail-secrets-key.service`. The lodge app files are in
+`/usr/share/lodge/apps/mail/`: `app.json` and `web/`.
+
+## Update, roll back, and remove
+
+Check for an update, then install it:
+
+```bash
+updex features check --component=maild
+sudo updex features update --component=maild
+```
+
+The update takes effect at the next boot. Until then, the running daemon keeps
+its old binary. See [Update](/docs/sysexts/manage/#update).
+
+To switch without a reboot:
+
+```bash
+sudo systemd-sysusers
+sudo systemd-tmpfiles --create
+sudo systemctl daemon-reload
+sudo systemctl restart frostmail.socket frostmail.service
+```
+
+Roll back with `sudo updex features rollback maild`. It takes effect at the next
+boot. See [Roll back](/docs/sysexts/manage/#roll-back).
+
+Remove maild:
+
+```bash
+sudo updex features disable maild --now --force
+```
+
+Updex unmerges all extensions on the host, deletes the image, and merges the
+rest again. Reboot when the command finishes. Without `--force`, Updex refuses
+while the image is merged.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Package | `frostyard-maild`, the `.deb` attached to the app's GitHub release, installed into the image with `dpkg`. The build checks the download against a pinned SHA-256 and checks its GitHub build-provenance attestation, and checks that its dependencies are met before it installs |
+| Feature | `Mail (Frostmail mail engine and Lodge mail app)` |
+| Commands | `/usr/bin/maild` and `/usr/bin/mailctl` |
+| Service | `frostmail.service`, which runs `/usr/bin/maild --lodge` as the system user `frostmail` |
+| Socket | `frostmail.socket` on `/run/lodge/apps/mail.sock`, owner `frostmail`, group `lodge`, mode `0660` |
+| Private socket | `/run/frostmail/maild.sock`, for `mailctl` |
+| Data and cache | `/var/lib/frostmail` and `/var/cache/frostmail` |
+| Secrets key | `frostmail-secrets-key.service` and `/usr/libexec/frostmail/make-secrets-key`, which make `/etc/credstore.encrypted/frostmail-secrets-key` at first start |
+| User and group | `frostmail`, groups `lodge` and `lodge-apps`, and `frostmail` in `lodge-apps`, from `/usr/lib/sysusers.d/frostmail.conf` |
+| Lodge app | `/usr/share/lodge/apps/mail/`, with `app.json` and `web/` |
+| Activation | `/usr/lib/systemd/system/multi-user.target.d/10-maild.conf` with `Upholds=`, and `/usr/lib/systemd/system-preset/40-maild.preset` |
+| Version | The image file name carries the `frostyard-maild` package version, which is the app's release version |
+| Image file | `maild_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/maild/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+
+<ExtensionSnapshot name="maild" />
+
+Each build checks the commands, the units, the sysusers file, the lodge app manifest and web page, and the preset, activation drop-in and extension-release files. A build that is missing one fails. Each build also checks that every upheld unit has no `Condition*=` line, or is a oneshot that stays active.
+
+## See also
+
+- [System extension catalog](/docs/sysexts/)
+- [Manage system extensions](/docs/sysexts/manage/)
+- [lodge](/docs/apps/lodge/)
+- [Frostmail](/docs/apps/frostmail/)
+- [Mail in lodge](https://github.com/frostyard/frostmail/blob/main/docs/specs/lodge-app.md): the app contract with lodge.
+- [Accounts, sign-in and providers](https://github.com/frostyard/frostmail/blob/main/docs/design/accounts.md): how to add an account, and what each provider needs.
+
+## Sources
+
+Reviewed 2026-10-28. snosi commit
+[`896461480e6edd6473b6812661e2b63c15523771`](https://github.com/frostyard/snosi/tree/896461480e6edd6473b6812661e2b63c15523771);
+core commit
+[`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
+Frostmail v0.2.0 commit
+[`0424a736cc44a4ab8a0bfb247a8d445c0b967387`](https://github.com/frostyard/frostmail/tree/0424a736cc44a4ab8a0bfb247a8d445c0b967387);
+Updex v2.1.2 commit
+[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
+
+- [`mkosi.images/maild/mkosi.conf`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/mkosi.images/maild/mkosi.conf)
+- [`mkosi.images/maild/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/mkosi.images/maild/mkosi.postinst.chroot)
+- [`mkosi.images/maild/required-paths.txt`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/mkosi.images/maild/required-paths.txt)
+- [`mkosi.images/maild/mkosi.extra/usr/lib/systemd/system-preset/40-maild.preset`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/mkosi.images/maild/mkosi.extra/usr/lib/systemd/system-preset/40-maild.preset)
+- [`mkosi.images/maild/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-maild.conf`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/mkosi.images/maild/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-maild.conf)
+- [`mkosi.images/maild/mkosi.extra/usr/lib/extension-release.d/extension-release.maild`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/mkosi.images/maild/mkosi.extra/usr/lib/extension-release.d/extension-release.maild)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.maild.d/maild.feature`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.maild.d/maild.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.maild.d/maild.transfer`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.maild.d/maild.transfer)
+- [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/shared/download/sysext-checksums.json)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/896461480e6edd6473b6812661e2b63c15523771/docs/design/sysexts.md)
+- [snosi#1169](https://github.com/frostyard/snosi/pull/1169) (merged 2026-10-28) and [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28)
+- core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md)
+- Frostmail [`packaging/lodge/frostmail.service`](https://github.com/frostyard/frostmail/blob/0424a736cc44a4ab8a0bfb247a8d445c0b967387/packaging/lodge/frostmail.service), [`packaging/lodge/frostmail.socket`](https://github.com/frostyard/frostmail/blob/0424a736cc44a4ab8a0bfb247a8d445c0b967387/packaging/lodge/frostmail.socket), [`packaging/lodge/frostmail-secrets-key.service`](https://github.com/frostyard/frostmail/blob/0424a736cc44a4ab8a0bfb247a8d445c0b967387/packaging/lodge/frostmail-secrets-key.service), [`packaging/lodge/make-secrets-key.sh`](https://github.com/frostyard/frostmail/blob/0424a736cc44a4ab8a0bfb247a8d445c0b967387/packaging/lodge/make-secrets-key.sh), [`packaging/lodge/sysusers.d-frostmail.conf`](https://github.com/frostyard/frostmail/blob/0424a736cc44a4ab8a0bfb247a8d445c0b967387/packaging/lodge/sysusers.d-frostmail.conf), [`cmd/mailctl/hello.go`](https://github.com/frostyard/frostmail/blob/0424a736cc44a4ab8a0bfb247a8d445c0b967387/cmd/mailctl/hello.go)
+- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
+- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

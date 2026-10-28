@@ -28,7 +28,8 @@ one package, `frostyard-maild_X.Y.Z_amd64.deb`, for lodge's host. It holds
 `maild`, `mailctl`, the units, the `frostmail` user, and the web build for
 lodge's mail app. The desktop app has no package. Frostmail is not in the
 Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard
-Homebrew tap. Snosi picks the `.deb` up later.
+Homebrew tap. On a Frostyard image, the
+[maild system extension](/docs/sysexts/maild/) installs it.
 
 A standalone desktop Flatpak is coming. Its first part is merged on `main`
 (frostmail#126): the Flatpak `org.frostyard.Frostmail` carries `maild` and
@@ -95,4 +96,5 @@ Reviewed 2026-10-28.
 - [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/internal/store/store.go)
 - Frostmail `main` at [`9c91d183f4946dc0fb966e58f1748ac7028e590a`](https://github.com/frostyard/frostmail/tree/9c91d183f4946dc0fb966e58f1748ac7028e590a), after PR #126 (merge commit `433ae7059429b98093b48d8ee12a4e349fead5eb`): [`docs/plans/0013-m6-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostmail/blob/9c91d183f4946dc0fb966e58f1748ac7028e590a/docs/plans/0013-m6-the-standalone-desktop-flatpak.md) (Status, 2026-10-28: Phases 2 and 3 are built in PR #126; Phases 4 to 10 are not built) and [`docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md`](https://github.com/frostyard/frostmail/blob/9c91d183f4946dc0fb966e58f1748ac7028e590a/docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md) (Accepted 2026-10-28). The latest release is still v0.1.0.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
+- snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
 - No package: the Flatpak index [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82` has no entry, and the Homebrew tap [`Casks`](https://github.com/frostyard/homebrew-tap/tree/afd829de04b62b37f20a97d2a67fdfe4b477606f/Casks) at `afd829de04b62b37f20a97d2a67fdfe4b477606f` holds only `chairlift.rb` and `nsl.rb`. The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-28, lists no package.

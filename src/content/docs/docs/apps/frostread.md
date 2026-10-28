@@ -24,8 +24,9 @@ articles to read later.
 ## Status
 
 frostread is pre-release. The latest release is v0.1.0. Each release attaches
-one package, `frostyard-readd_X.Y.Z_amd64.deb`, for lodge's host. Snosi picks
-the `.deb` up later. The daemon, its API, `readctl`, MCP, save-as-note, the web app,
+one package, `frostyard-readd_X.Y.Z_amd64.deb`, for lodge's host. On a
+Frostyard image, the [readd system extension](/docs/sysexts/readd/) installs
+it. The daemon, its API, `readctl`, MCP, save-as-note, the web app,
 save from the phone, and the blob sweep are built.
 
 A desktop app is planned: the Flatpak `org.frostyard.Frostread`, with its own
@@ -78,4 +79,5 @@ Reviewed 2026-10-28.
 - [`docs/adr/0003-the-fetcher-reaches-only-public-addresses.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/adr/0003-the-fetcher-reaches-only-public-addresses.md), [`docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md)
 - frostread `main` at [`ef216dd72df14dfe3f3059bcdd571320c9786544`](https://github.com/frostyard/frostread/tree/ef216dd72df14dfe3f3059bcdd571320c9786544): [`docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md`](https://github.com/frostyard/frostread/blob/ef216dd72df14dfe3f3059bcdd571320c9786544/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md) (Status: Proposed) and [`docs/plans/0002-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostread/blob/ef216dd72df14dfe3f3059bcdd571320c9786544/docs/plans/0002-the-standalone-desktop-flatpak.md) ("Nothing is built"; open question 1, the lodge mode, is Brian's).
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`: frostread's lodge mode is "not decided: sync or connection".
+- snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28, adds the lodge, readd, and porterd extensions.
 - [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/internal/store/store.go)

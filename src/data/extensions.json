@@ -1,11 +1,11 @@
 {
   "source": "https://repository.frostyard.org/ext/index",
-  "updatedAt": "2026-10-23T17:32:12.276Z",
+  "updatedAt": "2026-10-28T16:10:20.798Z",
   "extensions": [
     {
       "name": "1password",
       "label": "1Password desktop",
-      "version": "8.12.40+r1"
+      "version": "8.12.42+r1"
     },
     {
       "name": "1password-cli",
@@ -15,27 +15,27 @@
     {
       "name": "bitwarden",
       "label": "Bitwarden",
-      "version": "2026.10.0+r1"
+      "version": "2026.10.1+r1"
     },
     {
       "name": "chatgpt",
       "label": "ChatGPT",
-      "version": "26.1016.61520+r1"
+      "version": "26.1023.51421+r1"
     },
     {
       "name": "claude-desktop",
       "label": "Claude Desktop",
-      "version": "3.6556.2+r1"
+      "version": "4.29.0+r1"
     },
     {
       "name": "code-server",
       "label": "code-server",
-      "version": "4.141.0"
+      "version": "4.143.1"
     },
     {
       "name": "coder",
       "label": "Coder",
-      "version": "2.37.4-1+r2"
+      "version": "2.37.7-1+r3"
     },
     {
       "name": "debdev",
@@ -55,17 +55,17 @@
     {
       "name": "edge",
       "label": "Microsoft Edge",
-      "version": "155.0.4283.62-1+r2"
+      "version": "156.0.4314.50-1+r2"
     },
     {
       "name": "gitdesktop",
       "label": "GitDesktop",
-      "version": "0.13.5"
+      "version": "0.13.7"
     },
     {
       "name": "github-copilot",
       "label": "GitHub Copilot",
-      "version": "1.1.30+r1"
+      "version": "1.1.33+r1"
     },
     {
       "name": "himmelblau",
@@ -75,7 +75,7 @@
     {
       "name": "incus",
       "label": "Incus",
-      "version": "1+7.5.1-debian13-202610231610+r5"
+      "version": "1+7.5.1-debian13-202610281111+r5"
     },
     {
       "name": "k3s",
@@ -85,7 +85,7 @@
     {
       "name": "lemonade",
       "label": "Lemonade",
-      "version": "2026.42.1~13"
+      "version": "2026.43.3~13"
     },
     {
       "name": "localsend",
@@ -93,24 +93,39 @@
       "version": "1.18.2+64"
     },
     {
+      "name": "lodge",
+      "label": "lodge",
+      "version": "0.1.0"
+    },
+    {
+      "name": "maild",
+      "label": "Frostmail maild",
+      "version": "0.2.0"
+    },
+    {
       "name": "moonlight",
       "label": "Moonlight",
-      "version": "6.1.0-frostyard20261023154048"
+      "version": "6.1.0-frostyard20261027004156"
     },
     {
       "name": "nix",
       "label": "Nix",
-      "version": "2.26.3+dfsg-1+r3"
+      "version": "2.26.3+dfsg-1+r5"
+    },
+    {
+      "name": "notesd",
+      "label": "Frostnotes notesd",
+      "version": "0.2.0"
     },
     {
       "name": "obsidian",
       "label": "Obsidian",
-      "version": "1.14.4"
+      "version": "1.14.5"
     },
     {
       "name": "paseo",
       "label": "paseo",
-      "version": "0.12.0+r1"
+      "version": "0.13.2+r1"
     },
     {
       "name": "pilothouse",
@@ -123,6 +138,16 @@
       "version": "5.4.2+ds1-2+b2"
     },
     {
+      "name": "porterd",
+      "label": "Porter porterd",
+      "version": "0.1.0"
+    },
+    {
+      "name": "readd",
+      "label": "frostread readd",
+      "version": "0.1.0"
+    },
+    {
       "name": "sunshine",
       "label": "Sunshine",
       "version": "2026.914.233613-1+debiantrixie"
@@ -130,12 +155,12 @@
     {
       "name": "tailscale",
       "label": "Tailscale",
-      "version": "1.104.2"
+      "version": "1.104.4"
     },
     {
       "name": "voxtype",
       "label": "Voxtype",
-      "version": "0.7.5-frostyard20261023154051+r1"
+      "version": "0.7.5-frostyard20261027004156+r1"
     },
     {
       "name": "vscode",

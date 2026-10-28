@@ -1,0 +1,193 @@
+---
+title: frostread readd
+description: Enable, update, roll back, and remove the frostread readd system extension on Frostyard bootc images.
+---
+
+import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
+
+The readd extension adds `readd`, frostread's daemon, to a Frostyard bootc image. It runs as lodge's Read app, with the app id `read`. A server that runs the suite's services runs [Floe](/docs/images/floe/). frostread's own page is [frostread](/docs/apps/frostread/). Every image carries the extension's definition, switched off. The extension itself is not in the image: Updex turns it on and downloads it.
+
+## Before you start
+
+You need:
+
+- A Frostyard bootc image built on Base.
+- Root access to enable, update, and remove the extension.
+- Network access to `https://repository.frostyard.org/ext/readd/`.
+- Free space in `/var` for the image.
+
+readd has no published test results on Frostyard images yet. Try it on a machine you can spare first.
+
+You reach Read in a browser through [lodge](/docs/sysexts/lodge/). Enable lodge first. Enabling readd does not enable lodge: Updex features have no dependencies.
+
+## Enable readd
+
+See what Updex found, then enable the feature and download it now:
+
+```bash
+updex features list --component=readd
+sudo updex features enable readd --now
+```
+
+`readd` appears as a component, with its feature disabled. The enable command
+downloads the image, checks its checksum and signature, links it, and refreshes
+the merge.
+
+If `updex features list` does not show the feature, the image is older than the
+extension. [Update the image](/docs/images/install-update/) first.
+
+Start readd:
+
+Reboot. At boot the image merges the extensions, runs `systemd-sysusers` and
+`systemd-tmpfiles --create`, reloads systemd, and `Upholds=` starts the units.
+
+To start without a reboot:
+
+```bash
+sudo systemd-sysusers
+sudo systemd-tmpfiles --create
+sudo systemctl start frostread.socket frostread.service
+```
+
+Without the first two commands, the socket fails on its group.
+
+Check the units and the feeds:
+
+```bash
+systemctl status frostread.socket frostread.service
+sudo -u frostread readctl sources
+```
+
+`systemctl status` shows both units active. `readctl sources` lists the feeds.
+`readctl` uses `/run/frostread/readctl.sock` by default.
+
+If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
+download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
+reboot. Then run the checks above again.
+
+## What runs
+
+`frostread.socket` and `frostread.service` run on the host. The service is
+upheld because its feed poller works without a client.
+
+The drop-in `/usr/lib/systemd/system/multi-user.target.d/10-readd.conf` has
+`Upholds=` for both units, and the preset
+`/usr/lib/systemd/system-preset/40-readd.preset` enables both. Both start at
+boot. If one stops, even with exit status 0, systemd starts it again. To stop it
+for longer, remove the extension or mask the unit.
+
+`extension-release.readd` sets `EXTENSION_RELOAD_MANAGER=1`, so a merge or
+refresh reloads systemd's unit files.
+
+`frostread.service` runs `/usr/bin/readd --socket /run/frostread/readctl.sock`
+as the user `frostread`, with the groups `lodge-apps` and `lodge-agents`. Its
+state is in `/var/lib/frostread`. readd reaches the public web itself, to fetch
+feeds.
+
+The configuration belongs to you, and the extension ships no file in `/etc`:
+`/etc/frostread/frostread.json`.
+
+`frostread.socket` listens on `/run/lodge/apps/read.sock` as owner `frostread`,
+group `lodge`, mode `0660`.
+
+The sysusers file `/usr/lib/sysusers.d/frostread.conf` creates the user
+`frostread` and the group `lodge`, with `frostread` in `lodge-apps` and
+`lodge-agents`. The user is never in group `lodge`. Save-as-note needs lodge's
+configuration to name `frostread` in `agents`.
+
+The commands are `/usr/bin/readd` and `/usr/bin/readctl`. The lodge app files
+are in `/usr/share/lodge/apps/read/`.
+
+## Update, roll back, and remove
+
+Check for an update, then install it:
+
+```bash
+updex features check --component=readd
+sudo updex features update --component=readd
+```
+
+The update takes effect at the next boot. Until then, the running daemon keeps
+its old binary. See [Update](/docs/sysexts/manage/#update).
+
+To switch without a reboot:
+
+```bash
+sudo systemd-sysusers
+sudo systemd-tmpfiles --create
+sudo systemctl daemon-reload
+sudo systemctl restart frostread.socket frostread.service
+```
+
+Roll back with `sudo updex features rollback readd`. It takes effect at the next
+boot. See [Roll back](/docs/sysexts/manage/#roll-back).
+
+Remove readd:
+
+```bash
+sudo updex features disable readd --now --force
+```
+
+Updex unmerges all extensions on the host, deletes the image, and merges the
+rest again. Reboot when the command finishes. Without `--force`, Updex refuses
+while the image is merged.
+
+## What ships
+
+| Item | What you get |
+| --- | --- |
+| Package | `frostyard-readd`, the `.deb` attached to the app's GitHub release, installed into the image with `dpkg`. The build checks the download against a pinned SHA-256 and checks its GitHub build-provenance attestation, and checks that its dependencies are met before it installs |
+| Feature | `Read (frostread feed reader daemon and Lodge read app)` |
+| Commands | `/usr/bin/readd` and `/usr/bin/readctl` |
+| Service | `frostread.service`, which runs `/usr/bin/readd --socket /run/frostread/readctl.sock` as the user `frostread` |
+| Socket | `frostread.socket` on `/run/lodge/apps/read.sock`, owner `frostread`, group `lodge`, mode `0660` |
+| Private socket | `/run/frostread/readctl.sock`, for `readctl` |
+| State | `/var/lib/frostread` |
+| User and group | `frostread`, group `lodge`, and `frostread` in `lodge-apps` and `lodge-agents`, from `/usr/lib/sysusers.d/frostread.conf` |
+| Lodge app | `/usr/share/lodge/apps/read/` |
+| Activation | `/usr/lib/systemd/system/multi-user.target.d/10-readd.conf` with `Upholds=`, and `/usr/lib/systemd/system-preset/40-readd.preset` |
+| Version | The image file name carries the `frostyard-readd` package version, which is the app's release version |
+| Image file | `readd_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
+| Download | From `https://repository.frostyard.org/ext/readd/`, signature required (`Verify=true`), into `/var/lib/extensions.d/` |
+
+<ExtensionSnapshot name="readd" />
+
+Each build checks the commands, the units, the sysusers file, the lodge app manifest and web page, and the preset, activation drop-in and extension-release files. A build that is missing one fails. Each build also checks that every upheld unit has no `Condition*=` line, or is a oneshot that stays active.
+
+## See also
+
+- [System extension catalog](/docs/sysexts/)
+- [Manage system extensions](/docs/sysexts/manage/)
+- [lodge](/docs/sysexts/lodge/)
+- [frostread](/docs/apps/frostread/)
+- [Frostnotes notesd](/docs/sysexts/notesd/)
+- [Frostmail maild](/docs/sysexts/maild/)
+- [Porter porterd](/docs/sysexts/porterd/)
+
+## Sources
+
+Reviewed 2026-10-28. snosi commit
+[`0ede646cd878f82e91b891d9c3f6eba77227573b`](https://github.com/frostyard/snosi/tree/0ede646cd878f82e91b891d9c3f6eba77227573b);
+core commit
+[`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
+frostread v0.1.0 commit
+[`3dc30c605f750d671e04465ef8b52810bc52ff2c`](https://github.com/frostyard/frostread/tree/3dc30c605f750d671e04465ef8b52810bc52ff2c);
+Updex v2.1.2 commit
+[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
+
+- [`mkosi.images/readd/mkosi.conf`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/readd/mkosi.conf)
+- [`mkosi.images/readd/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/readd/mkosi.postinst.chroot)
+- [`mkosi.images/readd/required-paths.txt`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/readd/required-paths.txt)
+- [`mkosi.images/readd/mkosi.extra/usr/lib/systemd/system-preset/40-readd.preset`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/readd/mkosi.extra/usr/lib/systemd/system-preset/40-readd.preset)
+- [`mkosi.images/readd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-readd.conf`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/readd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-readd.conf)
+- [`mkosi.images/readd/mkosi.extra/usr/lib/extension-release.d/extension-release.readd`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/readd/mkosi.extra/usr/lib/extension-release.d/extension-release.readd)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.readd.d/readd.feature`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.readd.d/readd.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.readd.d/readd.transfer`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.readd.d/readd.transfer)
+- [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/shared/download/sysext-checksums.json)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/design/sysexts.md)
+- [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28, merge commit `0ede646cd878f82e91b891d9c3f6eba77227573b`)
+- core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md)
+- frostread [`packaging/lodge/frostread.service`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/packaging/lodge/frostread.service), [`packaging/lodge/frostread.socket`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/packaging/lodge/frostread.socket), [`packaging/lodge/sysusers.d-frostread.conf`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/packaging/lodge/sysusers.d-frostread.conf), [`cmd/readctl/main.go`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/cmd/readctl/main.go)
+- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
+- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
+- [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
