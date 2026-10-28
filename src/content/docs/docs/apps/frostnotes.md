@@ -66,9 +66,14 @@ Run the CLI on a desktop through the Flatpak, for example:
 
 `flatpak run --command=notesctl org.frostyard.Frostnotes vault list`
 
-`notesd` runs in its own sandbox. It keeps running after you close the last
-window, until you log out. The first launch asks the Background portal to
-start it at login. The app's data is under
+`notesd` runs in its own sandbox. The first launch asks the Background portal
+to let it run in the background and start at login. With that permission,
+`notesd` keeps running after you close the last window, until you log out.
+If you turn Run in Background off (GNOME Settings, Apps, Frostnotes), the
+desktop stops `notesd` once no window is open: on GNOME 48, about 45 seconds
+after the last window closes. Sync then waits until you open the app again.
+
+The app's data is under
 `~/.var/app/org.frostyard.Frostnotes/`, and the `notesd` log is
 `~/.var/app/org.frostyard.Frostnotes/.local/state/frostnotes/notesd.log`.
 
@@ -84,7 +89,11 @@ Then approve the one-time code on the hub. On lodge's host, run
 `sudo -u frostnotes notesctl hub approve CODE`. The canonical steps are in
 [The hub behind lodge](https://github.com/frostyard/frostnotes/blob/main/docs/design/hub.md)
 and [Pairing and sessions](https://github.com/frostyard/frostnotes/blob/main/docs/design/sync.md#pairing-and-sessions).
-`notesctl sync leave` leaves a hub, and your files stay.
+To leave a hub, run this, with your local vault's name as `VAULT`:
+
+`flatpak run --command=notesctl org.frostyard.Frostnotes sync leave --vault VAULT`
+
+The vault's files stay on your computer, and you can still edit them.
 
 ### Build from source
 
