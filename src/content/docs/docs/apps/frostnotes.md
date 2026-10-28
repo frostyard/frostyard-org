@@ -25,7 +25,8 @@ Frostnotes is pre-release. The latest release is v0.2.0. Its Flatpak is in the
 attaches `frostyard-notesd_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
 `notesd`, `notesctl`, the units, the `frostnotes` user, and the web build for
 lodge's notes app. Frostnotes is not in the Frostyard APT repository or the
-Frostyard Homebrew tap. Snosi picks the `.deb` up later.
+Frostyard Homebrew tap. On a Frostyard image, the
+[notesd system extension](/docs/sysexts/notesd/) installs it.
 
 The vault, sync, and the desktop app are done. Notes inside lodge is in
 progress: `notesd` runs as lodge's `notes` app. The hub moved behind lodge
@@ -149,6 +150,7 @@ Reviewed 2026-10-28.
 - The Flatpak: [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/eafe7bc3d45796c81e548004458ecd0fb304196d/docs/design/app.md) (section "The Flatpak") and [`docs/plans/0008-m6-the-standalone-desktop-app.md`](https://github.com/frostyard/frostnotes/blob/eafe7bc3d45796c81e548004458ecd0fb304196d/docs/plans/0008-m6-the-standalone-desktop-app.md) (gap G1, no join form).
 - Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82`. The live catalogue on 2026-10-28 lists Frostnotes 0.2.0 from tag `v0.2.0`.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
+- snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
 - [`README.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/README.md)
 - [`docs/design/vault.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/docs/design/vault.md), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/docs/design/sync.md), [`docs/design/hub.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/docs/design/hub.md), [`docs/design/overview.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/docs/design/overview.md)
 - [`docs/specs/mcp.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/docs/specs/mcp.md), [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/docs/specs/lodge-app.md)

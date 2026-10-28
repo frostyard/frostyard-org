@@ -78,6 +78,11 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/content/docs/docs/sysexts/obsidian.mdx` covers the Obsidian extension.
 - `src/content/docs/docs/sysexts/paseo.mdx` covers the paseo extension.
 - `src/content/docs/docs/sysexts/pilothouse.mdx` covers the pilothouse extension.
+- `src/content/docs/docs/sysexts/maild.mdx` covers the Frostmail maild extension.
+- `src/content/docs/docs/sysexts/notesd.mdx` covers the Frostnotes notesd extension.
+- `src/content/docs/docs/sysexts/lodge.mdx` covers the lodge extension.
+- `src/content/docs/docs/sysexts/porterd.mdx` covers the Porter porterd extension.
+- `src/content/docs/docs/sysexts/readd.mdx` covers the frostread readd extension.
 - `src/content/docs/docs/sysexts/podman.mdx` covers the Podman + Distrobox extension.
 - `src/content/docs/docs/sysexts/sunshine.mdx` covers the Sunshine extension.
 - `src/content/docs/docs/sysexts/voxtype.mdx` covers the Voxtype extension.
