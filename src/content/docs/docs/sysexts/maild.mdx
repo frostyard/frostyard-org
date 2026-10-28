@@ -114,13 +114,17 @@ updex features check --component=maild
 sudo updex features update --component=maild
 ```
 
-The update merges the new files at once, and systemd reloads its unit files.
-The running daemon keeps its old binary until it restarts. New users, groups,
-and directories wait for the next boot. A reboot applies everything. Only
-`--no-refresh` and the automatic update timer leave the whole update for the
-next boot. See [Update](/docs/sysexts/manage/#update).
+By default, the update merges the new files at once, and systemd reloads its
+unit files. The running daemon keeps its old binary until it restarts. New
+users, groups, and directories wait for the next boot. A reboot applies
+everything.
 
-To switch now, without a reboot:
+The new files wait for the next boot when you pass `--no-refresh`, when the
+automatic update timer installs the update, or when the output says
+`refresh skipped`: Updex skips the refresh when it cannot refresh safely. Then
+reboot. See [Update](/docs/sysexts/manage/#update).
+
+After a merged update, to switch now without a reboot:
 
 ```bash
 sudo systemd-sysusers
