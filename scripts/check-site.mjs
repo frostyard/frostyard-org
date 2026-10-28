@@ -1235,7 +1235,11 @@ for (const [name, marker] of [
   assert(sectionText.includes("keeps its old binary until it restarts"), `${route} must say that the running daemon keeps its old binary until it restarts.`);
   assert(sectionText.includes(marker), `${route} must give the failure message "${marker}".`);
   assert(sectionText.indexOf("older than v2.1.3") !== -1 && sectionText.indexOf("older than v2.1.3") < sectionText.indexOf("To run the new version now"), `${route} must give the older-Updex commands before the restart step.`);
-  assert(textOf(html).includes("activation did not finish"), `${route} must explain the "activation did not finish" message.`);
+  const beforeRuns = html.indexOf('id="what-runs"');
+  assert(beforeRuns !== -1, `${route} must render the "what-runs" section.`);
+  const enableText = textOf(html.slice(0, beforeRuns));
+  assert(enableText.includes("activation did not finish"), `${route} must explain the "activation did not finish" message in the enable section.`);
+  assert(enableText.includes("can be missing: reboot"), `${route} must say that users and groups can be missing until a reboot.`);
 }
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);
