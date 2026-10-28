@@ -29,8 +29,8 @@ the `.deb` up later. The daemon, its API, `readctl`, MCP, save-as-note, the web 
 save from the phone, and the blob sweep are built.
 
 A desktop app is planned: the Flatpak `org.frostyard.Frostread`, with its own
-`readd`, local by default, and lodge as a connection you choose. Nothing is
-built. Today frostread runs only behind lodge.
+`readd`, local by default. How it works with lodge is not decided yet.
+Nothing is built. Today frostread runs only behind lodge.
 
 ## Install
 
@@ -48,7 +48,7 @@ in the README are the canonical ones.
 - [Update](https://github.com/frostyard/frostread/blob/main/README.md#update) and [Roll back](https://github.com/frostyard/frostread/blob/main/README.md#roll-back): stop frostread, take a rollback archive, copy the new build, and check the version.
 - [API spec](https://github.com/frostyard/frostread/blob/main/docs/specs/api.md): the API, `readctl`, the configuration, and the state layout.
 - [Design overview](https://github.com/frostyard/frostread/blob/main/docs/design/overview.md): the parts and how they fit.
-- [ADR-0008](https://github.com/frostyard/frostread/blob/main/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md): the planned desktop Flatpak carries its own `readd`, and lodge is a connection (Status: Proposed).
+- [ADR-0008](https://github.com/frostyard/frostread/blob/main/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md): the proposed design of the desktop Flatpak. Its lodge mode is still an open question.
 - [ADR-0003](https://github.com/frostyard/frostread/blob/main/docs/adr/0003-the-fetcher-reaches-only-public-addresses.md): the fetcher reaches only public addresses.
 - [ADR-0006](https://github.com/frostyard/frostread/blob/main/docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md): save from another page with a bookmarklet.
 - [Roadmap](https://github.com/frostyard/frostread/blob/main/docs/plans/0001-roadmap.md): what is built and what comes next.
@@ -76,5 +76,6 @@ Reviewed 2026-10-28.
 - [`README.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/README.md)
 - [`docs/specs/api.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/specs/api.md), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/plans/0001-roadmap.md)
 - [`docs/adr/0003-the-fetcher-reaches-only-public-addresses.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/adr/0003-the-fetcher-reaches-only-public-addresses.md), [`docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md)
-- frostread `main` at [`ef216dd72df14dfe3f3059bcdd571320c9786544`](https://github.com/frostyard/frostread/tree/ef216dd72df14dfe3f3059bcdd571320c9786544): [`docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md`](https://github.com/frostyard/frostread/blob/ef216dd72df14dfe3f3059bcdd571320c9786544/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md) (Status: Proposed) and [`docs/plans/0002-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostread/blob/ef216dd72df14dfe3f3059bcdd571320c9786544/docs/plans/0002-the-standalone-desktop-flatpak.md) ("Nothing is built").
+- frostread `main` at [`ef216dd72df14dfe3f3059bcdd571320c9786544`](https://github.com/frostyard/frostread/tree/ef216dd72df14dfe3f3059bcdd571320c9786544): [`docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md`](https://github.com/frostyard/frostread/blob/ef216dd72df14dfe3f3059bcdd571320c9786544/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md) (Status: Proposed) and [`docs/plans/0002-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostread/blob/ef216dd72df14dfe3f3059bcdd571320c9786544/docs/plans/0002-the-standalone-desktop-flatpak.md) ("Nothing is built"; open question 1, the lodge mode, is Brian's).
+- Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`: frostread's lodge mode is "not decided: sync or connection".
 - [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/3dc30c605f750d671e04465ef8b52810bc52ff2c/internal/store/store.go)
