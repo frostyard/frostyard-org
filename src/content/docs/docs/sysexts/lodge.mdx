@@ -209,8 +209,11 @@ sudo systemctl unmask lodge.service
 sudo systemctl start lodge.service
 ```
 
-The restore loses the tokens, the allow-list changes, and the provider sign-ins
-made after the backup.
+The restore loses the tokens, the allow-list changes, and the provider keys and
+sign-ins made after the backup. If lodge refreshed a `codex` sign-in after the
+backup, the restored one is refused: `sudo lodgectl status` shows the provider
+unavailable. Sign in again with `sudo lodgectl provider login NAME`, where
+`NAME` is the provider.
 
 Remove lodge:
 
@@ -280,6 +283,8 @@ Updex v2.1.2 commit
 - core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md)
 - lodge [`packaging/systemd/lodge.service`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/systemd/lodge.service), [`packaging/sysusers.d/lodge.conf`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/sysusers.d/lodge.conf), [`packaging/tmpfiles.d/lodge.conf`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/tmpfiles.d/lodge.conf), [`packaging/README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/README.md), [`cmd/lodgectl/main.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/cmd/lodgectl/main.go)
 - lodge [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/design/overview.md) (back up `/var/lib/lodge`; a restore keeps the node names), [`internal/store/store.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/store/store.go) (the migration refusal), [`cmd/lodge/main.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/cmd/lodge/main.go) (`lodge starting`), [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl status`)
+- lodge [`docs/adr/0015-codex-uses-the-owners-chatgpt-plan-through-sign-in-with-chatgpt.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/adr/0015-codex-uses-the-owners-chatgpt-plan-through-sign-in-with-chatgpt.md) (refresh tokens rotate; a refused refresh signs the provider out), [`internal/codexauth/codexauth.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/codexauth/codexauth.go), [`internal/inference/usage.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/inference/usage.go) (`provider_keys` is in the database), [`cmd/lodgectl/main.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/cmd/lodgectl/main.go) (`provider login`)
+- [Irulan's review (frostyard-org#58)](https://github.com/frostyard/frostyard-org/pull/58#issuecomment-6478694500)
 - [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
 - [Updex v2.1.2 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
 - snosi [`docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md) (attestation checked at pin time and in every CI build)

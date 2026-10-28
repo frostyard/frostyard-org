@@ -173,8 +173,9 @@ sudo lodgectl apps
 journalctl -u frostporter.service -n 20
 ```
 
-`lodgectl apps` lists `porter` up, with the new version. The journal since the
-start shows no warning and no error.
+`lodgectl apps` lists `porter` up, with the new version. lodge polls each app
+every 15 seconds, so if `porter` shows `down` at once, run `lodgectl apps` again
+after 15 seconds. The journal since the start shows no warning and no error.
 
 Roll back to the previous version:
 
@@ -186,8 +187,10 @@ The rollback takes effect at the next boot. To apply it now, add `--now`, then
 restart Porter as above. See [Roll back](/docs/sysexts/manage/#roll-back).
 
 Restore the state only if `journalctl -u frostporter.service` shows a thread
-database error at start. These errors begin with `open thread database:`,
-`thread schema:`, `thread recovery:`, or `routines columns:`. A start can fail
+database error at start. These errors follow `porterd: ` and begin with
+`open thread database:`, `thread schema:`, `routines columns:`,
+`add routines.last_success:`, `fill routines.last_success:`, or
+`thread recovery:`. A start can fail
 for other reasons, such as a bad `/etc/porter/porter.json`, and a restore does
 not help then. To restore, keep the current state aside and extract the
 backup. Replace `ARCHIVE` with the path of the archive:
@@ -269,8 +272,9 @@ Updex v2.1.2 commit
 - [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28, merge commit `0ede646cd878f82e91b891d9c3f6eba77227573b`)
 - core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md)
 - porter [`packaging/lodge/frostporter.service`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/frostporter.service), [`packaging/lodge/frostporter.socket`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/frostporter.socket), [`packaging/lodge/sysusers.d-frostporter.conf`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/sysusers.d-frostporter.conf), [`cmd/porterd/main.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/cmd/porterd/main.go) (`token set`), [`internal/config/config.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/internal/config/config.go) (state directory and token path)
-- porter [`README.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/README.md) (Update and Roll back), [`internal/thread/store.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/internal/thread/store.go) (the thread database errors)
-- lodge [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl reload` rereads the manifests)
+- porter [`README.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/README.md) (Update and Roll back), [`internal/thread/store.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/internal/thread/store.go) (the thread database errors), [`cmd/porterd/main.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/cmd/porterd/main.go) (the `porterd: ` prefix)
+- lodge [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl reload` rereads the manifests), [`internal/apps/apps.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/apps/apps.go) (`PollEvery`, 15 seconds)
+- [Irulan's review (frostyard-org#58)](https://github.com/frostyard/frostyard-org/pull/58#issuecomment-6478694500)
 - lodge v0.1.0 [`packaging/README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/README.md) (`lodgectl token issue`)
 - [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
 - [Updex v2.1.2 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)

@@ -1234,6 +1234,8 @@ for (const [name, marker] of [
   assert(sectionText.includes("systemctl mask --now"), `${route} must mask the units while the state is copied.`);
   assert(sectionText.includes("keeps its old binary until it restarts"), `${route} must say that the running daemon keeps its old binary until it restarts.`);
   assert(sectionText.includes(marker), `${route} must give the failure message "${marker}".`);
+  if (name === "lodge") assert(sectionText.includes("provider keys and sign-ins") && sectionText.includes("lodgectl provider login"), `${route} must say that a restore loses provider keys and can need a new codex sign-in.`);
+  if (name === "porterd") assert(sectionText.includes("add routines.last_success:") && sectionText.includes("fill routines.last_success:"), `${route} must list every thread database error.`);
   assert(sectionText.indexOf("older than v2.1.3") !== -1 && sectionText.indexOf("older than v2.1.3") < sectionText.indexOf("To run the new version now"), `${route} must give the older-Updex commands before the restart step.`);
   const beforeRuns = html.indexOf('id="what-runs"');
   assert(beforeRuns !== -1, `${route} must render the "what-runs" section.`);
