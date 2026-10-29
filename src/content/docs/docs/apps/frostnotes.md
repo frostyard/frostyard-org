@@ -77,7 +77,7 @@ Run the CLI on a desktop through the Flatpak, for example:
 
 `notesd` runs in its own sandbox. The first launch asks the Background portal
 to let it run in the background and start at login. With that permission,
-`notesd` keeps running after you close the last window, until you log out.
+and with the app's setting On (below), `notesd` keeps running after you close the last window, until you log out.
 If you turn Run in Background off (GNOME Settings, Apps, Frostnotes), the
 desktop stops `notesd` once no window is open: on GNOME 48, about 45 seconds
 after the last window closes. Sync then waits until you open the app again.
@@ -96,8 +96,10 @@ The app's data is under
 
 ### If notesd does not start
 
-If `notesd` does not start, the window says why: the cause, the checks to
-run, and the path of `notesd.log`.
+If `notesd` does not start, the window says why, under "Reconnecting to
+notesd…". It shows the last line of `notesd.log`, or, when the Flatpak portal
+did not start `notesd`, the checks to run. It always shows the path of
+`notesd.log`.
 
 If the Flatpak portal did not start `notesd`, the window lists these
 commands:
@@ -197,7 +199,7 @@ Reviewed 2026-10-29.
 
 - Frostnotes release v0.3.0 commit [`2d80734337b90f497c5b6f0c7e87038d2bc96b20`](https://github.com/frostyard/frostnotes/tree/2d80734337b90f497c5b6f0c7e87038d2bc96b20), released 2026-10-28, and `main` at [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/tree/edee4ee870e55981d8912a4ecfe146b6958abfdc).
 - [`docs/plans/0008-m6-the-standalone-desktop-app.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 4: G1, G2, G3, G5), [`docs/adr/0032-an-update-replaces-the-running-notesd.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/adr/0032-an-update-replaces-the-running-notesd.md), [`docs/adr/0033-a-setting-keeps-notesd-running-without-a-window.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/adr/0033-a-setting-keeps-notesd-running-without-a-window.md).
-- [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/specs/ui.md) (sections Connecting, Settings, Vault manager) and [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/design/app.md) (section The Flatpak).
+- [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/specs/ui.md) (sections Connecting, Settings, Vault manager) and [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/design/app.md) (section The Flatpak), and [`app/src/features/connecting/NotesdCause.tsx`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/app/src/features/connecting/NotesdCause.tsx).
 - Plan 0008 at `main` [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/blob/edee4ee870e55981d8912a4ecfe146b6958abfdc/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 3, Run 2: the update from v0.2.0 to v0.3.0, 2026-10-29).
 - The live Frostyard catalogue on 2026-10-29 lists `frostyard/frostnotes` at tag `latest`, digest `sha256:46e19029bb751b1bfe9c0182e9e72d5d052ed1618b84f5bd7145360a4dd96145`, the v0.3.0 image.
 - Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82`.

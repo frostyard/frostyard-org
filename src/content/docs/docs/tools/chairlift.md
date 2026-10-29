@@ -122,10 +122,13 @@ revision. See
 
 After a feature update, ChairLift checks the features again, also when the
 update failed. The rows and the group description then show the state after
-the update, not the state from the check when ChairLift started.
+the update, not the state from the check when ChairLift started. If that
+check fails, the group description says `update check failed`, and the rows
+keep their earlier text.
 
 A feature whose new version is linked and becomes active at the next boot has
-the row text `changes apply after reboot`. It counts as neither an update nor
+the row text `changes apply after reboot`, when it has no update and does not
+wait for a newer OS image. It counts as neither an update nor
 a wait.
 
 The check at startup shows `waiting for a newer OS image` on a bootc host
