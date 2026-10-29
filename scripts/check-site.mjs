@@ -1215,6 +1215,13 @@ for (const name of ["notesd", "maild", "lodge", "readd", "porterd"]) {
   assert(!text.includes("RequisiteFeatures"), `${route} must not describe a RequisiteFeatures dependency.`);
 }
 
+// No lab run has enabled these three live yet. Remove this guard with the caveat when one does.
+for (const name of ["lodge", "porterd", "readd"]) {
+  const route = `/docs/sysexts/${name}`;
+  const text = textOf(await readRoute(route));
+  assert(text.includes(`The lab has not yet proven this for ${name}`), `${route} must say that the lab has not yet proven the live enable.`);
+}
+
 // The update sections of the suite guides that back lodge's apps.
 for (const [name, marker] of [
   ["lodge", "the database is at version N, newer than this lodge's M"],

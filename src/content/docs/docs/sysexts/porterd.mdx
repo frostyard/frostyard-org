@@ -31,25 +31,28 @@ sudo updex features enable porterd --now
 
 `porterd` appears as a component, with its feature disabled. The enable command
 downloads the image, checks its checksum and signature, links it, and refreshes
-the merge.
+the merge. With Updex v2.1.3 and later, the refresh also creates the users,
+groups, and directories that the extension declares, before systemd reloads.
+`Upholds=` then starts the units, with no reboot. `updex --version` shows your
+version.
+
+The lab has not yet proven this for porterd: no lab run has enabled it live yet.
+If a unit fails, follow the `start-limit-hit` steps below, or reboot.
 
 If `updex features list` does not show the feature, the image is older than the
 extension. [Update the image](/docs/images/install-update/) first.
 
-Start porterd:
-
-Reboot. At boot the image merges the extensions, runs `systemd-sysusers` and
-`systemd-tmpfiles --create`, reloads systemd, and `Upholds=` starts the units.
-
-To start without a reboot:
+With an Updex older than v2.1.3, the units cannot start after the enable: their
+users and groups do not exist yet. Reboot. At boot the image merges the
+extensions, runs `systemd-sysusers` and `systemd-tmpfiles --create`, reloads
+systemd, and `Upholds=` starts the units. To start them without a reboot:
 
 ```bash
 sudo systemd-sysusers
 sudo systemd-tmpfiles --create
+sudo systemctl reset-failed frostporter.socket frostporter.service
 sudo systemctl start frostporter.socket frostporter.service
 ```
-
-Without the first two commands, the socket fails on its group.
 
 Check the units:
 
@@ -58,6 +61,10 @@ systemctl status frostporter.socket frostporter.service
 ```
 
 `systemctl status` shows both units active.
+
+If a unit shows `failed` with `start-limit-hit`, systemd stopped starting it.
+Run `sudo systemctl reset-failed frostporter.socket frostporter.service`, then
+`sudo systemctl start frostporter.socket frostporter.service`, or reboot. Then run the checks again.
 
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
 download worked, but the activation did not. If the output says
@@ -104,7 +111,10 @@ The configuration belongs to you, and the extension ships no file in `/etc`:
 
 The sysusers file `/usr/lib/sysusers.d/frostporter.conf` creates the user
 `frostporter` and the group `lodge`, with `frostporter` in `lodge-apps` and
-`lodge-agents`. The user is never in group `lodge`. Porter reaches the apps
+`lodge-agents`. The user is never in group `lodge`.
+The file also creates the user `lodge`, with the same line as lodge's own
+sysusers file. The daemon looks up the user `lodge` when it starts, so it
+starts without lodge's extension. Porter reaches the apps
 through lodge's agent socket, so lodge's configuration must name it in
 `agents`.
 
@@ -227,7 +237,7 @@ while the image is merged.
 | Service | `frostporter.service`, which runs `/usr/bin/porterd` as the user `frostporter` |
 | Socket | `frostporter.socket` on `/run/lodge/apps/porter.sock`, owner `frostporter`, group `lodge`, mode `0660` |
 | State | `/var/lib/frostporter`, with app tokens in `/var/lib/frostporter/tokens` |
-| User and group | `frostporter`, group `lodge`, and `frostporter` in `lodge-apps` and `lodge-agents`, from `/usr/lib/sysusers.d/frostporter.conf` |
+| User and group | `frostporter`, group `lodge`, `frostporter` in `lodge-apps` and `lodge-agents`, and the user `lodge`, from `/usr/lib/sysusers.d/frostporter.conf` |
 | Lodge app | `/usr/share/lodge/apps/porter/` |
 | Activation | `/usr/lib/systemd/system/multi-user.target.d/10-porterd.conf` with `Upholds=`, and `/usr/lib/systemd/system-preset/40-porterd.preset` |
 | Version | The image file name carries the `frostyard-porterd` package version, which is the app's release version |
@@ -250,39 +260,40 @@ Each build checks the command, the units, the sysusers file, the lodge app manif
 
 ## Sources
 
-Reviewed 2026-10-28. snosi commit
-[`0ede646cd878f82e91b891d9c3f6eba77227573b`](https://github.com/frostyard/snosi/tree/0ede646cd878f82e91b891d9c3f6eba77227573b);
+Reviewed 2026-10-29. snosi commit
+[`e423112908540aa3a8045fa9d8022a3742e3cd17`](https://github.com/frostyard/snosi/tree/e423112908540aa3a8045fa9d8022a3742e3cd17);
 core commit
 [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
-porter v0.1.0 commit
-[`a56337d0f2cec26f660b651fa3c8003ed19d22bd`](https://github.com/frostyard/porter/tree/a56337d0f2cec26f660b651fa3c8003ed19d22bd);
-Updex v2.1.2 commit
-[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
+porter v0.1.1 commit
+[`d1c8631fd953dcbb25f17ad1004d1edd075dadb6`](https://github.com/frostyard/porter/tree/d1c8631fd953dcbb25f17ad1004d1edd075dadb6);
+Updex v2.1.3 commit
+[`2661e987faac986f2594d1d9bbbadf1bf3053f5b`](https://github.com/frostyard/updex/tree/2661e987faac986f2594d1d9bbbadf1bf3053f5b).
 
-- [`mkosi.images/porterd/mkosi.conf`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/porterd/mkosi.conf)
-- [`mkosi.images/porterd/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/porterd/mkosi.postinst.chroot)
-- [`mkosi.images/porterd/required-paths.txt`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/porterd/required-paths.txt)
-- [`mkosi.images/porterd/mkosi.extra/usr/lib/systemd/system-preset/40-porterd.preset`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/porterd/mkosi.extra/usr/lib/systemd/system-preset/40-porterd.preset)
-- [`mkosi.images/porterd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-porterd.conf`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/porterd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-porterd.conf)
-- [`mkosi.images/porterd/mkosi.extra/usr/lib/extension-release.d/extension-release.porterd`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/porterd/mkosi.extra/usr/lib/extension-release.d/extension-release.porterd)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.porterd.d/porterd.feature`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.porterd.d/porterd.feature)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.porterd.d/porterd.transfer`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.porterd.d/porterd.transfer)
-- [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/shared/download/sysext-checksums.json)
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/design/sysexts.md)
-- [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28, merge commit `0ede646cd878f82e91b891d9c3f6eba77227573b`)
+- [`mkosi.images/porterd/mkosi.conf`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/porterd/mkosi.conf)
+- [`mkosi.images/porterd/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/porterd/mkosi.postinst.chroot)
+- [`mkosi.images/porterd/required-paths.txt`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/porterd/required-paths.txt)
+- [`mkosi.images/porterd/mkosi.extra/usr/lib/systemd/system-preset/40-porterd.preset`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/porterd/mkosi.extra/usr/lib/systemd/system-preset/40-porterd.preset)
+- [`mkosi.images/porterd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-porterd.conf`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/porterd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-porterd.conf)
+- [`mkosi.images/porterd/mkosi.extra/usr/lib/extension-release.d/extension-release.porterd`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/porterd/mkosi.extra/usr/lib/extension-release.d/extension-release.porterd)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.porterd.d/porterd.feature`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.porterd.d/porterd.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.porterd.d/porterd.transfer`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.porterd.d/porterd.transfer)
+- [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/shared/download/sysext-checksums.json)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/docs/design/sysexts.md)
+- [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28, merge commit `0ede646cd878f82e91b891d9c3f6eba77227573b`) and [snosi#1175](https://github.com/frostyard/snosi/pull/1175) (merged 2026-10-28, merge commit `e423112908540aa3a8045fa9d8022a3742e3cd17`)
 - core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md)
-- porter [`packaging/lodge/frostporter.service`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/frostporter.service), [`packaging/lodge/frostporter.socket`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/frostporter.socket), [`packaging/lodge/sysusers.d-frostporter.conf`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/lodge/sysusers.d-frostporter.conf), [`cmd/porterd/main.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/cmd/porterd/main.go) (`token set`), [`internal/config/config.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/internal/config/config.go) (state directory and token path)
-- porter [`README.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/README.md) (Update and Roll back), [`internal/thread/store.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/internal/thread/store.go) (the thread database errors), [`cmd/porterd/main.go`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/cmd/porterd/main.go) (the `porterd: ` prefix)
+- porter [`packaging/lodge/frostporter.service`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/packaging/lodge/frostporter.service), [`packaging/lodge/frostporter.socket`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/packaging/lodge/frostporter.socket), [`packaging/lodge/sysusers.d-frostporter.conf`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/packaging/lodge/sysusers.d-frostporter.conf), [`cmd/porterd/main.go`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/cmd/porterd/main.go) (`token set`), [`internal/config/config.go`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/internal/config/config.go) (state directory and token path)
+- porter [`README.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/README.md) (Update and Roll back), [`internal/thread/store.go`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/internal/thread/store.go) (the thread database errors), [`cmd/porterd/main.go`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/cmd/porterd/main.go) (the `porterd: ` prefix)
 - lodge [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl reload` rereads the manifests), [`internal/apps/apps.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/apps/apps.go) (`PollEvery`, 15 seconds)
 - [Irulan's review (frostyard-org#58)](https://github.com/frostyard/frostyard-org/pull/58#issuecomment-6478694500)
 - lodge v0.1.0 [`packaging/README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/README.md) (`lodgectl token issue`)
-- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
-- [Updex v2.1.2 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
+- [Updex v2.1.3 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
 - snosi [`docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md) (attestation checked at pin time and in every CI build)
 - [Murbella's review (frostyard-org#57)](https://github.com/frostyard/frostyard-org/pull/57#issuecomment-6474564111)
-- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
-- [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (Updex does not restart units)
+- [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; a link on an older image shows an update, and `features update` repoints it)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (Updex does not restart units; a unit at its start limit stays failed until `systemctl reset-failed` or a reboot)
 - Updex v2.1.3 [`updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go) (`activation did not finish`: the images are merged, and a reboot finishes the activation)
 - [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
+- [lodge#41](https://github.com/frostyard/lodge/pull/41) (merged 2026-10-28)
+- lodge [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/e76a17c57766bad3797b8d78708591d88c5e7777/docs/specs/app-contract.md) (each app's `sysusers.d` entry declares user `lodge`, with the line in lodge's own `packaging/sysusers.d/lodge.conf`)
+- lab [`docs/plans/2026-10-28-snow-sysext-probe-run.md`](https://github.com/frostyard/lab/blob/a1cb6edf1940df80d23277489381c02a4e3d683a/docs/plans/2026-10-28-snow-sysext-probe-run.md) (run `jvzfn`: with Updex v2.1.3 a unit can still fail in the enable boot) and [lab#164](https://github.com/frostyard/lab/pull/164) (merged 2026-10-28)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
