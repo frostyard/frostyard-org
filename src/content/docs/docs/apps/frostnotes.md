@@ -136,8 +136,9 @@ and [Pairing and sessions](https://github.com/frostyard/frostnotes/blob/main/doc
 To sync a vault you already have, open the vault, then Settings, Sync, Join….
 
 Settings, Sync also has Pair again… for a hub that refused this device's
-token. To leave a hub, open Settings, Sync, press Stop syncing, then press
-Leave. The vault's files stay on your computer, and you can still edit them.
+token. To leave a hub, open Settings, Sync. In the Stop syncing row, press
+Leave, then press Leave again to confirm. The vault's files stay on your
+computer, and you can still edit them.
 The hub keeps its copy.
 
 From the terminal, with your local vault's name as `VAULT`:
