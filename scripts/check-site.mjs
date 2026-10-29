@@ -1213,6 +1213,8 @@ for (const name of ["notesd", "maild", "lodge", "readd", "porterd"]) {
   assert(text.includes("Upholds="), `${route} must explain the Upholds= drop-in that restarts the units.`);
   assert(text.includes("sudo systemd-sysusers"), `${route} must give the sysusers command for a start without a reboot.`);
   assert(!text.includes("RequisiteFeatures"), `${route} must not describe a RequisiteFeatures dependency.`);
+  // Remove this guard with the caveat when a lab run proves the live enable (T416).
+  assert(text.includes("The lab has not yet proven this for"), `${route} must say that the lab has not yet proven the live enable.`);
 }
 
 // The update sections of the suite guides that back lodge's apps.

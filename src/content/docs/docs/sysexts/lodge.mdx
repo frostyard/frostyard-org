@@ -46,6 +46,9 @@ groups, and directories that the extension declares, before systemd reloads.
 `Upholds=` then starts the unit, with no reboot. `updex --version` shows your
 version.
 
+The lab has not yet proven this for lodge: no lab run has enabled it live yet.
+If the unit fails, follow the `start-limit-hit` steps below, or reboot.
+
 If `updex features list` does not show the feature, the image is older than the
 extension. [Update the image](/docs/images/install-update/) first.
 

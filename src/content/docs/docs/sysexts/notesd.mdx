@@ -36,6 +36,10 @@ groups, and directories that the extension declares, before systemd reloads.
 `Upholds=` then starts the units, with no reboot. `updex --version` shows your
 version.
 
+The lab has not yet proven this for notesd and maild: the last run, before the
+packages that declare the user `lodge`, still failed in the enable boot. If a
+unit fails, follow the `start-limit-hit` steps below, or reboot.
+
 If `updex features list` does not show the feature, the image is older than the
 extension. [Update the image](/docs/images/install-update/) first.
 
