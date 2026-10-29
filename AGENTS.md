@@ -30,6 +30,21 @@ the snapshot with a new timestamp.
 - Do not commit secrets or private configuration; `.env*` and `.dev.vars*` are
   ignored except for documented example files.
 
+## Releases and dependencies
+
+- This repository is a website. It has no tags and no GitHub releases. The
+  `version` in `package.json` is not a release version.
+- Cloudflare Workers Builds builds and deploys the site. The connection is set
+  up in the Cloudflare dashboard, not in this repository, which has no GitHub
+  Actions workflows. A push to `main` deploys to production. A PR gets a
+  preview URL in its `Workers Builds: frostyard-org` check.
+- Who deploys: Brian, when he merges to `main`. Agents never run
+  `npm run deploy` or `wrangler deploy`.
+- Internal dependencies: none. `package.json` has no frostyard or bketelsen
+  package. The build reads the published extension index at
+  `https://repository.frostyard.org/ext/index` as display data (see
+  "Generated files"). It is not a pinned dependency.
+
 ## Learned agent skills
 
 Before planning, implementing, or reviewing, read every file in
