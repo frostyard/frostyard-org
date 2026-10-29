@@ -1,6 +1,6 @@
 {
   "source": "https://repository.frostyard.org/ext/index",
-  "updatedAt": "2026-10-28T16:10:20.798Z",
+  "updatedAt": "2026-10-29T03:20:09.617Z",
   "extensions": [
     {
       "name": "1password",
@@ -100,7 +100,7 @@
     {
       "name": "maild",
       "label": "Frostmail maild",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "name": "moonlight",
@@ -115,7 +115,7 @@
     {
       "name": "notesd",
       "label": "Frostnotes notesd",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "name": "obsidian",
@@ -140,12 +140,12 @@
     {
       "name": "porterd",
       "label": "Porter porterd",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "name": "readd",
       "label": "frostread readd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "name": "sunshine",
@@ -165,7 +165,7 @@
     {
       "name": "vscode",
       "label": "Visual Studio Code",
-      "version": "1.143.1-1792691907+r1"
+      "version": "1.144.0-1793133881+r1"
     }
   ]
 }
