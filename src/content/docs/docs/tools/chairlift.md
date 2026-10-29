@@ -6,7 +6,7 @@ description: "Use ChairLift on a Frostyard image to stage system updates, update
 ChairLift is a GTK4 and Libadwaita app for system chores on a Frostyard
 desktop. It stages the next system image, updates Homebrew and Flatpak
 applications, runs cleanups, and turns Updex features on and off. This guide
-follows ChairLift v0.11.2.
+follows ChairLift v0.11.3, which uses Updex v2.1.3 for the Features page.
 
 ## Which images have it
 
@@ -83,10 +83,41 @@ update badge in the sidebar.
 2. Flip the switch on the feature, and enter your administrator password.
 
 ChairLift hands the change to Updex through the helper
-`/usr/bin/chairlift-updex-helper`. The **Update** button in the group header
-updates features. For what a feature does, how to check the merge, and how
-to remove one, see [Updex](/docs/tools/updex/) and
+`/usr/bin/chairlift-updex-helper`. For what a feature does, how to check the
+merge, and how to remove one, see [Updex](/docs/tools/updex/) and
 [Manage system extensions](/docs/sysexts/manage/).
+
+### Update features
+
+When you open Features, ChairLift checks the enabled features for updates.
+The group description shows the result, for example
+`4 features available (1 update, 1 waiting for a newer OS image)`.
+
+1. Open Features.
+2. Press **Update** in the group header, and enter your administrator
+   password.
+
+When every feature updated, the toast says
+`Features updated. Changes apply after reboot.` When nothing changed, it says
+`Features are already up to date.` Otherwise the toast stays on screen until
+you close it. It names each feature by its outcome, with the reason:
+`Updated:`, `Waiting for a newer OS image:`, `Held by a rollback:`, or
+`Failed:`.
+
+A feature waits when a downloaded revision needs a newer OS image than the
+one that boots next. Its row says `waiting for a newer OS image` and names
+each component with the image it needs, as
+`COMPONENT: needs image >= VERSION`. Updex links nothing of that feature until
+the newer image boots, so **Update** changes nothing for it. Stage a system
+update and restart. The next feature update links the revision. See
+[An extension that needs a newer image](/docs/sysexts/manage/#an-extension-that-needs-a-newer-image).
+
+The check sees only revisions that are already downloaded. Until **Update**
+downloads a newer revision, its feature reads as update available or up to
+date.
+
+A feature held by a rollback stays at its older version. See
+[Roll back](/docs/sysexts/manage/#roll-back).
 
 ### Trust a Homebrew tap
 
@@ -119,10 +150,15 @@ applications_page:
 
 Restart ChairLift. The Brew Search group is gone. A page disappears when all of its
 groups are off, and Help always stays. The
-[configuration reference](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/CONFIG.md)
+[configuration reference](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/CONFIG.md)
 lists every page and group.
 
 ## Update and roll back
+
+ChairLift v0.11.3 needs Go 1.26.10 or later to build. That Go release has the
+fixes for security issues in Go's `crypto/x509`, `crypto/tls`, `net/http`, and
+`net/textproto` packages. If you installed the package yourself, update it to
+v0.11.3 or later.
 
 On Snow, Snowfield, and Sundog, ChairLift is part of the image. It updates
 with the image: see [Stage a system update](#stage-a-system-update). It rolls
@@ -200,6 +236,9 @@ says the tool is unavailable.
 | A page is missing from the sidebar | `/etc/chairlift/config.yml` | Every group on that page is set to `enabled: false`. Turn one on and restart. |
 | No System Updates group on Updates | `sudo bootc status` and `ls /usr/libexec/bootc-update-stage` | The group needs a booted bootc deployment and that helper. |
 | Features says **Feature Manager Not Available** | `updex features list` | Updex is not set up on this system. See [Updex](/docs/tools/updex/). |
+| A feature row says `waiting for a newer OS image` | `sudo bootc status` | A downloaded revision needs a newer OS image. Stage a system update and restart. The next feature update links it. |
+| The Update toast says `activation did not finish` | The toast | The extensions merged. Restart to finish. |
+| A feature change or **Update** fails with `another updex operation is running` | Another `updex` command or the timer | Wait, then try again. Only one Updex operation that changes state runs at a time. |
 | A Homebrew upgrade fails and mentions an untrusted tap | Untrusted Homebrew Taps on Updates | Press **Trust** on the tap, then upgrade again. |
 | ChairLift asks for a password | The prompt | Staging an update and changing a feature need administrator authentication. ChairLift installs no passwordless rule. |
 | A Homebrew or Flatpak group says the tool is unavailable | `brew --version` or `flatpak --version` | Install the tool. The Maintenance groups for a missing tool are hidden. |
@@ -209,21 +248,29 @@ says the tool is unavailable.
 - [Updex](/docs/tools/updex/)
 - [Manage system extensions](/docs/sysexts/manage/)
 - [Snow](/docs/images/snow/)
-- [ChairLift README](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/README.md)
+- [ChairLift README](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/README.md)
 
 ## Sources
 
-Reviewed 2026-10-27.
+Reviewed 2026-10-29.
 
-- ChairLift main commit [`2ee787eafc52d687b036c67a769099d58b8f7065`](https://github.com/frostyard/chairlift/tree/2ee787eafc52d687b036c67a769099d58b8f7065) (latest release: v0.11.2; none of the files below changed since it)
-- [`README.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/README.md)
-- [`docs/index.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/docs/index.md)
-- [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/docs/reference.md)
-- [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/CONFIG.md)
-- [`config.yml`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/config.yml)
-- [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/docs/design/package-managers.md)
-- [`internal/views/updates_page.go`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/internal/views/updates_page.go)
-- [`internal/views/features_page.go`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/internal/views/features_page.go)
-- [`internal/views/system_page.go`](https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/internal/views/system_page.go)
+- ChairLift main commit [`f29ae11b5d5abf20f1acb9d3c0f85e4146e00464`](https://github.com/frostyard/chairlift/tree/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464) (the v0.11.3 release commit)
+- [`README.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/README.md)
+- [`docs/index.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/docs/index.md)
+- [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/docs/reference.md)
+- [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/CONFIG.md)
+- [`config.yml`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/config.yml)
+- [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/docs/design/package-managers.md)
+- [`internal/views/updates_page.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/updates_page.go)
+- [`internal/views/features_page.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/features_page.go)
+- [`internal/views/system_page.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/system_page.go)
+- [`internal/views/featurestatus/featurestatus.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/featurestatus/featurestatus.go)
+- [`internal/views/actionmsg/actionmsg.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/actionmsg/actionmsg.go)
+- [`internal/updex/summary.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/updex/summary.go)
+- [`internal/window/window.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/window/window.go)
+- [ChairLift v0.11.3 release notes](https://github.com/frostyard/chairlift/releases/tag/v0.11.3)
+- Go 1.26.10 change: commit [`5fd9b98ce7c805e6d542e1d0d5c309d34b74dcee`](https://github.com/frostyard/chairlift/commit/5fd9b98ce7c805e6d542e1d0d5c309d34b74dcee)
+- Updex v2.1.3 [`updex/lock.go`](https://github.com/frostyard/updex/blob/v2.1.3/updex/lock.go)
+- The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-29, lists `frostyard-chairlift` 0.11.3.
 - [Duncan's review: package downgrade (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
 - snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf)

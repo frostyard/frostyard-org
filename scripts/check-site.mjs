@@ -773,13 +773,16 @@ for (const heading of [
 ]) {
   assert(chairlift.includes(`id="${heading}"`), `/docs/tools/chairlift must render the "${heading}" section.`);
 }
-for (const source of ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml"]) {
-  assert(chairlift.includes(`https://github.com/frostyard/chairlift/blob/2ee787eafc52d687b036c67a769099d58b8f7065/${source}`), `/docs/tools/chairlift must cite ${source}.`);
+for (const source of ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml", "internal/views/featurestatus/featurestatus.go", "internal/views/actionmsg/actionmsg.go"]) {
+  assert(chairlift.includes(`https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/${source}`), `/docs/tools/chairlift must cite ${source}.`);
 }
 for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
   assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
 }
-assert(chairliftText.includes("This guide follows ChairLift v0.11.2"), "/docs/tools/chairlift must follow ChairLift v0.11.2.");
+assert(chairliftText.includes("This guide follows ChairLift v0.11.3"), "/docs/tools/chairlift must follow ChairLift v0.11.3.");
+assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');
+assert(chairliftText.includes("waiting for a newer OS image") && chairliftText.includes("needs image &gt;= VERSION"), "/docs/tools/chairlift must explain a feature that waits for a newer OS image.");
+assert(chairliftText.includes("Go 1.26.10"), "/docs/tools/chairlift must name the Go 1.26.10 security fix.");
 assert(chairliftText.includes("Snow, Snowfield, and Sundog install ChairLift") && chairliftText.includes("Floe does not"), "/docs/tools/chairlift must name the images that have ChairLift.");
 assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chairlift must give the dry-run command.");
 assert(chairliftText.includes("/etc/chairlift/config.yml"), "/docs/tools/chairlift must name the administrator config file.");
