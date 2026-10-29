@@ -97,24 +97,28 @@ The group description shows the result, for example
 2. Press **Update** in the group header, and enter your administrator
    password.
 
-When every feature updated, the toast says
-`Features updated. Changes apply after reboot.` When nothing changed, it says
-`Features are already up to date.` Otherwise the toast stays on screen until
-you close it. It names each feature by its outcome, with the reason:
-`Updated:`, `Waiting for a newer OS image:`, `Held by a rollback:`, or
-`Failed:`.
+The toast says what happened:
+
+- Every feature updated or was already current, and at least one updated:
+  `Features updated. Changes apply after reboot.`
+- Every feature was already current: `Features are already up to date.`
+- No feature is enabled: `No enabled features to update.`
+- A feature waits, is held, or failed, or the update fails: the toast stays
+  on screen until you close it. It names each feature by its outcome, with
+  the reason: `Updated:`, `Waiting for a newer OS image:`,
+  `Held by a rollback:`, or `Failed:`.
 
 A feature waits when a downloaded revision needs a newer OS image than the
 one that boots next. Its row says `waiting for a newer OS image` and names
 each component with the image it needs, as
-`COMPONENT: needs image >= VERSION`. Updex links nothing of that feature until
-the newer image boots, so **Update** changes nothing for it. Stage a system
-update and restart. The next feature update links the revision. See
+`COMPONENT: needs image >= VERSION`. Updex keeps the downloaded revision, but
+links no new revision of that feature while the image that boots next is too
+old. Stage a system update and restart. The next feature update links the
+revision. See
 [An extension that needs a newer image](/docs/sysexts/manage/#an-extension-that-needs-a-newer-image).
 
-The check sees only revisions that are already downloaded. Until **Update**
-downloads a newer revision, its feature reads as update available or up to
-date.
+ChairLift can tell that a revision needs a newer OS image only after an update
+downloads it. Until then, its feature reads as update available.
 
 A feature held by a rollback stays at its older version. See
 [Roll back](/docs/sysexts/manage/#roll-back).
