@@ -6,7 +6,7 @@ description: "Use ChairLift on a Frostyard image to stage system updates, update
 ChairLift is a GTK4 and Libadwaita app for system chores on a Frostyard
 desktop. It stages the next system image, updates Homebrew and Flatpak
 applications, runs cleanups, and turns Updex features on and off. This guide
-follows ChairLift v0.11.3, which uses Updex v2.1.3 for the Features page.
+follows ChairLift v0.11.4, which uses Updex v2.1.3 for the Features page.
 
 ## Which images have it
 
@@ -120,9 +120,20 @@ old. Stage a system update and restart. The next feature update links the
 revision. See
 [An extension that needs a newer image](/docs/sysexts/manage/#an-extension-that-needs-a-newer-image).
 
-ChairLift can tell that a revision needs a newer OS image only after an update
-downloads it. The **Update** toast says so at once. The row and the group
-description change at the next check, when ChairLift starts again.
+After a feature update, ChairLift checks the features again, also when the
+update failed. The rows and the group description then show the state after
+the update, not the state from the check when ChairLift started.
+
+A feature whose new version is linked and becomes active at the next boot has
+the row text `changes apply after reboot`. It counts as neither an update nor
+a wait.
+
+The check at startup shows `waiting for a newer OS image` on a bootc host
+too.
+
+One limit: when a newer OS image is already staged, a row can say
+`waiting for a newer OS image` although the next update would link the
+feature. Restart into the staged image to clear it.
 
 A feature held by a rollback stays at its older version. See
 [Roll back](/docs/sysexts/manage/#roll-back).
@@ -244,7 +255,7 @@ says the tool is unavailable.
 | A page is missing from the sidebar | `/etc/chairlift/config.yml` | Every group on that page is set to `enabled: false`. Turn one on and restart. |
 | No System Updates group on Updates | `sudo bootc status` and `ls /usr/libexec/bootc-update-stage` | The group needs a booted bootc deployment and that helper. |
 | Features says **Feature Manager Not Available** | `updex features list` | Updex is not set up on this system. See [Updex](/docs/tools/updex/). |
-| A feature row says `waiting for a newer OS image` | `sudo bootc status` | A downloaded revision needs a newer OS image. Stage a system update and restart. The next feature update links it. |
+| A feature row says `waiting for a newer OS image` | `sudo bootc status` | A downloaded revision needs a newer OS image. Stage a system update and restart. The next feature update links it. If a newer image is already staged, restart into it. |
 | The Update toast says `activation did not finish` | The toast | The extensions merged. Restart to finish. |
 | A feature change or **Update** fails with `another updex operation is running` | Another `updex` command or the timer | Wait, then try again. Only one Updex operation that changes state runs at a time. |
 | A Homebrew upgrade fails and mentions an untrusted tap | Untrusted Homebrew Taps on Updates | Press **Trust** on the tap, then upgrade again. |
@@ -262,6 +273,8 @@ says the tool is unavailable.
 
 Reviewed 2026-10-29.
 
+- ChairLift release v0.11.4 commit [`91cdb7a150e0101ed8adf5d812ac8c59c498c74c`](https://github.com/frostyard/chairlift/tree/91cdb7a150e0101ed8adf5d812ac8c59c498c74c), released 2026-10-29; [chairlift#255](https://github.com/frostyard/chairlift/pull/255).
+- [`docs/adr/0011-unprivileged-feature-check-compares-with-the-booted-image.md`](https://github.com/frostyard/chairlift/blob/91cdb7a150e0101ed8adf5d812ac8c59c498c74c/docs/adr/0011-unprivileged-feature-check-compares-with-the-booted-image.md); [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/91cdb7a150e0101ed8adf5d812ac8c59c498c74c/docs/design/package-managers.md) at v0.11.4; [v0.11.4 release notes](https://github.com/frostyard/chairlift/releases/tag/v0.11.4).
 - ChairLift main commit [`f29ae11b5d5abf20f1acb9d3c0f85e4146e00464`](https://github.com/frostyard/chairlift/tree/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464) (the v0.11.3 release commit)
 - [`README.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/README.md)
 - [`docs/index.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/docs/index.md)
@@ -280,6 +293,6 @@ Reviewed 2026-10-29.
 - [ChairLift v0.11.3 release notes](https://github.com/frostyard/chairlift/releases/tag/v0.11.3)
 - Go 1.26.10 change: commit [`5fd9b98ce7c805e6d542e1d0d5c309d34b74dcee`](https://github.com/frostyard/chairlift/commit/5fd9b98ce7c805e6d542e1d0d5c309d34b74dcee)
 - Updex v2.1.3 [`updex/lock.go`](https://github.com/frostyard/updex/blob/v2.1.3/updex/lock.go)
-- The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-29, lists `frostyard-chairlift` 0.11.3.
+- The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-29, lists `frostyard-chairlift` 0.11.4.
 - [Duncan's review: package downgrade (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
 - snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf)

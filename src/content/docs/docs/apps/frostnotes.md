@@ -20,7 +20,7 @@ want notes that sync between your devices and that agents can read and write.
 
 ## Status
 
-Frostnotes is pre-release. The latest release is v0.2.0. Its Flatpak is in the
+Frostnotes is pre-release. The latest release is v0.3.0. Its Flatpak is in the
 [Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
 attaches `frostyard-notesd_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
 `notesd`, `notesctl`, the units, the `frostnotes` user, and the web build for
@@ -34,6 +34,11 @@ on 2026-10-26, and devices now sync through lodge. Graph and queries
 (Obsidian Bases) are planned. A hub container image and systemd unit, and
 Frostyard APT packages, are planned. Windows and macOS builds, Canvas, and a
 mobile app come later.
+
+Release v0.3.0 adds a hub join from the app, a background setting, and a
+new window that replaces an older `notesd` after an update. The window also
+says why `notesd` did not start. The join form, the background setting, and
+the update replacement are not yet tested on a real desktop.
 
 ## Install
 
@@ -59,9 +64,12 @@ Check the install:
 
 `flatpak info org.frostyard.Frostnotes`
 
-You see version 0.2.0. Frostnotes shows in the app grid. Update it with
-`flatpak update`. In v0.2.0, `flatpak update` does not replace the `notesd`
-that runs. Log out and in to start the new one.
+You see version 0.3.0. Frostnotes shows in the app grid. Update it with
+`flatpak update`. From v0.3.0, when you open a new window after
+`flatpak update`, the app replaces a `notesd` of an older build with the new
+one, and you need no logout. The update from v0.2.0 to v0.3.0 is different:
+the v0.2.0 `notesd` keeps running until you log out and in. Your notes,
+files, and versions stay.
 
 Run the CLI on a desktop through the Flatpak, for example:
 
@@ -74,27 +82,67 @@ If you turn Run in Background off (GNOME Settings, Apps, Frostnotes), the
 desktop stops `notesd` once no window is open: on GNOME 48, about 45 seconds
 after the last window closes. Sync then waits until you open the app again.
 
+You can also set this in the app. Open Settings, then Background, then
+"Keep syncing when no window is open". It is On by default. On: `notesd`
+keeps running after the last window closes, and it can start at login. Off:
+`notesd` stops when the last window closes and does not start at login, so
+notes from other devices arrive only while a window is open. With the
+desktop permission off, the desktop's own stop wins. The setting applies to
+the installed app, for all vaults. The section shows only in the Flatpak.
+
 The app's data is under
 `~/.var/app/org.frostyard.Frostnotes/`, and the `notesd` log is
 `~/.var/app/org.frostyard.Frostnotes/.local/state/frostnotes/notesd.log`.
 
+### If notesd does not start
+
+If `notesd` does not start, the window says why: the cause, the checks to
+run, and the path of `notesd.log`.
+
+If the Flatpak portal did not start `notesd`, the window lists these
+commands:
+
+- `flatpak override --user --show org.frostyard.Frostnotes`
+- `flatpak override --user --reset org.frostyard.Frostnotes`
+- `systemctl --user status flatpak-portal.service`
+
+If you add or create a vault in a folder outside the Flatpak's file access,
+the app refuses it and names the fix:
+`flatpak override --user --filesystem=PATH org.frostyard.Frostnotes`. Then log
+out and in.
+
 ### Sync with a hub
 
 Sync with a hub, for example the hub in [lodge](/docs/apps/lodge/), is
-optional. Nothing turns it on for you. The app has no join form yet, so you
-join from the terminal:
+optional. Nothing turns it on for you.
 
-`flatpak run --command=notesctl org.frostyard.Frostnotes hub join URL NAME`
+1. Open the vault menu, and press Manage vaults…. With no vault yet, the app
+   opens there.
+2. Press Join on the row "Join a vault on a hub".
+3. Fill in Hub URL, for example
+   `https://lodge.example.ts.net/device/notes`, Hub vault name, This device's
+   name (optional), and Location.
+4. Press Join.
 
-Then approve the one-time code on the hub. On lodge's host, run
-`sudo -u frostnotes notesctl hub approve CODE`. The canonical steps are in
+If this device has not paired with that hub before, the app shows a one-time
+code. Approve it on the hub's machine with `notesctl hub approve CODE`. On
+lodge's host, run `sudo -u frostnotes notesctl hub approve CODE`. The code
+expires in 10 minutes. The app then makes the vault, joins it, and opens it.
+
+The canonical steps are in
 [The hub behind lodge](https://github.com/frostyard/frostnotes/blob/main/docs/design/hub.md)
 and [Pairing and sessions](https://github.com/frostyard/frostnotes/blob/main/docs/design/sync.md#pairing-and-sessions).
-To leave a hub, run this, with your local vault's name as `VAULT`:
+
+To sync a vault you already have, open the vault, then Settings, Sync, Join….
+
+Settings, Sync also has Pair again… for a hub that refused this device's
+token. To leave a hub, open Settings, Sync, press Stop syncing, then press
+Leave. The vault's files stay on your computer, and you can still edit them.
+The hub keeps its copy.
+
+From the terminal, with your local vault's name as `VAULT`:
 
 `flatpak run --command=notesctl org.frostyard.Frostnotes sync leave --vault VAULT`
-
-The vault's files stay on your computer, and you can still edit them.
 
 ### Build from source
 
@@ -144,11 +192,14 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 ## Sources
 
-Reviewed 2026-10-28.
+Reviewed 2026-10-29.
 
-- Frostnotes release v0.2.0 commit [`0573fab7eeeabf7b76a8e94916ca2b429f5b65e3`](https://github.com/frostyard/frostnotes/tree/0573fab7eeeabf7b76a8e94916ca2b429f5b65e3). `main` at [`eafe7bc3d45796c81e548004458ecd0fb304196d`](https://github.com/frostyard/frostnotes/tree/eafe7bc3d45796c81e548004458ecd0fb304196d).
-- The Flatpak: [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/eafe7bc3d45796c81e548004458ecd0fb304196d/docs/design/app.md) (section "The Flatpak") and [`docs/plans/0008-m6-the-standalone-desktop-app.md`](https://github.com/frostyard/frostnotes/blob/eafe7bc3d45796c81e548004458ecd0fb304196d/docs/plans/0008-m6-the-standalone-desktop-app.md) (gap G1, no join form).
-- Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82`. The live catalogue on 2026-10-28 lists Frostnotes 0.2.0 from tag `v0.2.0`.
+- Frostnotes release v0.3.0 commit [`2d80734337b90f497c5b6f0c7e87038d2bc96b20`](https://github.com/frostyard/frostnotes/tree/2d80734337b90f497c5b6f0c7e87038d2bc96b20), released 2026-10-28, and `main` at [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/tree/edee4ee870e55981d8912a4ecfe146b6958abfdc).
+- [`docs/plans/0008-m6-the-standalone-desktop-app.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 4: G1, G2, G3, G5), [`docs/adr/0032-an-update-replaces-the-running-notesd.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/adr/0032-an-update-replaces-the-running-notesd.md), [`docs/adr/0033-a-setting-keeps-notesd-running-without-a-window.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/adr/0033-a-setting-keeps-notesd-running-without-a-window.md).
+- [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/specs/ui.md) (sections Connecting, Settings, Vault manager) and [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/design/app.md) (section The Flatpak).
+- Plan 0008 at `main` [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/blob/edee4ee870e55981d8912a4ecfe146b6958abfdc/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 3, Run 2: the update from v0.2.0 to v0.3.0, 2026-10-29).
+- The live Frostyard catalogue on 2026-10-29 lists `frostyard/frostnotes` at tag `latest`, digest `sha256:46e19029bb751b1bfe9c0182e9e72d5d052ed1618b84f5bd7145360a4dd96145`, the v0.3.0 image.
+- Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82`.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
 - [`README.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/README.md)
