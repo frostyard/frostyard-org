@@ -99,14 +99,17 @@ The group description shows the result, for example
 
 The toast says what happened:
 
-- Every feature updated or was already current, and at least one updated:
-  `Features updated. Changes apply after reboot.`
-- Every feature was already current: `Features are already up to date.`
+- The update succeeds, every feature updated or was already current, and at
+  least one updated: `Features updated. Changes apply after reboot.`
+- The update succeeds, and every feature was already current:
+  `Features are already up to date.`
 - No feature is enabled: `No enabled features to update.`
-- A feature waits, is held, or failed, or the update fails: the toast stays
-  on screen until you close it. It names each feature by its outcome, with
-  the reason: `Updated:`, `Waiting for a newer OS image:`,
-  `Held by a rollback:`, or `Failed:`.
+- A feature waits, is held, or failed: the toast lists those features with
+  their reasons, under `Waiting for a newer OS image:`, `Held by a rollback:`,
+  or `Failed:`, and the features that updated, under `Updated:`. It stays on
+  screen until you close it.
+- The update itself fails: the toast reports the error and stays on screen
+  until you close it.
 
 A feature waits when a downloaded revision needs a newer OS image than the
 one that boots next. Its row says `waiting for a newer OS image` and names
