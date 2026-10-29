@@ -89,7 +89,7 @@ merge, and how to remove one, see [Updex](/docs/tools/updex/) and
 
 ### Update features
 
-When you open Features, ChairLift checks the enabled features for updates.
+When ChairLift starts, it checks the enabled features for updates.
 The group description shows the result, for example
 `4 features available (1 update, 1 waiting for a newer OS image)`.
 
@@ -121,7 +121,8 @@ revision. See
 [An extension that needs a newer image](/docs/sysexts/manage/#an-extension-that-needs-a-newer-image).
 
 ChairLift can tell that a revision needs a newer OS image only after an update
-downloads it. Until then, its feature reads as update available.
+downloads it. The **Update** toast says so at once. The row and the group
+description change at the next check, when ChairLift starts again.
 
 A feature held by a rollback stays at its older version. See
 [Roll back](/docs/sysexts/manage/#roll-back).
@@ -268,6 +269,7 @@ Reviewed 2026-10-29.
 - [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/CONFIG.md)
 - [`config.yml`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/config.yml)
 - [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/docs/design/package-managers.md)
+- [`internal/views/views.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/views.go)
 - [`internal/views/updates_page.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/updates_page.go)
 - [`internal/views/features_page.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/features_page.go)
 - [`internal/views/system_page.go`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/internal/views/system_page.go)
