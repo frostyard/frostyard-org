@@ -23,22 +23,22 @@ daemon on your machine, and the app and the command line talk to it.
 
 ## Status
 
-Frostmail is pre-release. The latest release is v0.2.0. Each release attaches
-one package, `frostyard-maild_X.Y.Z_amd64.deb`, for lodge's host. It holds
-`maild`, `mailctl`, the units, the `frostmail` user, and the web build for
-lodge's mail app. The desktop app has no package. Frostmail is not in the
-Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard
-Homebrew tap. On a Frostyard image, the
+Frostmail is pre-release. The latest release is v0.3.0. Each release
+attaches one package, `frostyard-maild_X.Y.Z_amd64.deb`, for lodge's host. It holds `maild`, `mailctl`, the units, the `frostmail`
+user, and the web build for lodge's mail app. The desktop app has no
+package. Frostmail is not in the Frostyard APT repository, the Frostyard
+Flatpak remote, or the Frostyard Homebrew tap. On a Frostyard image, the
 [maild system extension](/docs/sysexts/maild/) installs it.
 
-A standalone desktop Flatpak is coming. Its first part is merged on `main`
-(frostmail#126): the Flatpak `org.frostyard.Frostmail` carries `maild` and
-`mailctl`, and its launcher starts its own local `maild`. The choice of mode,
-secrets in the sandbox, and the release are not built. When it ships, local
-is the default, and [lodge](/docs/apps/lodge/) is a connection you choose:
-nothing turns it on for you, and a change of mode never copies, moves,
-merges, or deletes your data unless you confirm it. The latest release,
-v0.2.0, has no Flatpak yet.
+A standalone desktop Flatpak, `org.frostyard.Frostmail`, is in
+release-candidate testing. It carries `maild` and `mailctl`, and its launcher
+starts its own local `maild`. Local is the default, and
+[lodge](/docs/apps/lodge/) is a connection you choose: nothing turns it on
+for you, and a change of mode never copies, moves, merges, or deletes your
+data unless you confirm it. Secrets in its own keyring namespace, Save As
+through the file chooser portal, the first run, and the change of mode are
+built. The Flatpak is not in the Frostyard Flatpak remote yet, and release
+v0.3.0 has no Flatpak.
 
 Mail in lodge is built and still in progress. Its last step, the move of a
 real mail store to lodge's host, has not run yet. Calendar, task, and
@@ -86,8 +86,11 @@ for one user are the canonical ones.
 
 ## Sources
 
-Reviewed 2026-10-28.
+Reviewed 2026-10-29.
 
+- Frostmail release v0.3.0 commit [`89243ae6753d6da11947c6fd7023c84ad0ce59d7`](https://github.com/frostyard/frostmail/tree/89243ae6753d6da11947c6fd7023c84ad0ce59d7), released 2026-10-28. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.3.0) attaches only `frostyard-maild_0.3.0_amd64.deb`.
+- Frostmail `main` at [`32d764c1dfd59d5178621bcf17290a6e6dc68963`](https://github.com/frostyard/frostmail/tree/32d764c1dfd59d5178621bcf17290a6e6dc68963): [`docs/plans/0013-m6-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/plans/0013-m6-the-standalone-desktop-flatpak.md) (Status, 2026-10-29: Phases 2 to 7 built; Phase 8's workflow built in PR #143; Phase 8's test remote and Phases 9 and 10 not done).
+- Release candidates: the tags [`v0.4.0-rc.1`](https://github.com/frostyard/frostmail/tree/v0.4.0-rc.1) (commit `ddad3ba6ec8ddf0a0b74860dbdc51ad12e35254d`) and [`v0.4.0-rc.2`](https://github.com/frostyard/frostmail/tree/v0.4.0-rc.2) (commit `32d764c1dfd59d5178621bcf17290a6e6dc68963`, `main` above). Their `flatpak.yml` runs passed on 2026-10-29. A candidate tag does not move `latest` or the Frostyard remote (plan 0013, Phase 8).
 - Frostmail v0.1.0 commit [`df106558209fad29c63983710a1a646557064dd4`](https://github.com/frostyard/frostmail/tree/df106558209fad29c63983710a1a646557064dd4)
 - [`README.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/README.md)
 - [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/design/desktop.md), [`docs/design/accounts.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/design/accounts.md), [`docs/design/overview.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/design/overview.md)
@@ -98,4 +101,4 @@ Reviewed 2026-10-28.
 - Frostmail release v0.2.0 commit [`0424a736cc44a4ab8a0bfb247a8d445c0b967387`](https://github.com/frostyard/frostmail/tree/0424a736cc44a4ab8a0bfb247a8d445c0b967387), released 2026-10-28. It includes PR #126 and PR #129, and its [release](https://github.com/frostyard/frostmail/releases/tag/v0.2.0) attaches only `frostyard-maild_0.2.0_amd64.deb`.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
-- No package: the Flatpak index [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82` has no entry, and the Homebrew tap [`Casks`](https://github.com/frostyard/homebrew-tap/tree/afd829de04b62b37f20a97d2a67fdfe4b477606f/Casks) at `afd829de04b62b37f20a97d2a67fdfe4b477606f` holds only `chairlift.rb` and `nsl.rb`. The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-28, lists no package.
+- No package: the Flatpak index [`apps.json`](https://github.com/frostyard/flatpak-index/blob/36eafa7332b1b63fc78a4c2609ab7ebc10705874/apps.json) at `36eafa7332b1b63fc78a4c2609ab7ebc10705874` has no entry, and the Homebrew tap [`Casks`](https://github.com/frostyard/homebrew-tap/tree/afd829de04b62b37f20a97d2a67fdfe4b477606f/Casks) at `afd829de04b62b37f20a97d2a67fdfe4b477606f` holds only `chairlift.rb` and `nsl.rb`. The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-10-29, lists no package.
