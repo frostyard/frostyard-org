@@ -142,8 +142,8 @@ also hold the Frostyard key, or every Frostyard download fails verification.
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
 download worked, but the activation did not. If the output says `activation did
 not finish`, the extension is merged, but its users and groups can be missing:
-reboot. Otherwise the merge failed: run `sudo systemd-sysext refresh`, or
-reboot.
+reboot. Otherwise Updex cannot tell what is merged: run
+`sudo systemd-sysext refresh`, or reboot. Then check `systemd-sysext status`.
 
 ## Update
 
