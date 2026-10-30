@@ -55,8 +55,11 @@ There is no unit to check. The extension ships no service, no preset, and no
 boot drop-in.
 
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
-download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
-reboot. Then run the checks above again.
+download worked, but the activation did not. If the output says
+`activation did not finish`, the extension is merged, but users and groups can
+be missing: reboot. Otherwise the merge state is unknown: reboot. A
+`sudo systemd-sysext refresh` by hand does not create users and groups. Then run
+the checks above again.
 
 ## Use Visual Studio Code
 
@@ -114,9 +117,9 @@ timer, and plain `disable`.
 
 | Symptom | Check | Fix |
 | --- | --- | --- |
-| `code` or the launcher is missing | `systemd-sysext status`, `command -v code`, and `ls /usr/share/applications/com.microsoft.VSCode.desktop` | Check that the image is merged. If it is, run `sudo systemd-sysext refresh` or reboot. |
+| `code` or the launcher is missing | `systemd-sysext status`, `command -v code`, and `ls /usr/share/applications/com.microsoft.VSCode.desktop` | Check that the image is merged. If it is, reboot: a `sudo systemd-sysext refresh` does nothing when the merged images did not change. |
 | The icon is the generic application icon | The icon in the application grid after a new login | A running GNOME session does not always rescan icons from a merge. Icons are reliable from the next session start. |
-| `enable --now` exits non-zero after the download | The output shows `Error: sysext refresh failed` (`refresh_error` with `--json`) | Run `sudo systemd-sysext refresh` or reboot, then check `systemd-sysext status`. |
+| `enable --now` exits non-zero after the download | The output shows `Error: sysext refresh failed` (`refresh_error` with `--json`) | If the output says `activation did not finish`, reboot. Otherwise reboot too: a refresh by hand does not create the extension's users and groups. Then check `systemd-sysext status`. |
 
 Do not repair the extension with `apt`. If a merged image is missing files, the
 fix is a corrected extension build.
@@ -154,14 +157,14 @@ have. A later Base can break an older Visual Studio Code image.
 - [Dev tools system extension](/docs/sysexts/dev/)
 - [Manage system extensions](/docs/sysexts/manage/)
 - [Desktop applications in sysexts](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [Updex v2.1.2 command reference](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
+- [Updex v2.1.3 command reference](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md)
 
 ## Sources
 
-Reviewed 2026-10-27. snosi commit
+Reviewed 2026-10-27; Updex facts reviewed 2026-10-30. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.1.2 commit
-[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
+Updex v2.1.3 commit
+[`2661e987faac986f2594d1d9bbbadf1bf3053f5b`](https://github.com/frostyard/updex/tree/2661e987faac986f2594d1d9bbbadf1bf3053f5b).
 
 - [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/vscode/mkosi.conf)
 - [`mkosi.images/vscode/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/vscode/required-paths.txt)
@@ -171,9 +174,10 @@ Updex v2.1.2 commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.transfer)
 - [`docs/native-ab-prototype-history.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/native-ab-prototype-history.md)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
-- [Updex v2.1.2 `updex/features.go`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/features.go)
-- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
+- [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md)
+- [Updex v2.1.3 `updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go)
+- [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
 - [Murbella's live check on a merged host (frostyard-org#21 review)](https://github.com/frostyard/frostyard-org/pull/21#pullrequestreview-5619934232)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

@@ -42,8 +42,11 @@ systemctl status pilothoused.service pilothouse.service
 `systemd-sysext status` lists `pilothouse`, both names print a path, and both units are active.
 
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
-download worked but the merge did not. Run `sudo systemd-sysext refresh`, or
-reboot. Then run the checks above again.
+download worked, but the activation did not. If the output says
+`activation did not finish`, the extension is merged, but users and groups can
+be missing: reboot. Otherwise the merge state is unknown: reboot. A
+`sudo systemd-sysext refresh` by hand does not create users and groups. Then run
+the checks above again.
 
 ## Use pilothouse
 
@@ -55,7 +58,7 @@ http://127.0.0.1:8888
 
 Sign in with a non-root account of this machine and its password. Root cannot sign in. Every signed-in account can view. Members of the `sudo` group can make changes.
 
-`pilothoused.service` is the root broker. It listens on `/run/pilothouse/broker.sock` for members of the `pilothouse` group. It treats members of the `sudo` group as administrators. It checks admin actions through the `pilothouse` PAM service. The merge places `/etc/pam.d/pilothouse` from `/usr/share/factory/etc/pam.d/pilothouse`.
+`pilothoused.service` is the root broker. It listens on `/run/pilothouse/broker.sock` for members of the `pilothouse` group. It treats members of the `sudo` group as administrators. It checks admin actions through the `pilothouse` PAM service. A tmpfiles rule copies `/etc/pam.d/pilothouse` from `/usr/share/factory/etc/pam.d/pilothouse` at boot, or on a refresh by Updex v2.1.3 and later, when the file is missing.
 
 Frostyard starts the broker with these backends switched on: Updex (`/usr/bin/updex`), the Podman socket (`/run/podman/podman.sock`), the Docker socket (`unix:///var/run/docker.sock`), Incus, and k3s (`/usr/bin/k3s`). A backend whose program or socket is missing does not stop the broker. Merge the [Podman](/docs/sysexts/podman/), [Docker](/docs/sysexts/docker/), [Incus](/docs/sysexts/incus/), or [k3s](/docs/sysexts/k3s/) extension to give Pilothouse something to manage.
 
@@ -87,7 +90,7 @@ Updex unmerges all extensions on the host, deletes the image, and merges the res
 | Package | `frostyard-pilothouse`, from the upstream release, installed into the image with `dpkg`. The build checks the download against a pinned checksum, and checks that its dependencies are met before it installs |
 | Commands | `/usr/bin/pilothouse` and `/usr/bin/pilothoused` |
 | PAM service | `/etc/pam.d/pilothouse`, from `/usr/share/factory/etc/pam.d/pilothouse` |
-| User and group | `pilothouse`, created at boot |
+| User and group | `pilothouse`, created at boot, or by a refresh from Updex v2.1.3 and later |
 | Broker command | `pilothoused --socket /run/pilothouse/broker.sock --socket-group pilothouse --admin-group sudo --updex /usr/bin/updex --podman-socket /run/podman/podman.sock --docker unix:///var/run/docker.sock --incus --k3s /usr/bin/k3s` |
 | Version | The image file name carries the `frostyard-pilothouse` package version, plus a `+rN` snosi revision when one is set |
 | Image file | `pilothouse_<version>_<os>_<arch>.raw.zst`; `.raw.xz`, `.raw.gz`, and `.raw` also work |
@@ -109,10 +112,10 @@ Each build checks the two commands, both service units, the sysusers file, the f
 
 ## Sources
 
-Reviewed 2026-10-27. snosi commit
+Reviewed 2026-10-27; Updex facts reviewed 2026-10-30. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.1.2 commit
-[`ce3900e5f2eded725ddc5afd8b532992e573200e`](https://github.com/frostyard/updex/tree/ce3900e5f2eded725ddc5afd8b532992e573200e).
+Updex v2.1.3 commit
+[`2661e987faac986f2594d1d9bbbadf1bf3053f5b`](https://github.com/frostyard/updex/tree/2661e987faac986f2594d1d9bbbadf1bf3053f5b).
 
 - [`mkosi.images/pilothouse/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/pilothouse/mkosi.conf)
 - [`mkosi.images/pilothouse/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/pilothouse/mkosi.postinst.chroot)
@@ -127,7 +130,8 @@ Updex v2.1.2 commit
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
 - [`docs/adr/0004-sysext-authoring-rules.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/adr/0004-sysext-authoring-rules.md)
 
-- [Updex v2.1.2 `README.md`](https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md)
-- [Updex v2.1.2 release](https://github.com/frostyard/updex/releases/tag/v2.1.2)
+- [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md)
+- [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
 - [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

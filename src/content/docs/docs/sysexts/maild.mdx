@@ -70,8 +70,9 @@ Run `sudo systemctl reset-failed frostmail.socket frostmail.service`, then
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
 download worked, but the activation did not. If the output says
 `activation did not finish`, the extension is merged, but its users and groups
-can be missing: reboot. Otherwise the merge failed: run
-`sudo systemd-sysext refresh`, or reboot. Then run the checks above again.
+can be missing: reboot. Otherwise the merge state is unknown: reboot. A
+`sudo systemd-sysext refresh` by hand does not create the extension's users
+and groups. Then run the checks above again.
 
 ## What runs
 
