@@ -269,8 +269,8 @@ for (const route of ["/docs/images/install-update/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
-assert(docsLanding.includes("Updex v2.1.2"), "/docs must name the Updex v2.1.2 source pin.");
-assert(docsLanding.includes("https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md"), "/docs must cite the pinned Updex v2.1.2 README.");
+assert(docsLanding.includes("Updex v2.1.3"), "/docs must name the Updex v2.1.3 source pin.");
+assert(docsLanding.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md"), "/docs must cite the pinned Updex v2.1.3 README.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
 
 const snow = await readRoute("/docs/images/snow");
@@ -934,10 +934,10 @@ for (const page of sysextPages) {
   assert(text.includes("%w") && text.includes("%a"), `${page.route} must explain the %w and %a transfer matching.`);
   assert(text.includes("does not prove that setup completed"), `${page.route} must state that a merge does not prove setup completed.`);
   assert(text.includes("unmerges all extensions on the host"), `${page.route} must warn that removal unmerges all extensions.`);
-  assert(text.includes("remaining extensions stay unmerged"), `${page.route} must warn about a failed post-removal refresh.`);
+  assert(text.includes("remaining extensions may stay unmerged"), `${page.route} must warn about a failed post-removal refresh.`);
   assert(text.includes("sudo systemd-sysext refresh"), `${page.route} must give the sudo refresh recovery command.`);
   assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`), `${page.route} must cite reload-sysext.service.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/features.go"), `${page.route} must cite updex/features.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go"), `${page.route} must cite updex/features.go.`);
   if (page.route === "/docs/sysexts/incus") {
     assert(html.includes('<code dir="auto">driver: lxc | qemu</code>'), "Incus must render the complete QEMU driver text.");
     assert(html.includes('If only <code dir="auto">lxc</code> is present, the bundled QEMU runtime is not loading.'), "Incus must keep the VM troubleshooting next action.");
@@ -977,14 +977,14 @@ for (const page of sysextPages) {
   for (const source of page.sources) {
     assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/${source}`), `${page.route} must cite ${source} at snosi ${page.snosi}.`);
   }
-  assert(html.includes("https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md"), `${page.route} must cite the Updex v2.1.2 README.`);
-  assert(html.includes("https://github.com/frostyard/updex/releases/tag/v2.1.2"), `${page.route} must link the Updex v2.1.2 release.`);
-  assert(html.includes("Updex v2.1.2 release"), `${page.route} must label the Updex release source.`);
-  assert(html.includes("Updex v2.1.2 commit"), `${page.route} must label the Updex commit source.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md"), `${page.route} must cite the Updex v2.1.3 README.`);
+  assert(html.includes("https://github.com/frostyard/updex/releases/tag/v2.1.3"), `${page.route} must link the Updex v2.1.3 release.`);
+  assert(html.includes("Updex v2.1.3 release"), `${page.route} must label the Updex release source.`);
+  assert(html.includes("Updex v2.1.3 commit"), `${page.route} must label the Updex commit source.`);
   assert(html.includes("https://github.com/frostyard/updex/pull/445"), `${page.route} must link Updex PR #445.`);
   assert(text.includes("--force"), `${page.route} must explain the --force removal guard.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/install.go"), `${page.route} must cite updex/install.go.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/sysext/manager.go"), `${page.route} must cite sysext/manager.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/install.go"), `${page.route} must cite updex/install.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/sysext/manager.go"), `${page.route} must cite sysext/manager.go.`);
   assert(!html.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), `${page.route} must not cite the old Updex branch commit.`);
   assert(html.includes(`/var/lib/extensions/${page.name}.raw`), `${page.route} must name the live sysext link.`);
   assert(html.includes(`/var/lib/extensions.d/${page.name}.raw`), `${page.route} must name the removed legacy link.`);
@@ -1109,8 +1109,8 @@ for (const page of commandPages) {
     assert(html.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `${page.route} must cite ${source}.`);
   }
   assert(html.includes("https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md"), `${page.route} must cite the system extension model.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/README.md"), `${page.route} must cite the Updex v2.1.2 README.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/updex/features.go"), `${page.route} must cite updex/features.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md"), `${page.route} must cite the Updex v2.1.3 README.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go"), `${page.route} must cite updex/features.go.`);
   assert(html.includes("https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json"), `${page.route} must cite the catalog snapshot.`);
 
   for (const statement of page.statements) {
@@ -1120,7 +1120,7 @@ for (const page of commandPages) {
 
 for (const route of ["/docs/tools/updex", "/docs/sysexts", "/docs/sysexts/manage", "/docs/sysexts/docker", "/docs/sysexts/incus", "/docs/sysexts/tailscale", "/docs/sysexts/dev", "/docs/sysexts/k3s", "/docs/sysexts/nix", "/docs/sysexts/vscode", "/docs/sysexts/himmelblau"]) {
   const stale = textOf(await readRoute(route));
-  assert(!stale.includes("Planned:"), `${route} must not carry a "Planned:" paragraph: Updex v2.1.2 ships rollback, the packaged timer, and the RUNNING and LINKED columns.`);
+  assert(!stale.includes("Planned:"), `${route} must not carry a "Planned:" paragraph: Updex v2.1.3 ships rollback, the packaged timer, and the RUNNING and LINKED columns.`);
   assert(!stale.includes("has no rollback command"), `${route} must not say that Updex has no rollback command.`);
   assert(!stale.includes("once a day") && !stale.includes("daily timer"), `${route} must not describe the old daily timer.`);
   assert(!stale.includes("switched off. daemon enable turns it on") && !stale.includes("timer is off by default") && !stale.includes("timer is opt-in"), `${route} must not say that the update timer is off by default: the base image enables updex-update.timer.`);
@@ -1214,7 +1214,7 @@ assert(pagefindEnglish.page_count === docsRoutes.length, `The Pagefind index mus
 for (const name of ["1password-cli", "1password", "bitwarden", "chatgpt", "claude-desktop", "code-server", "coder", "debdev", "edge", "gitdesktop", "github-copilot", "lemonade", "localsend", "lodge", "maild", "moonlight", "notesd", "obsidian", "paseo", "pilothouse", "podman", "porterd", "readd", "sunshine", "voxtype"]) {
   const route = `/docs/sysexts/${name}`;
   const text = textOf(await readRoute(route));
-  assert(!text.includes("has no rollback command") && !text.includes("planned `updex features rollback`") && !text.includes("planned updex features rollback"), `${route} must not say that Updex has no rollback command: Updex v2.1.2 ships it.`);
+  assert(!text.includes("has no rollback command") && !text.includes("planned `updex features rollback`") && !text.includes("planned updex features rollback"), `${route} must not say that Updex has no rollback command: Updex v2.1.3 ships it.`);
   assert(text.includes(`sudo updex features rollback ${name}`), `${route} must give the rollback command.`);
 }
 
@@ -1262,6 +1262,52 @@ for (const [name, marker] of [
   const enableText = textOf(html.slice(0, beforeRuns));
   assert(enableText.includes("activation did not finish"), `${route} must explain the "activation did not finish" message in the enable section.`);
   assert(enableText.includes("can be missing: reboot"), `${route} must say that users and groups can be missing until a reboot.`);
+}
+
+// Every sysext guide states the Updex v2.1.3 refresh result and cites the current Updex pin.
+const refreshGuideNames = [
+  "1password-cli",
+  "1password",
+  "bitwarden",
+  "chatgpt",
+  "claude-desktop",
+  "code-server",
+  "coder",
+  "debdev",
+  "dev",
+  "docker",
+  "edge",
+  "gitdesktop",
+  "github-copilot",
+  "himmelblau",
+  "incus",
+  "k3s",
+  "lemonade",
+  "localsend",
+  "lodge",
+  "maild",
+  "moonlight",
+  "notesd",
+  "nix",
+  "obsidian",
+  "paseo",
+  "pilothouse",
+  "podman",
+  "porterd",
+  "readd",
+  "sunshine",
+  "tailscale",
+  "voxtype",
+  "vscode",
+];
+for (const route of refreshGuideNames.map((name) => `/docs/sysexts/${name}`).concat("/docs/sysexts")) {
+  const html = await readRoute(route);
+  const text = textOf(html);
+  assert(!text.includes("Otherwise the merge failed"), `${route} must not say that an unknown merge state means a failed merge.`);
+  assert(!text.includes("the download worked but the merge did not"), `${route} must not say that a failed refresh means the merge did not happen.`);
+  assert(text.includes("the merge state is unknown: reboot"), `${route} must state that an unknown merge state needs a reboot.`);
+  assert(!html.includes("ce3900e5f2eded725ddc5afd8b532992e573200e"), `${route} must not cite the old Updex commit.`);
+  assert(!text.includes("Updex v2.1.2"), `${route} must not name Updex v2.1.2.`);
 }
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);
