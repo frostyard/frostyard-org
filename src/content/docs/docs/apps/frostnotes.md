@@ -197,7 +197,7 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 ## Sources
 
-Reviewed 2026-10-29.
+Reviewed 2026-10-30.
 
 - Frostnotes release v0.3.0 commit [`2d80734337b90f497c5b6f0c7e87038d2bc96b20`](https://github.com/frostyard/frostnotes/tree/2d80734337b90f497c5b6f0c7e87038d2bc96b20), released 2026-10-28, and `main` at [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/tree/edee4ee870e55981d8912a4ecfe146b6958abfdc).
 - [`docs/plans/0008-m6-the-standalone-desktop-app.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 4: G1, G2, G3, G5), [`docs/adr/0032-an-update-replaces-the-running-notesd.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/adr/0032-an-update-replaces-the-running-notesd.md), [`docs/adr/0033-a-setting-keeps-notesd-running-without-a-window.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/adr/0033-a-setting-keeps-notesd-running-without-a-window.md).
@@ -205,7 +205,7 @@ Reviewed 2026-10-29.
 - Plan 0008 at `main` [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/blob/edee4ee870e55981d8912a4ecfe146b6958abfdc/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 3, Run 2: the update from v0.2.0 to v0.3.0, 2026-10-29).
 - The live Frostyard catalogue on 2026-10-29 lists `frostyard/frostnotes` at tag `latest`, digest `sha256:46e19029bb751b1bfe9c0182e9e72d5d052ed1618b84f5bd7145360a4dd96145`, the v0.3.0 image.
 - Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82`.
-- Install text: flatpak-index [flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7) at [`8f951e53a8801b289e4edcd7d06f018a0333f73e`](https://github.com/frostyard/flatpak-index/blob/8f951e53a8801b289e4edcd7d06f018a0333f73e/README.md) (open on 2026-10-30): the per-user remote and the Flathub user remote.
+- Install text: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md) at `4828c9836d451aaa7376483737d25a764b4e17bd` ([flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7), merged 2026-10-30): the per-user remote and the Flathub user remote.
 - The per-user remote: Brian's decisions T532a (2026-10-29) and T532b: every user adds the remote. A fresh Snow install has no `frostyard` remote, user or system (Murbella's check, T540).
 - The Flathub user remote: a test on 2026-10-30 with Flatpak 1.16.6 and an empty user installation. Without Flathub as a user remote, `flatpak install --user` fails with `requires the runtime org.gnome.Platform/x86_64/51 which was not found`.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.

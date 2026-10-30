@@ -63,7 +63,7 @@ sudo updex features rollback <name>
 ```
 
 The rollback takes effect at the next boot. Add `--now` to apply it with a
-`systemd-sysext refresh`, and `--to VERSION` to pick the version. Updex then
+refresh, and `--to VERSION` to pick the version. Updex then
 holds the feature until a newer version is published. Delete the hold with
 `sudo updex features rollback --clear <name>`. See [Roll
 back](/docs/sysexts/manage/#roll-back) for the steps and the rules.

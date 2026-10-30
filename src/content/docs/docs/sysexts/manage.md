@@ -75,8 +75,7 @@ sudo updex features enable <name> --now
 
 The output says `Feature '<name>' enabled.` and lists the downloaded files.
 With `--now`, Updex writes the drop-in, downloads the image, checks its SHA256
-hash against the signed manifest, creates the link, and runs
-`systemd-sysext refresh`.
+hash against the signed manifest, creates the link, and refreshes the merge.
 
 The refresh also creates the users, groups, and directories that the extension
 declares, before systemd reloads. Its units can then start at once, with no
@@ -142,8 +141,11 @@ also hold the Frostyard key, or every Frostyard download fails verification.
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
 download worked, but the activation did not. If the output says `activation did
 not finish`, the extension is merged, but its users and groups can be missing:
-reboot. Otherwise Updex cannot tell what is merged: run
-`sudo systemd-sysext refresh`, or reboot. Then check `systemd-sysext status`.
+reboot. Otherwise Updex cannot tell what is merged: reboot. Updex v2.1.3
+still says `run 'systemd-sysext refresh' (or reboot)` here. Do not refresh by
+hand: a `sudo systemd-sysext refresh` merges the extension, but it does not
+create the extension's users and groups. After the reboot, check
+`systemd-sysext status`.
 
 ## Update
 
@@ -191,8 +193,8 @@ the new version runs after the next reboot. If Updex prints
 `refresh skipped: ...`, it could not refresh safely, and the output says why:
 a revision needs a newer running image, or Updex cannot check one. The links
 stay, and the change takes effect at the next boot. Do not run
-`systemd-sysext refresh` by hand: a refresh by hand does not create the
-extension's users and groups. With `--json`, each feature result has
+`systemd-sysext refresh` by hand: it merges a revision that the running image
+may not support, and it does not create the extension's users and groups. With `--json`, each feature result has
 `refresh_skipped` with this reason. See
 [Features and components](https://github.com/frostyard/updex/blob/v2.1.3/README.md#features-and-components)
 for the refresh rules.
@@ -374,8 +376,8 @@ sudo updex features rollback <name>
 ```
 
 Updex links the newest staged version that is older than the linked one. The
-rollback takes effect at the next boot. To apply it now with a
-`systemd-sysext refresh`, add `--now`. To pick the version, add
+rollback takes effect at the next boot. To apply it now with a refresh, add
+`--now`. To pick the version, add
 `--to VERSION`. If the older version is not on disk, the command fails and
 changes nothing.
 
@@ -493,7 +495,7 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 | `features update` shows `not linked: needs image >= <value>` | `bootc status` | The revision needs a newer base image. Update the image. The next run links it. |
 | `another updex operation is running` | Another `updex` command or the timer | Wait, then run the command again. Only one operation that changes state runs at a time. |
 | `features check` shows `UPDATE=error` | The command output and the network | Check the network and the published manifest. The command exits non-zero. Do not read the row as up to date. |
-| `enable --now` exits non-zero after the download | The output shows `sysext refresh failed` | If the output says `activation did not finish`, reboot. Otherwise run `sudo systemd-sysext refresh`, or reboot. Then check `systemd-sysext status`. |
+| `enable --now` exits non-zero after the download | The output shows `sysext refresh failed` | If the output says `activation did not finish`, reboot. Otherwise reboot too: a refresh by hand does not create the extension's users and groups. Then check `systemd-sysext status`. |
 | A service is not active after `enable --now` | `systemctl status <name>.service` and `systemd-sysext status` | If the unit shows `start-limit-hit`, run `sudo systemctl reset-failed <name>.service`, then start it. Otherwise reboot, so that `reload-sysext.service` runs the setup, then check again. |
 | `disable --now` refuses with `is active` | The refusal names the extension and its version | Add `--force`, then reboot. |
 | A signature check fails | The command output | Check the network and the published manifest. The publisher must provide `SHA256SUMS.gpg`. Never turn verification off. |
@@ -541,6 +543,9 @@ Updex v2.1.3 commit
 - [`docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md)
 - [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md)
 - [`sysext/runner.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/sysext/runner.go) (`ErrActivationIncomplete`: `extensions merged, but activation did not finish`)
+- [`updex/imagegate.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/imagegate.go) (`refreshGate`) and [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/design/overview.md#refresh-gate-the-running-image-adr-0016) (Refresh gate)
+- [updex#479](https://github.com/frostyard/updex/issues/479): `updex/features.go:417` at v2.1.3 still advises a refresh by hand after a failed refresh.
+- [Lucilla's review, frostyard-org#63](https://github.com/frostyard/frostyard-org/pull/63#issuecomment-6519217746): reboot, not a refresh by hand, after an `enable --now` refresh failure.
 - [`shared/sysext/finalize/sysext-upholds-guard.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-upholds-guard.sh)
 - [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
 - [`cmd/updex/components.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/cmd/updex/components.go)

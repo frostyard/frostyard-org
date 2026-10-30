@@ -30,12 +30,17 @@ attaches `frostyard-maild_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
 `maild`, `mailctl`, the units, the `frostmail` user, and the web build for
 lodge's mail app. Frostmail is not in the Frostyard APT repository or the
 Frostyard Homebrew tap. On a Frostyard image, the
-[maild system extension](/docs/sysexts/maild/) installs it.
+[maild system extension](/docs/sysexts/maild/) installs `maild` for lodge's
+host.
 
 The Flatpak carries `maild` and `mailctl`, and its launcher starts its own
 local `maild`. Local is the default, and [lodge](/docs/apps/lodge/) is a
 connection you choose: nothing turns it on for you, and a change of mode never
 copies, moves, merges, or deletes your data.
+
+The first launch asks the Background portal to let `maild` run in the
+background and start at login. If you refuse, `maild` runs only while a window
+is open, so sync, Send Later, and notifications wait until you open the app.
 
 Mail in lodge is built and still in progress. Its last step, the move of a
 real mail store to lodge's host, has not run yet. Calendar, task, and contact
@@ -76,7 +81,8 @@ has them.
 
 To build from source, `make install` puts `maild` and `mailctl` in
 `~/.local/bin` with a systemd user service, and you build the app in an
-[nsl](/docs/tools/nsl/) machine. The
+[nsl](/docs/tools/nsl/) machine. The local build has the same app ID as the
+Flatpak from the remote: install one of the two at a time. The
 [install steps](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#installing-for-one-user)
 for one user are the canonical ones. Behind [lodge](/docs/apps/lodge/), `maild`
 runs as the system user `frostmail` on lodge's host. To check the release
@@ -120,8 +126,8 @@ Reviewed 2026-10-30.
 
 - Frostmail release v0.4.0 commit [`32d764c1dfd59d5178621bcf17290a6e6dc68963`](https://github.com/frostyard/frostmail/tree/32d764c1dfd59d5178621bcf17290a6e6dc68963), released 2026-10-29. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.4.0) attaches only `frostyard-maild_0.4.0_amd64.deb`.
 - The Flatpak: GHCR `ghcr.io/frostyard/frostmail` tags `v0.4.0` and `latest` at digest `sha256:89980a48d4492400636022d8db44ef64dcc16e3c405f501617d4357f7b90cf2a`, which the live Frostyard catalogue lists on 2026-10-30. [`packaging/flatpak/org.frostyard.Frostmail.json`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/packaging/flatpak/org.frostyard.Frostmail.json) (runtime `org.gnome.Platform` 51).
-- Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ec8b85e371bd9cac79512904c1a8b27179c5cc6a/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ec8b85e371bd9cac79512904c1a8b27179c5cc6a/apps.json) at `ec8b85e371bd9cac79512904c1a8b27179c5cc6a`, after [flatpak-index#6](https://github.com/frostyard/flatpak-index/pull/6), merged 2026-10-29.
-- Install text: flatpak-index [flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7) at [`8f951e53a8801b289e4edcd7d06f018a0333f73e`](https://github.com/frostyard/flatpak-index/blob/8f951e53a8801b289e4edcd7d06f018a0333f73e/README.md) (open on 2026-10-30): the per-user remote and the Flathub user remote.
+- Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/apps.json) at `4828c9836d451aaa7376483737d25a764b4e17bd`, after [flatpak-index#6](https://github.com/frostyard/flatpak-index/pull/6), merged 2026-10-29.
+- Install text: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md) at `4828c9836d451aaa7376483737d25a764b4e17bd` ([flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7), merged 2026-10-30): the per-user remote and the Flathub user remote.
 - The per-user remote: Brian's decisions T532a (2026-10-29) and T532b: every user adds the remote. A fresh Snow install has no `frostyard` remote, user or system (Murbella's check, T540).
 - The Flathub user remote: a test on 2026-10-30 with Flatpak 1.16.6 and an empty user installation. Without Flathub as a user remote, `flatpak install --user` fails with `requires the runtime org.gnome.Platform/x86_64/51 which was not found`.
 - [`README.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/README.md)
@@ -129,6 +135,7 @@ Reviewed 2026-10-30.
 - [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/specs/lodge-app.md), [`docs/specs/search.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/specs/search.md)
 - [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/plans/0002-roadmap.md), [`docs/plans/0010-m7-microsoft-and-windows.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/plans/0010-m7-microsoft-and-windows.md), [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/plans/0011-m8-mail-in-lodge.md), [`docs/plans/0013-m6-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/plans/0013-m6-the-standalone-desktop-flatpak.md)
 - [`docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md) (Accepted 2026-10-28)
+- A refused Background portal: ADR-0046 at `main` [`71b37f4`](https://github.com/frostyard/frostmail/blob/71b37f4eadd248e04b65e2c94a969cdb46dc7a39/docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md) (section Which engine runs in each mode, and the launcher; Brian, T491c, 2026-10-29). The behaviour is the v0.4.0 build's; only the text changed after the tag ([Irulan's review, frostyard-org#63](https://github.com/frostyard/frostyard-org/pull/63#issuecomment-6519212956)).
 - [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/internal/store/store.go)
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
