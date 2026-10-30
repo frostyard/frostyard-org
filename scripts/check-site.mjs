@@ -577,7 +577,7 @@ for (const source of [
   "updex/daemon.go",
   "updex/catalog.go",
 ]) {
-  assert(updex.includes(`https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/${source}`), `/docs/tools/updex must cite ${source}.`);
+  assert(updex.includes(`https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/${source}`), `/docs/tools/updex must cite ${source}.`);
 }
 for (const source of [
   "mkosi.images/base/mkosi.conf",
@@ -594,8 +594,8 @@ assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name th
 assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
 assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
 assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
-assert(updexText.includes("This guide follows Updex v2.1.2"), "/docs/tools/updex must follow Updex v2.1.2.");
-assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.1.2"), "/docs/tools/updex must link the Updex v2.1.2 release.");
+assert(updexText.includes("This guide follows Updex v2.1.3"), "/docs/tools/updex must follow Updex v2.1.3.");
+assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.1.3"), "/docs/tools/updex must link the Updex v2.1.3 release.");
 assert(updexText.includes("sudo updex --dry-run daemon enable"), "/docs/tools/updex must explain the daemon dry run.");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
 assert(updexText.includes("updex features rollback"), "/docs/tools/updex must give the rollback command.");
@@ -637,7 +637,7 @@ const lightPages = [
   {
     route: "frostmail",
     repo: "frostmail",
-    sha: "df106558209fad29c63983710a1a646557064dd4",
+    sha: "32d764c1dfd59d5178621bcf17290a6e6dc68963",
     install: "install",
     canonical: "docs/design/desktop.md#installing-for-one-user",
     sentence: "Frostmail is pre-release",
@@ -695,8 +695,9 @@ for (const [route, extension] of Object.entries(extensionForApp)) {
 }
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
-assert(lightHtml.frostmail.text.includes("not in the Frostyard APT repository, the Frostyard Flatpak remote, or the Frostyard Homebrew tap"), "/docs/apps/frostmail must say that there is no published install path.");
-assert(lightHtml.frostnotes.text.includes("flatpak install frostyard org.frostyard.Frostnotes"), "/docs/apps/frostnotes must give the Flatpak install command.");
+assert(lightHtml.frostmail.text.includes("flatpak install --user frostyard org.frostyard.Frostmail"), "/docs/apps/frostmail must give the per-user Flatpak install command.");
+assert(lightHtml.frostmail.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostmail must link the Frostyard Flatpak remote README.");
+assert(lightHtml.frostnotes.text.includes("flatpak install --user frostyard org.frostyard.Frostnotes"), "/docs/apps/frostnotes must give the per-user Flatpak install command.");
 assert(lightHtml.frostnotes.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostnotes must link the Frostyard Flatpak remote README.");
 
 const nsl = await readRoute("/docs/tools/nsl");
@@ -721,13 +722,13 @@ for (const source of [
   "site/content/reference/machine-images.md",
   "site/content/reference/limits.md",
 ]) {
-  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/b78a782f7f56eb1717afac16fa69d05a58cfd60e/${source}`), `/docs/tools/nsl must cite ${source}.`);
+  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/c0c1121b5dd2f0d921f8effe0ffcdf89a89c6442/${source}`), `/docs/tools/nsl must cite ${source}.`);
 }
 for (const source of ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"]) {
   assert(nsl.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/nsl must cite snosi ${source}.`);
 }
 assert(nsl.includes("https://github.com/frostyard/firn/blob/11133e6b801fc68a7490742244aa87e0313a8acd/internal/catalog/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
-assert(nslText.includes("This guide follows nsl v0.11.0"), "/docs/tools/nsl must follow nsl v0.11.0.");
+assert(nslText.includes("This guide follows nsl v0.11.1"), "/docs/tools/nsl must follow nsl v0.11.1.");
 assert(nsl.includes('href="https://frostyard.github.io/nsl/reference/machine-images/"'), "/docs/tools/nsl must link the nsl machine images reference.");
 assert(nslText.includes("Firn does not add your user to it"), "/docs/tools/nsl must state that Firn does not add the user to kvm.");
 assert(nsl.includes('data-code="sudo usermod -aG kvm'), "/docs/tools/nsl must give the kvm group command.");
@@ -754,10 +755,18 @@ for (const source of ["README.md", "io.github.frostyard.Igloo.json", "agent/ptyx
 assert(igloo.includes("https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo"), "/docs/tools/igloo must cite the Snow Flathub remote.");
 assert(iglooText.includes("nsl 0.8.0 or later"), "/docs/tools/igloo must state the nsl 0.8.0 requirement.");
 assert(iglooText.includes("The Flatpak does not bundle nsl"), "/docs/tools/igloo must state that the Flatpak does not bundle nsl.");
-assert(igloo.includes('data-code="flatpak remote-add --if-not-exists frostyard'), "/docs/tools/igloo must give the Frostyard remote command.");
-assert(igloo.includes('data-code="flatpak install frostyard io.github.frostyard.Igloo"'), "/docs/tools/igloo must give the install command.");
+assert(igloo.includes('data-code="flatpak remote-add --user --if-not-exists frostyard'), "/docs/tools/igloo must give the per-user Frostyard remote command.");
+assert(igloo.includes('data-code="flatpak install --user frostyard io.github.frostyard.Igloo"'), "/docs/tools/igloo must give the per-user install command.");
 assert(iglooText.includes("Check Again"), "/docs/tools/igloo must mention the Check Again button.");
 assert(igloo.includes('href="/docs/tools/nsl/"'), "/docs/tools/igloo must link the nsl page.");
+for (const [route, pageText] of [
+  ["/docs/apps/frostmail", lightHtml.frostmail.text],
+  ["/docs/apps/frostnotes", lightHtml.frostnotes.text],
+  ["/docs/tools/igloo", iglooText],
+]) {
+  assert(!pageText.includes("flatpak remote-add --if-not-exists frostyard") && !pageText.includes("flatpak install frostyard "), `${route} must teach the per-user Frostyard remote (T532a).`);
+  assert(pageText.includes("flatpak remote-add --user --if-not-exists flathub"), `${route} must give the per-user Flathub remote command.`);
+}
 
 const chairlift = await readRoute("/docs/tools/chairlift");
 const chairliftText = textOf(chairlift);
@@ -1166,10 +1175,11 @@ for (const source of [
   "sysext/manager.go",
   "systemd/unit.go",
 ]) {
-  assert(manage.includes(`https://github.com/frostyard/updex/blob/ce3900e5f2eded725ddc5afd8b532992e573200e/${source}`), `/docs/sysexts/manage must cite ${source}.`);
+  assert(manage.includes(`https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/${source}`), `/docs/sysexts/manage must cite ${source}.`);
 }
-assert(manageText.includes("This guide follows Updex v2.1.2"), "/docs/sysexts/manage must follow Updex v2.1.2.");
-assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.1.2"), "/docs/sysexts/manage must link the Updex v2.1.2 release.");
+assert(manageText.includes("This guide follows Updex v2.1.3"), "/docs/sysexts/manage must follow Updex v2.1.3.");
+assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.1.3"), "/docs/sysexts/manage must link the Updex v2.1.3 release.");
+assert(manageText.includes("activation did not finish"), "/docs/sysexts/manage must explain the Updex v2.1.3 activation message.");
 assert(manage.includes('id="roll-back"'), "/docs/sysexts/manage must render the roll back section.");
 assert(manageText.includes("sudo updex features rollback"), "/docs/sysexts/manage must give the rollback command.");
 assert(manageText.includes("sudo updex features rollback --clear"), "/docs/sysexts/manage must give the rollback --clear command.");
