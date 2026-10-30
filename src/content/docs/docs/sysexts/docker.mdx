@@ -80,10 +80,10 @@ A merge does not prove that setup completed. At boot, `reload-sysext.service`
 runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, a
 `systemd-sysctl` replay of the inotify, `fs.aio-max-nr`, and `kernel.keys`
 limits, and `systemctl daemon-reload` after the merge. A refresh by Updex v2.1.3
-and later also runs `systemd-sysusers` and `systemd-tmpfiles --create`, but not
-the `systemd-sysctl` replay. After an interactive `--now` merge, the rest may
-not have run yet. If the `docker` group, the files in `/etc/docker`, or the
-sockets are missing, reboot and check again.
+and later also runs `systemd-sysusers` and `systemd-tmpfiles --create`. After an
+interactive `--now` merge, the `systemd-sysctl` replay waits for the next boot,
+and systemd may not have loaded the new units yet. If the `docker` group, the
+files in `/etc/docker`, or the sockets are missing, reboot and check again.
 
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
 download worked, but the activation did not. If the output says
@@ -271,6 +271,7 @@ Updex v2.1.3 commit
 - [Updex v2.1.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0007-daemon-stages-never-activates.md)
 - [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
 - Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
+- [snosi#1189](https://github.com/frostyard/snosi/issues/1189) and [snosi#1193](https://github.com/frostyard/snosi/pull/1193) (open on 2026-10-30): a refresh reloads systemd only when a merged extension sets `EXTENSION_RELOAD_MANAGER=1`, and this extension does not set it yet
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/cb31aaf3bb5f31dd2969341ae0ace6325f3ca810/src/data/extensions.json)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
 - [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

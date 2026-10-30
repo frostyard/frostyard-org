@@ -58,7 +58,7 @@ http://127.0.0.1:8888
 
 Sign in with a non-root account of this machine and its password. Root cannot sign in. Every signed-in account can view. Members of the `sudo` group can make changes.
 
-`pilothoused.service` is the root broker. It listens on `/run/pilothouse/broker.sock` for members of the `pilothouse` group. It treats members of the `sudo` group as administrators. It checks admin actions through the `pilothouse` PAM service. The merge places `/etc/pam.d/pilothouse` from `/usr/share/factory/etc/pam.d/pilothouse`.
+`pilothoused.service` is the root broker. It listens on `/run/pilothouse/broker.sock` for members of the `pilothouse` group. It treats members of the `sudo` group as administrators. It checks admin actions through the `pilothouse` PAM service. A tmpfiles rule copies `/etc/pam.d/pilothouse` from `/usr/share/factory/etc/pam.d/pilothouse` at boot, or on a refresh by Updex v2.1.3 and later, when the file is missing.
 
 Frostyard starts the broker with these backends switched on: Updex (`/usr/bin/updex`), the Podman socket (`/run/podman/podman.sock`), the Docker socket (`unix:///var/run/docker.sock`), Incus, and k3s (`/usr/bin/k3s`). A backend whose program or socket is missing does not stop the broker. Merge the [Podman](/docs/sysexts/podman/), [Docker](/docs/sysexts/docker/), [Incus](/docs/sysexts/incus/), or [k3s](/docs/sysexts/k3s/) extension to give Pilothouse something to manage.
 

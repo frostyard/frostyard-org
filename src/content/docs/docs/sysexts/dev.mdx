@@ -105,7 +105,7 @@ timer, and plain `disable`.
 
 | Symptom | Check | Fix |
 | --- | --- | --- |
-| `cmake`, `gdb`, `ninja`, or `automake` is missing | `systemd-sysext status` and `command -v cmake` | Check that the image is merged. If it is, run `sudo systemd-sysext refresh` or reboot. |
+| `cmake`, `gdb`, `ninja`, or `automake` is missing | `systemd-sysext status` and `command -v cmake` | Check that the image is merged. If it is, reboot: a `sudo systemd-sysext refresh` does nothing when the merged images did not change. |
 | `gcc` or `make` is missing | `command -v gcc make` | They come from the image, not from this extension. Update the image. |
 | GNOME icons render blank after the merge | The installed `dev` image version | An older build carried a GdkPixbuf `loaders.cache` without the SVG loader, which hid Snow's icons. Install the current image. |
 | A link under `/usr/bin` points into `/etc/alternatives` and does not resolve | `readlink -f /usr/bin/automake` | The build repoints these links, and reports one it cannot resolve. Install a corrected build. |

@@ -960,6 +960,7 @@ for (const page of sysextPages) {
     assert(text.includes("/etc/qemu-ifdown , come from Base") || text.includes("come from Base, not from the extension"), "Incus must state that Base owns the QEMU network helpers.");
     assert(text.includes("These Debian leftovers are separate from the bundled"), "Incus must separate delta leftovers from the bundled runtime.");
     assert(!text.includes("remain carried and unused"), "Incus must not repeat the stale blanket carry claim.");
+    assert(!text.includes("If the dnsmasq user") && !text.includes("The extension creates the dnsmasq user") && text.includes("comes from Base"), "Incus must say that the dnsmasq user comes from Base, not from the extension (snosi#1111).");
   }
   if (page.route === "/docs/sysexts/tailscale") {
     assert(html.includes("does not authorize the host"), "Tailscale must separate enabling from authorization.");
