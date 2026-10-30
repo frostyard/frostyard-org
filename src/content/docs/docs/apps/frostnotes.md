@@ -44,19 +44,23 @@ the update replacement are not yet tested on a real desktop.
 
 The desktop app is a Flatpak. It works on its own: you need no account,
 server, lodge, Tailscale, or other app. It carries the UI, `notesd`, and
-`notesctl`.
+`notesctl`. Floe has no Flatpak.
 
-Add the Frostyard remote once:
+Add the Frostyard remote once, for your user:
 
-`flatpak remote-add --if-not-exists frostyard https://frostyard.github.io/flatpak-index/frostyard.flatpakrepo`
+`flatpak remote-add --user --if-not-exists frostyard https://frostyard.github.io/flatpak-index/frostyard.flatpakrepo`
 
-The app uses runtimes from Flathub, such as the GNOME runtime. Snow,
-Snowfield, and Sundog include Flathub. Floe has no Flatpak. On another
-system, add Flathub first: [flathub.org/setup](https://flathub.org/setup).
+Snow images already have this remote, so Snow users can skip this step.
+
+Apps use runtimes from Flathub, such as the GNOME runtime. A `--user` install
+gets a missing runtime only from a user remote, so add Flathub for your user
+too:
+
+`flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`
 
 Install Frostnotes:
 
-`flatpak install frostyard org.frostyard.Frostnotes`
+`flatpak install --user frostyard org.frostyard.Frostnotes`
 
 The [Frostyard Flatpak remote](https://github.com/frostyard/flatpak-index/blob/main/README.md#install-apps) has the canonical steps.
 
@@ -203,6 +207,9 @@ Reviewed 2026-10-29.
 - Plan 0008 at `main` [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/blob/edee4ee870e55981d8912a4ecfe146b6958abfdc/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 3, Run 2: the update from v0.2.0 to v0.3.0, 2026-10-29).
 - The live Frostyard catalogue on 2026-10-29 lists `frostyard/frostnotes` at tag `latest`, digest `sha256:46e19029bb751b1bfe9c0182e9e72d5d052ed1618b84f5bd7145360a4dd96145`, the v0.3.0 image.
 - Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82`.
+- Install text: flatpak-index [flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7) at [`8f951e53a8801b289e4edcd7d06f018a0333f73e`](https://github.com/frostyard/flatpak-index/blob/8f951e53a8801b289e4edcd7d06f018a0333f73e/README.md) (open on 2026-10-30): the per-user remote and the Flathub user remote.
+- The per-user remote: Brian's decision T532a, 2026-10-29. Snow images already have a user-level remote named `frostyard`.
+- The Flathub user remote: a test on 2026-10-30 with Flatpak 1.16.6 and an empty user installation. Without Flathub as a user remote, `flatpak install --user` fails with `requires the runtime org.gnome.Platform/x86_64/51 which was not found`.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
 - [`README.md`](https://github.com/frostyard/frostnotes/blob/e850667533e63c52df844fc0cadac28516dc7450/README.md)
