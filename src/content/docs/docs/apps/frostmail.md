@@ -50,8 +50,6 @@ Add the Frostyard remote once, for your user:
 
 `flatpak remote-add --user --if-not-exists frostyard https://frostyard.github.io/flatpak-index/frostyard.flatpakrepo`
 
-Snow images already have this remote, so Snow users can skip this step.
-
 Apps use runtimes from Flathub, such as the GNOME runtime. A `--user` install
 gets a missing runtime only from a user remote, so add Flathub for your user
 too:
@@ -124,7 +122,7 @@ Reviewed 2026-10-30.
 - The Flatpak: GHCR `ghcr.io/frostyard/frostmail` tags `v0.4.0` and `latest` at digest `sha256:89980a48d4492400636022d8db44ef64dcc16e3c405f501617d4357f7b90cf2a`, which the live Frostyard catalogue lists on 2026-10-30. [`packaging/flatpak/org.frostyard.Frostmail.json`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/packaging/flatpak/org.frostyard.Frostmail.json) (runtime `org.gnome.Platform` 51).
 - Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ec8b85e371bd9cac79512904c1a8b27179c5cc6a/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ec8b85e371bd9cac79512904c1a8b27179c5cc6a/apps.json) at `ec8b85e371bd9cac79512904c1a8b27179c5cc6a`, after [flatpak-index#6](https://github.com/frostyard/flatpak-index/pull/6), merged 2026-10-29.
 - Install text: flatpak-index [flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7) at [`8f951e53a8801b289e4edcd7d06f018a0333f73e`](https://github.com/frostyard/flatpak-index/blob/8f951e53a8801b289e4edcd7d06f018a0333f73e/README.md) (open on 2026-10-30): the per-user remote and the Flathub user remote.
-- The per-user remote: Brian's decision T532a, 2026-10-29. Snow images already have a user-level remote named `frostyard`.
+- The per-user remote: Brian's decisions T532a (2026-10-29) and T532b: every user adds the remote. A fresh Snow install has no `frostyard` remote, user or system (Murbella's check, T540).
 - The Flathub user remote: a test on 2026-10-30 with Flatpak 1.16.6 and an empty user installation. Without Flathub as a user remote, `flatpak install --user` fails with `requires the runtime org.gnome.Platform/x86_64/51 which was not found`.
 - [`README.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/README.md)
 - [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/design/desktop.md) (sections Installing for one user, The Flatpak in CI, The Flatpak's own maild, Windows), [`docs/design/accounts.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/design/accounts.md), [`docs/design/overview.md`](https://github.com/frostyard/frostmail/blob/32d764c1dfd59d5178621bcf17290a6e6dc68963/docs/design/overview.md)
