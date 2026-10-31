@@ -185,8 +185,9 @@ purpose:
 - Without that state, the host is a new node. Run `tailscale up` and
   authorize it.
 
-Enabling Tailscale again does not by itself bring the host back on the
-tailnet. The daemon, the image, and the node's authorization are separate.
+Enabling Tailscale again with `--now` starts the daemon. A still-authorized
+node reconnects with the identity in `/var/lib/tailscale`. A new node needs
+`sudo tailscale up` and an authorization.
 
 If the refresh at the end fails, the remaining extensions may stay unmerged. Run
 `sudo systemd-sysext refresh`, or reboot. If the output says
@@ -219,7 +220,7 @@ Set them up as separate choices, and review them before you expose the host.
 | The host is not on the tailnet | `systemctl status tailscaled.service` | Check the service first. If the node key expired or an administrator removed the node, run `sudo tailscale up` and authorize the host again. |
 | A manifest or signature check fails | `updex features check --component=tailscale` | Check the network and the published manifest. Never turn verification off. |
 | Remote access dropped during an update | The journal shows the daemon restart after the `/usr` refresh | Update in a maintenance window. Keep another way into the host. |
-| The host is offline after removal | `systemd-sysext status` and `systemctl status tailscaled.service` | Enable Tailscale again. A still-authorized node reconnects without a new authorization. |
+| The host is offline after removal | `systemd-sysext status` and `systemctl status tailscaled.service` | Enable Tailscale again with `--now`. A still-authorized node reconnects without a new authorization. |
 
 Do not repair the extension with `apt`. If a merged image is missing files,
 the fix is a corrected extension build.
