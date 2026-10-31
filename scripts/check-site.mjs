@@ -857,12 +857,13 @@ assert(!catalogList.includes("set:html"), "ExtensionCatalog must not render cata
 const sysextPages = [
   {
     route: "/docs/sysexts/docker",
-    snosi: "b2858ca0222814c395cf8248db98f3e096d57dc9",
+    snosi: "859f45434aa7960d42b1f7ad35e01f12fd4aafb3",
     name: "docker",
     sources: [
       "mkosi.images/docker/mkosi.conf",
       "mkosi.images/docker/mkosi.finalize",
       "mkosi.images/docker/required-paths.txt",
+      "mkosi.images/docker/mkosi.extra/usr/lib/extension-release.d/extension-release.docker",
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.transfer",
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature",
       "shared/sysext/postoutput/sysext-postoutput.sh",
@@ -872,13 +873,14 @@ const sysextPages = [
   },
   {
     route: "/docs/sysexts/incus",
-    // Incus is pinned after snosi#1020 (revision 4).
-    snosi: "b2858ca0222814c395cf8248db98f3e096d57dc9",
+    // Incus is pinned after snosi#1189 (revision 6 adds the reload setting).
+    snosi: "859f45434aa7960d42b1f7ad35e01f12fd4aafb3",
     name: "incus",
     sources: [
       "mkosi.images/incus/mkosi.conf",
       "mkosi.images/incus/mkosi.finalize",
       "mkosi.images/incus/required-paths.txt",
+      "mkosi.images/incus/mkosi.extra/usr/lib/extension-release.d/extension-release.incus",
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer",
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature",
       "mkosi.images/base/mkosi.conf",
@@ -891,12 +893,13 @@ const sysextPages = [
   },
   {
     route: "/docs/sysexts/tailscale",
-    snosi: "b2858ca0222814c395cf8248db98f3e096d57dc9",
+    snosi: "859f45434aa7960d42b1f7ad35e01f12fd4aafb3",
     name: "tailscale",
     sources: [
       "mkosi.images/tailscale/mkosi.conf",
       "mkosi.images/tailscale/mkosi.finalize",
       "mkosi.images/tailscale/required-paths.txt",
+      "mkosi.images/tailscale/mkosi.extra/usr/lib/extension-release.d/extension-release.tailscale",
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer",
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature",
       "docs/design/sysexts.md",
@@ -937,6 +940,12 @@ for (const page of sysextPages) {
   assert(text.includes("remaining extensions may stay unmerged"), `${page.route} must warn about a failed post-removal refresh.`);
   assert(text.includes("sudo systemd-sysext refresh"), `${page.route} must give the sudo refresh recovery command.`);
   assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`), `${page.route} must cite reload-sysext.service.`);
+  // snosi#1193: the extension sets EXTENSION_RELOAD_MANAGER=1, so a live refresh reloads systemd.
+  assert(text.includes("EXTENSION_RELOAD_MANAGER=1"), `${page.route} must state that the extension sets EXTENSION_RELOAD_MANAGER=1.`);
+  assert(text.includes("Only the systemd-sysctl replay waits for the next boot"), `${page.route} must limit the deferred sysctl replay to the next boot.`);
+  assert(!text.includes("may not have loaded the new units"), `${page.route} must not say that systemd may not have loaded the new units.`);
+  assert(!text.includes("(open on 2026-10-30)"), `${page.route} must not cite the open snosi issues.`);
+  assert(text.includes("Until the reboot, systemd can keep the removed units loaded"), `${page.route} must state that removed units can stay loaded until a reboot.`);
   assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go"), `${page.route} must cite updex/features.go.`);
   if (page.route === "/docs/sysexts/incus") {
     assert(html.includes('<code dir="auto">driver: lxc | qemu</code>'), "Incus must render the complete QEMU driver text.");
@@ -948,8 +957,8 @@ for (const page of sysextPages) {
     assert(text.includes("does not promise that every request ships"), "Incus must not imply every request ships.");
     assert(html.includes("repository.frostyard.org/debian/"), "Incus must cite the executable Frostyard APT source.");
     assert(text.includes("Base already ships") && text.includes("holds only what Base does not have"), "Incus must distinguish Base packages from the delta.");
-    // snosi#1020: revision 4 drops the Debian QEMU. snosi#1113: revision 5 stops upholding incus-lxcfs.service.
-    assert(text.includes("SYSEXT_REVISION=5") && !text.includes("can still be revision 3"), "Incus must state that the source builds r5 and must not say the published image can still be r3.");
+    // snosi#1020: revision 4 drops the Debian QEMU. snosi#1113: revision 5 stops upholding incus-lxcfs.service. snosi#1189: revision 6 adds the reload setting.
+    assert(text.includes("SYSEXT_REVISION=6") && !text.includes("can still be revision 3"), "Incus must state that the source builds r6 and must not say the published image can still be r3.");
     assert(text.includes("Since revision 4, the extension ships no Debian QEMU or OVMF") && text.includes("A build guard keeps it so"), "Incus must state that r4 and later ship no Debian QEMU, enforced by a build guard.");
     assert(text.includes("Revision 3 images carried"), "Incus must limit the Debian leftovers to r3 images.");
     assert(text.includes("The setup service pulls in incus-lxcfs.service"), "Incus must state that the setup service pulls in incus-lxcfs.service instead of the target upholding it.");
@@ -1011,6 +1020,7 @@ for (const page of sysextPages) {
 const commandPages = [
   {
     route: "/docs/sysexts/dev",
+    snosi: "b2858ca0222814c395cf8248db98f3e096d57dc9",
     name: "dev",
     enableId: "enable-dev-tools",
     useId: "use-dev-tools",
@@ -1029,6 +1039,7 @@ const commandPages = [
   },
   {
     route: "/docs/sysexts/k3s",
+    snosi: "b2858ca0222814c395cf8248db98f3e096d57dc9",
     name: "k3s",
     enableId: "enable-k3s",
     useId: "use-k3s",
@@ -1047,6 +1058,7 @@ const commandPages = [
   },
   {
     route: "/docs/sysexts/nix",
+    snosi: "859f45434aa7960d42b1f7ad35e01f12fd4aafb3",
     name: "nix",
     enableId: "enable-nix",
     useId: "use-nix",
@@ -1055,6 +1067,8 @@ const commandPages = [
       "mkosi.images/nix/mkosi.finalize",
       "mkosi.images/nix/required-paths.txt",
       "mkosi.images/nix/mkosi.extra/usr/lib/sysusers.d/nix.conf",
+      "mkosi.images/nix/mkosi.extra/usr/lib/tmpfiles.d/nix-sysext.conf",
+      "mkosi.images/nix/mkosi.extra/usr/lib/extension-release.d/extension-release.nix",
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.nix.d/nix.feature",
       "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.nix.d/nix.transfer",
     ],
@@ -1066,6 +1080,7 @@ const commandPages = [
   },
   {
     route: "/docs/sysexts/vscode",
+    snosi: "b2858ca0222814c395cf8248db98f3e096d57dc9",
     name: "vscode",
     enableId: "enable-visual-studio-code",
     useId: "use-visual-studio-code",
@@ -1107,15 +1122,22 @@ for (const page of commandPages) {
   assert(text.includes("unmerges all extensions on the host"), `${page.route} must warn that removal unmerges all extensions.`);
 
   for (const source of page.sources) {
-    assert(html.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `${page.route} must cite ${source}.`);
+    assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/${source}`), `${page.route} must cite ${source} at snosi ${page.snosi}.`);
   }
-  assert(html.includes("https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md"), `${page.route} must cite the system extension model.`);
+  assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/docs/design/sysexts.md`), `${page.route} must cite the system extension model.`);
   assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md"), `${page.route} must cite the Updex v2.1.3 README.`);
   assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go"), `${page.route} must cite updex/features.go.`);
   assert(html.includes("https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json"), `${page.route} must cite the catalog snapshot.`);
 
   for (const statement of page.statements) {
     assert(text.includes(statement), `${page.route} must state "${statement}".`);
+  }
+
+  if (page.name === "nix") {
+    // snosi#1193: the extension sets the reload setting, and profiles are per-user.
+    assert(text.includes("EXTENSION_RELOAD_MANAGER=1"), `${page.route} must state that the extension sets EXTENSION_RELOAD_MANAGER=1.`);
+    assert(text.includes("/nix/var/nix/profiles/per-user"), `${page.route} must name the per-user profile path.`);
+    assert(!text.includes("/var/lib/nix/profiles"), `${page.route} must not name the old profile path.`);
   }
 }
 
