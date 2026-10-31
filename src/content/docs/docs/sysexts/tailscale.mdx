@@ -83,9 +83,10 @@ A merge does not prove that setup completed. At boot, `reload-sysext.service`
 runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, a
 `systemd-sysctl` replay of the inotify, `fs.aio-max-nr`, and `kernel.keys`
 limits, and `systemctl daemon-reload` after the merge. A refresh by Updex v2.1.3
-and later also runs `systemd-sysusers` and `systemd-tmpfiles --create`. After an
-interactive `--now` merge, the `systemd-sysctl` replay waits for the next boot,
-and systemd may not have loaded the new units yet. If the daemon is not active, reboot and check again.
+and later also runs `systemd-sysusers` and `systemd-tmpfiles --create`. The
+extension sets `EXTENSION_RELOAD_MANAGER=1`, so the refresh also reloads
+systemd, and the units start in the same boot. Only the `systemd-sysctl` replay
+waits for the next boot. If the daemon is not active, reboot and check again.
 
 Then connect the host to your tailnet:
 
@@ -168,7 +169,9 @@ sudo updex features disable tailscale --now --force
 This unmerges all extensions on the host, deletes the Tailscale image, and
 merges the rest again. A remote session through the tailnet can drop
 immediately. Make sure you have another way in, stop or drain your
-workloads, and reboot when the command finishes.
+workloads, and reboot when the command finishes. The unmerge reloads systemd,
+because the extension sets `EXTENSION_RELOAD_MANAGER=1`. A unit that still runs
+stays loaded until it stops or the host reboots.
 
 Without `--force`, Updex refuses while Tailscale is merged:
 `Extension tailscale (version ...) is active. Removing requires --force and a reboot to take effect.`
@@ -182,8 +185,9 @@ purpose:
 - Without that state, the host is a new node. Run `tailscale up` and
   authorize it.
 
-Enabling Tailscale again does not by itself bring the host back on the
-tailnet. The daemon, the image, and the node's authorization are separate.
+Enabling Tailscale again with `--now` starts the daemon. A still-authorized
+node reconnects with the identity in `/var/lib/tailscale`. A new node needs
+`sudo tailscale up` and an authorization.
 
 If the refresh at the end fails, the remaining extensions may stay unmerged. Run
 `sudo systemd-sysext refresh`, or reboot. If the output says
@@ -216,7 +220,7 @@ Set them up as separate choices, and review them before you expose the host.
 | The host is not on the tailnet | `systemctl status tailscaled.service` | Check the service first. If the node key expired or an administrator removed the node, run `sudo tailscale up` and authorize the host again. |
 | A manifest or signature check fails | `updex features check --component=tailscale` | Check the network and the published manifest. Never turn verification off. |
 | Remote access dropped during an update | The journal shows the daemon restart after the `/usr` refresh | Update in a maintenance window. Keep another way into the host. |
-| The host is offline after removal | `systemd-sysext status` and `systemctl status tailscaled.service` | Enable Tailscale again. A still-authorized node reconnects without a new authorization. |
+| The host is offline after removal | `systemd-sysext status` and `systemctl status tailscaled.service` | Enable Tailscale again with `--now`. A still-authorized node reconnects without a new authorization. |
 
 Do not repair the extension with `apt`. If a merged image is missing files,
 the fix is a corrected extension build.
@@ -254,31 +258,32 @@ right after a merge.
 - [Snow image](/docs/images/snow/)
 - [Docker system extension](/docs/sysexts/docker/)
 - [Incus system extension](/docs/sysexts/incus/)
-- [System extension model](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [System extension model](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/design/sysexts.md)
+- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/nbc-to-bootc-migration.md)
 - [Updex v2.1.3 command reference](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md)
 
 ## Sources
 
-Reviewed 2026-10-27; Updex facts reviewed 2026-10-30. snosi commit
-[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
+Reviewed 2026-10-27; Updex facts reviewed 2026-10-30; snosi facts reviewed 2026-10-31. snosi commit
+[`859f45434aa7960d42b1f7ad35e01f12fd4aafb3`](https://github.com/frostyard/snosi/tree/859f45434aa7960d42b1f7ad35e01f12fd4aafb3);
 Updex v2.1.3 commit
 [`2661e987faac986f2594d1d9bbbadf1bf3053f5b`](https://github.com/frostyard/updex/tree/2661e987faac986f2594d1d9bbbadf1bf3053f5b).
 
-- [`mkosi.images/tailscale/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/tailscale/mkosi.conf)
-- [`mkosi.images/tailscale/mkosi.finalize`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/tailscale/mkosi.finalize)
-- [`mkosi.images/tailscale/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/tailscale/required-paths.txt)
-- [`mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system-preset/40-tailscale.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system-preset/40-tailscale.preset)
-- [`mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-tailscale.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-tailscale.conf)
-- [`mkosi.images/tailscale/mkosi.extra/usr/lib/tmpfiles.d/tailscale.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/tailscale/mkosi.extra/usr/lib/tmpfiles.d/tailscale.conf)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
-- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/postoutput/sysext-postoutput.sh)
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [`mkosi.images/tailscale/mkosi.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/tailscale/mkosi.conf)
+- [`mkosi.images/tailscale/mkosi.finalize`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/tailscale/mkosi.finalize)
+- [`mkosi.images/tailscale/required-paths.txt`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/tailscale/required-paths.txt)
+- [`mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system-preset/40-tailscale.preset`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system-preset/40-tailscale.preset)
+- [`mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-tailscale.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/tailscale/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-tailscale.conf)
+- [`mkosi.images/tailscale/mkosi.extra/usr/lib/tmpfiles.d/tailscale.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/tailscale/mkosi.extra/usr/lib/tmpfiles.d/tailscale.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.tailscale.d/tailscale.transfer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/shared/sysext/postoutput/sysext-postoutput.sh)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/design/sysexts.md)
+- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/nbc-to-bootc-migration.md)
 - [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)
 - [Updex v2.1.3 `updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go)
+- [Updex v2.1.3 `sysext/runner.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/sysext/runner.go#L156-L158) (`disable --now` unmerges first, with a plain `systemd-sysext unmerge`)
 - [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md)
 - [Updex v2.1.3 `updex/install.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/install.go)
 - [Updex v2.1.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/sysext/manager.go)
@@ -287,7 +292,9 @@ Updex v2.1.3 commit
 - [Updex v2.1.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0007-daemon-stages-never-activates.md)
 - [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
 - Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
-- [snosi#1189](https://github.com/frostyard/snosi/issues/1189) and [snosi#1193](https://github.com/frostyard/snosi/pull/1193) (open on 2026-10-30): a refresh reloads systemd only when a merged extension sets `EXTENSION_RELOAD_MANAGER=1`, and this extension does not set it yet
+- [snosi#1193](https://github.com/frostyard/snosi/pull/1193), merged as [`20a569e`](https://github.com/frostyard/snosi/commit/20a569e5e4495a03059c4928787b4801edc84b21): the extension sets `EXTENSION_RELOAD_MANAGER=1`, so a refresh reloads systemd
+- [`docs/adr/0026-sysexts-with-system-units-reload-the-manager.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/adr/0026-sysexts-with-system-units-reload-the-manager.md)
+- [`mkosi.images/tailscale/mkosi.extra/usr/lib/extension-release.d/extension-release.tailscale`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/tailscale/mkosi.extra/usr/lib/extension-release.d/extension-release.tailscale)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/cb31aaf3bb5f31dd2969341ae0ace6325f3ca810/src/data/extensions.json)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
 - [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

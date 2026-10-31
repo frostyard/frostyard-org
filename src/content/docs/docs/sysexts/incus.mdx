@@ -28,8 +28,9 @@ You need:
 - A backup or export of any existing containers, virtual machines, and
   storage pools.
 
-Incus has no published test results on Frostyard images yet. Try it on a
-machine you can spare first.
+In lab tests on Snow in October 2026, the Incus units of revision 5 loaded and
+started. The tests ran no containers or virtual machines. The current revision
+has no test results yet. Try it on a machine you can spare first.
 
 ## Choose Incus
 
@@ -92,11 +93,11 @@ A merge does not prove that setup completed. At boot, `reload-sysext.service`
 runs `systemd-sysusers`, `systemd-tmpfiles --create --graceful`, a
 `systemd-sysctl` replay of the inotify, `fs.aio-max-nr`, and `kernel.keys`
 limits, and `systemctl daemon-reload` after the merge. A refresh by Updex v2.1.3
-and later also runs `systemd-sysusers` and `systemd-tmpfiles --create`. After an
-interactive `--now` merge, the `systemd-sysctl` replay waits for the next boot,
-and systemd may not have loaded the new units yet. If the `rdma` group, the
-files in `/etc`, or `incus-sysext-setup.service` are missing, reboot and check
-again.
+and later also runs `systemd-sysusers` and `systemd-tmpfiles --create`. The
+extension sets `EXTENSION_RELOAD_MANAGER=1`, so the refresh also reloads
+systemd, and the units start in the same boot. Only the `systemd-sysctl` replay
+waits for the next boot. If the `rdma` group, the files in `/etc`, or
+`incus-sysext-setup.service` are missing, reboot and check again.
 
 If `enable --now` exits with a refresh error (`refresh_error` in JSON), the
 download worked, but the activation did not. If the output says
@@ -177,6 +178,9 @@ sudo updex features disable incus --now --force
 This unmerges all extensions on the host, deletes the Incus image, and merges
 the rest again. Running containers and virtual machines can stop immediately.
 Stop or migrate your workloads first, and reboot when the command finishes.
+The unmerge reloads systemd, because the extension sets
+`EXTENSION_RELOAD_MANAGER=1`. A unit that still runs stays loaded until it
+stops or the host reboots.
 
 Without `--force`, Updex refuses while Incus is merged:
 `Extension incus (version ...) is active. Removing requires --force and a reboot to take effect.`
@@ -247,7 +251,7 @@ link, `CurrentSymlink=incus.raw`, but Updex deletes that one
 (`/var/lib/extensions.d/incus.raw`) when it installs.
 
 The checked catalog snapshot is generated, and its version changes with each
-sync. The source builds revision 5 (`SYSEXT_REVISION=5`). The revision is the
+sync. The source builds revision 6 (`SYSEXT_REVISION=6`). The revision is the
 `+r` number at the end of the version.
 
 The `incus` package comes from the Frostyard APT repository,
@@ -284,40 +288,41 @@ match. The build check protects the build, not a host with a different Base.
 - [Snow image](/docs/images/snow/)
 - [Docker system extension](/docs/sysexts/docker/)
 - [Tailscale system extension](/docs/sysexts/tailscale/)
-- [System extension model](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [System extension model](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/design/sysexts.md)
+- [nbc to bootc migration runbook](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/nbc-to-bootc-migration.md)
 - [Updex v2.1.3 command reference](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md)
 
 ## Sources
 
-Reviewed 2026-10-27; Updex facts reviewed 2026-10-30. snosi commit
-[`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
+Reviewed 2026-10-27; Updex facts reviewed 2026-10-30; snosi facts reviewed 2026-10-31. snosi commit
+[`859f45434aa7960d42b1f7ad35e01f12fd4aafb3`](https://github.com/frostyard/snosi/tree/859f45434aa7960d42b1f7ad35e01f12fd4aafb3);
 Updex v2.1.3 commit
 [`2661e987faac986f2594d1d9bbbadf1bf3053f5b`](https://github.com/frostyard/updex/tree/2661e987faac986f2594d1d9bbbadf1bf3053f5b).
 
-- [`mkosi.images/incus/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/mkosi.conf)
-- [`mkosi.images/incus/mkosi.finalize`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/mkosi.finalize)
-- [`mkosi.images/incus/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/required-paths.txt)
-- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system-preset/40-incus.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system-preset/40-incus.preset)
-- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-incus.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-incus.conf)
-- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/incus-sysext-setup.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/incus-sysext-setup.service)
-- [`mkosi.images/incus/mkosi.extra/usr/lib/incus/incus-sysext-setup`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/mkosi.extra/usr/lib/incus/incus-sysext-setup)
-- [`mkosi.images/incus/mkosi.extra/usr/lib/tmpfiles.d/incus.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/mkosi.extra/usr/lib/tmpfiles.d/incus.conf)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysusers.d/dnsmasq.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysusers.d/dnsmasq.conf) (the `dnsmasq` user; the incus copy at the same path never reached the extension, because `Overlay=yes` drops paths that Base ships: [snosi#1111](https://github.com/frostyard/snosi/issues/1111), removed in [`f83b264`](https://github.com/frostyard/snosi/commit/f83b26412d2a83a968d8b44faa81fe8b632995d9))
+- [`mkosi.images/incus/mkosi.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.conf)
+- [`mkosi.images/incus/mkosi.finalize`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.finalize)
+- [`mkosi.images/incus/required-paths.txt`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/required-paths.txt)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system-preset/40-incus.preset`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system-preset/40-incus.preset)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-incus.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-incus.conf)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/incus-sysext-setup.service`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.extra/usr/lib/systemd/system/incus-sysext-setup.service)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/incus/incus-sysext-setup`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.extra/usr/lib/incus/incus-sysext-setup)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/tmpfiles.d/incus.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.extra/usr/lib/tmpfiles.d/incus.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysusers.d/dnsmasq.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/sysusers.d/dnsmasq.conf) (the `dnsmasq` user; the incus copy at the same path never reached the extension, because `Overlay=yes` drops paths that Base ships: [snosi#1111](https://github.com/frostyard/snosi/issues/1111), removed in [`f83b264`](https://github.com/frostyard/snosi/commit/f83b26412d2a83a968d8b44faa81fe8b632995d9))
 - [Murbella's review (frostyard-org#64)](https://github.com/frostyard/frostyard-org/pull/64#pullrequestreview-5714827501)
-- [`mkosi.images/incus/mkosi.extra/usr/lib/sysusers.d/rdma.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/incus/mkosi.extra/usr/lib/sysusers.d/rdma.conf)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
-- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.conf)
-- [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources)
-- [`shared/sysext/finalize/sysext-no-base-owned.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-no-base-owned.sh)
-- [`shared/sysext/base-owned-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/base-owned-paths.txt)
-- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/postoutput/sysext-postoutput.sh)
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/sysusers.d/rdma.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.extra/usr/lib/sysusers.d/rdma.conf)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.incus.d/incus.transfer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/reload-sysext.service)
+- [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.conf)
+- [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources)
+- [`shared/sysext/finalize/sysext-no-base-owned.sh`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/shared/sysext/finalize/sysext-no-base-owned.sh)
+- [`shared/sysext/base-owned-paths.txt`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/shared/sysext/base-owned-paths.txt)
+- [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/shared/sysext/postoutput/sysext-postoutput.sh)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/design/sysexts.md)
+- [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/nbc-to-bootc-migration.md)
 - [Updex PR #445: refuse removal of a merged extension](https://github.com/frostyard/updex/pull/445)
 - [Updex v2.1.3 `updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go)
+- [Updex v2.1.3 `sysext/runner.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/sysext/runner.go#L156-L158) (`disable --now` unmerges first, with a plain `systemd-sysext unmerge`)
 - [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md)
 - [Updex v2.1.3 `updex/install.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/install.go)
 - [Updex v2.1.3 `sysext/manager.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/sysext/manager.go)
@@ -326,8 +331,10 @@ Updex v2.1.3 commit
 - [Updex v2.1.3 ADR 0007: daemon stages, never activates](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0007-daemon-stages-never-activates.md)
 - [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
 - Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
-- [snosi#1189](https://github.com/frostyard/snosi/issues/1189) and [snosi#1193](https://github.com/frostyard/snosi/pull/1193) (open on 2026-10-30): a refresh reloads systemd only when a merged extension sets `EXTENSION_RELOAD_MANAGER=1`, and this extension does not set it yet
+- [snosi#1193](https://github.com/frostyard/snosi/pull/1193), merged as [`20a569e`](https://github.com/frostyard/snosi/commit/20a569e5e4495a03059c4928787b4801edc84b21): the extension sets `EXTENSION_RELOAD_MANAGER=1`, so a refresh reloads systemd
+- [`docs/adr/0026-sysexts-with-system-units-reload-the-manager.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/adr/0026-sysexts-with-system-units-reload-the-manager.md) (lab runs `dev-snow-bootc-lifecycle-mm4s5` and `dev-snow-bootc-lifecycle-4hr54`, revision 5: they checked that the units load and start, not workloads)
+- [`mkosi.images/incus/mkosi.extra/usr/lib/extension-release.d/extension-release.incus`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/incus/mkosi.extra/usr/lib/extension-release.d/extension-release.incus)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/cb31aaf3bb5f31dd2969341ae0ace6325f3ca810/src/data/extensions.json)
-- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
 - [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
 - Incus database after an upgrade: [Incus, Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus), read 2026-10-24; [Ben Sherman's review of core#162](https://github.com/frostyard/core/pull/162#issuecomment-6388139358).
