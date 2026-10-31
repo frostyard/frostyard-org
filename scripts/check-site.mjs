@@ -945,8 +945,17 @@ for (const page of sysextPages) {
   assert(text.includes("Only the systemd-sysctl replay waits for the next boot"), `${page.route} must limit the deferred sysctl replay to the next boot.`);
   assert(!text.includes("may not have loaded the new units"), `${page.route} must not say that systemd may not have loaded the new units.`);
   assert(!text.includes("(open on 2026-10-30)"), `${page.route} must not cite the open snosi issues.`);
-  assert(text.includes("Until the reboot, systemd can keep the removed units loaded"), `${page.route} must state that removed units can stay loaded until a reboot.`);
+  // updex disable --now runs a plain systemd-sysext unmerge first; the removed extension still sets the key, so the unmerge reloads PID 1.
+  assert(text.includes("The unmerge reloads systemd, because the extension sets EXTENSION_RELOAD_MANAGER=1") && text.includes("A unit that still runs stays loaded until it stops or the host reboots."), `${page.route} must state that the unmerge reloads systemd and that a running unit stays loaded.`);
+  assert(!text.includes("Until the reboot, systemd can keep the removed units loaded") && !text.includes("only when an extension that stays merged sets"), `${page.route} must not say that only a remaining extension reloads systemd after a removal.`);
   assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go"), `${page.route} must cite updex/features.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/sysext/runner.go"), `${page.route} must cite sysext/runner.go.`);
+  // ADR-0026 dev probe runs (mm4s5, 4hr54) checked only that the revision 5 units load and start.
+  assert(!/ran in (a )?lab tests?/.test(text), `${page.route} must not imply that a lab run tested workloads.`);
+  if (page.route === "/docs/sysexts/incus" || page.route === "/docs/sysexts/nix") {
+    assert(text.includes("units of revision 5 loaded and started"), `${page.route} must limit the lab result to units that load and start.`);
+    assert(html.includes("dev-snow-bootc-lifecycle-mm4s5") && html.includes("dev-snow-bootc-lifecycle-4hr54"), `${page.route} must name the ADR-0026 lab runs in Sources.`);
+  }
   if (page.route === "/docs/sysexts/incus") {
     assert(html.includes('<code dir="auto">driver: lxc | qemu</code>'), "Incus must render the complete QEMU driver text.");
     assert(html.includes('If only <code dir="auto">lxc</code> is present, the bundled QEMU runtime is not loading.'), "Incus must keep the VM troubleshooting next action.");

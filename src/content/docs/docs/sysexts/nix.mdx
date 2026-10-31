@@ -24,9 +24,9 @@ You need:
   store grows with each package and profile you add.
 - The user names you will add to the `nix-users` group.
 
-Nix ran in lab tests on Snow in October 2026, at revision 5 and earlier. The
-current revision has no test results yet. Try it on a machine you can spare
-first.
+In lab tests on Snow in October 2026, the Nix units of revision 5 loaded and
+started. The tests built and installed no packages. The current revision has no
+test results yet. Try it on a machine you can spare first.
 
 ## Enable Nix
 
@@ -115,10 +115,10 @@ sudo updex features disable nix --now --force
 Updex unmerges all extensions on the host, deletes the Nix image, and merges
 the rest again. The mount unit and the daemon go. `/var/lib/nix` stays, with
 every store path and profile you built. Reboot when the command finishes.
-Until the reboot, systemd can keep the removed units loaded. The refresh
-reloads systemd only when an extension that stays merged sets
-`EXTENSION_RELOAD_MANAGER=1`. Without `--force`, Updex refuses while the image
-is merged.
+The unmerge reloads systemd, because the extension sets
+`EXTENSION_RELOAD_MANAGER=1`. A unit that still runs stays loaded until it
+stops or the host reboots. Without `--force`, Updex refuses while the image is
+merged.
 
 ### Roll back
 
@@ -191,10 +191,11 @@ Updex v2.1.3 commit
 - [`test/nix-client-group-test.py`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/test/nix-client-group-test.py)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/design/sysexts.md)
 - [snosi#1193](https://github.com/frostyard/snosi/pull/1193), merged as [`20a569e`](https://github.com/frostyard/snosi/commit/20a569e5e4495a03059c4928787b4801edc84b21): the extension sets `EXTENSION_RELOAD_MANAGER=1`, so a refresh reloads systemd
-- [`docs/adr/0026-sysexts-with-system-units-reload-the-manager.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/adr/0026-sysexts-with-system-units-reload-the-manager.md)
+- [`docs/adr/0026-sysexts-with-system-units-reload-the-manager.md`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/docs/adr/0026-sysexts-with-system-units-reload-the-manager.md) (lab runs `dev-snow-bootc-lifecycle-mm4s5` and `dev-snow-bootc-lifecycle-4hr54`, revision 5: they checked that the units load and start, not workloads)
 - [`mkosi.images/nix/mkosi.extra/usr/lib/extension-release.d/extension-release.nix`](https://github.com/frostyard/snosi/blob/859f45434aa7960d42b1f7ad35e01f12fd4aafb3/mkosi.images/nix/mkosi.extra/usr/lib/extension-release.d/extension-release.nix)
 - [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md)
 - [Updex v2.1.3 `updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go)
+- [Updex v2.1.3 `sysext/runner.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/sysext/runner.go#L156-L158) (`disable --now` unmerges first, with a plain `systemd-sysext unmerge`)
 - [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
 - Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
