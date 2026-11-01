@@ -165,8 +165,9 @@ The rollback takes effect at the next boot. To apply it now, add `--now`, then
 restart notesd as above. See [Roll back](/docs/sysexts/manage/#roll-back).
 
 notesd refuses a database that a newer notesd migrated, and a rollback does not
-undo a migration. notesd 0.3.0 adds no migration to 0.2.0, so a rollback from
-0.3.0 to 0.2.0 needs no restore.
+undo a migration. notesd 0.3.1 adds a migration to 0.3.0, so after 0.3.1 has
+run, notesd 0.3.0 refuses the database. notesd 0.3.0 adds no migration to
+0.2.0.
 
 When the older version runs, read the journal:
 
@@ -228,28 +229,30 @@ Each build checks the commands, the units, the sysusers file, the lodge app mani
 
 ## Sources
 
-Reviewed 2026-10-29. snosi commit
-[`e423112908540aa3a8045fa9d8022a3742e3cd17`](https://github.com/frostyard/snosi/tree/e423112908540aa3a8045fa9d8022a3742e3cd17);
+Reviewed 2026-11-01. snosi commit
+[`9b0b1539ae547e45ad32bfb4f581444e9bc0734c`](https://github.com/frostyard/snosi/tree/9b0b1539ae547e45ad32bfb4f581444e9bc0734c);
 core commit
 [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
-Frostnotes v0.3.0 commit
-[`2d80734337b90f497c5b6f0c7e87038d2bc96b20`](https://github.com/frostyard/frostnotes/tree/2d80734337b90f497c5b6f0c7e87038d2bc96b20);
+Frostnotes v0.3.1 commit
+[`189ae2f7f435439943b0dfb62d3b4f9221724bf5`](https://github.com/frostyard/frostnotes/tree/189ae2f7f435439943b0dfb62d3b4f9221724bf5);
 Updex v2.1.3 commit
 [`2661e987faac986f2594d1d9bbbadf1bf3053f5b`](https://github.com/frostyard/updex/tree/2661e987faac986f2594d1d9bbbadf1bf3053f5b).
 
-- [`mkosi.images/notesd/mkosi.conf`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/notesd/mkosi.conf)
-- [`mkosi.images/notesd/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/notesd/mkosi.postinst.chroot)
-- [`mkosi.images/notesd/required-paths.txt`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/notesd/required-paths.txt)
-- [`mkosi.images/notesd/mkosi.extra/usr/lib/systemd/system-preset/40-notesd.preset`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/notesd/mkosi.extra/usr/lib/systemd/system-preset/40-notesd.preset)
-- [`mkosi.images/notesd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-notesd.conf`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/notesd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-notesd.conf)
-- [`mkosi.images/notesd/mkosi.extra/usr/lib/extension-release.d/extension-release.notesd`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/notesd/mkosi.extra/usr/lib/extension-release.d/extension-release.notesd)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.notesd.d/notesd.feature`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.notesd.d/notesd.feature)
-- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.notesd.d/notesd.transfer`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.notesd.d/notesd.transfer)
-- [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/shared/download/sysext-checksums.json)
-- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/docs/design/sysexts.md)
+- [`mkosi.images/notesd/mkosi.conf`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/notesd/mkosi.conf)
+- [`mkosi.images/notesd/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/notesd/mkosi.postinst.chroot)
+- [`mkosi.images/notesd/required-paths.txt`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/notesd/required-paths.txt)
+- [`mkosi.images/notesd/mkosi.extra/usr/lib/systemd/system-preset/40-notesd.preset`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/notesd/mkosi.extra/usr/lib/systemd/system-preset/40-notesd.preset)
+- [`mkosi.images/notesd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-notesd.conf`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/notesd/mkosi.extra/usr/lib/systemd/system/multi-user.target.d/10-notesd.conf)
+- [`mkosi.images/notesd/mkosi.extra/usr/lib/extension-release.d/extension-release.notesd`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/notesd/mkosi.extra/usr/lib/extension-release.d/extension-release.notesd)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.notesd.d/notesd.feature`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.notesd.d/notesd.feature)
+- [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.notesd.d/notesd.transfer`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.notesd.d/notesd.transfer)
+- [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/shared/download/sysext-checksums.json)
+- [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/docs/design/sysexts.md)
 - [snosi#1169](https://github.com/frostyard/snosi/pull/1169) (merged 2026-10-28), [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28) and [snosi#1175](https://github.com/frostyard/snosi/pull/1175) (merged 2026-10-28)
+- [snosi#1195](https://github.com/frostyard/snosi/pull/1195) (merged 2026-10-31) pins notesd 0.3.1. `https://repository.frostyard.org/ext/notesd/SHA256SUMS`, checked 2026-11-01, lists 0.2.0, 0.3.0 and 0.3.1.
+- Frostnotes [`internal/store/migrations/0005_sync_push_base_hash.sql`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/internal/store/migrations/0005_sync_push_base_hash.sql) (the migration that v0.3.1 adds)
 - core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) and [`docs/adr/0063-uphold-notesds-service-as-well-as-its-socket.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0063-uphold-notesds-service-as-well-as-its-socket.md)
-- Frostnotes [`packaging/systemd/frostnotes.service`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/packaging/systemd/frostnotes.service), [`packaging/systemd/frostnotes-lodge.socket`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/packaging/systemd/frostnotes-lodge.socket), [`packaging/sysusers.d/frostnotes.conf`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/packaging/sysusers.d/frostnotes.conf), [`cmd/notesctl/root.go`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/cmd/notesctl/root.go)
+- Frostnotes [`packaging/systemd/frostnotes.service`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/packaging/systemd/frostnotes.service), [`packaging/systemd/frostnotes-lodge.socket`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/packaging/systemd/frostnotes-lodge.socket), [`packaging/sysusers.d/frostnotes.conf`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/packaging/sysusers.d/frostnotes.conf), [`cmd/notesctl/root.go`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/cmd/notesctl/root.go)
 - [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; a link on an older image shows an update, and `features update` repoints it; a rollback records the newer version as rejected, and `features update` links nothing at or below it until `features rollback --clear`)
 - [Updex v2.1.3 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
 - snosi [`docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md) (attestation checked at pin time and in every CI build)
@@ -262,5 +265,5 @@ Updex v2.1.3 commit
 - Updex v2.1.3 [`updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go) (`activation did not finish`: the images are merged, and a reboot finishes the activation)
 - [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
 - lodge [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl reload` rereads the manifests), [`internal/apps/apps.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/apps/apps.go) (`PollEvery`, 15 seconds)
-- Frostnotes [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/internal/store/store.go) (the schema refusal), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/design/sync.md) (back up the vault and data directories), [`cmd/notesd/main.go`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/cmd/notesd/main.go) and [`cmd/notesctl/hello.go`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/cmd/notesctl/hello.go) (`hello` names `notesd <version>`)
+- Frostnotes [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/internal/store/store.go) (the schema refusal), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/docs/design/sync.md) (back up the vault and data directories), [`cmd/notesd/main.go`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/cmd/notesd/main.go) and [`cmd/notesctl/hello.go`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/cmd/notesctl/hello.go) (`hello` names `notesd <version>`)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

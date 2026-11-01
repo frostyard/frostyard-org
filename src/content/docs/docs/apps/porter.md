@@ -21,7 +21,7 @@ lodge.
 
 ## Status
 
-Porter is pre-release. The latest release is v0.1.0. Each release attaches
+Porter is pre-release. The latest release is v0.1.1. Each release attaches
 one package, `frostyard-porterd_X.Y.Z_amd64.deb`, for lodge's host. On a
 Frostyard image, the [porterd system extension](/docs/sysexts/porterd/)
 installs it. Chat, routines, and reading from frostread are built and run on
@@ -80,14 +80,15 @@ goes in.
 
 ## Sources
 
-Reviewed 2026-10-28.
+Reviewed 2026-11-01.
 
-- Porter v0.1.0 commit [`a56337d0f2cec26f660b651fa3c8003ed19d22bd`](https://github.com/frostyard/porter/tree/a56337d0f2cec26f660b651fa3c8003ed19d22bd)
-- [`README.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/README.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/plans/0001-roadmap.md), [`docs/specs/routines.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/specs/routines.md)
-- [`docs/adr/0004-porter-drafts-and-the-owner-sends.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0004-porter-drafts-and-the-owner-sends.md), [`docs/adr/0005-memory-and-routines-live-in-the-vault.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0005-memory-and-routines-live-in-the-vault.md), [`docs/adr/0006-one-continuous-thread.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0006-one-continuous-thread.md), [`docs/adr/0007-porter-reads-frostread-read-only.md`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/docs/adr/0007-porter-reads-frostread-read-only.md)
+- Porter v0.1.1 commit [`d1c8631fd953dcbb25f17ad1004d1edd075dadb6`](https://github.com/frostyard/porter/tree/d1c8631fd953dcbb25f17ad1004d1edd075dadb6), released 2026-10-28. Its [release](https://github.com/frostyard/porter/releases/tag/v0.1.1) attaches only `frostyard-porterd_0.1.1_amd64.deb`. It adds the user `lodge` to the sysusers entry ([porter#22](https://github.com/frostyard/porter/pull/22)).
+- [`README.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/README.md)
+- [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/docs/plans/0001-roadmap.md), [`docs/specs/routines.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/docs/specs/routines.md)
+- [`docs/adr/0004-porter-drafts-and-the-owner-sends.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/docs/adr/0004-porter-drafts-and-the-owner-sends.md), [`docs/adr/0005-memory-and-routines-live-in-the-vault.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/docs/adr/0005-memory-and-routines-live-in-the-vault.md), [`docs/adr/0006-one-continuous-thread.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/docs/adr/0006-one-continuous-thread.md), [`docs/adr/0007-porter-reads-frostread-read-only.md`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/docs/adr/0007-porter-reads-frostread-read-only.md)
 - lodge commit [`a43d3be1de45704e0514d51da4c4b32d575f7c6c`](https://github.com/frostyard/lodge/tree/a43d3be1de45704e0514d51da4c4b32d575f7c6c): [`packaging/README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/packaging/README.md)
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28, adds the lodge, readd, and porterd extensions.
+- snosi PR [snosi#1175](https://github.com/frostyard/snosi/pull/1175), merged 2026-10-28, pins porterd 0.1.1. `https://repository.frostyard.org/ext/porterd/SHA256SUMS`, checked 2026-11-01, lists 0.1.0 and 0.1.1.
 - core commit [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a): [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/plans/0010-suite-packaging.md) (Phase 2: the `.deb` is not registered with apt-publisher)
-- [`packaging/nfpm.yaml`](https://github.com/frostyard/porter/blob/a56337d0f2cec26f660b651fa3c8003ed19d22bd/packaging/nfpm.yaml) (the description says "Built for Snosi's sysext")
+- [`packaging/nfpm.yaml`](https://github.com/frostyard/porter/blob/d1c8631fd953dcbb25f17ad1004d1edd075dadb6/packaging/nfpm.yaml) (the description says "Built for Snosi's sysext")

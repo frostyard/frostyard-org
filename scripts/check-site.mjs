@@ -619,7 +619,7 @@ const lightPages = [
   {
     route: "frostread",
     repo: "frostread",
-    sha: "3dc30c605f750d671e04465ef8b52810bc52ff2c",
+    sha: "a800ed947935c30a888e1039830a29af774ab073",
     install: "install",
     canonical: "README.md#install-on-lodges-host",
     sentence: "frostread is pre-release",
@@ -628,7 +628,7 @@ const lightPages = [
   {
     route: "porter",
     repo: "porter",
-    sha: "a56337d0f2cec26f660b651fa3c8003ed19d22bd",
+    sha: "d1c8631fd953dcbb25f17ad1004d1edd075dadb6",
     install: "install",
     canonical: "docs/design/overview.md#operational-notes",
     sentence: "Porter is pre-release",
@@ -637,7 +637,7 @@ const lightPages = [
   {
     route: "frostmail",
     repo: "frostmail",
-    sha: "32d764c1dfd59d5178621bcf17290a6e6dc68963",
+    sha: "94b92304ff15653bc94ab47bb72e876a9c14294e",
     install: "install",
     canonical: "docs/design/desktop.md#installing-for-one-user",
     sentence: "Frostmail is pre-release",
@@ -646,7 +646,7 @@ const lightPages = [
   {
     route: "frostnotes",
     repo: "frostnotes",
-    sha: "e850667533e63c52df844fc0cadac28516dc7450",
+    sha: "189ae2f7f435439943b0dfb62d3b4f9221724bf5",
     install: "install",
     canonical: "README.md#try-it",
     sentence: "Frostnotes is pre-release",
