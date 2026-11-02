@@ -382,8 +382,9 @@ rollback takes effect at the next boot. To apply it now with a refresh, add
 `--to VERSION`. If the older version is not on disk, the command fails and
 changes nothing.
 
-If the `--now` refresh fails, the output says `reboot to activate it`. Reboot.
-Do not refresh by hand.
+If the `--now` refresh fails, reboot. If the output says `activation did not
+finish`, the extensions are merged, but their users and groups can be missing.
+Otherwise the output says `reboot to activate it`. Do not refresh by hand.
 
 Updex records the rejected version in `/var/lib/updex/rollback/<name>`. While
 the record exists, `updex features update` and the timer leave the extension
