@@ -259,8 +259,8 @@ core commit
 [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
 frostread v0.3.0 commit
 [`a800ed947935c30a888e1039830a29af774ab073`](https://github.com/frostyard/frostread/tree/a800ed947935c30a888e1039830a29af774ab073);
-Updex v2.1.3 commit
-[`2661e987faac986f2594d1d9bbbadf1bf3053f5b`](https://github.com/frostyard/updex/tree/2661e987faac986f2594d1d9bbbadf1bf3053f5b).
+Updex v2.1.4 commit
+[`1843ea8ded298fbde42390a0c8b2842d09a92757`](https://github.com/frostyard/updex/tree/1843ea8ded298fbde42390a0c8b2842d09a92757).
 
 - [`mkosi.images/readd/mkosi.conf`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/readd/mkosi.conf)
 - [`mkosi.images/readd/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/mkosi.images/readd/mkosi.postinst.chroot)
@@ -280,13 +280,13 @@ Updex v2.1.3 commit
 - frostread [`README.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/README.md) (Update and Roll back), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/docs/design/overview.md) (Backup), [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/internal/store/store.go) (the schema refusal)
 - lodge [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl reload` rereads the manifests), [`internal/apps/apps.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/apps/apps.go) (`PollEvery`, 15 seconds)
 - [Irulan's review (frostyard-org#58)](https://github.com/frostyard/frostyard-org/pull/58#issuecomment-6478694500)
-- [Updex v2.1.3 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
+- [Updex v2.1.4 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
 - snosi [`docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md) (attestation checked at pin time and in every CI build)
 - [Murbella's review (frostyard-org#57)](https://github.com/frostyard/frostyard-org/pull/57#issuecomment-6474564111)
-- [Updex v2.1.3 `README.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/README.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; a link on an older image shows an update, and `features update` repoints it)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (Updex does not restart units; a unit at its start limit stays failed until `systemctl reset-failed` or a reboot)
-- Updex v2.1.3 [`updex/features.go`](https://github.com/frostyard/updex/blob/2661e987faac986f2594d1d9bbbadf1bf3053f5b/updex/features.go) (`activation did not finish`: the images are merged, and a reboot finishes the activation)
-- [Updex v2.1.3 release](https://github.com/frostyard/updex/releases/tag/v2.1.3)
+- [Updex v2.1.4 `README.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; a link on an older image shows an update, and `features update` repoints it)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (Updex does not restart units; a unit at its start limit stays failed until `systemctl reset-failed` or a reboot)
+- Updex v2.1.4 [`updex/features.go`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/updex/features.go) (`activation did not finish`: the images are merged, and a reboot finishes the activation)
+- [Updex v2.1.4 release](https://github.com/frostyard/updex/releases/tag/v2.1.4)
 - [lodge#41](https://github.com/frostyard/lodge/pull/41) (merged 2026-10-28)
 - lodge [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/e76a17c57766bad3797b8d78708591d88c5e7777/docs/specs/app-contract.md) (each app's `sysusers.d` entry declares user `lodge`, with the line in lodge's own `packaging/sysusers.d/lodge.conf`)
 - lab [`docs/plans/2026-10-28-snow-sysext-probe-run.md`](https://github.com/frostyard/lab/blob/a1cb6edf1940df80d23277489381c02a4e3d683a/docs/plans/2026-10-28-snow-sysext-probe-run.md) (run `jvzfn`: with Updex v2.1.3 a unit can still fail in the enable boot) and [lab#164](https://github.com/frostyard/lab/pull/164) (merged 2026-10-28)
