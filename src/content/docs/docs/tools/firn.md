@@ -16,13 +16,8 @@ For a first install, follow
 
 When you install with a wizard, Firn saves the recipe you reviewed as
 `recipe.toml` in a private directory below `/run/firn`. It then shows the
-command that repeats the install:
-
-```bash
-firn install --confirm /dev/nvme0n1 recipe.toml
-```
-
-The command names your target disk and the full path of the saved recipe.
+`firn install --confirm` command that repeats the install. That command names
+your target disk and the full path of the saved recipe. Write it down.
 
 The recipe stays there only until the installer environment reboots. Copy
 `recipe.toml` to other storage before you reboot.
@@ -80,7 +75,8 @@ detection is wrong, set them with `--secure-boot`, `--tpm`, and `--uefi`. Each
 takes `auto`, `on`, or `off`. For a script, add `--json-progress`: Firn then
 writes each progress event as one JSON line, as the
 [progress protocol](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/docs/specs/progress-protocol.md)
-describes.
+describes. That output contains the recovery key, if the recipe makes one.
+Keep it out of ordinary logs.
 
 ## Version 1 recipes stop working on 2026-12-30
 
