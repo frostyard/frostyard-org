@@ -87,6 +87,7 @@ export default defineConfig({
         {
           label: "Tools",
           items: [
+            { label: "Firn", slug: "docs/tools/firn" },
             { label: "Updex", slug: "docs/tools/updex" },
             { label: "APT repository", slug: "docs/tools/apt-repository" },
             { label: "nsl", slug: "docs/tools/nsl" },

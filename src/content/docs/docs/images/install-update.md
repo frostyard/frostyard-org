@@ -404,6 +404,7 @@ Podman services, and the merged extensions.
 ## See also
 
 - [Install a Frostyard image](/install)
+- [Firn: reinstall from a recipe](/docs/tools/firn/)
 - [Snow](/docs/images/snow/)
 - [Snowfield](/docs/images/snowfield/)
 - [Sundog](/docs/images/sundog/)
