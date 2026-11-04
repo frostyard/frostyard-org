@@ -100,6 +100,54 @@ nsl shutdown
 can usually leave the shutdown to nsl: a machine stops after 15 minutes
 without sessions or windows, and the VM stops a minute after its last machine.
 
+## Machines
+
+A machine is a Linux distro with its own packages, services, and home, under a
+name you choose. Ordinary machines are systemd-nspawn containers in one shared
+VM. nsl boots that VM with systemd-vmspawn and QEMU/KVM, and the machines share
+its memory and CPUs.
+[How nsl works](https://frostyard.github.io/nsl/concepts/how-it-works/)
+explains the parts.
+
+| Task | Command | Guide |
+| --- | --- | --- |
+| Create a machine | `nsl create NAME --distro DISTRO:RELEASE` | [Create a machine](https://frostyard.github.io/nsl/guides/machines/#create-a-machine) |
+| Make a machine the default | `nsl default NAME` | [The default machine](https://frostyard.github.io/nsl/guides/machines/#the-default-machine) |
+| Start or stop one machine | `nsl start NAME`, `nsl stop NAME` | [Start, stop and idle](https://frostyard.github.io/nsl/guides/machines/#start-stop-and-idle) |
+| Remove a stopped machine | `nsl remove NAME --yes` | [Remove a machine](https://frostyard.github.io/nsl/guides/machines/#remove-a-machine) |
+| Grow the VM's data disk | `nsl resize --disk GiB` | [Grow the data disk](https://frostyard.github.io/nsl/guides/storage/#grow-the-data-disk) |
+| Run untrusted software in a VM of its own | `nsl create NAME --distro DISTRO:RELEASE --isolated` | [Isolated machines](https://frostyard.github.io/nsl/guides/isolated/) |
+
+A name starts with a lowercase letter, then lowercase letters, digits, or
+hyphens, up to 24 characters. It cannot end with a hyphen. Put flags after the
+name.
+
+Install software with the machine's own package manager: `apt-get`, `dnf`,
+`pacman`, or `zypper`. A newer machine image changes only machines you create
+later. Rootless Podman works inside a machine.
+
+An ordinary machine can read and write your home, `/run/media/USER`, and
+`/mnt`, under `/mnt/host`. Treat software in it as software that runs with
+your permissions. Edits you make on the host send no file events into the
+machine, so keep file watchers and hot reload in the guest home. The
+[host files guide](https://frostyard.github.io/nsl/guides/host-files/) has the
+path rules.
+
+An isolated machine runs in its own VM. It has no host files, no windows on
+your desktop, and no `nsl-open` to the host. Its VM gets 2 GiB of memory and 2
+CPUs by default. You choose the tier when you create or import the machine.
+
+Services inside a machine do not keep it running. To keep machines running,
+set `idle_timeout = 0` in the `[machines]` section of
+`$XDG_CONFIG_HOME/nsl/nsl.conf`. When `XDG_CONFIG_HOME` is unset, empty, or
+relative, the file is `~/.config/nsl/nsl.conf`. The same file sets the VM's
+memory and CPUs: see the
+[configuration reference](https://frostyard.github.io/nsl/reference/configuration/#keys).
+
+Run `nsl remove NAME` without `--yes` first: it shows what it deletes.
+Removal is permanent. Your host files, cached images, and exported archives
+stay. To keep a copy, export the machine first.
+
 ## Everyday tasks
 
 | Task | Command | Guide |
@@ -199,6 +247,15 @@ Reviewed 2026-11-04.
 - [`site/content/getting-started/install.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/getting-started/install.md)
 - [`site/content/getting-started/first-machine.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/getting-started/first-machine.md)
 - [`site/content/guides/machines.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/machines.md)
+- [`site/content/guides/isolated.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/isolated.md)
+- [`site/content/guides/host-files.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/host-files.md)
+- [`site/content/guides/storage.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/storage.md)
+- [`site/content/concepts/how-it-works.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/concepts/how-it-works.md)
+- [`site/content/reference/configuration.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/reference/configuration.md)
+- [`main.go`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/main.go)
+- [`config.go`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/config.go)
+- [`machines.go`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/machines.go)
+- [`internal/protocol/protocol.go`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/internal/protocol/protocol.go)
 - [`site/content/guides/ports.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/ports.md)
 - [`site/content/guides/editors.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/editors.md)
 - [`site/content/guides/export-import.md`](https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/export-import.md)
