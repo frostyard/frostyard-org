@@ -20,13 +20,13 @@ want notes that sync between your devices and that agents can read and write.
 
 ## Status
 
-Frostnotes is pre-release. The latest release is v0.3.2. Its Flatpak is in the
+Frostnotes is pre-release. The latest release is v0.4.0. Its Flatpak is in the
 [Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
 attaches `frostyard-notesd_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
 `notesd`, `notesctl`, the units, the `frostnotes` user, and the web build for
 lodge's notes app. Frostnotes is not in the Frostyard APT repository or the
 Frostyard Homebrew tap. On a Frostyard image, the
-[notesd system extension](/docs/sysexts/notesd/) installs it.
+[notesd system extension](/docs/sysexts/notesd/) installs it. The system extension can trail the latest release. The [catalog](/docs/sysexts/) lists the version it ships.
 
 The vault, sync, and the desktop app are done. Notes inside lodge is in
 progress: `notesd` runs as lodge's `notes` app. The hub moved behind lodge
@@ -54,6 +54,8 @@ device, for example delete again a file that another device brought back. Now
 before the next sync. v0.3.2 also adds a database migration, so v0.3.1 cannot
 open the database after v0.3.2 has run.
 
+Release v0.4.0 adds a Tasks pane. It lists the vault's open tasks, the list items that start with `[ ]`, grouped by note. Select a task to open its note at that line. Agents get the MCP tool `list_tasks`. The app's details in the Flatpak remote now show 4 screenshots.
+
 ## Install
 
 The desktop app is a Flatpak. It works on its own: you need no account,
@@ -80,7 +82,7 @@ Check the install:
 
 `flatpak info org.frostyard.Frostnotes`
 
-You see version 0.3.2. Frostnotes shows in the app grid. Update it with
+You see version 0.4.0. Frostnotes shows in the app grid. Update it with
 `flatpak update`. From v0.3.0, when you open a new window after
 `flatpak update`, the app replaces a `notesd` of an older build with the new
 one, and you need no logout. The update from v0.2.0 to v0.3.0 is different:
@@ -218,10 +220,12 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 ## Sources
 
-Reviewed 2026-11-02.
+Reviewed 2026-11-04.
 
-- Frostnotes release v0.3.2 commit [`a9982d247adf644e882432e0c2485421b3d72be7`](https://github.com/frostyard/frostnotes/tree/a9982d247adf644e882432e0c2485421b3d72be7), released 2026-11-02. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.3.2) attaches only `frostyard-notesd_0.3.2_amd64.deb`.
-- v0.3.2's changes: [frostnotes#122](https://github.com/frostyard/frostnotes/pull/122) (the crash fix), [`docs/adr/0034-a-device-records-the-head-it-applies-before-it-changes-the-disk.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/adr/0034-a-device-records-the-head-it-applies-before-it-changes-the-disk.md) (the design), and [`internal/store/migrations/0006_sync_applying.sql`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/internal/store/migrations/0006_sync_applying.sql) (the migration).
+- Frostnotes release v0.4.0 commit [`567513880a2f6526054225f9c43d45e9cace4275`](https://github.com/frostyard/frostnotes/tree/567513880a2f6526054225f9c43d45e9cace4275), released 2026-11-04. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.4.0) attaches only `frostyard-notesd_0.4.0_amd64.deb`.
+- v0.4.0's changes: [frostnotes#125](https://github.com/frostyard/frostnotes/pull/125) adds the Tasks pane and the `list_tasks` MCP tool. [frostnotes#127](https://github.com/frostyard/frostnotes/pull/127) adds screenshots. [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/specs/ui.md) and [`docs/specs/mcp.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/specs/mcp.md) describe the changes.
+- Frostyard Flatpak remote, checked 2026-11-04: `org.frostyard.Frostnotes` lists release 0.4.0, built from 567513880a2f6526054225f9c43d45e9cace4275.
+- v0.3.2's changes: [frostnotes#122](https://github.com/frostyard/frostnotes/pull/122) (the crash fix), [`docs/adr/0034-a-device-records-the-head-it-applies-before-it-changes-the-disk.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/adr/0034-a-device-records-the-head-it-applies-before-it-changes-the-disk.md) (the design), and [`internal/store/migrations/0006_sync_applying.sql`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/internal/store/migrations/0006_sync_applying.sql) (the migration).
 - Frostnotes release v0.3.1 commit [`189ae2f7f435439943b0dfb62d3b4f9221724bf5`](https://github.com/frostyard/frostnotes/tree/189ae2f7f435439943b0dfb62d3b4f9221724bf5), released 2026-10-30. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.3.1) attaches only `frostyard-notesd_0.3.1_amd64.deb`.
 - v0.3.1's changes: [frostnotes#121](https://github.com/frostyard/frostnotes/pull/121) (the conflict version), [frostnotes#114](https://github.com/frostyard/frostnotes/pull/114) (the background answer), [`internal/store/migrations/0005_sync_push_base_hash.sql`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/internal/store/migrations/0005_sync_push_base_hash.sql) (the migration), and [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/docs/design/app.md) (section Operational notes, Moving from a host notesd).
 - Frostnotes release v0.3.0 commit [`2d80734337b90f497c5b6f0c7e87038d2bc96b20`](https://github.com/frostyard/frostnotes/tree/2d80734337b90f497c5b6f0c7e87038d2bc96b20), released 2026-10-28, and `main` at [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/tree/edee4ee870e55981d8912a4ecfe146b6958abfdc).
@@ -235,10 +239,10 @@ Reviewed 2026-11-02.
 - The Flathub user remote: a test on 2026-10-30 with Flatpak 1.16.6 and an empty user installation. Without Flathub as a user remote, `flatpak install --user` fails with `requires the runtime org.gnome.Platform/x86_64/51 which was not found`.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
-- [`README.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/README.md)
-- [`docs/design/vault.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/design/vault.md), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/design/sync.md), [`docs/design/hub.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/design/hub.md), [`docs/design/overview.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/design/overview.md)
-- [`docs/specs/mcp.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/specs/mcp.md), [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/specs/lodge-app.md)
-- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/plans/0002-roadmap.md), [`docs/plans/0006-m4-notes-inside-lodge.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/plans/0006-m4-notes-inside-lodge.md)
-- [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/internal/store/store.go)
+- [`README.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/README.md)
+- [`docs/design/vault.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/design/vault.md), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/design/sync.md), [`docs/design/hub.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/design/hub.md), [`docs/design/overview.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/design/overview.md)
+- [`docs/specs/mcp.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/specs/mcp.md), [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/specs/lodge-app.md)
+- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/plans/0002-roadmap.md), [`docs/plans/0006-m4-notes-inside-lodge.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/plans/0006-m4-notes-inside-lodge.md)
+- [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/internal/store/store.go)
 - lodge commit [`a43d3be1de45704e0514d51da4c4b32d575f7c6c`](https://github.com/frostyard/lodge/tree/a43d3be1de45704e0514d51da4c4b32d575f7c6c) on `main`: [`README.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/README.md)
 - No APT or Homebrew package: the Homebrew tap [`Casks`](https://github.com/frostyard/homebrew-tap/tree/8dfab8783f6b22e6333656aa317b5aac2611d5f7/Casks) at `8dfab8783f6b22e6333656aa317b5aac2611d5f7` holds only `chairlift.rb` and `nsl.rb`. The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-11-01, lists no suite package.

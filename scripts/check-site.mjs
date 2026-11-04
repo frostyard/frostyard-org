@@ -622,7 +622,7 @@ const lightPages = [
   {
     route: "lodge",
     repo: "lodge",
-    sha: "a43d3be1de45704e0514d51da4c4b32d575f7c6c",
+    sha: "bd6fa7b391d08ce0de44d80a875e4a386e415985",
     install: "install",
     canonical: "packaging/README.md",
     sentence: "lodge is pre-release",
@@ -631,7 +631,7 @@ const lightPages = [
   {
     route: "frostread",
     repo: "frostread",
-    sha: "a800ed947935c30a888e1039830a29af774ab073",
+    sha: "513f14c4d270c97c3ae62ea187051741b0dae582",
     install: "install",
     canonical: "README.md#install-on-lodges-host",
     sentence: "frostread is pre-release",
@@ -640,7 +640,7 @@ const lightPages = [
   {
     route: "porter",
     repo: "porter",
-    sha: "d1c8631fd953dcbb25f17ad1004d1edd075dadb6",
+    sha: "99ab9a393596b13e096a5c111a3c4f7ac7ac0429",
     install: "install",
     canonical: "docs/design/overview.md#operational-notes",
     sentence: "Porter is pre-release",
@@ -658,7 +658,7 @@ const lightPages = [
   {
     route: "frostnotes",
     repo: "frostnotes",
-    sha: "a9982d247adf644e882432e0c2485421b3d72be7",
+    sha: "567513880a2f6526054225f9c43d45e9cace4275",
     install: "install",
     canonical: "README.md#try-it",
     sentence: "Frostnotes is pre-release",
@@ -681,6 +681,15 @@ for (const page of lightPages) {
     assert(html.includes(`href="${link}"`), `${path} must link ${link}.`);
   }
   assert(!html.includes("data-code="), `${path} must not carry copied command blocks.`);
+}
+assert(lightHtml.lodge.text.includes("The latest release is v0.2.0"), "/docs/apps/lodge must name v0.2.0 as the latest release.");
+assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
+assert(lightHtml.porter.text.includes("The latest release is v0.2.0"), "/docs/apps/porter must name v0.2.0 as the latest release.");
+assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
+assert(lightHtml.frostread.text.includes("The latest release is v0.5.0") && lightHtml.frostread.text.includes("desktop shell are built"), "/docs/apps/frostread must name v0.5.0 and the desktop shell.");
+assert(lightHtml.frostnotes.text.includes("The latest release is v0.4.0") && lightHtml.frostnotes.text.includes("You see version 0.4.0") && lightHtml.frostnotes.text.includes("list_tasks"), "/docs/apps/frostnotes must name v0.4.0 and list_tasks.");
+for (const route of ["lodge", "frostread", "frostnotes"]) {
+  assert(lightHtml[route].text.includes("The system extension can trail the latest release"), `/docs/apps/${route} must state that the system extension can trail the latest release.`);
 }
 assert(lightHtml.lodge.text.includes("On a Frostyard image, enable the lodge system extension") && lightHtml.lodge.text.includes("/usr is read-only on a Frostyard image."), "/docs/apps/lodge must state the lodge extension and the /usr limit.");
 assert(lightHtml.frostread.text.includes("lodge shows it as the app Read"), "/docs/apps/frostread must say that lodge shows it as Read.");
