@@ -73,8 +73,14 @@ if (sampleFound.length === 0 || sampleFound.some((line) => line !== 1)) {
   throw new Error(`check-prose self-test failed: ${JSON.stringify(findings(sample))}`);
 }
 
+const pageFiles = await pages(docsDir);
+if (pageFiles.length === 0) {
+  console.error("check-prose: no .md or .mdx pages in src/content/docs.");
+  process.exit(1);
+}
+
 let failures = 0;
-for (const file of (await pages(docsDir)).sort()) {
+for (const file of pageFiles.sort()) {
   const source = await readFile(file, "utf8");
   for (const item of findings(source)) {
     failures += 1;
@@ -83,7 +89,7 @@ for (const file of (await pages(docsDir)).sort()) {
 }
 
 if (failures > 0) {
-  console.error(`\ncheck-prose: ${failures} banned phrase(s). See docs/agents/skills/docs-voice.md.`);
+  console.error(`\ncheck-prose: ${failures} banned phrase(s) in ${pageFiles.length} pages. See docs/agents/skills/docs-voice.md.`);
   process.exit(1);
 }
-console.log("check-prose: no banned phrases in src/content/docs.");
+console.log(`check-prose: checked ${pageFiles.length} pages in src/content/docs, no banned phrases.`);

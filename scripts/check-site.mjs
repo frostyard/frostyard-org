@@ -115,6 +115,17 @@ const docsRoutes = [
   "/docs/tools/firn",
 ];
 
+let files;
+try {
+  files = await htmlFiles(dist);
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+  files = [];
+}
+if (files.length === 0) {
+  throw new Error("check-site: no built HTML pages in dist/client. Run npm run build:check first.");
+}
+
 await Promise.all(["install", "sundog"].map(route => access(routeFile(`/${route}`))));
 await Promise.all(docsRoutes.map(route => access(routeFile(route))));
 try {
@@ -124,7 +135,6 @@ try {
   if (error.code !== "ENOENT") throw error;
 }
 
-const files = await htmlFiles(dist);
 for (const file of files) {
   const html = await readFile(file, "utf8");
   const page = `/${relative(dist.pathname, file)}`;
