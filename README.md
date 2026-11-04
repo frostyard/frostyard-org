@@ -105,6 +105,7 @@ existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
 - `src/content/docs/docs/tools/igloo.md` covers the Igloo terminal: install, use, and update.
 - `src/content/docs/docs/tools/chairlift.md` covers ChairLift: the pages, everyday tasks, and install.
 - `src/content/docs/docs/tools/intuneme.md` covers intuneme: install, enrollment, daily use, upgrade, and removal.
+- `src/content/docs/docs/tools/firn.md` covers Firn: keeping the wizard's recipe, reinstalling from it, and the 2026-12-30 end of version 1 recipes.
 - `src/content.config.ts` defines the typed Starlight `docs` collection.
 - `src/components/starlight/MobileMenuToggle.astro` wraps the Starlight
   component and mirrors its expanded state onto the visible button for
@@ -166,3 +167,4 @@ The docs pilot adds these content routes:
 `src/content/docs/docs/tools/igloo.md` is `/docs/tools/igloo/`.
 `src/content/docs/docs/tools/chairlift.md` is `/docs/tools/chairlift/`.
 `src/content/docs/docs/tools/intuneme.md` is `/docs/tools/intuneme/`.
+`src/content/docs/docs/tools/firn.md` is `/docs/tools/firn/`.

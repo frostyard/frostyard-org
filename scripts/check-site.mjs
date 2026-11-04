@@ -112,6 +112,7 @@ const docsRoutes = [
   "/docs/tools/igloo",
   "/docs/tools/chairlift",
   "/docs/tools/intuneme",
+  "/docs/tools/firn",
 ];
 
 await Promise.all(["install", "sundog"].map(route => access(routeFile(`/${route}`))));
@@ -240,6 +241,7 @@ for (const route of docsRoutes) {
     "/docs/tools/igloo/",
     "/docs/tools/chairlift/",
     "/docs/tools/intuneme/",
+    "/docs/tools/firn/",
   ]) {
     assert(html.includes(`href="${href}"`), `${route} must render the docs navigation link ${href}.`);
   }
@@ -261,7 +263,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/", "/docs/tools/chairlift/", "/docs/tools/intuneme/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/", "/docs/tools/chairlift/", "/docs/tools/intuneme/", "/docs/tools/firn/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 
