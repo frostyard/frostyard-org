@@ -8,7 +8,7 @@ reach. It runs behind [lodge](/docs/apps/lodge/), where lodge shows it as the
 app Read. You need it if you run lodge and want to follow feeds and keep
 articles to read later.
 
-- Sources: RSS, Atom, and JSON Feed, imported and exported as OPML. Each
+- Sources: RSS, Atom, and JSON Feed, imported and exported as OPML. Sources can be in folders, and OPML import and export keep the folders. Each
   source polls about every 20 minutes.
 - Read later: save a link from the app, with `readctl save`, or from an agent
   with a `read;write` token.
@@ -17,21 +17,22 @@ articles to read later.
 - Articles are extracted and sanitized, and their images are inlined, so the
   browser loads nothing remote.
 - Unread, starred, and archived views, and full-text search.
+- lodge shows the Unread view's count as Read's badge in the rail.
 - Save an article as a note under `Reading/` in
   [Frostnotes](/docs/apps/frostnotes/).
 - Agents, such as [Porter](/docs/apps/porter/), reach it at `/mcp/read`.
 
 ## Status
 
-frostread is pre-release. The latest release is v0.3.0. Each release attaches
+frostread is pre-release. The latest release is v0.5.0. Each release attaches
 one package, `frostyard-readd_X.Y.Z_amd64.deb`, for lodge's host. On a
 Frostyard image, the [readd system extension](/docs/sysexts/readd/) installs
-it. The daemon, its API, `readctl`, MCP, save-as-note, the web app,
+it. The system extension can trail the latest release. The [catalog](/docs/sysexts/) lists the version it ships. The daemon, its API, `readctl`, MCP, save-as-note, the web app,
 save from the phone, and the blob sweep are built.
 
 A desktop app is planned: the Flatpak `org.frostyard.Frostread`, with its own
 `readd`, local by default, and lodge as a connection you choose. readd's
-desktop mode is built. The Flatpak and its lodge connection are not, so today
+desktop mode and the desktop shell are built. The Flatpak and its lodge connection are not, so today
 frostread runs only behind lodge.
 
 ## Install
@@ -50,11 +51,10 @@ On a Frostyard image, Updex updates and rolls back the readd system extension.
 has the steps, with the backup to take first. The release `.deb` is built for
 that extension, and it is not in the Frostyard APT repository.
 
-On a host installed by hand from source, follow
+On lodge's own host, you install the release `.deb` by hand with `dpkg -i`. Follow
 [Update](https://github.com/frostyard/frostread/blob/main/README.md#update) and
 [Roll back](https://github.com/frostyard/frostread/blob/main/README.md#roll-back)
-in the README. The Update steps take a rollback archive before the new build
-goes in.
+in the README. The Update steps check the package and take a rollback archive before the new version goes in.
 
 ## Documentation
 
@@ -73,7 +73,7 @@ goes in.
 - Read fetches only public addresses. A feed on your home network cannot be
   read.
 - frostread refuses a database with a newer schema than the program knows.
-  Back up `/var/lib/frostread` before an update.
+  Back up `/var/lib/frostread` before an update. v0.4.0 adds a migration, so v0.3.0 cannot open the database after v0.4.0 has run.
 
 ## See also
 
@@ -85,16 +85,20 @@ goes in.
 
 ## Sources
 
-Reviewed 2026-11-01.
+Reviewed 2026-11-04.
 
-- frostread v0.3.0 commit [`a800ed947935c30a888e1039830a29af774ab073`](https://github.com/frostyard/frostread/tree/a800ed947935c30a888e1039830a29af774ab073), released 2026-10-30. Its [release](https://github.com/frostyard/frostread/releases/tag/v0.3.0) attaches only `frostyard-readd_0.3.0_amd64.deb`.
-- [`README.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/README.md)
-- [`docs/specs/api.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/docs/specs/api.md), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/docs/plans/0001-roadmap.md)
-- [`docs/adr/0003-the-fetcher-reaches-only-public-addresses.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/docs/adr/0003-the-fetcher-reaches-only-public-addresses.md), [`docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md)
-- [`docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md) (Status: Accepted, Brian, 2026-10-28), and frostread `main` at [`19f092568236c793424671d2ac6ae3d50b975452`](https://github.com/frostyard/frostread/tree/19f092568236c793424671d2ac6ae3d50b975452): [`docs/plans/0002-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostread/blob/19f092568236c793424671d2ac6ae3d50b975452/docs/plans/0002-the-standalone-desktop-flatpak.md) (Status 2026-10-31: Phase 2, readd's desktop mode, is merged; nothing of the Rust shell, the Flatpak, the lodge connection or the release candidate is built).
+- frostread v0.5.0 commit [`513f14c4d270c97c3ae62ea187051741b0dae582`](https://github.com/frostyard/frostread/tree/513f14c4d270c97c3ae62ea187051741b0dae582), released 2026-11-04 ([release](https://github.com/frostyard/frostread/releases/tag/v0.5.0)). Its release attaches only `frostyard-readd_0.5.0_amd64.deb`. v0.4.0 was released 2026-11-03 ([release](https://github.com/frostyard/frostread/releases/tag/v0.4.0)).
+- [`README.md`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/README.md)
+- [`docs/specs/api.md`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/docs/specs/api.md), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/docs/plans/0001-roadmap.md)
+- [`docs/adr/0003-the-fetcher-reaches-only-public-addresses.md`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/docs/adr/0003-the-fetcher-reaches-only-public-addresses.md), [`docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/docs/adr/0006-save-from-another-page-through-a-confirm-page-a-bookmarklet-opens.md)
+- [`docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md) (Status: Accepted, Brian, 2026-10-28).
+- [frostread#40](https://github.com/frostyard/frostread/pull/40) adds source folders. [frostread#41](https://github.com/frostyard/frostread/pull/41) adds the rail badge.
+- [`internal/store/migrations/0003_source_folders.sql`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/internal/store/migrations/0003_source_folders.sql).
+- [`docs/plans/0002-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/docs/plans/0002-the-standalone-desktop-flatpak.md) (Status 2026-11-03: Phase 3, the desktop shell, is done).
+- `https://repository.frostyard.org/ext/readd/SHA256SUMS`, checked 2026-11-04, lists up to 0.4.0.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`. ADR-0008 settles frostread's lodge mode: a connection.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28, adds the lodge, readd, and porterd extensions.
 - snosi PR [snosi#1196](https://github.com/frostyard/snosi/pull/1196), merged 2026-10-31, pins readd 0.3.0.
-- [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/internal/store/store.go)
+- [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/internal/store/store.go)
 - core commit [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a): [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/plans/0010-suite-packaging.md) (Phase 2: the `.deb` is not registered with apt-publisher)
-- [`packaging/nfpm.yaml`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/packaging/nfpm.yaml) (the description says "Built for Snosi's sysext")
+- [`packaging/nfpm.yaml`](https://github.com/frostyard/frostread/blob/513f14c4d270c97c3ae62ea187051741b0dae582/packaging/nfpm.yaml) (the description says "Built for Snosi's sysext")
