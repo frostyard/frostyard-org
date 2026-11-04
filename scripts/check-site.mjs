@@ -729,6 +729,7 @@ for (const heading of [
   "before-you-start",
   "install",
   "create-your-first-machine",
+  "machines",
   "everyday-tasks",
   "update-and-remove",
   "igloo",
@@ -744,6 +745,15 @@ for (const source of [
   "site/content/getting-started/first-machine.md",
   "site/content/reference/machine-images.md",
   "site/content/reference/limits.md",
+  "site/content/guides/isolated.md",
+  "site/content/guides/host-files.md",
+  "site/content/guides/storage.md",
+  "site/content/concepts/how-it-works.md",
+  "site/content/reference/configuration.md",
+  "main.go",
+  "config.go",
+  "machines.go",
+  "internal/protocol/protocol.go",
 ]) {
   assert(nsl.includes(`https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/${source}`), `/docs/tools/nsl must cite ${source}.`);
 }
@@ -752,6 +762,19 @@ for (const source of ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkos
 }
 assert(nsl.includes("https://github.com/frostyard/firn/blob/11133e6b801fc68a7490742244aa87e0313a8acd/internal/catalog/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
 assert(nslText.includes("This guide follows nsl v0.12.0"), "/docs/tools/nsl must follow nsl v0.12.0.");
+assert(nslText.includes("systemd-nspawn containers in one shared"), "/docs/tools/nsl must say that machines are systemd-nspawn containers in the shared VM.");
+assert(nslText.includes("nsl boots that VM with systemd-vmspawn"), "/docs/tools/nsl must say that nsl boots the VM with systemd-vmspawn.");
+for (const url of [
+  "https://frostyard.github.io/nsl/concepts/how-it-works/",
+  "https://frostyard.github.io/nsl/guides/machines/#create-a-machine",
+  "https://frostyard.github.io/nsl/guides/machines/#remove-a-machine",
+  "https://frostyard.github.io/nsl/guides/storage/#grow-the-data-disk",
+  "https://frostyard.github.io/nsl/guides/isolated/",
+  "https://frostyard.github.io/nsl/guides/host-files/",
+]) {
+  assert(nsl.includes(`href="${url}"`), `/docs/tools/nsl must link ${url}.`);
+}
+assert(nslText.includes("idle_timeout = 0"), "/docs/tools/nsl must say how to turn off the idle stop.");
 assert(nsl.includes('href="https://frostyard.github.io/nsl/reference/machine-images/"'), "/docs/tools/nsl must link the nsl machine images reference.");
 assert(nslText.includes("Firn does not add your user to it"), "/docs/tools/nsl must state that Firn does not add the user to kvm.");
 assert(nsl.includes('data-code="sudo usermod -aG kvm'), "/docs/tools/nsl must give the kvm group command.");
