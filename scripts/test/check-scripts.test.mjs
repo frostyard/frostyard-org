@@ -1,0 +1,117 @@
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { copyFile, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { test } from "node:test";
+
+async function fixtureDir() {
+  return mkdtemp(join(tmpdir(), "check-scripts-"));
+}
+
+async function copyScripts(root, names) {
+  const scriptsDir = join(root, "scripts");
+  await mkdir(scriptsDir, { recursive: true });
+  for (const name of names) {
+    await copyFile(new URL(`../${name}`, import.meta.url), join(scriptsDir, name));
+  }
+  return scriptsDir;
+}
+
+function run(script, root) {
+  return spawnSync(process.execPath, [script], { cwd: root, encoding: "utf8" });
+}
+
+test("check-prose fails when the docs directory has no pages", async () => {
+  const root = await fixtureDir();
+  try {
+    const scriptsDir = await copyScripts(root, ["check-prose.mjs", "prose-rules.json"]);
+    await mkdir(join(root, "src/content/docs"), { recursive: true });
+
+    const result = run(join(scriptsDir, "check-prose.mjs"), root);
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /no \.md or \.mdx pages/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("check-prose passes a clean page", async () => {
+  const root = await fixtureDir();
+  try {
+    const scriptsDir = await copyScripts(root, ["check-prose.mjs", "prose-rules.json"]);
+    const docsDir = join(root, "src/content/docs");
+    await mkdir(docsDir, { recursive: true });
+    await writeFile(join(docsDir, "index.md"), "Enable the extension.");
+
+    const result = run(join(scriptsDir, "check-prose.mjs"), root);
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /checked 1 pages/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("check-prose reports a banned phrase and file name", async () => {
+  const root = await fixtureDir();
+  try {
+    const scriptsDir = await copyScripts(root, ["check-prose.mjs", "prose-rules.json"]);
+    const docsDir = join(root, "src/content/docs");
+    await mkdir(docsDir, { recursive: true });
+    await writeFile(join(docsDir, "index.md"), "Leverage the extension.");
+
+    const result = run(join(scriptsDir, "check-prose.mjs"), root);
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /index\.md:1: "Leverage"/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("check-site fails when dist/client is empty", async () => {
+  const root = await fixtureDir();
+  try {
+    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+    await mkdir(join(root, "dist/client"), { recursive: true });
+
+    const result = run(join(scriptsDir, "check-site.mjs"), root);
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /no built HTML pages in dist\/client/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("check-site fails when dist/client has only a non-HTML file", async () => {
+  const root = await fixtureDir();
+  try {
+    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+    await mkdir(join(root, "dist/client"), { recursive: true });
+    await writeFile(join(root, "dist/client/_redirects"), "/cayo /floe 301\n");
+
+    const result = run(join(scriptsDir, "check-site.mjs"), root);
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /no built HTML pages in dist\/client/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("check-site fails when dist is missing", async () => {
+  const root = await fixtureDir();
+  try {
+    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+
+    const result = run(join(scriptsDir, "check-site.mjs"), root);
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /no built HTML pages in dist\/client/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

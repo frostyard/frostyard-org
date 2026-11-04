@@ -35,9 +35,13 @@ the snapshot with a new timestamp.
 - This repository is a website. It has no tags and no GitHub releases. The
   `version` in `package.json` is not a release version.
 - Cloudflare Workers Builds builds and deploys the site. The connection is set
-  up in the Cloudflare dashboard, not in this repository, which has no GitHub
-  Actions workflows. A push to `main` deploys to production. A PR gets a
-  preview URL in its `Workers Builds: frostyard-org` check.
+  up in the Cloudflare dashboard, not in this repository. A push to `main`
+  deploys to production. A PR gets a preview URL in its
+  `Workers Builds: frostyard-org` check.
+- GitHub Actions only tests. `.github/workflows/ci.yml` runs `npm ci` and
+  `npm run ci` on each PR and each push to `main`, as the check `ci`. It
+  builds from the committed catalog snapshot (`build:check` has no prebuild
+  step) and fails if `src/data/extensions.json` changes. It does not deploy.
 - Who deploys: Brian, when he merges to `main`. Agents never run
   `npm run deploy` or `wrangler deploy`.
 - Internal dependencies: none. `package.json` has no frostyard or bketelsen
