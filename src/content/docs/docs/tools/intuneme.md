@@ -7,7 +7,7 @@ intuneme runs Microsoft Intune, the Microsoft Identity Broker, and Microsoft
 Edge in a systemd-nspawn container on an immutable host. You need it when your
 employer manages your device with Intune and the host `/usr` is read-only.
 The host stays almost unchanged, and your enrollment lives in `~/Intune`. This
-guide follows intuneme v0.21.1; the full documentation is at
+guide follows intuneme v0.22.1; the full documentation is at
 [frostyard.github.io/intuneme](https://frostyard.github.io/intuneme/).
 
 Snow, Snowfield, and Sundog already include the `frostyard-intuneme` package.
@@ -135,9 +135,12 @@ Each of these is optional. The guides are on the intuneme site.
 | Use a YubiKey or webcam in the container | Automatic while the container runs | [Device hotplug](https://frostyard.github.io/intuneme/user-guide/device-hotplug/) |
 | Start and stop from GNOME Quick Settings | `intuneme extension install`, then log out and back in | [GNOME extension](https://frostyard.github.io/intuneme/user-guide/gnome-extension/) |
 | Launch Edge and Intune Portal from the application grid | `bash scripts/install-desktop-items.sh` from the intuneme repository | [Desktop shortcuts](https://frostyard.github.io/intuneme/user-guide/desktop-shortcuts/) |
+| Choose the container's host name, which Intune shows as the device name | Set `hostname` in `~/.local/share/intuneme/config.toml` before `intuneme init` | [Container hostname](https://frostyard.github.io/intuneme/reference/configuration/#container-hostname) |
 
 The broker proxy gives host apps your corporate sign-in tokens. Turn it on
 only if you use Microsoft apps on the host with your Intune identity.
+
+The default host name is your host name with `LXC` at the end. The key takes effect only at `intuneme init` and `intuneme recreate`. Set it before you enroll: a change after enrollment can show in Intune as a renamed or a new device.
 
 ## What the helper can do
 
@@ -274,6 +277,7 @@ On Fedora or RHEL, run `sudo rpm -e frostyard-intuneme` instead.
 | `intuneme start` says `broker proxy failed to start within 5 seconds` | `echo $DBUS_SESSION_BUS_ADDRESS` | Run from a desktop session, or run `intuneme config broker-proxy disable`, then `intuneme stop` and `intuneme start`. |
 | `intuneme status` shows the broker proxy as `not running (bus name owned by ...)` | The process that `status` names | Stop or disable that process, or run `intuneme config broker-proxy disable` if you do not need the proxy. If an old `intuneme broker-proxy` owns it, run `intuneme config broker-proxy enable` again. |
 | Commands fail with a `config.toml` parse error | `~/.local/share/intuneme/config.toml` | Fix the TOML syntax. To rebuild the file, run `intuneme init --force`. Your `~/Intune` stays, but settings such as the broker proxy return to their defaults. |
+| Edge shows `You're using an unsupported command-line flag: --disable-gpu-sandbox` | `intuneme version` | Upgrade to v0.22.1 or later, then run `intuneme start`. It installs an Edge policy that hides the banner, also in a container that already runs. The flag stays, because the GPU sandbox crashes in the container. |
 | Edge or Intune Portal asks you to sign in again after a reboot | In `intuneme shell`: `journalctl -t intuneme-session-setup` | Run `intuneme start` again. It is safe while the container runs. Then follow the recovery steps on the [troubleshooting page](https://frostyard.github.io/intuneme/troubleshooting/). From v0.21.1, `start` turns on the container user's session, and each new session tries the keyring again, at most 3 times each boot. |
 
 The [troubleshooting page](https://frostyard.github.io/intuneme/troubleshooting/)
@@ -286,26 +290,29 @@ covers Edge crashes, X authorization errors, and the rest.
 
 ## Sources
 
-Reviewed 2026-11-02.
+Reviewed 2026-11-04.
 
-- intuneme v0.21.1 commit [`fbfc3a1887302317ccc11904a82d9a380fcfbb92`](https://github.com/frostyard/intuneme/tree/fbfc3a1887302317ccc11904a82d9a380fcfbb92)
-- [intuneme v0.21.1 release](https://github.com/frostyard/intuneme/releases/tag/v0.21.1)
-- [`README.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/README.md)
-- [`SECURITY.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/SECURITY.md)
-- [`site/getting-started/prerequisites.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/getting-started/prerequisites.md)
-- [`site/getting-started/installation.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/getting-started/installation.md)
-- [`site/getting-started/quick-start.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/getting-started/quick-start.md)
-- [`site/user-guide/daily-workflow.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/user-guide/daily-workflow.md)
-- [`site/user-guide/broker-proxy.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/user-guide/broker-proxy.md)
-- [`site/user-guide/mcp-servers.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/user-guide/mcp-servers.md)
-- [`site/user-guide/device-hotplug.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/user-guide/device-hotplug.md)
-- [`site/user-guide/gnome-extension.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/user-guide/gnome-extension.md)
-- [`site/user-guide/desktop-shortcuts.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/user-guide/desktop-shortcuts.md)
-- [`site/user-guide/upgrading.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/user-guide/upgrading.md)
-- [`site/troubleshooting.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/site/troubleshooting.md) (sign in again after a reboot: the recovery steps)
-- [`docs/design/overview.md`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/docs/design/overview.md) (v0.21.1: `start` enables linger on every run; the keyring unlock retries at most 3 times each boot, logged with the tag `intuneme-session-setup`)
-- [`cmd/init.go`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/cmd/init.go)
-- [`cmd/destroy.go`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/cmd/destroy.go)
-- [`internal/version/version.go`](https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/internal/version/version.go)
+- intuneme v0.22.1 commit [`257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6`](https://github.com/frostyard/intuneme/tree/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6)
+- [intuneme v0.22.1 release](https://github.com/frostyard/intuneme/releases/tag/v0.22.1)
+- [intuneme v0.22.0 release](https://github.com/frostyard/intuneme/releases/tag/v0.22.0)
+- [`README.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/README.md)
+- [`SECURITY.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/SECURITY.md)
+- [`site/getting-started/prerequisites.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/getting-started/prerequisites.md)
+- [`site/getting-started/installation.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/getting-started/installation.md)
+- [`site/getting-started/quick-start.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/getting-started/quick-start.md)
+- [`site/user-guide/daily-workflow.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/user-guide/daily-workflow.md)
+- [`site/user-guide/broker-proxy.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/user-guide/broker-proxy.md)
+- [`site/user-guide/mcp-servers.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/user-guide/mcp-servers.md)
+- [`site/user-guide/device-hotplug.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/user-guide/device-hotplug.md)
+- [`site/user-guide/gnome-extension.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/user-guide/gnome-extension.md)
+- [`site/user-guide/desktop-shortcuts.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/user-guide/desktop-shortcuts.md)
+- [`site/user-guide/upgrading.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/user-guide/upgrading.md)
+- [`site/troubleshooting.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/troubleshooting.md) (sign in again after a reboot: the recovery steps)
+- [`site/reference/configuration.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/site/reference/configuration.md) (container hostname)
+- [`docs/specs/container-image.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/docs/specs/container-image.md) (the Edge policy file `/etc/opt/edge/policies/managed/intuneme-command-line-flags.json`)
+- [`docs/design/overview.md`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/docs/design/overview.md) (v0.21.1: `start` enables linger on every run; the keyring unlock retries at most 3 times each boot, logged with the tag `intuneme-session-setup`)
+- [`cmd/init.go`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/cmd/init.go)
+- [`cmd/destroy.go`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/cmd/destroy.go)
+- [`internal/version/version.go`](https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/internal/version/version.go)
 - [Duncan's review: intuneme roll back (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
 - snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf)

@@ -1,12 +1,12 @@
 ---
 title: ChairLift
-description: "Use ChairLift on a Frostyard image to stage system updates, update Homebrew and Flatpak apps, toggle features, and trust Homebrew taps."
+description: "Use ChairLift on a Frostyard image to stage system updates, install device firmware updates, update Homebrew and Flatpak apps, toggle features, and trust Homebrew taps."
 ---
 
 ChairLift is a GTK4 and Libadwaita app for system chores on a Frostyard
 desktop. It stages the next system image, updates Homebrew and Flatpak
-applications, runs cleanups, and turns Updex features on and off. This guide
-follows ChairLift v0.11.4, which uses Updex v2.1.3 for the Features page.
+applications, installs device firmware updates, runs cleanups, and turns Updex features on and off. This guide
+follows ChairLift v0.12.0, which uses Updex v2.1.3 for the Features page.
 
 ## Which images have it
 
@@ -40,7 +40,7 @@ Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits.
 | --- | --- |
 | Applications | Search for Homebrew formulae and casks and install them. Uninstall them, and pin or unpin formulae. Install curated bundles. List and uninstall Flatpak apps. |
 | Maintenance | Run `brew cleanup` and `flatpak uninstall --unused`. |
-| Updates | Stage the next system image. Update Homebrew and its packages. Update Flatpak apps. Trust Homebrew taps. |
+| Updates | Stage the next system image. Install device firmware updates. Update Homebrew and its packages. Update Flatpak apps. Trust Homebrew taps. |
 | System | Read the OS information and the booted, staged, and rollback images. Open the health monitor. |
 | Features | Turn Updex features on and off, and update them. |
 | Help | Open the project website, the issue tracker, and the community chat. |
@@ -76,6 +76,18 @@ hourly background staging that Snow does, see [Snow](/docs/images/snow/).
 
 After each successful action, ChairLift refreshes the outdated list and the
 update badge in the sidebar.
+
+### Install a firmware update
+
+From v0.12.0, the Updates page has a Firmware Updates group. It lists device firmware updates from the Linux Vendor Firmware Service (fwupd). The group shows only when `fwupdmgr` is installed; every Frostyard image installs fwupd, so it shows.
+
+You install 1 device at a time, and only 1 install runs at a time. ChairLift asks you to confirm first: keep the computer on power and do not unplug the device. ChairLift does not restart the computer. When the device needs a restart or a shutdown, ChairLift says so, and you restart it yourself.
+
+A device that fwupd does not update now, for example with the lid closed, on battery power, or after an update error, stays in the list with its reason and no install button. fwupd, not ChairLift, asks for authentication, with its own PolicyKit actions.
+
+After the install, ChairLift reads the device's own state: an update that fwupd did not apply shows as an error, and the device stays in the list. See [Firmware Updates](https://github.com/frostyard/chairlift/blob/main/docs/reference.md#updates-page-updates_page) for the details.
+
+To hide the group, set `firmware_updates_group` to `enabled: false` under `updates_page` ([Hide a group or a page](#hide-a-group-or-a-page)).
 
 ### Turn a feature on or off
 
@@ -274,9 +286,11 @@ says the tool is unavailable.
 
 ## Sources
 
-Reviewed 2026-10-29.
+Reviewed 2026-11-04.
 
-- ChairLift release v0.11.4 commit [`91cdb7a150e0101ed8adf5d812ac8c59c498c74c`](https://github.com/frostyard/chairlift/tree/91cdb7a150e0101ed8adf5d812ac8c59c498c74c), released 2026-10-29; [chairlift#255](https://github.com/frostyard/chairlift/pull/255).
+- ChairLift release v0.12.0 commit [`64245bc9852c4171e9b55b46048d8cf64e7a0f47`](https://github.com/frostyard/chairlift/tree/64245bc9852c4171e9b55b46048d8cf64e7a0f47), released 2026-11-04 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.12.0)); [chairlift#257](https://github.com/frostyard/chairlift/pull/257), [chairlift#258](https://github.com/frostyard/chairlift/pull/258).
+- [`README.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/README.md), [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/reference.md), [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/CONFIG.md), [`config.yml`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/config.yml), [`docs/adr/0012-firmware-updates-use-fwupds-own-polkit.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/adr/0012-firmware-updates-use-fwupds-own-polkit.md), [`docs/adr/0013-firmware-updates-are-on-by-default.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/adr/0013-firmware-updates-are-on-by-default.md).
+- snosi commit [`42677d1514096716069bbb13b785d9f5814b14be`](https://github.com/frostyard/snosi/tree/42677d1514096716069bbb13b785d9f5814b14be): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/42677d1514096716069bbb13b785d9f5814b14be/mkosi.images/base/mkosi.conf#L121-L123) (fwupd in every image).
 - [`docs/adr/0011-unprivileged-feature-check-compares-with-the-booted-image.md`](https://github.com/frostyard/chairlift/blob/91cdb7a150e0101ed8adf5d812ac8c59c498c74c/docs/adr/0011-unprivileged-feature-check-compares-with-the-booted-image.md); [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/91cdb7a150e0101ed8adf5d812ac8c59c498c74c/docs/design/package-managers.md) at v0.11.4; [v0.11.4 release notes](https://github.com/frostyard/chairlift/releases/tag/v0.11.4).
 - ChairLift main commit [`f29ae11b5d5abf20f1acb9d3c0f85e4146e00464`](https://github.com/frostyard/chairlift/tree/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464) (the v0.11.3 release commit)
 - [`README.md`](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/README.md)

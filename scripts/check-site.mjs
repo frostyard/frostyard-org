@@ -589,7 +589,7 @@ for (const source of [
   "updex/daemon.go",
   "updex/catalog.go",
 ]) {
-  assert(updex.includes(`https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/${source}`), `/docs/tools/updex must cite ${source}.`);
+  assert(updex.includes(`https://github.com/frostyard/updex/blob/725cd46b8933c31e71a0acc3a7a8959a9be078f6/${source}`), `/docs/tools/updex must cite ${source}.`);
 }
 for (const source of [
   "mkosi.images/base/mkosi.conf",
@@ -606,13 +606,15 @@ assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name th
 assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
 assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
 assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
-assert(updexText.includes("This guide follows Updex v2.1.4"), "/docs/tools/updex must follow Updex v2.1.4.");
-assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.1.4"), "/docs/tools/updex must link the Updex v2.1.4 release.");
+assert(updexText.includes("This guide follows Updex v2.2.0"), "/docs/tools/updex must follow Updex v2.2.0.");
+assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.2.0"), "/docs/tools/updex must link the Updex v2.2.0 release.");
 assert(updexText.includes("sudo updex --dry-run daemon enable"), "/docs/tools/updex must explain the daemon dry run.");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
 assert(updexText.includes("updex features rollback"), "/docs/tools/updex must give the rollback command.");
 assert(updexText.includes("sudo updex daemon enable"), "/docs/tools/updex must tell the reader how to turn the timer on.");
 assert(updexText.includes("PENDING REBOOT:"), "/docs/tools/updex must explain the PENDING REBOOT line.");
+assert(updex.includes("https://github.com/frostyard/updex/pull/481"), "/docs/tools/updex must link Updex PR #481.");
+assert(updexText.includes("From v2.2.0"), "/docs/tools/updex must name the v2.2.0 feature-name behavior.");
 
 for (const route of ["/docs/apps/frostmail/", "/docs/apps/frostnotes/", "/docs/apps/lodge/", "/docs/apps/frostread/", "/docs/apps/porter/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
@@ -734,19 +736,22 @@ for (const source of [
   "site/content/reference/machine-images.md",
   "site/content/reference/limits.md",
 ]) {
-  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/c0c1121b5dd2f0d921f8effe0ffcdf89a89c6442/${source}`), `/docs/tools/nsl must cite ${source}.`);
+  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/${source}`), `/docs/tools/nsl must cite ${source}.`);
 }
 for (const source of ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"]) {
   assert(nsl.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/nsl must cite snosi ${source}.`);
 }
 assert(nsl.includes("https://github.com/frostyard/firn/blob/11133e6b801fc68a7490742244aa87e0313a8acd/internal/catalog/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
-assert(nslText.includes("This guide follows nsl v0.11.1"), "/docs/tools/nsl must follow nsl v0.11.1.");
+assert(nslText.includes("This guide follows nsl v0.12.0"), "/docs/tools/nsl must follow nsl v0.12.0.");
 assert(nsl.includes('href="https://frostyard.github.io/nsl/reference/machine-images/"'), "/docs/tools/nsl must link the nsl machine images reference.");
 assert(nslText.includes("Firn does not add your user to it"), "/docs/tools/nsl must state that Firn does not add the user to kvm.");
 assert(nsl.includes('data-code="sudo usermod -aG kvm'), "/docs/tools/nsl must give the kvm group command.");
 assert(nsl.includes("brew install --cask frostyard/tap/nsl"), "/docs/tools/nsl must give the Homebrew install command.");
 assert(nsl.includes("brew upgrade --cask frostyard/tap/nsl"), "/docs/tools/nsl must give the Homebrew upgrade command.");
 assert(nsl.includes('href="/docs/tools/igloo/"'), "/docs/tools/nsl must link the Igloo page.");
+assert(nsl.includes("https://frostyard.github.io/nsl/guides/desktop/#add-an-application-to-the-menu"), "/docs/tools/nsl must link the Desktop applications guide.");
+assert(nslText.includes("nsl app add"), "/docs/tools/nsl must explain nsl app add.");
+assert(nsl.includes("https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/desktop.md"), "/docs/tools/nsl must cite site/content/guides/desktop.md at the v0.12.0 pin.");
 
 const igloo = await readRoute("/docs/tools/igloo");
 const iglooText = textOf(igloo);
@@ -800,7 +805,7 @@ for (const source of ["README.md", "docs/index.md", "docs/reference.md", "CONFIG
 for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
   assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
 }
-assert(chairliftText.includes("This guide follows ChairLift v0.11.4"), "/docs/tools/chairlift must follow ChairLift v0.11.4.");
+assert(chairliftText.includes("This guide follows ChairLift v0.12.0"), "/docs/tools/chairlift must follow ChairLift v0.12.0.");
 assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');
 assert(chairliftText.includes("waiting for a newer OS image") && chairliftText.includes("needs image &gt;= VERSION"), "/docs/tools/chairlift must explain a feature that waits for a newer OS image.");
 assert(chairliftText.includes("Go 1.26.10"), "/docs/tools/chairlift must name the Go 1.26.10 security fix.");
@@ -811,6 +816,9 @@ assert(chairliftText.includes("Trust is per user and needs no password"), "/docs
 assert(chairliftText.includes("frostyard-chairlift-system-integration"), "/docs/tools/chairlift must warn about the system-integration package.");
 assert(chairlift.includes('href="/docs/tools/updex/"'), "/docs/tools/chairlift must link the Updex page.");
 assert(chairlift.includes('href="/docs/sysexts/manage/"'), "/docs/tools/chairlift must link the manage page.");
+assert(chairlift.includes('id="install-a-firmware-update"'), "/docs/tools/chairlift must render the install-a-firmware-update heading.");
+assert(chairliftText.includes("firmware_updates_group"), "/docs/tools/chairlift must explain firmware_updates_group.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/adr/0012-firmware-updates-use-fwupds-own-polkit.md"), "/docs/tools/chairlift must cite the firmware PolicyKit ADR.");
 
 const intuneme = await readRoute("/docs/tools/intuneme");
 const intunemeText = textOf(intuneme);
@@ -830,18 +838,20 @@ for (const heading of [
   assert(intuneme.includes(`id="${heading}"`), `/docs/tools/intuneme must render the "${heading}" section.`);
 }
 for (const source of ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md"]) {
-  assert(intuneme.includes(`https://github.com/frostyard/intuneme/blob/fbfc3a1887302317ccc11904a82d9a380fcfbb92/${source}`), `/docs/tools/intuneme must cite ${source}.`);
+  assert(intuneme.includes(`https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/${source}`), `/docs/tools/intuneme must cite ${source}.`);
 }
 for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
   assert(intuneme.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/intuneme must cite snosi ${source}.`);
 }
-assert(intunemeText.includes("This guide follows intuneme v0.21.1"), "/docs/tools/intuneme must follow intuneme v0.21.1.");
+assert(intunemeText.includes("This guide follows intuneme v0.22.1"), "/docs/tools/intuneme must follow intuneme v0.22.1.");
 assert(intunemeText.includes("Snow, Snowfield, and Sundog already include the frostyard-intuneme package") && intunemeText.includes("Floe does not"), "/docs/tools/intuneme must name the images that have intuneme.");
 for (const command of ["intuneme init", "intuneme start", "intuneme open portal", "intuneme recreate", "intuneme destroy --all"]) {
   assert(intuneme.includes(`data-code="${command}`), `/docs/tools/intuneme must give the command ${command}.`);
 }
 assert(intuneme.includes("https://frostyard.github.io/intuneme/user-guide/broker-proxy/"), "/docs/tools/intuneme must link the broker proxy guide.");
 assert(intunemeText.includes("A root shell in the container needs a password"), "/docs/tools/intuneme must state the helper limits.");
+assert(intuneme.includes("https://frostyard.github.io/intuneme/reference/configuration/#container-hostname"), "/docs/tools/intuneme must link the Container hostname guide.");
+assert(intunemeText.includes("--disable-gpu-sandbox"), "/docs/tools/intuneme must explain the unsupported Edge flag.");
 
 const catalog = JSON.parse(await readFile(new URL("../src/data/extensions.json", import.meta.url), "utf8"));
 const catalogDate = catalog.updatedAt.slice(0, 10);
