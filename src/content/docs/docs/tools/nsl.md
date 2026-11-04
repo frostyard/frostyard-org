@@ -139,7 +139,9 @@ CPUs by default. You choose the tier when you create or import the machine.
 
 Services inside a machine do not keep it running. To keep machines running,
 set `idle_timeout = 0` in the `[machines]` section of
-`~/.config/nsl/nsl.conf`. The same file sets the VM's memory and CPUs: see the
+`$XDG_CONFIG_HOME/nsl/nsl.conf`. When `XDG_CONFIG_HOME` is unset, empty, or
+relative, the file is `~/.config/nsl/nsl.conf`. The same file sets the VM's
+memory and CPUs: see the
 [configuration reference](https://frostyard.github.io/nsl/reference/configuration/#keys).
 
 Run `nsl remove NAME` without `--yes` first: it shows what it deletes.

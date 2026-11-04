@@ -775,6 +775,7 @@ for (const url of [
   assert(nsl.includes(`href="${url}"`), `/docs/tools/nsl must link ${url}.`);
 }
 assert(nslText.includes("idle_timeout = 0"), "/docs/tools/nsl must say how to turn off the idle stop.");
+assert(nslText.includes("$XDG_CONFIG_HOME/nsl/nsl.conf"), "/docs/tools/nsl must give the nsl.conf path under XDG_CONFIG_HOME.");
 assert(nsl.includes('href="https://frostyard.github.io/nsl/reference/machine-images/"'), "/docs/tools/nsl must link the nsl machine images reference.");
 assert(nslText.includes("Firn does not add your user to it"), "/docs/tools/nsl must state that Firn does not add the user to kvm.");
 assert(nsl.includes('data-code="sudo usermod -aG kvm'), "/docs/tools/nsl must give the kvm group command.");
