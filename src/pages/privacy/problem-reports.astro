@@ -51,7 +51,7 @@ const sources: Array<[string, string, string]> = [
 
   <h2 id="where-reports-go">Where reports go and how long we keep them</h2>
   <ul>
-    <li><strong>Reports:</strong> the intake checks each report against the format, then forwards each problem report to GlitchTip, an error tracker on a server in the United States. The weekly count is not forwarded. GlitchTip deletes each report after 72 days, and its search entries for the report within 9 more days. Backup snapshots keep a copy at most 7 more days. Every report is deleted within 90 days.</li>
+    <li><strong>Reports:</strong> the intake checks each report against the format, then forwards each problem report to GlitchTip, an error tracker on a server in the United States. The weekly count is not forwarded. GlitchTip keeps reports for 72 days. Its nightly cleanup and 7 days of backup snapshots can keep parts of a report up to about 88 days in all. Every report is deleted within 90 days.</li>
     <li><strong>Counts for the statistics:</strong> for each accepted report, the intake also writes 1 data point to Cloudflare Workers Analytics Engine. A data point holds only values from the report, such as the kind, the image and its version. It holds no <code>report_id</code>, no week and no IP address. Cloudflare keeps these points for about 3 months.</li>
     <li><strong>Weekly statistics:</strong> totals for each week. We keep them and publish them.</li>
   </ul>
