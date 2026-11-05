@@ -1,12 +1,12 @@
 ---
 title: ChairLift
-description: "Use ChairLift on a Frostyard image to stage system updates, install device firmware updates, update Homebrew and Flatpak apps, toggle features, and trust Homebrew taps."
+description: "Use ChairLift on a Frostyard image to stage system updates, install device firmware updates, update Homebrew and Flatpak apps, toggle features, trust Homebrew taps, and run the first-login setup."
 ---
 
 ChairLift is a GTK4 and Libadwaita app for system chores on a Frostyard
 desktop. It stages the next system image, updates Homebrew and Flatpak
 applications, installs device firmware updates, runs cleanups, and turns Updex features on and off. This guide
-follows ChairLift v0.12.0, which uses Updex v2.1.3 for the Features page.
+follows ChairLift v0.13.0, which uses Updex v2.1.3 for the Features page.
 
 ## Which images have it
 
@@ -32,7 +32,7 @@ chairlift --dry-run
 In that mode ChairLift changes nothing on the system.
 
 Keys: `Alt+1`, `Alt+2`, and so on open the pages in sidebar order. `F1` opens
-Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits.
+Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits. Before v0.13.0, `Ctrl+Q` did nothing.
 
 ## What each page does
 
@@ -47,6 +47,36 @@ Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits.
 
 ChairLift does not install new Flatpak apps. The Applications page opens
 Bazaar for that.
+
+## First-login setup
+
+From v0.13.0, ChairLift has a first-login setup, `chairlift --first-run`. It replaces SNOW First Setup. In one window it greets you, checks the internet connection, sets the light or dark style, offers Flatpak apps from Flathub, installs the ones you pick for your user, and shows any errors.
+
+ChairLift does not start it by itself. The image starts `chairlift-first-run` at login, and that opens the setup once for each user. Snow and Snowfield still start SNOW First Setup at first login. [Snow](/docs/images/snow/) lists what the image ships.
+
+To try the setup without changes:
+
+```bash
+chairlift --first-run --dry-run
+```
+
+The window opens. In this mode it installs no app, does not change the style, and does not record the setup as done.
+
+The setup counts as done for you when `~/.config/chairlift/first-run.done` or SNOW First Setup's `~/.config/snow-first-setup.done` exists. If you set `$XDG_CONFIG_HOME`, it replaces `~/.config`. So you do not see the setup again after SNOW First Setup.
+
+To skip the setup without opening it:
+
+```bash
+chairlift-first-run --mark-done
+```
+
+Both files now exist.
+
+Without an internet connection, the setup skips the app step, and you can still finish.
+
+To hide the app step, set `first_run_apps_group` to `enabled: false` under `first_run_page` ([Hide a group or a page](#hide-a-group-or-a-page)). The app list is `/usr/share/snow/first-run/apps.json`, and `apps_path` changes it.
+
+See [first-run settings](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/reference.md#first-run-page-first_run_page) and [how the first run works](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/design/overview.md#first-run-mode).
 
 ## Everyday tasks
 
@@ -76,6 +106,8 @@ hourly background staging that Snow does, see [Snow](/docs/images/snow/).
 
 After each successful action, ChairLift refreshes the outdated list and the
 update badge in the sidebar.
+
+From v0.13.0, ChairLift checks each Flatpak remote on its own. A remote that does not answer no longer hides the updates from your other remotes. ChairLift ignores a failed remote that none of your installed apps comes from. When a remote that an installed app comes from fails, Available Updates still lists the updates from the other remotes, and its subtitle names the installation it could not check, for example `2 updates available; the system installation could not be checked`. When both the user and the system checks fail and find no update, the subtitle says `Could not check for updates`, and the list and the sidebar count from the last check stay. See [Update queries run per remote](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/design/package-managers.md#update-queries-run-per-remote).
 
 ### Install a firmware update
 
@@ -184,7 +216,7 @@ applications_page:
 
 Restart ChairLift. The Brew Search group is gone. A page disappears when all of its
 groups are off, and Help always stays. The
-[configuration reference](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/CONFIG.md)
+[configuration reference](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/CONFIG.md)
 lists every page and group.
 
 ## Update and roll back
@@ -274,6 +306,7 @@ says the tool is unavailable.
 | The Update toast says `activation did not finish` | The toast | The extensions merged. Restart to finish. |
 | A feature change or **Update** fails with `another updex operation is running` | Another `updex` command or the timer | Wait, then try again. Only one Updex operation that changes state runs at a time. |
 | A Homebrew upgrade fails and mentions an untrusted tap | Untrusted Homebrew Taps on Updates | Press **Trust** on the tap, then upgrade again. |
+| Available Updates under Flatpak Updates says an installation `could not be checked` | `flatpak remotes --user` or `flatpak remotes --system`, then `flatpak remote-ls --updates --app --user REMOTE` (or `--system`) for each remote | A remote that an installed app comes from did not answer. ChairLift lists the updates from the other remotes. Try again when that remote answers. |
 | ChairLift asks for a password | The prompt | Staging an update and changing a feature need administrator authentication. ChairLift installs no passwordless rule. |
 | A Homebrew or Flatpak group says the tool is unavailable | `brew --version` or `flatpak --version` | Install the tool. The Maintenance groups for a missing tool are hidden. |
 
@@ -282,12 +315,15 @@ says the tool is unavailable.
 - [Updex](/docs/tools/updex/)
 - [Manage system extensions](/docs/sysexts/manage/)
 - [Snow](/docs/images/snow/)
-- [ChairLift README](https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/README.md)
+- [ChairLift README](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/README.md#first-run)
 
 ## Sources
 
-Reviewed 2026-11-04.
+Reviewed 2026-11-05.
 
+- ChairLift release v0.13.0 commit [`7aada596112fb0ed833a5ed99b7c62c5f4411b4c`](https://github.com/frostyard/chairlift/tree/7aada596112fb0ed833a5ed99b7c62c5f4411b4c), released 2026-11-04 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.13.0)); [chairlift#260](https://github.com/frostyard/chairlift/pull/260), [chairlift#262](https://github.com/frostyard/chairlift/pull/262), [chairlift#264](https://github.com/frostyard/chairlift/pull/264), [chairlift#265](https://github.com/frostyard/chairlift/pull/265).
+- [`README.md`](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/README.md), [`docs/adr/0014-first-run-mode.md`](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/adr/0014-first-run-mode.md), [`docs/design/overview.md`](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/design/overview.md), [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/design/package-managers.md), [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/reference.md), [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/CONFIG.md), [`internal/views/flatpakstatus/flatpakstatus.go`](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/internal/views/flatpakstatus/flatpakstatus.go), [`internal/app/app.go`](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/internal/app/app.go).
+- snosi commit [`144bdacb81bbe670833c0a373e207a25d3e5d064`](https://github.com/frostyard/snosi/tree/144bdacb81bbe670833c0a373e207a25d3e5d064): [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/144bdacb81bbe670833c0a373e207a25d3e5d064/shared/packages/snow/mkosi.conf#L7) (Snow and Snowfield still ship `snow-first-setup`).
 - ChairLift release v0.12.0 commit [`64245bc9852c4171e9b55b46048d8cf64e7a0f47`](https://github.com/frostyard/chairlift/tree/64245bc9852c4171e9b55b46048d8cf64e7a0f47), released 2026-11-04 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.12.0)); [chairlift#257](https://github.com/frostyard/chairlift/pull/257), [chairlift#258](https://github.com/frostyard/chairlift/pull/258).
 - [`README.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/README.md), [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/reference.md), [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/CONFIG.md), [`config.yml`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/config.yml), [`docs/adr/0012-firmware-updates-use-fwupds-own-polkit.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/adr/0012-firmware-updates-use-fwupds-own-polkit.md), [`docs/adr/0013-firmware-updates-are-on-by-default.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/adr/0013-firmware-updates-are-on-by-default.md).
 - snosi commit [`42677d1514096716069bbb13b785d9f5814b14be`](https://github.com/frostyard/snosi/tree/42677d1514096716069bbb13b785d9f5814b14be): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/42677d1514096716069bbb13b785d9f5814b14be/mkosi.images/base/mkosi.conf#L121-L123) (fwupd in every image).

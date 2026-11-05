@@ -420,6 +420,7 @@ assert(snowfieldText.includes("linux-image-surface") && snowfieldText.includes("
 assert(!snowfieldText.includes("linux-image-amd64/forky"), "/docs/images/snowfield must not claim the backports kernel.");
 assert(snowfieldText.includes("does not force a reboot"), "/docs/images/snowfield must state that the stager does not force a reboot.");
 assert(!snowfieldText.includes("A rollback also changes the image") && snowfieldText.includes("It waits for the next published image"), "/docs/images/snowfield must describe the rollback hold correctly.");
+assert(snowfieldText.includes("snow-first-setup"), "/docs/images/snowfield must still name snow-first-setup until T843 t6.");
 
 const sundog = await readRoute("/docs/images/sundog");
 const sundogText = textOf(sundog);
@@ -824,6 +825,7 @@ for (const heading of [
   "which-images-have-it",
   "open-it",
   "what-each-page-does",
+  "first-login-setup",
   "everyday-tasks",
   "install-on-another-system",
   "troubleshooting",
@@ -838,12 +840,19 @@ for (const source of ["README.md", "docs/index.md", "docs/reference.md", "CONFIG
 for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
   assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
 }
-assert(chairliftText.includes("This guide follows ChairLift v0.12.0"), "/docs/tools/chairlift must follow ChairLift v0.12.0.");
+assert(chairliftText.includes("This guide follows ChairLift v0.13.0"), "/docs/tools/chairlift must follow ChairLift v0.13.0.");
 assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');
 assert(chairliftText.includes("waiting for a newer OS image") && chairliftText.includes("needs image &gt;= VERSION"), "/docs/tools/chairlift must explain a feature that waits for a newer OS image.");
 assert(chairliftText.includes("Go 1.26.10"), "/docs/tools/chairlift must name the Go 1.26.10 security fix.");
 assert(chairliftText.includes("Snow, Snowfield, and Sundog install ChairLift") && chairliftText.includes("Floe does not"), "/docs/tools/chairlift must name the images that have ChairLift.");
 assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chairlift must give the dry-run command.");
+assert(chairlift.includes('data-code="chairlift --first-run --dry-run"'), "/docs/tools/chairlift must give the first-run dry-run command.");
+assert(chairlift.includes('data-code="chairlift-first-run --mark-done"'), "/docs/tools/chairlift must give the mark-done command.");
+assert(chairliftText.includes("first-run.done") && chairliftText.includes("snow-first-setup.done"), "/docs/tools/chairlift must name both first-run marker files.");
+assert(chairliftText.includes("Snow and Snowfield still start SNOW First Setup"), "/docs/tools/chairlift must say that the swap is not live on the images, T843 t3.");
+assert(chairliftText.includes("Before v0.13.0"), "/docs/tools/chairlift must say that Ctrl+Q did nothing before v0.13.0.");
+assert(chairliftText.includes("the system installation could not be checked") && chairliftText.includes("Could not check for updates"), "/docs/tools/chairlift must describe per-installation Flatpak failures.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/adr/0014-first-run-mode.md"), "/docs/tools/chairlift must link the first-run ADR at the v0.13.0 commit.");
 assert(chairliftText.includes("/etc/chairlift/config.yml"), "/docs/tools/chairlift must name the administrator config file.");
 assert(chairliftText.includes("Trust is per user and needs no password"), "/docs/tools/chairlift must state that tap trust needs no password.");
 assert(chairliftText.includes("frostyard-chairlift-system-integration"), "/docs/tools/chairlift must warn about the system-integration package.");
