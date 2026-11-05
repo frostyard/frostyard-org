@@ -108,8 +108,8 @@ image into `/var` before it stages it.
 
 ## Problems
 
-Floe checks itself for problems about 3 minutes after boot and then about
-every hour. It records:
+Floe checks itself for problems 3 to 8 minutes after boot, then about every
+hour. It records:
 
 - a system service that failed
 - an image update that could not be staged

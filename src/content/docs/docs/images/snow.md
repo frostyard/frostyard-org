@@ -105,8 +105,8 @@ image into `/var` before it stages it.
 
 ## Problems
 
-Snow checks itself for problems about 3 minutes after boot and then about
-every hour. It records:
+Snow checks itself for problems 3 to 8 minutes after boot, then about every
+hour. It records:
 
 - a system service that failed
 - an image update that could not be staged
@@ -135,9 +135,13 @@ snosi-health --list
 
 Each line shows when the problem was last seen, its kind, a short summary,
 and how many times it was seen. With no problems, it prints
-`No problems recorded` and the time of the last check. If ChairLift has no
-Problems page or the command is missing, the image is older than this
-feature: let it update, then reboot.
+`No problems recorded` and the time of the last check. If the command is
+missing, the image is older than this feature: let it update, then reboot.
+
+If ChairLift has no Problems page, the image may be older than this feature:
+let it update, then reboot. On a current image, ChairLift hides the page when `/etc/chairlift/config.yml`
+turns off all 3 of its groups, or when it shows a configuration error. Fix
+the file and restart ChairLift.
 
 A crash keeps no core file. The journal keeps the crash entry and its stack
 trace. To keep core files while you debug a crash, set `Storage=external` in
@@ -256,4 +260,5 @@ The Problems section was reviewed 2026-11-05 against snosi commit
 - [ChairLift `docs/adr/0015-problems-page-and-opt-in-reporting.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/adr/0015-problems-page-and-opt-in-reporting.md)
 - [ChairLift `docs/specs/problems-page.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md)
 - [ChairLift `config.yml`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/config.yml)
+- [ChairLift `CONFIG.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/CONFIG.md)
 - [ChairLift `internal/views/pageview/problems.go`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/internal/views/pageview/problems.go)

@@ -478,6 +478,8 @@ for (const [route, html, text, desktop] of [
   assert(html.includes('id="problems"'), `${route} must render the "problems" section (T857 t14).`);
   assert(text.includes("snosi-health --list"), `${route} must name snosi-health --list.`);
   assert(text.includes("Storage=external"), `${route} must say how to keep core files (Storage=none on every image).`);
+  assert(text.includes("3 to 8 minutes after boot"), `${route} must give the first snosi-health run with its random delay (OnBootSec=3min, RandomizedDelaySec=5min).`);
+  assert(!text.includes("about 3 minutes after boot"), `${route} must not drop the timer's random delay.`);
   for (const source of [
     "docs/adr/0029-snosi-health-records-problems.md",
     "mkosi.images/base/mkosi.extra/usr/bin/snosi-health",
@@ -487,6 +489,7 @@ for (const [route, html, text, desktop] of [
   }
   if (desktop) {
     assert(text.includes("select Problems") && text.includes("ChairLift sends nothing"), `${route} must describe the local ChairLift Problems page.`);
+    assert(text.includes("the image may be older than this feature") && text.includes("/etc/chairlift/config.yml"), `${route} must name both causes of a missing Problems page: an old image, or a ChairLift configuration that hides it.`);
     for (const source of ["README.md", "docs/specs/problems-page.md"]) {
       assert(html.includes(`${problemsChairlift}/${source}`), `${route} must cite ChairLift ${source} at the Problems page pin.`);
     }
