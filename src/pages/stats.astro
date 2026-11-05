@@ -1,0 +1,139 @@
+---
+// The weekly problem report statistics. The counts come from the intake
+// service at report.frostyard.org, are checked here against the schema and the
+// hiding rules, and are displayed as plain text. A bad snapshot fails the
+// build instead of publishing a number that should have been hidden.
+import Document from "../layouts/Document.astro";
+import snapshot from "../data/problem-stats.json";
+import schema from "../../public/schemas/problem-report/v1.json";
+import { statsView, validateStats } from "../lib/problem-stats.mjs";
+
+validateStats(snapshot, schema);
+const view = statsView(snapshot, schema);
+const fetchedAt = typeof view.fetchedAt === "string" ? view.fetchedAt : null;
+const checked = fetchedAt === null ? null : fetchedAt.slice(0, 10);
+---
+
+<Document
+  title="Problem report statistics | Frostyard"
+  description="Weekly counts of Frostyard problem reports, with small counts hidden."
+  eyebrow="Statistics"
+  heading="Problem report statistics"
+>
+  <p>
+    These are counts of the problem reports that Frostyard computers send. A report never names the computer
+    that sent it. The <a href="/privacy/problem-reports/">problem reports page</a> says what a report holds and
+    how long we keep it. A week is the ISO week (UTC) in which the reports arrived.
+  </p>
+
+  {
+    view.empty ? (
+      <p class="no-data">
+        No data yet. Each Monday, the counts of the week before are added. The first week can be a part week.
+      </p>
+    ) : (
+      <>
+        <p>
+          The latest week is <strong>{view.week}</strong>. {view.weekCount} weeks are published.
+        </p>
+
+        {view.tables.map((table) => (
+          <section class="stats-table" data-stats-table={table.name} data-table-total={table.total === null ? "hidden" : String(table.total)}>
+            <h2>{table.label}</h2>
+            <p>{table.note}</p>
+            <div class="table-scroll" role="region" aria-label={table.label} tabindex="0">
+              <table>
+                <caption class="sr-only">{table.label}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{table.groupLabel}</th>
+                    {table.columns.map((column) => (
+                      <th scope="col"><code>{column}</code></th>
+                    ))}
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {table.rows.map((row) => (
+                    <tr>
+                      <th scope="row"><code>{row.key}</code></th>
+                      {row.cells.map((cell) =>
+                        cell.value === null ? (
+                          <td data-stat="hidden">hidden</td>
+                        ) : cell.value === 0 ? (
+                          <td>0</td>
+                        ) : (
+                          <td data-stat={cell.value}>{cell.value}</td>
+                        ),
+                      )}
+                      {row.total === null ? (
+                        <td data-stat="hidden">hidden</td>
+                      ) : (
+                        <td data-stat={row.total}>{row.total}</td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th scope="row">Total</th>
+                    {table.columns.map(() => <td></td>)}
+                    {table.total === null ? (
+                      <td data-stat="hidden">hidden</td>
+                    ) : table.total === 0 ? (
+                      <td>0</td>
+                    ) : (
+                      <td data-stat={table.total}>{table.total}</td>
+                    )}
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </section>
+        ))}
+
+        <p class="note">
+          A cell that says hidden means the count is from 1 to 4, or it is hidden so that a small count cannot
+          be worked out from the totals. A cell with no reports shows 0.
+        </p>
+      </>
+    )
+  }
+
+  {
+    checked === null || fetchedAt === null ? null : (
+      <p class="note">Last checked <time datetime={fetchedAt}>{checked}</time>.</p>
+    )
+  }
+
+  <p class="note">
+    The same counts are at <a href="https://report.frostyard.org/v1/stats">report.frostyard.org/v1/stats</a> as JSON. A new week is added each Monday.
+  </p>
+</Document>
+
+<style>
+  .no-data {
+    color: var(--text-body);
+    border: 1px solid var(--line);
+    background: var(--gradient-panel);
+    padding: 1rem 1.2rem;
+  }
+
+  .stats-table h2 {
+    margin-top: 2.5rem;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+
+  table {
+    min-width: 34rem;
+  }
+
+  .note {
+    font-size: var(--text-small-size);
+    color: var(--text-dim);
+  }
+</style>

@@ -1,0 +1,33 @@
+name: stats-rebuild
+
+# The weekly aggregation runs in the intake Worker each Monday at 03:23 UTC.
+# This job starts a Workers Builds build of main 2 hours later, so /stats/
+# shows the new week without waiting for the next push. It builds main as it
+# is; it changes no file. Brian creates the deploy hook in the Cloudflare
+# dashboard and sets its secret URL as STATS_DEPLOY_HOOK_URL.
+
+on:
+  schedule:
+    - cron: "41 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Start a Workers Builds build of main
+        env:
+          STATS_DEPLOY_HOOK_URL: ${{ secrets.STATS_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$STATS_DEPLOY_HOOK_URL" ]; then
+            echo "::notice::STATS_DEPLOY_HOOK_URL is not set, so no build was started. Brian sets it from the Cloudflare dashboard."
+            exit 0
+          fi
+          answer="$(mktemp)"
+          # The hook URL is a credential: curl never prints it here.
+          curl --fail-with-body -sS -X POST "$STATS_DEPLOY_HOOK_URL" -o "$answer"
+          jq -e '.success == true' "$answer" > /dev/null
+          echo "Started build $(jq -r '.result.build_uuid' "$answer")"
