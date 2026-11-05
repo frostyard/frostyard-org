@@ -284,6 +284,8 @@ assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile
 assert(docsLanding.includes("Updex v2.1.4"), "/docs must name the Updex v2.1.4 source pin.");
 assert(docsLanding.includes("https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md"), "/docs must cite the pinned Updex v2.1.4 README.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
+assert(!textOf(docsLanding).includes("snow-first-setup"), "/docs must not name snow-first-setup: snosi#1224 removed it (T843 t6).");
+assert(docsLanding.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs must point to the ChairLift first-login setup (T843 t6).");
 
 const snow = await readRoute("/docs/images/snow");
 const snowText = textOf(snow);
@@ -322,7 +324,10 @@ assert(!snowText.includes("present only if"), "/docs/images/snow must not claim 
 assert(!snowText.includes("userspace, systemd, bootc,"), "/docs/images/snow must not attribute bootc to Base.");
 assert(snowText.includes("Bootc runtime"), "/docs/images/snow must have a separate bootc-runtime row.");
 assert(snowText.includes("The table shows the main layers only"), "/docs/images/snow must scope the table to main layers.");
-assert(snowText.includes("Homebrew") && snowText.includes("frostyard-chairlift") && snowText.includes("snow-first-setup"), "/docs/images/snow must name key omitted components.");
+assert(snowText.includes("Homebrew") && snowText.includes("frostyard-chairlift") && snowText.includes("first-login setup"), "/docs/images/snow must name key omitted components.");
+assert(snow.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs/images/snow must link the ChairLift first-login setup (T843 t6).");
+assert(!snowText.includes("snow-first-setup"), "/docs/images/snow must not list snow-first-setup: snosi#1224 removed it (T843 t6).");
+assert(snowText.includes("If you finished SNOW First Setup on an older Snow image, it does not open at all"), "/docs/images/snow must say that a finished SNOW First Setup skips the first-login setup.");
 assert(snowText.includes("untested on representative Surface hardware"), "/docs/images/snow must state that Snowfield is untested.");
 assert(snowText.includes("gate was waived for catalog inclusion"), "/docs/images/snow must state the Surface hardware gate waiver.");
 assert(!snowText.includes("testing still pending"), "/docs/images/snow must not imply a planned Surface test.");
@@ -420,7 +425,8 @@ assert(snowfieldText.includes("linux-image-surface") && snowfieldText.includes("
 assert(!snowfieldText.includes("linux-image-amd64/forky"), "/docs/images/snowfield must not claim the backports kernel.");
 assert(snowfieldText.includes("does not force a reboot"), "/docs/images/snowfield must state that the stager does not force a reboot.");
 assert(!snowfieldText.includes("A rollback also changes the image") && snowfieldText.includes("It waits for the next published image"), "/docs/images/snowfield must describe the rollback hold correctly.");
-assert(snowfieldText.includes("snow-first-setup"), "/docs/images/snowfield must still name snow-first-setup until T843 t6.");
+assert(!snowfieldText.includes("snow-first-setup"), "/docs/images/snowfield must not list snow-first-setup: snosi#1224 removed it (T843 t6).");
+assert(snowfield.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs/images/snowfield must link the ChairLift first-login setup (T843 t6).");
 
 const sundog = await readRoute("/docs/images/sundog");
 const sundogText = textOf(sundog);
@@ -851,7 +857,8 @@ assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chair
 assert(chairlift.includes('data-code="chairlift --first-run --dry-run"'), "/docs/tools/chairlift must give the first-run dry-run command.");
 assert(chairlift.includes('data-code="chairlift-first-run --mark-done"'), "/docs/tools/chairlift must give the mark-done command.");
 assert(chairliftText.includes("first-run.done") && chairliftText.includes("snow-first-setup.done"), "/docs/tools/chairlift must name both first-run marker files.");
-assert(chairliftText.includes("Snow and Snowfield still start SNOW First Setup"), "/docs/tools/chairlift must say that the swap is not live on the images, T843 t3.");
+assert(chairliftText.includes("Snow and Snowfield start it at login. Sundog does not."), "/docs/tools/chairlift must name the images that start the first-login setup (snosi ADR-0028, T843 t6).");
+assert(!chairliftText.includes("still start SNOW First Setup"), "/docs/tools/chairlift must not say that Snow still starts SNOW First Setup (T843 t6).");
 assert(chairliftText.includes("Before v0.13.0"), "/docs/tools/chairlift must say that Ctrl+Q did nothing before v0.13.0.");
 assert(chairliftText.includes("the system installation could not be checked") && chairliftText.includes("Could not check for updates"), "/docs/tools/chairlift must describe per-installation Flatpak failures.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/adr/0014-first-run-mode.md"), "/docs/tools/chairlift must link the first-run ADR at the v0.13.0 commit.");

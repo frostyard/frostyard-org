@@ -127,8 +127,9 @@ desktop composition, the linux-surface kernel, and the image output format.
 | Containers | Podman and Distrobox, plus `systemd-container` and the Frostyard Intune integration |
 
 The table shows the main layers only. Snowfield reuses Snow's composition, so
-it also carries Homebrew integration, `frostyard-chairlift`,
-`snow-first-setup`, the Snow Plymouth theme, the hotedge and Logo Menu GNOME
+it also carries Homebrew integration, `frostyard-chairlift` with its
+[first-login setup](/docs/tools/chairlift/#first-login-setup), the Snow
+Plymouth theme, the hotedge and Logo Menu GNOME
 extensions, and the Bazaar companion build. The
 [Snow page](/docs/images/snow/#what-ships) lists them.
 
@@ -222,3 +223,4 @@ Reviewed 2026-10-27 against snosi commit
 - [`docs/design/testing.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/testing.md)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- First-login setup, reviewed 2026-11-05 against snosi commit [`770f9a3c82c4bb7348f6c477fce08febf25554af`](https://github.com/frostyard/snosi/tree/770f9a3c82c4bb7348f6c477fce08febf25554af) ([snosi#1224](https://github.com/frostyard/snosi/pull/1224)): [`docs/adr/0028-first-login-runs-chairlift-first-run.md`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/docs/adr/0028-first-login-runs-chairlift-first-run.md), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/packages/snow/mkosi.conf)
