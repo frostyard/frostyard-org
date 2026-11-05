@@ -483,6 +483,7 @@ for (const [route, html, text, desktop] of [
   assert(text.includes("/etc/systemd/coredump.conf.d/90-debug.conf") && text.includes("sorts after") && text.includes("50-snosi.conf"), `${route} must name a coredump drop-in that sorts after the image's 50-snosi.conf (owner review of frostyard-org#75).`);
   assert(text.includes("1 GiB or smaller"), `${route} must state the ProcessSizeMax=1G limit on the stack trace.`);
   assert(!text.includes("in a drop-in file in"), `${route} must not suggest that any drop-in name works.`);
+  assert(html.includes('data-code="sudo systemctl reload systemd-coredumpd.service"') && text.includes("A reboot also applies it"), `${route} must say how to apply the coredump drop-in: systemd-coredumpd reads it only at start or reload (cross-review of frostyard-org#75).`);
   for (const source of [
     "docs/adr/0029-snosi-health-records-problems.md",
     "mkosi.images/base/mkosi.extra/usr/bin/snosi-health",
@@ -878,6 +879,7 @@ for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog
 assert(chairliftText.includes("This guide follows ChairLift v0.13.0"), "/docs/tools/chairlift must follow ChairLift v0.13.0.");
 assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("ChairLift sends nothing"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, in the page table (owner review of frostyard-org#75).");
 assert(chairlift.indexOf("<td>Problems</td>") < chairlift.indexOf("<td>Help</td>"), "/docs/tools/chairlift must list Problems before Help, as the sidebar does.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md"), "/docs/tools/chairlift must cite the Problems page spec at its pin.");
 assert(!chairliftText.includes("ChairLift does not install new Flatpak apps"), "/docs/tools/chairlift must not say ChairLift installs no Flatpak apps: the first-login setup installs them (frostyard-org#73 review).");
 assert(chairliftText.includes("The Applications page does not install new Flatpak apps"), "/docs/tools/chairlift must scope the Bazaar limit to the Applications page (frostyard-org#73 review).");
 assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');

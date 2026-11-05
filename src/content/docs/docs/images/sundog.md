@@ -164,6 +164,15 @@ Storage=external
 The image sets `Storage=none` in `50-snosi.conf`, and the file that sorts last
 wins. Give your file a name that sorts after `50-snosi.conf`.
 
+Apply it before you reproduce the crash:
+
+```bash
+sudo systemctl reload systemd-coredumpd.service
+```
+
+If that service is not running, there is nothing to reload: each crash then
+reads the file. A reboot also applies it.
+
 ## What ships
 
 Sundog is Base plus the bootc runtime, the bootc security setup, the KDE
@@ -317,6 +326,7 @@ The Problems section was reviewed 2026-11-05 against snosi commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.service`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.service)
 - [`shared/bootc-secure/mkosi.conf`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/shared/bootc-secure/mkosi.conf)
 - [`shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf)
+- systemd v262 [`man/coredump.conf.xml`](https://github.com/systemd/systemd/blob/v262/man/coredump.conf.xml) (drop-in order, `ProcessSizeMax=`, reloading `systemd-coredumpd.service`)
 - [ChairLift `README.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/README.md)
 - [ChairLift `docs/adr/0015-problems-page-and-opt-in-reporting.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/adr/0015-problems-page-and-opt-in-reporting.md)
 - [ChairLift `docs/specs/problems-page.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md)
