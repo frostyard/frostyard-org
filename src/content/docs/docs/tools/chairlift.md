@@ -45,14 +45,13 @@ Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits. Before v0.13.0, `Ctrl+Q`
 | Features | Turn Updex features on and off, and update them. |
 | Help | Open the project website, the issue tracker, and the community chat. |
 
-ChairLift does not install new Flatpak apps. The Applications page opens
-Bazaar for that.
+The Applications page does not install new Flatpak apps. It opens Bazaar for that.
 
 ## First-login setup
 
 From v0.13.0, ChairLift has a first-login setup, `chairlift --first-run`. It replaces SNOW First Setup. In one window it greets you, checks the internet connection, sets the light or dark style, offers Flatpak apps from Flathub, installs the ones you pick for your user, and shows any errors.
 
-ChairLift does not start it by itself. The image starts `chairlift-first-run` at login, and that opens the setup once for each user. Snow and Snowfield still start SNOW First Setup at first login. [Snow](/docs/images/snow/) lists what the image ships.
+ChairLift does not start it by itself. An image can start `chairlift-first-run` at login, and that opens the setup once for each user. Snow and Snowfield still start SNOW First Setup at first login. [Snow](/docs/images/snow/) lists what the image ships.
 
 To try the setup without changes:
 
