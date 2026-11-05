@@ -1492,6 +1492,8 @@ const statsSnapshot = JSON.parse(await readFile(new URL("../src/data/problem-sta
 const statsErrors = checkStatsPage(stats, statsSnapshot);
 assert(statsErrors.length === 0, `/stats/ does not match the snapshot: ${statsErrors.join(" ")}`);
 
+assert(privacyText.includes("Controller: Frostyard Privacy Admin") && privacy.includes('href="mailto:privacy@frostyard.org"'), "/privacy/problem-reports/ must name the controller and link the contact that Brian gave (T886a).");
+
 // LAST: the privacy page needs the controller and the contact from Brian
 // (plan T857 section 6). Do not remove this assertion to make a build pass.
 assert(!privacyText.includes("PLACEHOLDER"), "/privacy/problem-reports/ still has a PLACEHOLDER: Brian must give the controller and the contact (plan T857 section 6).");
