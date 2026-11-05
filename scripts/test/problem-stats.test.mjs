@@ -335,3 +335,10 @@ test("a hidden table total beside only published group totals is rejected", () =
   });
   assert.throws(() => validateStats(document, schema), /every group total is published/);
 });
+
+test("an empty table must have total 0", () => {
+  for (const total of [99, null, 5]) {
+    const document = documentWithTable("app_problems", { group_by: "app_id", cell_by: "class", total, groups: {} });
+    assert.throws(() => validateStats(document, schema), /must be 0 for a table with no groups/);
+  }
+});

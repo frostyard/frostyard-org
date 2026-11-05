@@ -119,9 +119,11 @@ function checkTable(table, axis, path) {
     }
   }
 
-  // A table with no groups is empty: its only published total is 0.
-  if (table.total === 0) {
-    if (Object.keys(table.groups).length !== 0) fail(`${path}.total`, "must not be 0 while the table has groups.");
+  // A table with no groups is empty: its total is exactly 0, and only then.
+  if (Object.keys(table.groups).length === 0) {
+    if (table.total !== 0) fail(`${path}.total`, `must be 0 for a table with no groups, not ${JSON.stringify(table.total)}.`);
+  } else if (table.total === 0) {
+    fail(`${path}.total`, "must not be 0 while the table has groups.");
   } else {
     checkCount(table.total, `${path}.total`);
   }

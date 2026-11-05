@@ -137,6 +137,19 @@ export function checkStatsPage(html, snapshot) {
     return errors;
   }
 
+  // Every table renders, empty ones too, with its total (0, a count, or hidden).
+  for (const name of TABLE_NAMES) {
+    const table = snapshot.stats.latest.tables?.[name];
+    const want = table?.total === null ? "hidden" : String(table?.total);
+    const section = html.match(new RegExp(`<section\\b[^>]*\\bdata-stats-table="${name}"[^>]*>`));
+    if (section === null) {
+      errors.push(`the page does not render the table ${name}.`);
+      continue;
+    }
+    const total = section[0].match(/\bdata-table-total="([^"]*)"/)?.[1];
+    if (total !== want) errors.push(`the table ${name} renders the total ${JSON.stringify(total)}, not ${JSON.stringify(want)}.`);
+  }
+
   const expected = expectedStatsValues(snapshot);
   const { missing, extra } = difference(expected, rendered);
   if (missing.length > 0) errors.push(`the page does not render ${missing.length} count(s) that the snapshot publishes: ${missing.join(", ")}.`);

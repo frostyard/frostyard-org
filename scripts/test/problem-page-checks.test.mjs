@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 import { reportTable } from "../../src/lib/problem-report-table.mjs";
+import { validateStats } from "../../src/lib/problem-stats.mjs";
 import { checkPrivacyPage, checkStatsPage } from "../lib/problem-page-checks.mjs";
 import descriptions from "../../src/data/problem-report-descriptions.mjs";
 
@@ -80,18 +81,20 @@ function weekDocument() {
 
 function statsHtml(latest) {
   if (latest === null) return '<article><p class="no-data">No data yet.</p></article>';
-  const cells = [];
+  const cell = (value) => (value === null ? '<td data-stat="hidden">hidden</td>' : value === 0 ? "<td>0</td>" : `<td data-stat="${value}">${value}</td>`);
+  const sections = [];
   for (const name of ["reports", "app_problems", "installs"]) {
     const table = latest.tables[name];
+    const cells = [];
     for (const group of Object.values(table.groups)) {
       for (const value of Object.values(group.cells)) cells.push(value);
       cells.push(group.total);
     }
     cells.push(table.total);
+    const total = table.total === null ? "hidden" : String(table.total);
+    sections.push(`<section class="stats-table" data-stats-table="${name}" data-table-total="${total}">${cells.map(cell).join("")}</section>`);
   }
-  return `<article>${cells
-    .map((value) => (value === null ? '<td data-stat="hidden">hidden</td>' : value === 0 ? "<td>0</td>" : `<td data-stat="${value}">${value}</td>`))
-    .join("")}</article>`;
+  return `<article>${sections.join("")}</article>`;
 }
 
 test("a privacy page with every row passes", () => {
@@ -125,10 +128,40 @@ test("a stats page that renders every count passes", () => {
 });
 
 test("a week where every count is hidden passes", () => {
+  // Each table: 1 group with 1 small cell, so the cell, the group total and
+  // the table total are all hidden.
   const latest = weekDocument();
-  latest.tables.reports.total = null;
+  latest.tables.reports = { group_by: "image", cell_by: "kind", total: null, groups: { snow: { total: null, cells: { crash: null } } } };
+  latest.tables.app_problems = { group_by: "app_id", cell_by: "class", total: null, groups: { "org.frostyard.nsl": { total: null, cells: { panic: null } } } };
   latest.tables.installs = { group_by: "image", cell_by: "image_version", total: null, groups: { snow: { total: null, cells: { "20260901000000": null } } } };
-  assert.deepEqual(checkStatsPage(statsHtml(latest), statsSnapshot(latest)), []);
+  const snapshot = statsSnapshot(latest);
+  validateStats(snapshot, schema);
+  const html = statsHtml(latest);
+  const rendered = [...html.matchAll(/data-stat="([^"]*)"/g)].map((match) => match[1]);
+  assert.ok(rendered.length > 0);
+  assert.ok(rendered.every((value) => value === "hidden"));
+  assert.deepEqual(checkStatsPage(html, snapshot), []);
+});
+
+test("a week where every table is empty passes, and a page without its tables fails", () => {
+  const latest = weekDocument();
+  for (const [name, axes] of Object.entries({ reports: ["image", "kind"], app_problems: ["app_id", "class"], installs: ["image", "image_version"] })) {
+    latest.tables[name] = { group_by: axes[0], cell_by: axes[1], total: 0, groups: {} };
+  }
+  const snapshot = statsSnapshot(latest);
+  validateStats(snapshot, schema);
+  assert.deepEqual(checkStatsPage(statsHtml(latest), snapshot), []);
+  const errors = checkStatsPage("<h1>Statistics</h1>", snapshot);
+  assert.equal(errors.length, 3);
+  assert.match(errors.join(" "), /app_problems/);
+});
+
+test("a stats page that misses an empty table fails", () => {
+  const latest = weekDocument();
+  const html = statsHtml(latest).replace(/<section[^>]*data-stats-table="app_problems"[\s\S]*?<\/section>/, "");
+  const errors = checkStatsPage(html, statsSnapshot(latest));
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /app_problems/);
 });
 
 test("an empty snapshot passes with the no-data line", () => {

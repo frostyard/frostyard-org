@@ -38,7 +38,7 @@ const checked = fetchedAt === null ? null : fetchedAt.slice(0, 10);
         </p>
 
         {view.tables.map((table) => (
-          <section class="stats-table">
+          <section class="stats-table" data-stats-table={table.name} data-table-total={table.total === null ? "hidden" : String(table.total)}>
             <h2>{table.label}</h2>
             <p>{table.note}</p>
             <div class="table-scroll" role="region" aria-label={table.label} tabindex="0">
