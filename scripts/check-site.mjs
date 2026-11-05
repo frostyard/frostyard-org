@@ -1461,12 +1461,32 @@ assert(privacyText.includes("90 days"), "/privacy/problem-reports/ must state ho
 // so "never sent" must scope file names to the user's files and name both.
 assert(!privacyText.includes("No file path, file name"), "/privacy/problem-reports/ must not promise that no file name is sent: crash reports send the program name.");
 assert(privacyText.includes("A crash report names only the program that crashed and its package.") && privacyText.includes("A Rust app problem names a source file of Frostyard's own code."), "/privacy/problem-reports/ must name the program and source-file exceptions under what is never sent.");
+// Owner reviews of frostyard-org#74 (Murbella, Duncan): the ChairLift and Floe
+// controls are future (T857 t19, t20); the preview is only for "Ask each time";
+// counts are per opted-in user; Flatpak crashes stay local; stored arrival
+// times, kept tag values, counts after deletion and KV totals are stated.
+assert(!privacyText.includes("go to the Problems page, and use"), "/privacy/problem-reports/ must not describe the unbuilt ChairLift switch in the present tense.");
+for (const sentence of [
+  "These steps work when the release that sends reports ships",
+  "ChairLift will show you the exact report before it sends it",
+  "it will send without asking",
+  "Counts are approximate",
+  "a crash of a Flatpak app stays on your computer",
+  "The intake and GlitchTip record the time a report arrives",
+  "with no link to any report",
+  "A deleted report stays in the statistics data points and the weekly totals",
+  "Cloudflare Workers KV with no end date",
+]) {
+  assert(privacyText.includes(sentence), `/privacy/problem-reports/ must state: "${sentence}".`);
+}
+assert(!privacyText.includes("Flatpak app ID.") && !privacyText.includes("installs that turned reporting on"), "/privacy/problem-reports/ must not claim Flatpak crash reports or install counts.");
 // The core spec allows frames of github.com/emersion/go-imap/v2 (frostmail's fork).
 assert(privacyText.includes("the go-imap fork that Frostmail uses"), "/privacy/problem-reports/ must name the go-imap fork among the allowed Go frame modules.");
 assert(privacy.includes('href="/stats/"'), "/privacy/problem-reports/ must link /stats/.");
 assert(privacy.includes('href="/schemas/problem-report/v1.json"'), "/privacy/problem-reports/ must link /schemas/problem-report/v1.json.");
 
 const stats = await readRoute("/stats");
+if (textOf(stats).includes("No data yet")) assert(textOf(stats).includes("The first week can be a part week"), "/stats/ must say that the first week can be a part week.");
 const statsSnapshot = JSON.parse(await readFile(new URL("../src/data/problem-stats.json", import.meta.url), "utf8"));
 const statsErrors = checkStatsPage(stats, statsSnapshot);
 assert(statsErrors.length === 0, `/stats/ does not match the snapshot: ${statsErrors.join(" ")}`);

@@ -149,6 +149,10 @@ test("the view carries the week, the week count, and 1 entry for each table", ()
 
   const installs = view.tables[2];
   assert.deepEqual(installs.columns, ["20260901000000"]);
+  // Owner review of frostyard-org#74: the table counts weekly count reports of
+  // opted-in users, not installs.
+  assert.match(installs.label, /^Weekly counts/);
+  assert.doesNotMatch(`${installs.label} ${installs.note}`, /\binstalls\b/i);
 });
 
 test("the committed snapshot is valid", async () => {

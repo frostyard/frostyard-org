@@ -27,8 +27,8 @@ const TABLE_INFO = {
     groupLabel: "App",
   },
   installs: {
-    label: "Installs, by image and version",
-    note: "Counts of installs for each image and version.",
+    label: "Weekly counts, by image and version",
+    note: "Weekly count reports, for each image and version. Only users who turned reporting on send them (on Floe, the computer), so 1 desktop can count more than once.",
     groupLabel: "Image",
   },
 };

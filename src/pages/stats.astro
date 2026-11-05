@@ -23,13 +23,13 @@ const checked = fetchedAt === null ? null : fetchedAt.slice(0, 10);
   <p>
     These are counts of the problem reports that Frostyard computers send. A report never names the computer
     that sent it. The <a href="/privacy/problem-reports/">problem reports page</a> says what a report holds and
-    how long we keep it.
+    how long we keep it. A week is the ISO week (UTC) in which the reports arrived.
   </p>
 
   {
     view.empty ? (
       <p class="no-data">
-        No data yet. The first count appears after the first full week of reports.
+        No data yet. Each Monday, the counts of the week before are added. The first week can be a part week.
       </p>
     ) : (
       <>

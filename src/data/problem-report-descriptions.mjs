@@ -72,9 +72,9 @@ export default {
     },
     crash: {
       title: "A program crashed",
-      purpose: "Finds crashes of programs in the image and of Flatpak apps. The core dump, the command line and the environment are never sent.",
+      purpose: "Finds crashes of programs in the image. Only programs under /usr are reported; a crash of a Flatpak app stays on your computer. The core dump, the command line and the environment are never sent.",
       fields: {
-        exe: "The program's file name without its folder, or the Flatpak app ID.",
+        exe: "The program's file name without its folder.",
         package: "The Debian package that holds the program.",
         package_version: "The version of that package.",
         signal: "The signal that stopped the program.",
@@ -96,7 +96,7 @@ export default {
     },
     count: {
       title: "Weekly count",
-      purpose: "Counts the installs that turned reporting on, to see which versions are in use and whether updates arrive. Sent at most once a week.",
+      purpose: "Counts the users who turned reporting on (on Floe, the computer), to see which versions are in use and whether updates arrive. Sent at most once a week. Counts are approximate: 2 users who turn reporting on at 1 desktop count 2 times.",
       fields: {
         install_age: "How long ago the system was installed, in a range.",
         channel: "Whether the computer follows the latest image.",
