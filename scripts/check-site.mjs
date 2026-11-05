@@ -1460,7 +1460,7 @@ assert(privacyText.includes("90 days"), "/privacy/problem-reports/ must state ho
 // frostyard-org#74 cross-review: crash.exe and app_problem.location are sent,
 // so "never sent" must scope file names to the user's files and name both.
 assert(!privacyText.includes("No file path, file name"), "/privacy/problem-reports/ must not promise that no file name is sent: crash reports send the program name.");
-assert(privacyText.includes("A crash report names only the program that crashed and its package.") && privacyText.includes("A Rust app problem names a source file of Frostyard's own code."), "/privacy/problem-reports/ must name the program and source-file exceptions under what is never sent.");
+assert(privacyText.includes("When crash reports start, a crash report will name only the program that crashed and its package.") && privacyText.includes("A Rust app problem names a source file of Frostyard's own code."), "/privacy/problem-reports/ must name the program and source-file exceptions under what is never sent.");
 // Owner reviews of frostyard-org#74 (Murbella, Duncan): the ChairLift and Floe
 // controls are future (T857 t19, t20); the preview is only for "Ask each time";
 // counts are per opted-in user; Flatpak crashes stay local; stored arrival
@@ -1473,7 +1473,8 @@ for (const sentence of [
   "Counts are approximate",
   "a crash of a Flatpak app stays on your computer",
   "The intake and GlitchTip record the time a report arrives",
-  "with no link to any report",
+  "with no link to any report and with no end date",
+  "Not sent yet. The format defines crash reports",
   "A deleted report stays in the statistics data points and the weekly totals",
   "Cloudflare Workers KV with no end date",
 ]) {

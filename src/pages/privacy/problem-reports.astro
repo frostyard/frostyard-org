@@ -21,7 +21,7 @@ const sources: Array<[string, string, string]> = [
   <p><strong>Status:</strong> no released Frostyard software sends reports yet. The controls below come with a future release of ChairLift and of snosi-health. We publish this page first, so you can read it before you choose.</p>
 
   <h2 id="what-reports-are-for">What reports are for</h2>
-  <p>Reports tell us which updates fail, which services break, which programs crash, and which versions are in use. Each kind of report and its purpose is in <a href="#what-is-sent">What is sent</a>.</p>
+  <p>Reports tell us which updates fail, which services break, which Frostyard apps hit errors, and which versions are in use. Each kind of report and its purpose is in <a href="#what-is-sent">What is sent</a>.</p>
 
   <h2 id="turn-it-on-or-off">Turn reporting on or off</h2>
   <p>Nothing is sent until you turn reporting on. When you turn it off, sending stops at once. These steps work when the release that sends reports ships:</p>
@@ -40,7 +40,7 @@ const sources: Array<[string, string, string]> = [
   <ul>
     <li>No machine ID, boot ID, account, user name, host name or cookie.</li>
     <li>No error message, panic message, log text, command line or environment.</li>
-    <li>No path, name or content of your files, and no core dump. A crash report names only the program that crashed and its package. A Rust app problem names a source file of Frostyard's own code.</li>
+    <li>No path, name or content of your files, and no core dump. When crash reports start, a crash report will name only the program that crashed and its package. A Rust app problem names a source file of Frostyard's own code.</li>
     <li>No date or time finer than a week. The intake and GlitchTip record the time a report arrives.</li>
     <li>Nothing about services or extensions that you added yourself.</li>
   </ul>
@@ -51,7 +51,7 @@ const sources: Array<[string, string, string]> = [
 
   <h2 id="where-reports-go">Where reports go and how long we keep them</h2>
   <ul>
-    <li><strong>Reports:</strong> the intake checks each report against the format, then forwards each problem report to GlitchTip, an error tracker on a server in the United States. The weekly count is not forwarded. GlitchTip keeps reports for 72 days. Its nightly cleanup and 7 days of backup snapshots can keep parts of a report up to about 88 days in all. Every report is deleted within 90 days. GlitchTip keeps each value it has seen in a report field, such as an image version or a program name, with no link to any report.</li>
+    <li><strong>Reports:</strong> the intake checks each report against the format, then forwards each problem report to GlitchTip, an error tracker on a server in the United States. The weekly count is not forwarded. GlitchTip keeps reports for 72 days. Its nightly cleanup and 7 days of backup snapshots can keep parts of a report up to about 88 days in all. Every report is deleted within 90 days. GlitchTip keeps each value it has seen in a report field, such as an image version or a program name, with no link to any report and with no end date.</li>
     <li><strong>Counts for the statistics:</strong> for each accepted report, the intake also writes 1 data point to Cloudflare Workers Analytics Engine. A data point holds only values from the report, such as the kind, the image and its version. It holds no <code>report_id</code> and no IP address. Cloudflare records the time it writes each point and keeps the points for about 3 months.</li>
     <li><strong>Weekly statistics:</strong> totals for each week, kept in Cloudflare Workers KV with no end date, and published.</li>
   </ul>

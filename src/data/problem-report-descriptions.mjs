@@ -72,7 +72,7 @@ export default {
     },
     crash: {
       title: "A program crashed",
-      purpose: "Finds crashes of programs in the image. Only programs under /usr are reported; a crash of a Flatpak app stays on your computer. The core dump, the command line and the environment are never sent.",
+      purpose: "Not sent yet. The format defines crash reports, but the first releases that send reports keep crashes on your computer; a later release adds them. Then they will find crashes of programs in the image. Only programs under /usr will be reported; a crash of a Flatpak app stays on your computer. The core dump, the command line and the environment are never sent.",
       fields: {
         exe: "The program's file name without its folder.",
         package: "The Debian package that holds the program.",
