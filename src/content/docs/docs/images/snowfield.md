@@ -288,8 +288,9 @@ Reviewed 2026-10-27 against snosi commit
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
 
 The Problems section was reviewed 2026-11-05 against snosi commit
-[`b6e5e0769c605b920686c12bc7f0962caac10586`](https://github.com/frostyard/snosi/tree/b6e5e0769c605b920686c12bc7f0962caac10586) and ChairLift commit
-[`54124831081796ffdadd4e10644fdc20719bf723`](https://github.com/frostyard/chairlift/tree/54124831081796ffdadd4e10644fdc20719bf723).
+[`b6e5e0769c605b920686c12bc7f0962caac10586`](https://github.com/frostyard/snosi/tree/b6e5e0769c605b920686c12bc7f0962caac10586) and ChairLift release v0.14.0
+commit [`54124831081796ffdadd4e10644fdc20719bf723`](https://github.com/frostyard/chairlift/tree/54124831081796ffdadd4e10644fdc20719bf723)
+([release](https://github.com/frostyard/chairlift/releases/tag/v0.14.0)).
 
 - [`docs/adr/0029-snosi-health-records-problems.md`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/docs/adr/0029-snosi-health-records-problems.md)
 - [`docs/integration-contracts.md`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/docs/integration-contracts.md)

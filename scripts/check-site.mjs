@@ -495,6 +495,7 @@ for (const [route, html, text, desktop] of [
     assert(text.includes("select Problems") && text.includes("ChairLift sends nothing"), `${route} must describe the local ChairLift Problems page.`);
     assert(text.includes("a ChairLift older than v0.14.0") && text.includes("/etc/chairlift/config.yml"), `${route} must name both causes of a missing Problems page: a ChairLift older than v0.14.0, or a ChairLift configuration that hides it.`);
     assert(text.includes("The page comes with ChairLift v0.14.0"), `${route} must say which ChairLift release has the Problems page (owner review of frostyard-org#75).`);
+    assert(html.includes("https://github.com/frostyard/chairlift/releases/tag/v0.14.0"), `${route} must link the ChairLift v0.14.0 release that ships the Problems page.`);
     for (const source of ["README.md", "docs/specs/problems-page.md"]) {
       assert(html.includes(`${problemsChairlift}/${source}`), `${route} must cite ChairLift ${source} at the Problems page pin.`);
     }
@@ -880,6 +881,7 @@ assert(chairliftText.includes("This guide follows ChairLift v0.13.0"), "/docs/to
 assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("ChairLift sends nothing"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, in the page table (owner review of frostyard-org#75).");
 assert(chairlift.indexOf("<td>Problems</td>") < chairlift.indexOf("<td>Help</td>"), "/docs/tools/chairlift must list Problems before Help, as the sidebar does.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md"), "/docs/tools/chairlift must cite the Problems page spec at its pin.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.14.0") && chairliftText.includes("ChairLift release v0.14.0 commit"), "/docs/tools/chairlift must cite the v0.14.0 release for the Problems page.");
 assert(!chairliftText.includes("ChairLift does not install new Flatpak apps"), "/docs/tools/chairlift must not say ChairLift installs no Flatpak apps: the first-login setup installs them (frostyard-org#73 review).");
 assert(chairliftText.includes("The Applications page does not install new Flatpak apps"), "/docs/tools/chairlift must scope the Bazaar limit to the Applications page (frostyard-org#73 review).");
 assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');
