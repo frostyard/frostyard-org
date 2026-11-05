@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { access, readFile, readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
 
+import { checkPrivacyPage, checkStatsPage } from "./lib/problem-page-checks.mjs";
+
 // Astro 7 with the Cloudflare adapter writes the static site to dist/client.
 const dist = new URL("../dist/client/", import.meta.url);
 
@@ -1446,35 +1448,28 @@ function hasCode(html, name) {
   return html.split(/<code\b[^>]*>/).slice(1).some((part) => part.startsWith(`${escapeHtml(name)}</code>`));
 }
 const privacyText = textOf(privacy);
-for (const field of ["schema", "report_id", "week", "image.id", "image.version", "secure", "client", "kind"]) {
-  assert(hasCode(privacy, field), `/privacy/problem-reports/ must name the report field ${field} in code.`);
-}
 for (const kind of reportSchema.properties.kind.enum) {
   assert(hasCode(privacy, kind), `/privacy/problem-reports/ must name the report kind ${kind} in code.`);
   assert(privacy.includes(`id="kind-${escapeHtml(kind)}"`), `/privacy/problem-reports/ must render the heading id="kind-${kind}".`);
-  for (const field of Object.keys(reportSchema.$defs[kind]?.properties ?? {})) {
-    assert(hasCode(privacy, field), `/privacy/problem-reports/ must name the field ${field} of the kind ${kind} in code.`);
-  }
 }
-for (const appId of reportSchema.$defs.app_problem.properties.app_id.enum) {
-  assert(hasCode(privacy, appId), `/privacy/problem-reports/ must name the app ID ${appId} in code.`);
-}
+// Every field row must sit in the part of the page that belongs to its kind, so
+// a field that 2 kinds share cannot hide a missing row (see the module).
+const privacyErrors = checkPrivacyPage(privacy, reportSchema);
+assert(privacyErrors.length === 0, `/privacy/problem-reports/ is incomplete: ${privacyErrors.join(" ")}`);
 assert(privacyText.includes("90 days"), "/privacy/problem-reports/ must state how long a report is kept (90 days).");
+// frostyard-org#74 cross-review: crash.exe and app_problem.location are sent,
+// so "never sent" must scope file names to the user's files and name both.
+assert(!privacyText.includes("No file path, file name"), "/privacy/problem-reports/ must not promise that no file name is sent: crash reports send the program name.");
+assert(privacyText.includes("A crash report names only the program that crashed and its package.") && privacyText.includes("A Rust app problem names a source file of Frostyard's own code."), "/privacy/problem-reports/ must name the program and source-file exceptions under what is never sent.");
+// The core spec allows frames of github.com/emersion/go-imap/v2 (frostmail's fork).
+assert(privacyText.includes("the go-imap fork that Frostmail uses"), "/privacy/problem-reports/ must name the go-imap fork among the allowed Go frame modules.");
 assert(privacy.includes('href="/stats/"'), "/privacy/problem-reports/ must link /stats/.");
 assert(privacy.includes('href="/schemas/problem-report/v1.json"'), "/privacy/problem-reports/ must link /schemas/problem-report/v1.json.");
 
 const stats = await readRoute("/stats");
-const statsText = textOf(stats);
-const statsValues = [...stats.matchAll(/data-stat="([^"]*)"/g)].map((match) => match[1]);
-for (const value of statsValues) {
-  assert(value === "hidden" || (/^[0-9]+$/.test(value) && Number(value) >= 5), `/stats/ must publish no count from 1 to 4, and it renders data-stat="${value}".`);
-}
 const statsSnapshot = JSON.parse(await readFile(new URL("../src/data/problem-stats.json", import.meta.url), "utf8"));
-if (statsSnapshot.stats?.latest) {
-  assert(statsValues.some((value) => /^[0-9]+$/.test(value)), "/stats/ must render at least 1 published count when the snapshot has a week.");
-} else {
-  assert(statsText.includes("No data yet"), "/stats/ must say that there are no counts yet while the snapshot is empty.");
-}
+const statsErrors = checkStatsPage(stats, statsSnapshot);
+assert(statsErrors.length === 0, `/stats/ does not match the snapshot: ${statsErrors.join(" ")}`);
 
 // LAST: the privacy page needs the controller and the contact from Brian
 // (plan T857 section 6). Do not remove this assertion to make a build pass.

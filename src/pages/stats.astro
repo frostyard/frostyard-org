@@ -80,6 +80,8 @@ const checked = fetchedAt === null ? null : fetchedAt.slice(0, 10);
                     {table.columns.map(() => <td></td>)}
                     {table.total === null ? (
                       <td data-stat="hidden">hidden</td>
+                    ) : table.total === 0 ? (
+                      <td>0</td>
                     ) : (
                       <td data-stat={table.total}>{table.total}</td>
                     )}

@@ -99,7 +99,6 @@ function checkTable(table, axis, path) {
   exactKeys(table, ["group_by", "cell_by", "total", "groups"], path);
   if (table.group_by !== axis.group_by) fail(`${path}.group_by`, `must be "${axis.group_by}".`);
   if (table.cell_by !== axis.cell_by) fail(`${path}.cell_by`, `must be "${axis.cell_by}".`);
-  checkCount(table.total, `${path}.total`);
   if (!isObject(table.groups)) fail(`${path}.groups`, "must be an object.");
 
   for (const [groupKey, group] of Object.entries(table.groups)) {
@@ -108,6 +107,7 @@ function checkTable(table, axis, path) {
     exactKeys(group, ["total", "cells"], groupPath);
     checkCount(group.total, `${groupPath}.total`);
     if (!isObject(group.cells)) fail(`${groupPath}.cells`, "must be an object.");
+    if (Object.keys(group.cells).length === 0) fail(`${groupPath}.cells`, "must hold at least 1 cell: a group with no cell is absent.");
     for (const [cellKey, value] of Object.entries(group.cells)) {
       const cellPath = `${groupPath}.cells.${cellKey}`;
       if (axis.cells === null) {
@@ -117,6 +117,91 @@ function checkTable(table, axis, path) {
       }
       checkCount(value, cellPath);
     }
+  }
+
+  // A table with no groups is empty: its only published total is 0.
+  if (table.total === 0) {
+    if (Object.keys(table.groups).length !== 0) fail(`${path}.total`, "must not be 0 while the table has groups.");
+  } else {
+    checkCount(table.total, `${path}.total`);
+  }
+
+  checkTableEquations(table, path);
+}
+
+function publishedSum(values) {
+  return values.filter((value) => value !== null).reduce((total, value) => total + value, 0);
+}
+
+function hiddenCount(values) {
+  return values.filter((value) => value === null).length;
+}
+
+// The equations of docs/specs/stats.md rules 5 and 6, which keep every hidden
+// count at 2 or more possible values. A document that publishes 1 of the
+// parts of an equation beside 1 hidden part lets a reader work the hidden
+// part out by subtraction, so this refuses it.
+function checkTableEquations(table, path) {
+  const groupKeys = Object.keys(table.groups);
+
+  // The group equation, and the bound rule for a group.
+  for (const groupKey of groupKeys) {
+    const group = table.groups[groupKey];
+    const groupPath = `${path}.groups.${groupKey}`;
+    const values = Object.values(group.cells);
+    const hidden = hiddenCount(values);
+    const sum = publishedSum(values);
+    if (group.total === null) {
+      // A hidden total beside only published cells is their sum.
+      if (hidden === 0) fail(`${groupPath}.total`, "must not be hidden while every cell is published: it is the sum of the cells.");
+      continue;
+    }
+    if (hidden === 0) {
+      if (group.total !== sum) fail(`${groupPath}.total`, `must be the sum of its cells (${sum}), not ${group.total}.`);
+      continue;
+    }
+    if (hidden === 1) {
+      fail(`${groupPath}.total`, "must not stay published beside 1 hidden cell: the hidden cell can be found by subtraction.");
+    }
+    if (group.total < sum + hidden) {
+      fail(`${groupPath}.total`, `must be at least the published cells plus 1 for each hidden cell (${sum + hidden}), not ${group.total}.`);
+    }
+    if (group.total - sum - hidden < 1) {
+      fail(`${groupPath}.total`, "must leave slack above the hidden cells: each of them could be 1, so the hidden cells can be found by subtraction.");
+    }
+  }
+
+  // The table equation, and the bound rule for the table.
+  if (groupKeys.length === 0) return;
+  const hiddenTotals = groupKeys.filter((groupKey) => table.groups[groupKey].total === null);
+  if (table.total === null) {
+    // A hidden table total beside only published group totals is their sum.
+    if (hiddenTotals.length === 0) fail(`${path}.total`, "must not be hidden while every group total is published: it is their sum.");
+    return;
+  }
+  const sumPublished = publishedSum(groupKeys.map((groupKey) => table.groups[groupKey].total));
+  if (hiddenTotals.length === 0) {
+    if (table.total !== sumPublished) fail(`${path}.total`, `must be the sum of the group totals (${sumPublished}), not ${table.total}.`);
+    return;
+  }
+  if (hiddenTotals.length === 1) {
+    fail(`${path}.total`, "must not stay published beside 1 hidden group total: that total can be found by subtraction.");
+  }
+
+  // Each hidden group total sits at or above its lower bound: its published
+  // cells plus 1 for each hidden cell. The table total must leave room above
+  // those bounds, or each hidden total has only 1 possible value.
+  let lower = 0;
+  for (const groupKey of hiddenTotals) {
+    const values = Object.values(table.groups[groupKey].cells);
+    lower += publishedSum(values) + hiddenCount(values);
+  }
+  const room = table.total - sumPublished;
+  if (room < lower) {
+    fail(`${path}.total`, `must be at least ${lower} above the published group totals, not ${room}: a hidden group total cannot be below its own cells.`);
+  }
+  if (room - lower < 1) {
+    fail(`${path}.total`, "must leave slack above the hidden group totals: each of them could sit at its lower bound, so they can be found by subtraction.");
   }
 }
 

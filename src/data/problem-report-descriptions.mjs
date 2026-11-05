@@ -90,7 +90,7 @@ export default {
         component: "Which part of the app.",
         class: "A crash of the app (panic) or a known error.",
         code: "A fixed error code from the app's source, such as store.migrate_failed. Sent only for errors.",
-        frames: "For a Go panic: up to 32 function names of Frostyard code and the Go standard library. No file paths, no arguments. Other functions show as other.",
+        frames: "For a Go panic: up to 32 function names from Frostyard code, the Go standard library, and the go-imap fork that Frostmail uses. No file paths, no arguments. Other functions show as other.",
         location: "For a Rust panic: the source file and line in Frostyard's code, such as src/store.rs:42.",
       },
     },

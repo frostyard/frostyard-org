@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { test } from "node:test";
 
 async function fixtureDir() {
@@ -14,7 +14,9 @@ async function copyScripts(root, names) {
   const scriptsDir = join(root, "scripts");
   await mkdir(scriptsDir, { recursive: true });
   for (const name of names) {
-    await copyFile(new URL(`../${name}`, import.meta.url), join(scriptsDir, name));
+    const target = join(scriptsDir, name);
+    await mkdir(dirname(target), { recursive: true });
+    await copyFile(new URL(`../${name}`, import.meta.url), target);
   }
   return scriptsDir;
 }
@@ -83,7 +85,7 @@ test("the committed problem report schema copy is the pinned byte copy", async (
 test("check-site fails when dist/client is empty", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
     await mkdir(join(root, "dist/client"), { recursive: true });
 
     const result = run(join(scriptsDir, "check-site.mjs"), root);
@@ -98,7 +100,7 @@ test("check-site fails when dist/client is empty", async () => {
 test("check-site fails when dist/client has only a non-HTML file", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
     await mkdir(join(root, "dist/client"), { recursive: true });
     await writeFile(join(root, "dist/client/_redirects"), "/cayo /floe 301\n");
 
@@ -114,7 +116,7 @@ test("check-site fails when dist/client has only a non-HTML file", async () => {
 test("check-site fails when dist is missing", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
 
     const result = run(join(scriptsDir, "check-site.mjs"), root);
 
