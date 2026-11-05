@@ -487,6 +487,43 @@ assert(sundogText.includes("Gwenview, Okular, KCalc, and Skanpage are Flatpaks")
 assert(sundogText.includes("linux-image-amd64/forky"), "/docs/images/sundog must name the kernel selection.");
 assert(!sundogText.includes("A rollback also changes the image") && sundogText.includes("It waits for the next published image"), "/docs/images/sundog must describe the rollback hold correctly.");
 
+const problemsSnosi = "https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586";
+const problemsChairlift = "https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723";
+for (const [route, html, text, desktop] of [
+  ["/docs/images/snow", snow, snowText, true],
+  ["/docs/images/snowfield", snowfield, snowfieldText, true],
+  ["/docs/images/sundog", sundog, sundogText, true],
+  ["/docs/images/floe", floe, floeText, false],
+]) {
+  assert(html.includes('id="problems"'), `${route} must render the "problems" section (T857 t14).`);
+  assert(text.includes("snosi-health --list"), `${route} must name snosi-health --list.`);
+  assert(text.includes("Storage=external"), `${route} must say how to keep core files (Storage=none on every image).`);
+  assert(text.includes("3 to 8 minutes after boot"), `${route} must give the first snosi-health run with its random delay (OnBootSec=3min, RandomizedDelaySec=5min).`);
+  assert(!text.includes("about 3 minutes after boot"), `${route} must not drop the timer's random delay.`);
+  assert(text.includes("/etc/systemd/coredump.conf.d/90-debug.conf") && text.includes("sorts after") && text.includes("50-snosi.conf"), `${route} must name a coredump drop-in that sorts after the image's 50-snosi.conf (owner review of frostyard-org#75).`);
+  assert(text.includes("1 GiB or smaller"), `${route} must state the ProcessSizeMax=1G limit on the stack trace.`);
+  assert(!text.includes("in a drop-in file in"), `${route} must not suggest that any drop-in name works.`);
+  assert(html.includes('data-code="sudo systemctl reload systemd-coredumpd.service"') && text.includes("A reboot also applies it"), `${route} must say how to apply the coredump drop-in: systemd-coredumpd reads it only at start or reload (cross-review of frostyard-org#75).`);
+  for (const source of [
+    "docs/adr/0029-snosi-health-records-problems.md",
+    "mkosi.images/base/mkosi.extra/usr/bin/snosi-health",
+    "shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf",
+  ]) {
+    assert(html.includes(`${problemsSnosi}/${source}`), `${route} must cite snosi ${source} at the snosi-health pin.`);
+  }
+  if (desktop) {
+    assert(text.includes("select Problems") && text.includes("ChairLift sends nothing"), `${route} must describe the local ChairLift Problems page.`);
+    assert(text.includes("a ChairLift older than v0.14.0") && text.includes("/etc/chairlift/config.yml"), `${route} must name both causes of a missing Problems page: a ChairLift older than v0.14.0, or a ChairLift configuration that hides it.`);
+    assert(text.includes("The page comes with ChairLift v0.14.0"), `${route} must say which ChairLift release has the Problems page (owner review of frostyard-org#75).`);
+    assert(html.includes("https://github.com/frostyard/chairlift/releases/tag/v0.14.0"), `${route} must link the ChairLift v0.14.0 release that ships the Problems page.`);
+    for (const source of ["README.md", "docs/specs/problems-page.md"]) {
+      assert(html.includes(`${problemsChairlift}/${source}`), `${route} must cite ChairLift ${source} at the Problems page pin.`);
+    }
+  } else {
+    assert(!text.includes("select Problems"), `${route} must not send Floe users to ChairLift, which Floe does not ship.`);
+  }
+}
+
 const base = await readRoute("/docs/images/base");
 const baseText = textOf(base);
 for (const heading of [
@@ -861,6 +898,10 @@ for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog
   assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
 }
 assert(chairliftText.includes("This guide follows ChairLift v0.13.0"), "/docs/tools/chairlift must follow ChairLift v0.13.0.");
+assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("ChairLift sends nothing"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, in the page table (owner review of frostyard-org#75).");
+assert(chairlift.indexOf("<td>Problems</td>") < chairlift.indexOf("<td>Help</td>"), "/docs/tools/chairlift must list Problems before Help, as the sidebar does.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md"), "/docs/tools/chairlift must cite the Problems page spec at its pin.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.14.0") && chairliftText.includes("ChairLift release v0.14.0 commit"), "/docs/tools/chairlift must cite the v0.14.0 release for the Problems page.");
 assert(!chairliftText.includes("ChairLift does not install new Flatpak apps"), "/docs/tools/chairlift must not say ChairLift installs no Flatpak apps: the first-login setup installs them (frostyard-org#73 review).");
 assert(chairliftText.includes("The Applications page does not install new Flatpak apps"), "/docs/tools/chairlift must scope the Bazaar limit to the Applications page (frostyard-org#73 review).");
 assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');

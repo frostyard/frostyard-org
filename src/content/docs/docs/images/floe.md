@@ -106,6 +106,69 @@ image.
 Keep about twice the image size free in `/var`. The updater pulls each new
 image into `/var` before it stages it.
 
+## Problems
+
+Floe checks itself for problems 3 to 8 minutes after boot, then about every
+hour. It records:
+
+- a system service that failed
+- an image update that could not be staged
+- a system-extension update that failed
+- a boot into an older image
+- an encrypted disk that the TPM opened only after a retry, or that needed a
+  passphrase or the recovery key
+- an integrity error
+- a crash of a system program
+- a problem that a Frostyard system service recorded
+
+The records stay on this server.
+
+List them:
+
+```bash
+snosi-health --list
+```
+
+Any user can run it. Each line shows when the problem was last seen, its
+kind, a short summary, how many times it was seen, and whether the record is
+a valid problem report. With no problems, it prints `No problems recorded`
+and the time of the last check. Before the first check, it prints
+`No problem record yet`. `snosi-health` sends nothing.
+
+To check now instead of waiting for the next run:
+
+```bash
+sudo systemctl start snosi-health.service
+snosi-health --list
+```
+
+`systemctl list-timers snosi-health.timer` shows the next run. Members of the
+`sudo` group can read the full unit names and up to 5 journal messages for each
+problem in `/var/lib/snosi-health/details.json`. If the command is missing,
+the image is older than this feature: let it update, then reboot.
+
+A crash keeps no core file. The journal keeps the crash entry. It has a stack
+trace only when the core is 1 GiB or smaller. To keep core files while you
+debug a crash, set `Storage=external` in
+`/etc/systemd/coredump.conf.d/90-debug.conf`:
+
+```ini
+[Coredump]
+Storage=external
+```
+
+The image sets `Storage=none` in `50-snosi.conf`, and the file that sorts last
+wins. Give your file a name that sorts after `50-snosi.conf`.
+
+Apply it before you reproduce the crash:
+
+```bash
+sudo systemctl reload systemd-coredumpd.service
+```
+
+If that service is not running, there is nothing to reload: each crash then
+reads the file. A reboot also applies it.
+
 ## What ships
 
 Floe is Base plus the bootc runtime, the bootc security setup, the server
@@ -249,3 +312,15 @@ Reviewed 2026-10-27 against snosi commit
 - [`docs/design/testing.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/testing.md)
 - Extension definitions in the image, each with `Enabled=false`: [`mkosi.images/base/mkosi.extra/usr/lib/`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib), for example [`sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
+
+The Problems section was reviewed 2026-11-05 against snosi commit
+[`b6e5e0769c605b920686c12bc7f0962caac10586`](https://github.com/frostyard/snosi/tree/b6e5e0769c605b920686c12bc7f0962caac10586).
+
+- [`docs/adr/0029-snosi-health-records-problems.md`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/docs/adr/0029-snosi-health-records-problems.md)
+- [`docs/integration-contracts.md`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/docs/integration-contracts.md)
+- [`mkosi.images/base/mkosi.extra/usr/bin/snosi-health`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/mkosi.images/base/mkosi.extra/usr/bin/snosi-health)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.timer`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.timer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.service`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.service)
+- [`shared/bootc-secure/mkosi.conf`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/shared/bootc-secure/mkosi.conf)
+- [`shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf)
+- systemd v262 [`man/coredump.conf.xml`](https://github.com/systemd/systemd/blob/v262/man/coredump.conf.xml) (drop-in order, `ProcessSizeMax=`, reloading `systemd-coredumpd.service`)

@@ -112,6 +112,70 @@ rolled back from again. It waits for the next published image.
 Keep about twice the image size free in `/var`. The updater pulls each new
 image into `/var` before it stages it.
 
+## Problems
+
+Snowfield checks itself for problems 3 to 8 minutes after boot, then about every
+hour. It records:
+
+- a system service that failed
+- an image update that could not be staged
+- a system-extension update that failed
+- a boot into an older image
+- an encrypted disk that the TPM opened only after a retry, or that needed a
+  passphrase or the recovery key
+- an integrity error
+- a crash of a system program
+- a problem that a Frostyard system service recorded
+
+The records stay on this computer.
+
+To see them, open [ChairLift](/docs/tools/chairlift/) and select Problems.
+The page comes with ChairLift v0.14.0.
+Each row says what happened and when. Expand a row for a hint, the details,
+and the Copy details and Dismiss buttons. A dismissed problem shows again if
+it happens again. The page also lists crashes of your own programs and
+problems that Frostyard apps recorded in the last 90 days. ChairLift sends
+nothing.
+
+To read the system list in a terminal:
+
+```bash
+snosi-health --list
+```
+
+Each line shows when the problem was last seen, its kind, a short summary,
+and how many times it was seen. With no problems, it prints
+`No problems recorded` and the time of the last check. If the command is
+missing, the image is older than this feature: let it update, then reboot.
+
+If ChairLift has no Problems page, the image may carry a ChairLift older
+than v0.14.0: let it update, then reboot. On an image with ChairLift v0.14.0
+or later, ChairLift hides the page when `/etc/chairlift/config.yml`
+turns off all 3 of its groups, or when it shows a configuration error. Fix
+the file and restart ChairLift.
+
+A crash keeps no core file. The journal keeps the crash entry. It has a stack
+trace only when the core is 1 GiB or smaller. To keep core files while you
+debug a crash, set `Storage=external` in
+`/etc/systemd/coredump.conf.d/90-debug.conf`:
+
+```ini
+[Coredump]
+Storage=external
+```
+
+The image sets `Storage=none` in `50-snosi.conf`, and the file that sorts last
+wins. Give your file a name that sorts after `50-snosi.conf`.
+
+Apply it before you reproduce the crash:
+
+```bash
+sudo systemctl reload systemd-coredumpd.service
+```
+
+If that service is not running, there is nothing to reload: each crash then
+reads the file. A reboot also applies it.
+
 ## What ships
 
 Snowfield is Base plus the bootc runtime, the bootc security setup, Snow's
@@ -224,3 +288,23 @@ Reviewed 2026-10-27 against snosi commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
 - First-login setup, reviewed 2026-11-05 against snosi commit [`770f9a3c82c4bb7348f6c477fce08febf25554af`](https://github.com/frostyard/snosi/tree/770f9a3c82c4bb7348f6c477fce08febf25554af) ([snosi#1224](https://github.com/frostyard/snosi/pull/1224)): [`docs/adr/0028-first-login-runs-chairlift-first-run.md`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/docs/adr/0028-first-login-runs-chairlift-first-run.md), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/packages/snow/mkosi.conf)
+
+The Problems section was reviewed 2026-11-05 against snosi commit
+[`b6e5e0769c605b920686c12bc7f0962caac10586`](https://github.com/frostyard/snosi/tree/b6e5e0769c605b920686c12bc7f0962caac10586) and ChairLift release v0.14.0
+commit [`54124831081796ffdadd4e10644fdc20719bf723`](https://github.com/frostyard/chairlift/tree/54124831081796ffdadd4e10644fdc20719bf723)
+([release](https://github.com/frostyard/chairlift/releases/tag/v0.14.0)).
+
+- [`docs/adr/0029-snosi-health-records-problems.md`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/docs/adr/0029-snosi-health-records-problems.md)
+- [`docs/integration-contracts.md`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/docs/integration-contracts.md)
+- [`mkosi.images/base/mkosi.extra/usr/bin/snosi-health`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/mkosi.images/base/mkosi.extra/usr/bin/snosi-health)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.timer`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.timer)
+- [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.service`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.service)
+- [`shared/bootc-secure/mkosi.conf`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/shared/bootc-secure/mkosi.conf)
+- [`shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf)
+- systemd v262 [`man/coredump.conf.xml`](https://github.com/systemd/systemd/blob/v262/man/coredump.conf.xml) (drop-in order, `ProcessSizeMax=`, reloading `systemd-coredumpd.service`)
+- [ChairLift `README.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/README.md)
+- [ChairLift `docs/adr/0015-problems-page-and-opt-in-reporting.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/adr/0015-problems-page-and-opt-in-reporting.md)
+- [ChairLift `docs/specs/problems-page.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md)
+- [ChairLift `config.yml`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/config.yml)
+- [ChairLift `CONFIG.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/CONFIG.md)
+- [ChairLift `internal/views/pageview/problems.go`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/internal/views/pageview/problems.go)
