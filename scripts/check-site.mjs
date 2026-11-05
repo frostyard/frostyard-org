@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { access, readFile, readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
 
@@ -16,6 +17,10 @@ async function htmlFiles(directory) {
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function sha256(bytes) {
+  return createHash("sha256").update(bytes).digest("hex");
 }
 
 function escapeHtml(value) {
@@ -149,9 +154,16 @@ for (const file of files) {
   assert(!body.includes("2026-10-28"), `${page} contains the superseded lifecycle date.`);
 
   for (const match of html.matchAll(/<a\b[^>]*\shref="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
-    await access(routeFile(match[1])).catch(() => {
-      throw new Error(`${page} links to missing internal route ${match[1]}.`);
-    });
+    const href = match[1];
+    try {
+      await access(routeFile(href));
+    } catch {
+      // A link may also name a file that Astro copied from public/, such as
+      // the problem report schema. It must still exist in the build.
+      await access(new URL(`.${href}`, dist)).catch(() => {
+        throw new Error(`${page} links to missing internal route ${href}.`);
+      });
+    }
   }
 }
 
@@ -1413,5 +1425,59 @@ for (const route of refreshGuideNames.map((name) => `/docs/sysexts/${name}`).con
   assert(!html.includes("ce3900e5f2eded725ddc5afd8b532992e573200e"), `${route} must not cite the old Updex commit.`);
   assert(!text.includes("Updex v2.1.2"), `${route} must not name Updex v2.1.2.`);
 }
+
+// The problem report pages (plan T857 t18). The schema copy is a byte copy of
+// a pinned frostyard/core file, so the page cannot describe a field the schema
+// does not have, and the privacy page cannot lose a field it does have.
+const schemaPin = JSON.parse(await readFile(new URL("../src/data/problem-report-schema-pin.json", import.meta.url), "utf8"));
+const schemaSource = await readFile(new URL("../public/schemas/problem-report/v1.json", import.meta.url));
+const schemaBuilt = await readFile(new URL("schemas/problem-report/v1.json", dist));
+assert(sha256(schemaSource) === schemaPin.sha256, `public/schemas/problem-report/v1.json must be the pinned bytes (sha256 ${schemaPin.sha256}): run npm run sync:problem-schema.`);
+assert(sha256(schemaBuilt) === schemaPin.sha256, "The built /schemas/problem-report/v1.json must be the pinned bytes.");
+const reportSchema = JSON.parse(schemaBuilt.toString("utf8"));
+assert(reportSchema.$id === "https://frostyard.org/schemas/problem-report/v1.json", "The problem report schema copy must keep its $id.");
+
+await Promise.all(["/stats", "/privacy/problem-reports"].map((route) => access(routeFile(route))));
+
+const privacy = await readRoute("/privacy/problem-reports");
+// A name counts only inside a <code> element, so that prose words such as
+// "count" or "class" cannot stand in for the field of that name.
+function hasCode(html, name) {
+  return html.split(/<code\b[^>]*>/).slice(1).some((part) => part.startsWith(`${escapeHtml(name)}</code>`));
+}
+const privacyText = textOf(privacy);
+for (const field of ["schema", "report_id", "week", "image.id", "image.version", "secure", "client", "kind"]) {
+  assert(hasCode(privacy, field), `/privacy/problem-reports/ must name the report field ${field} in code.`);
+}
+for (const kind of reportSchema.properties.kind.enum) {
+  assert(hasCode(privacy, kind), `/privacy/problem-reports/ must name the report kind ${kind} in code.`);
+  assert(privacy.includes(`id="kind-${escapeHtml(kind)}"`), `/privacy/problem-reports/ must render the heading id="kind-${kind}".`);
+  for (const field of Object.keys(reportSchema.$defs[kind]?.properties ?? {})) {
+    assert(hasCode(privacy, field), `/privacy/problem-reports/ must name the field ${field} of the kind ${kind} in code.`);
+  }
+}
+for (const appId of reportSchema.$defs.app_problem.properties.app_id.enum) {
+  assert(hasCode(privacy, appId), `/privacy/problem-reports/ must name the app ID ${appId} in code.`);
+}
+assert(privacyText.includes("90 days"), "/privacy/problem-reports/ must state how long a report is kept (90 days).");
+assert(privacy.includes('href="/stats/"'), "/privacy/problem-reports/ must link /stats/.");
+assert(privacy.includes('href="/schemas/problem-report/v1.json"'), "/privacy/problem-reports/ must link /schemas/problem-report/v1.json.");
+
+const stats = await readRoute("/stats");
+const statsText = textOf(stats);
+const statsValues = [...stats.matchAll(/data-stat="([^"]*)"/g)].map((match) => match[1]);
+for (const value of statsValues) {
+  assert(value === "hidden" || (/^[0-9]+$/.test(value) && Number(value) >= 5), `/stats/ must publish no count from 1 to 4, and it renders data-stat="${value}".`);
+}
+const statsSnapshot = JSON.parse(await readFile(new URL("../src/data/problem-stats.json", import.meta.url), "utf8"));
+if (statsSnapshot.stats?.latest) {
+  assert(statsValues.some((value) => /^[0-9]+$/.test(value)), "/stats/ must render at least 1 published count when the snapshot has a week.");
+} else {
+  assert(statsText.includes("No data yet"), "/stats/ must say that there are no counts yet while the snapshot is empty.");
+}
+
+// LAST: the privacy page needs the controller and the contact from Brian
+// (plan T857 section 6). Do not remove this assertion to make a build pass.
+assert(!privacyText.includes("PLACEHOLDER"), "/privacy/problem-reports/ still has a PLACEHOLDER: Brian must give the controller and the contact (plan T857 section 6).");
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);

@@ -30,6 +30,15 @@ It uses the committed catalog snapshot if the published repository is unavailabl
 `build:check` deliberately skips the refresh so CI stays network-independent and
 does not rewrite `src/data/extensions.json`. Do not hand-edit that generated file.
 
+Two more scripts cover the problem report pages. `scripts/sync-problem-schema.mjs`
+(`npm run sync:problem-schema`) copies the pinned problem report schema from
+frostyard/core into `public/schemas/problem-report/v1.json`, and writes it only
+when the bytes match the sha256 in `src/data/problem-report-schema-pin.json`.
+`scripts/sync-problem-stats.mjs` runs in `prebuild`: it fetches the weekly counts
+from `https://report.frostyard.org/v1/stats`, checks them against the hiding
+rules, and writes `src/data/problem-stats.json`. When the service does not
+answer, the build uses the committed snapshot.
+
 ## Documentation pilot
 
 Astro Starlight supplies the `/docs/` shell, sidebar, table of contents, search,
@@ -140,7 +149,10 @@ navigation link, or Pagefind page disappears.
 `src/pages/install.astro` provides the bootc-first Firn installation path and
 lifecycle guidance. `src/pages/why-atomic.astro` explains the atomic model and
 supported workload boundaries. `src/pages/tools.astro` is the dedicated Firn,
-Updex, and ChairLift page.
+Updex, and ChairLift page. `src/pages/stats.astro` is `/stats/`, the weekly
+problem report counts. `src/pages/privacy/problem-reports.astro` is
+`/privacy/problem-reports/`, the privacy page for opt-in problem reports: what
+a report holds, how long it is kept, and your rights.
 
 The docs pilot adds these content routes:
 

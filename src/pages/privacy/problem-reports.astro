@@ -1,0 +1,82 @@
+---
+import ProblemReportTable from "../../components/ProblemReportTable.astro";
+import Document from "../../layouts/Document.astro";
+import { contact, controller } from "../../data/privacy-contact.mjs";
+
+const core = "https://github.com/frostyard/core/blob/main";
+const intake = "https://github.com/frostyard/problem-intake/blob/main";
+const sources: Array<[string, string, string]> = [
+  ["The decision", `${core}/docs/adr/0069-report-problems-local-first-opt-in-with-one-sender-per-host.md`, "frostyard/core ADR-0069: local first, opt-in, one sender per computer."],
+  ["The report format", `${core}/docs/specs/problem-report.md`, "frostyard/core: every field, every value, and the rules for new versions."],
+  ["The app library", "https://github.com/frostyard/std/tree/main/problems", "frostyard/std: the Go package that writes app problems to the local journal. The Rust crate is in rust/."],
+  ["The collector", "https://github.com/frostyard/snosi", "frostyard/snosi: snosi-health, which lists system problems and sends them on Floe."],
+  ["ChairLift", "https://github.com/frostyard/chairlift/blob/main/docs/adr/0015-problems-page-and-opt-in-reporting.md", "frostyard/chairlift: the Problems page and the desktop sender."],
+  ["The intake", "https://github.com/frostyard/problem-intake", "frostyard/problem-intake: the service at report.frostyard.org that checks reports and drops your IP address."],
+  ["The statistics", `${intake}/docs/specs/stats.md`, "frostyard/problem-intake: how the weekly statistics are counted and which numbers are hidden."],
+  ["Retention and deletion", `${intake}/docs/runbook/glitchtip.md`, "frostyard/problem-intake: the retention limit, the snapshots, and how 1 report is deleted."],
+];
+---
+<Document title="Problem reports | Frostyard" description="What Frostyard problem reports send, what they never send, how long they are kept, and your rights." eyebrow="Privacy" heading="Problem reports">
+  <p class="lede">Frostyard images and apps can send short problem reports, so we can find and fix faults. Reporting is off until you turn it on. This page says what a report holds, where it goes, how long we keep it, and how to have it deleted.</p>
+  <p><strong>Status:</strong> no released Frostyard software sends reports yet. We publish this page first, so you can read it before you choose.</p>
+
+  <h2 id="what-reports-are-for">What reports are for</h2>
+  <p>Reports tell us which updates fail, which services break, which programs crash, and which versions are in use. Each kind of report and its purpose is in <a href="#what-is-sent">What is sent</a>.</p>
+
+  <h2 id="turn-it-on-or-off">Turn reporting on or off</h2>
+  <p>Nothing is sent until you turn reporting on. When you turn it off, sending stops at once.</p>
+  <ul>
+    <li><strong>Snow, Snowfield and Sundog:</strong> open ChairLift, go to the Problems page, and use the <em>Send problem reports</em> switch. On Snow and Snowfield, ChairLift's first-run setup also asks you, with the switch off. Each user of the computer decides for themselves. ChairLift shows you the exact report before it sends it.</li>
+    <li><strong>Floe:</strong> run <code>sudo snosi-health reporting on</code>, <code>off</code> or <code>status</code>. Run <code>snosi-health send --dry-run</code> to print the exact reports without sending them.</li>
+  </ul>
+  <p>Frostyard apps never send anything themselves. They write problems to the journal on your computer. ChairLift on a desktop, or snosi-health on Floe, is the only program that sends. A computer that does not run a Frostyard image sends nothing.</p>
+  <p>If a new version of the report format adds a kind of report or a field, sending stops until you agree again.</p>
+
+  <h2 id="what-is-sent">What is sent</h2>
+  <p>Every report has the fields below, and then the fields of its kind. Every value is a fixed choice, a number in a range, a version, or a name from a fixed list. No field holds free text. The machine-readable format is <a href="/schemas/problem-report/v1.json"><code>/schemas/problem-report/v1.json</code></a>.</p>
+  <ProblemReportTable />
+
+  <h2 id="what-is-never-sent">What is never sent</h2>
+  <ul>
+    <li>No machine ID, boot ID, account, user name, host name or cookie.</li>
+    <li>No error message, panic message, log text, command line or environment.</li>
+    <li>No file path, file name or file content, and no core dump.</li>
+    <li>No date or time finer than a week.</li>
+    <li>Nothing about services or extensions that you added yourself.</li>
+  </ul>
+
+  <h2 id="your-ip-address">Your IP address</h2>
+  <p>Your IP address is personal data. It reaches Cloudflare, which carries the report to <code>report.frostyard.org</code> for us as our processor, under its data processing agreement. The intake uses the address only to limit each address to 10 reports a minute, with a short-lived counter. It does not store, log or forward the address. The server that keeps reports never receives it: the proxy in front of that server removes the forwarding headers and keeps no log.</p>
+  <p>Cloudflare's own security features can record the address of a request that they block or challenge, in Cloudflare's security events.</p>
+
+  <h2 id="where-reports-go">Where reports go and how long we keep them</h2>
+  <ul>
+    <li><strong>Reports:</strong> the intake checks each report against the format, then forwards each problem report to GlitchTip, an error tracker on a server in the United States. The weekly count is not forwarded. GlitchTip deletes each report after 72 days, and its search entries for the report within 9 more days. Backup snapshots keep a copy at most 7 more days. Every report is deleted within 90 days.</li>
+    <li><strong>Counts for the statistics:</strong> for each accepted report, the intake also writes 1 data point to Cloudflare Workers Analytics Engine. A data point holds only values from the report, such as the kind, the image and its version. It holds no <code>report_id</code>, no week and no IP address. Cloudflare keeps these points for about 3 months.</li>
+    <li><strong>Weekly statistics:</strong> totals for each week. We keep them and publish them.</li>
+  </ul>
+
+  <h2 id="public-statistics">Public statistics</h2>
+  <p>We publish weekly totals on the <a href="/stats/">statistics page</a>. A number from 1 to 4 is never published, and neither is a number that would let you work one out from the totals. We never publish single reports.</p>
+
+  <h2 id="your-rights">Your rights</h2>
+  <ul>
+    <li><strong>Consent.</strong> Consent is the legal basis for reports (GDPR Article 6(1)(a)). You can withdraw it at any time: turn reporting off.</li>
+    <li><strong>See what was sent.</strong> ChairLift lists the reports it sent, with each <code>report_id</code>. On Floe, the list is <code>/var/lib/snosi-health/sent.jsonl</code>.</li>
+    <li><strong>Delete a report.</strong> Send us its <code>report_id</code> and we delete that report. Backup snapshots keep it at most 7 more days. Without the <code>report_id</code> we cannot tell which report is yours, because reports hold no identifier (GDPR Article 11).</li>
+    <li><strong>Complain.</strong> You can complain to a data protection supervisory authority.</li>
+    <li><strong>No automated decisions.</strong> Reports are not used to make any decision about you.</li>
+  </ul>
+
+  <h2 id="who-is-responsible">Who is responsible</h2>
+  <p>Controller: {controller}</p>
+  <p>Contact for questions and deletion requests: {contact}</p>
+
+  <h2 id="transfers">Transfers outside the EU</h2>
+  <p>Reports are kept in the United States. Cloudflare processes requests on its global network, under its data processing agreement and the EU–US Data Privacy Framework.</p>
+
+  <h2 id="source">Source</h2>
+  <p>Every part of reporting is open source.</p>
+  <ul>{sources.map(([label, href, text]) => <li><a href={href}>{label}</a>: {text}</li>)}</ul>
+  <p>The history of this page is in <a href="https://github.com/frostyard/frostyard-org/commits/main/src/pages/privacy/problem-reports.astro">frostyard/frostyard-org</a>.</p>
+</Document>

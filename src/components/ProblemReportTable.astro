@@ -1,0 +1,125 @@
+---
+// The problem report field table for /privacy/problem-reports/.
+//
+// Every value comes from the schema copy in public/schemas/problem-report/v1.json
+// and the description map, and the builder fails the build when either side is
+// incomplete. Values are rendered as text: Astro escapes them, and this
+// component never renders markup from data.
+import schema from "../../public/schemas/problem-report/v1.json";
+import descriptions from "../data/problem-report-descriptions.mjs";
+import { reportTable } from "../lib/problem-report-table.mjs";
+
+const { envelope, kinds } = reportTable(schema, descriptions);
+---
+
+<div class="problem-report-fields">
+  <div class="table-scroll" role="region" aria-label="Report fields" tabindex="0">
+    <table>
+      <caption class="sr-only">Values that every problem report carries</caption>
+      <thead>
+        <tr>
+          <th scope="col">Field</th>
+          <th scope="col">What it holds</th>
+          <th scope="col">Values</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          envelope.map((row) => (
+            <tr>
+              <td>
+                <code>{row.field}</code>
+                {row.required ? null : <span class="optional"> (optional)</span>}
+              </td>
+              <td>{row.description}</td>
+              <td>
+                {row.values
+                  ? row.values.map((value, index) => (
+                      <Fragment>
+                        {index > 0 ? ", " : ""}
+                        <code>{value}</code>
+                      </Fragment>
+                    ))
+                  : null}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  {
+    kinds.map((kind) => (
+      <section class="kind">
+        <h3 id={`kind-${kind.kind}`}>
+          {kind.title} <code>{kind.kind}</code>
+        </h3>
+        <p>{kind.purpose}</p>
+        <div class="table-scroll" role="region" aria-label={`Fields of the ${kind.kind} report`} tabindex="0">
+          <table>
+            <caption class="sr-only">Fields of the {kind.kind} report</caption>
+            <thead>
+              <tr>
+                <th scope="col">Field</th>
+                <th scope="col">What it holds</th>
+                <th scope="col">Values</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kind.fields.map((row) => (
+                <tr>
+                  <td>
+                    <code>{row.field}</code>
+                    {row.required ? null : <span class="optional"> (optional)</span>}
+                  </td>
+                  <td>{row.description}</td>
+                  <td>
+                    {row.values
+                      ? row.values.map((value, index) => (
+                          <Fragment>
+                            {index > 0 ? ", " : ""}
+                            <code>{value}</code>
+                          </Fragment>
+                        ))
+                      : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .kind {
+    margin: 2.5rem 0 0;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    margin: 0.75rem 0 1.5rem;
+  }
+
+  table {
+    min-width: 38rem;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    min-width: 15rem;
+  }
+
+  th:first-child,
+  td:first-child {
+    width: 9rem;
+  }
+
+  .optional {
+    color: var(--text-dim);
+    font-size: var(--text-caption-size);
+  }
+</style>
