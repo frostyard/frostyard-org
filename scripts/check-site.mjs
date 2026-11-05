@@ -467,6 +467,34 @@ assert(sundogText.includes("Gwenview, Okular, KCalc, and Skanpage are Flatpaks")
 assert(sundogText.includes("linux-image-amd64/forky"), "/docs/images/sundog must name the kernel selection.");
 assert(!sundogText.includes("A rollback also changes the image") && sundogText.includes("It waits for the next published image"), "/docs/images/sundog must describe the rollback hold correctly.");
 
+const problemsSnosi = "https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586";
+const problemsChairlift = "https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723";
+for (const [route, html, text, desktop] of [
+  ["/docs/images/snow", snow, snowText, true],
+  ["/docs/images/snowfield", snowfield, snowfieldText, true],
+  ["/docs/images/sundog", sundog, sundogText, true],
+  ["/docs/images/floe", floe, floeText, false],
+]) {
+  assert(html.includes('id="problems"'), `${route} must render the "problems" section (T857 t14).`);
+  assert(text.includes("snosi-health --list"), `${route} must name snosi-health --list.`);
+  assert(text.includes("Storage=external"), `${route} must say how to keep core files (Storage=none on every image).`);
+  for (const source of [
+    "docs/adr/0029-snosi-health-records-problems.md",
+    "mkosi.images/base/mkosi.extra/usr/bin/snosi-health",
+    "shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf",
+  ]) {
+    assert(html.includes(`${problemsSnosi}/${source}`), `${route} must cite snosi ${source} at the snosi-health pin.`);
+  }
+  if (desktop) {
+    assert(text.includes("select Problems") && text.includes("ChairLift sends nothing"), `${route} must describe the local ChairLift Problems page.`);
+    for (const source of ["README.md", "docs/specs/problems-page.md"]) {
+      assert(html.includes(`${problemsChairlift}/${source}`), `${route} must cite ChairLift ${source} at the Problems page pin.`);
+    }
+  } else {
+    assert(!text.includes("select Problems"), `${route} must not send Floe users to ChairLift, which Floe does not ship.`);
+  }
+}
+
 const base = await readRoute("/docs/images/base");
 const baseText = textOf(base);
 for (const heading of [
