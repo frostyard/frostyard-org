@@ -56,6 +56,12 @@ Log in at the GDM screen with the user you created in Firn. Firn can install
 the chosen core Flatpak set as part of the recipe; if yours included it, the
 apps are already there. The image itself carries only the list.
 
+At your first login, ChairLift's
+[first-login setup](/docs/tools/chairlift/#first-login-setup) opens. It sets
+the light or dark style and offers Flatpak apps to install for your user. After
+you finish it, it does not open again. If you finished SNOW First Setup on an
+older Snow image, it does not open at all.
+
 Check that the system is healthy:
 
 ```bash
@@ -182,8 +188,8 @@ desktop, a kernel, and the image output format.
 | Containers | Podman and Distrobox, plus `systemd-container` and the Frostyard Intune integration |
 
 The table shows the main layers only. Snow also carries Homebrew
-integration, `frostyard-chairlift`, `snow-first-setup`, the Snow Plymouth
-theme, the hotedge and Logo Menu GNOME extensions, and the Bazaar companion
+integration, `frostyard-chairlift` with its first-login setup, the Snow
+Plymouth theme, the hotedge and Logo Menu GNOME extensions, and the Bazaar companion
 build.
 
 Snow uses the `linux-image-amd64/forky` kernel until the Trixie backports
@@ -264,6 +270,7 @@ Reviewed 2026-10-27 against snosi commit
 - [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- First-login setup, reviewed 2026-11-05 against snosi commit [`770f9a3c82c4bb7348f6c477fce08febf25554af`](https://github.com/frostyard/snosi/tree/770f9a3c82c4bb7348f6c477fce08febf25554af) ([snosi#1224](https://github.com/frostyard/snosi/pull/1224)): [`docs/adr/0028-first-login-runs-chairlift-first-run.md`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/docs/adr/0028-first-login-runs-chairlift-first-run.md), [`shared/snow/tree/etc/xdg/autostart/org.frostyard.ChairLift.FirstRun.desktop`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/snow/tree/etc/xdg/autostart/org.frostyard.ChairLift.FirstRun.desktop), [`shared/snow/tree/usr/share/snow/first-run/apps.json`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/snow/tree/usr/share/snow/first-run/apps.json), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/packages/snow/mkosi.conf)
 
 The Problems section was reviewed 2026-11-05 against snosi commit
 [`b6e5e0769c605b920686c12bc7f0962caac10586`](https://github.com/frostyard/snosi/tree/b6e5e0769c605b920686c12bc7f0962caac10586) and ChairLift release v0.14.0

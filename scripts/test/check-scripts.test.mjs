@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { copyFile, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { test } from "node:test";
 
 async function fixtureDir() {
@@ -13,7 +14,9 @@ async function copyScripts(root, names) {
   const scriptsDir = join(root, "scripts");
   await mkdir(scriptsDir, { recursive: true });
   for (const name of names) {
-    await copyFile(new URL(`../${name}`, import.meta.url), join(scriptsDir, name));
+    const target = join(scriptsDir, name);
+    await mkdir(dirname(target), { recursive: true });
+    await copyFile(new URL(`../${name}`, import.meta.url), target);
   }
   return scriptsDir;
 }
@@ -71,10 +74,18 @@ test("check-prose reports a banned phrase and file name", async () => {
   }
 });
 
+test("the committed problem report schema copy is the pinned byte copy", async () => {
+  const pin = JSON.parse(await readFile(new URL("../../src/data/problem-report-schema-pin.json", import.meta.url), "utf8"));
+  const copy = await readFile(new URL("../../public/schemas/problem-report/v1.json", import.meta.url));
+
+  assert.equal(createHash("sha256").update(copy).digest("hex"), pin.sha256);
+  assert.equal(JSON.parse(copy.toString("utf8")).$id, "https://frostyard.org/schemas/problem-report/v1.json");
+});
+
 test("check-site fails when dist/client is empty", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
     await mkdir(join(root, "dist/client"), { recursive: true });
 
     const result = run(join(scriptsDir, "check-site.mjs"), root);
@@ -89,7 +100,7 @@ test("check-site fails when dist/client is empty", async () => {
 test("check-site fails when dist/client has only a non-HTML file", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
     await mkdir(join(root, "dist/client"), { recursive: true });
     await writeFile(join(root, "dist/client/_redirects"), "/cayo /floe 301\n");
 
@@ -105,7 +116,7 @@ test("check-site fails when dist/client has only a non-HTML file", async () => {
 test("check-site fails when dist is missing", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
 
     const result = run(join(scriptsDir, "check-site.mjs"), root);
 

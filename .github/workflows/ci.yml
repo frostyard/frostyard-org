@@ -24,6 +24,6 @@ jobs:
       # build:check is "astro build" with no prebuild step, so the gate builds
       # from the committed catalog snapshot and does not fetch the live index.
       - run: npm run ci
-      # A changed snapshot means a step ran scripts/sync-extensions.mjs.
-      - name: Committed extension snapshot is unchanged
-        run: git diff --exit-code -- src/data/extensions.json
+      # A changed snapshot means a step ran a sync script.
+      - name: Committed data snapshots are unchanged
+        run: git diff --exit-code -- src/data/extensions.json src/data/problem-stats.json

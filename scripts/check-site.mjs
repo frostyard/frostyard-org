@@ -1,5 +1,8 @@
+import { createHash } from "node:crypto";
 import { access, readFile, readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
+
+import { checkPrivacyPage, checkStatsPage } from "./lib/problem-page-checks.mjs";
 
 // Astro 7 with the Cloudflare adapter writes the static site to dist/client.
 const dist = new URL("../dist/client/", import.meta.url);
@@ -16,6 +19,10 @@ async function htmlFiles(directory) {
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function sha256(bytes) {
+  return createHash("sha256").update(bytes).digest("hex");
 }
 
 function escapeHtml(value) {
@@ -149,9 +156,16 @@ for (const file of files) {
   assert(!body.includes("2026-10-28"), `${page} contains the superseded lifecycle date.`);
 
   for (const match of html.matchAll(/<a\b[^>]*\shref="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
-    await access(routeFile(match[1])).catch(() => {
-      throw new Error(`${page} links to missing internal route ${match[1]}.`);
-    });
+    const href = match[1];
+    try {
+      await access(routeFile(href));
+    } catch {
+      // A link may also name a file that Astro copied from public/, such as
+      // the problem report schema. It must still exist in the build.
+      await access(new URL(`.${href}`, dist)).catch(() => {
+        throw new Error(`${page} links to missing internal route ${href}.`);
+      });
+    }
   }
 }
 
@@ -284,6 +298,8 @@ assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile
 assert(docsLanding.includes("Updex v2.1.4"), "/docs must name the Updex v2.1.4 source pin.");
 assert(docsLanding.includes("https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md"), "/docs must cite the pinned Updex v2.1.4 README.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
+assert(!textOf(docsLanding).includes("snow-first-setup"), "/docs must not name snow-first-setup: snosi#1224 removed it (T843 t6).");
+assert(docsLanding.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs must point to the ChairLift first-login setup (T843 t6).");
 
 const snow = await readRoute("/docs/images/snow");
 const snowText = textOf(snow);
@@ -322,7 +338,10 @@ assert(!snowText.includes("present only if"), "/docs/images/snow must not claim 
 assert(!snowText.includes("userspace, systemd, bootc,"), "/docs/images/snow must not attribute bootc to Base.");
 assert(snowText.includes("Bootc runtime"), "/docs/images/snow must have a separate bootc-runtime row.");
 assert(snowText.includes("The table shows the main layers only"), "/docs/images/snow must scope the table to main layers.");
-assert(snowText.includes("Homebrew") && snowText.includes("frostyard-chairlift") && snowText.includes("snow-first-setup"), "/docs/images/snow must name key omitted components.");
+assert(snowText.includes("Homebrew") && snowText.includes("frostyard-chairlift") && snowText.includes("first-login setup"), "/docs/images/snow must name key omitted components.");
+assert(snow.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs/images/snow must link the ChairLift first-login setup (T843 t6).");
+assert(!snowText.includes("snow-first-setup"), "/docs/images/snow must not list snow-first-setup: snosi#1224 removed it (T843 t6).");
+assert(snowText.includes("If you finished SNOW First Setup on an older Snow image, it does not open at all"), "/docs/images/snow must say that a finished SNOW First Setup skips the first-login setup.");
 assert(snowText.includes("untested on representative Surface hardware"), "/docs/images/snow must state that Snowfield is untested.");
 assert(snowText.includes("gate was waived for catalog inclusion"), "/docs/images/snow must state the Surface hardware gate waiver.");
 assert(!snowText.includes("testing still pending"), "/docs/images/snow must not imply a planned Surface test.");
@@ -420,7 +439,8 @@ assert(snowfieldText.includes("linux-image-surface") && snowfieldText.includes("
 assert(!snowfieldText.includes("linux-image-amd64/forky"), "/docs/images/snowfield must not claim the backports kernel.");
 assert(snowfieldText.includes("does not force a reboot"), "/docs/images/snowfield must state that the stager does not force a reboot.");
 assert(!snowfieldText.includes("A rollback also changes the image") && snowfieldText.includes("It waits for the next published image"), "/docs/images/snowfield must describe the rollback hold correctly.");
-assert(snowfieldText.includes("snow-first-setup"), "/docs/images/snowfield must still name snow-first-setup until T843 t6.");
+assert(!snowfieldText.includes("snow-first-setup"), "/docs/images/snowfield must not list snow-first-setup: snosi#1224 removed it (T843 t6).");
+assert(snowfield.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs/images/snowfield must link the ChairLift first-login setup (T843 t6).");
 
 const sundog = await readRoute("/docs/images/sundog");
 const sundogText = textOf(sundog);
@@ -892,7 +912,8 @@ assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chair
 assert(chairlift.includes('data-code="chairlift --first-run --dry-run"'), "/docs/tools/chairlift must give the first-run dry-run command.");
 assert(chairlift.includes('data-code="chairlift-first-run --mark-done"'), "/docs/tools/chairlift must give the mark-done command.");
 assert(chairliftText.includes("first-run.done") && chairliftText.includes("snow-first-setup.done"), "/docs/tools/chairlift must name both first-run marker files.");
-assert(chairliftText.includes("Snow and Snowfield still start SNOW First Setup"), "/docs/tools/chairlift must say that the swap is not live on the images, T843 t3.");
+assert(chairliftText.includes("Snow and Snowfield start it at login. Sundog does not."), "/docs/tools/chairlift must name the images that start the first-login setup (snosi ADR-0028, T843 t6).");
+assert(!chairliftText.includes("still start SNOW First Setup"), "/docs/tools/chairlift must not say that Snow still starts SNOW First Setup (T843 t6).");
 assert(chairliftText.includes("Before v0.13.0"), "/docs/tools/chairlift must say that Ctrl+Q did nothing before v0.13.0.");
 assert(chairliftText.includes("the system installation could not be checked") && chairliftText.includes("Could not check for updates"), "/docs/tools/chairlift must describe per-installation Flatpak failures.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/adr/0014-first-run-mode.md"), "/docs/tools/chairlift must link the first-run ADR at the v0.13.0 commit.");
@@ -1454,5 +1475,75 @@ for (const route of refreshGuideNames.map((name) => `/docs/sysexts/${name}`).con
   assert(!html.includes("ce3900e5f2eded725ddc5afd8b532992e573200e"), `${route} must not cite the old Updex commit.`);
   assert(!text.includes("Updex v2.1.2"), `${route} must not name Updex v2.1.2.`);
 }
+
+// The problem report pages (plan T857 t18). The schema copy is a byte copy of
+// a pinned frostyard/core file, so the page cannot describe a field the schema
+// does not have, and the privacy page cannot lose a field it does have.
+const schemaPin = JSON.parse(await readFile(new URL("../src/data/problem-report-schema-pin.json", import.meta.url), "utf8"));
+const schemaSource = await readFile(new URL("../public/schemas/problem-report/v1.json", import.meta.url));
+const schemaBuilt = await readFile(new URL("schemas/problem-report/v1.json", dist));
+assert(sha256(schemaSource) === schemaPin.sha256, `public/schemas/problem-report/v1.json must be the pinned bytes (sha256 ${schemaPin.sha256}): run npm run sync:problem-schema.`);
+assert(sha256(schemaBuilt) === schemaPin.sha256, "The built /schemas/problem-report/v1.json must be the pinned bytes.");
+const reportSchema = JSON.parse(schemaBuilt.toString("utf8"));
+assert(reportSchema.$id === "https://frostyard.org/schemas/problem-report/v1.json", "The problem report schema copy must keep its $id.");
+
+await Promise.all(["/stats", "/privacy/problem-reports"].map((route) => access(routeFile(route))));
+
+const privacy = await readRoute("/privacy/problem-reports");
+// A name counts only inside a <code> element, so that prose words such as
+// "count" or "class" cannot stand in for the field of that name.
+function hasCode(html, name) {
+  return html.split(/<code\b[^>]*>/).slice(1).some((part) => part.startsWith(`${escapeHtml(name)}</code>`));
+}
+const privacyText = textOf(privacy);
+for (const kind of reportSchema.properties.kind.enum) {
+  assert(hasCode(privacy, kind), `/privacy/problem-reports/ must name the report kind ${kind} in code.`);
+  assert(privacy.includes(`id="kind-${escapeHtml(kind)}"`), `/privacy/problem-reports/ must render the heading id="kind-${kind}".`);
+}
+// Every field row must sit in the part of the page that belongs to its kind, so
+// a field that 2 kinds share cannot hide a missing row (see the module).
+const privacyErrors = checkPrivacyPage(privacy, reportSchema);
+assert(privacyErrors.length === 0, `/privacy/problem-reports/ is incomplete: ${privacyErrors.join(" ")}`);
+assert(privacyText.includes("90 days"), "/privacy/problem-reports/ must state how long a report is kept (90 days).");
+// frostyard-org#74 cross-review: crash.exe and app_problem.location are sent,
+// so "never sent" must scope file names to the user's files and name both.
+assert(!privacyText.includes("No file path, file name"), "/privacy/problem-reports/ must not promise that no file name is sent: crash reports send the program name.");
+assert(privacyText.includes("When crash reports start, a crash report will name only the program that crashed and its package.") && privacyText.includes("A Rust app problem names a source file of Frostyard's own code."), "/privacy/problem-reports/ must name the program and source-file exceptions under what is never sent.");
+// Owner reviews of frostyard-org#74 (Murbella, Duncan): the ChairLift and Floe
+// controls are future (T857 t19, t20); the preview is only for "Ask each time";
+// counts are per opted-in user; Flatpak crashes stay local; stored arrival
+// times, kept tag values, counts after deletion and KV totals are stated.
+assert(!privacyText.includes("go to the Problems page, and use"), "/privacy/problem-reports/ must not describe the unbuilt ChairLift switch in the present tense.");
+for (const sentence of [
+  "These steps work when the release that sends reports ships",
+  "ChairLift will show you the exact report before it sends it",
+  "it will send without asking",
+  "Counts are approximate",
+  "a crash of a Flatpak app stays on your computer",
+  "The intake and GlitchTip record the time a report arrives",
+  "with no link to any report and with no end date",
+  "Not sent yet. The format defines crash reports",
+  "A deleted report stays in the statistics data points and the weekly totals",
+  "Cloudflare Workers KV with no end date",
+]) {
+  assert(privacyText.includes(sentence), `/privacy/problem-reports/ must state: "${sentence}".`);
+}
+assert(!privacyText.includes("Flatpak app ID.") && !privacyText.includes("installs that turned reporting on"), "/privacy/problem-reports/ must not claim Flatpak crash reports or install counts.");
+// The core spec allows frames of github.com/emersion/go-imap/v2 (frostmail's fork).
+assert(privacyText.includes("the go-imap fork that Frostmail uses"), "/privacy/problem-reports/ must name the go-imap fork among the allowed Go frame modules.");
+assert(privacy.includes('href="/stats/"'), "/privacy/problem-reports/ must link /stats/.");
+assert(privacy.includes('href="/schemas/problem-report/v1.json"'), "/privacy/problem-reports/ must link /schemas/problem-report/v1.json.");
+
+const stats = await readRoute("/stats");
+if (textOf(stats).includes("No data yet")) assert(textOf(stats).includes("The first week can be a part week"), "/stats/ must say that the first week can be a part week.");
+const statsSnapshot = JSON.parse(await readFile(new URL("../src/data/problem-stats.json", import.meta.url), "utf8"));
+const statsErrors = checkStatsPage(stats, statsSnapshot);
+assert(statsErrors.length === 0, `/stats/ does not match the snapshot: ${statsErrors.join(" ")}`);
+
+assert(privacyText.includes("Controller: Frostyard Privacy Admin") && privacy.includes('href="mailto:privacy@frostyard.org"'), "/privacy/problem-reports/ must name the controller and link the contact that Brian gave (T886a).");
+
+// LAST: the privacy page needs the controller and the contact from Brian
+// (plan T857 section 6). Do not remove this assertion to make a build pass.
+assert(!privacyText.includes("PLACEHOLDER"), "/privacy/problem-reports/ still has a PLACEHOLDER: Brian must give the controller and the contact (plan T857 section 6).");
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);

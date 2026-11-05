@@ -1,0 +1,160 @@
+---
+// A readable document column for pages that are prose first: the privacy
+// pages and the statistics page. It wraps Site.astro, so the page keeps the
+// shared navigation and footer, and it owns the one h1 of the page.
+import Site from "./Site.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  heading: string;
+  active?: string;
+}
+
+const { title, description, eyebrow, heading, active } = Astro.props;
+---
+
+<Site title={title} description={description} active={active}>
+  <header class="document-header">
+    <p class="eyebrow"><i></i> {eyebrow}</p>
+    <h1>{heading}</h1>
+  </header>
+  <article class="document">
+    <slot />
+  </article>
+</Site>
+
+<style>
+  .document-header {
+    padding: 6rem 0 2.5rem;
+    max-width: 46rem;
+  }
+
+  .document-header h1 {
+    font-size: clamp(2.5rem, 4.4vw, 4.25rem);
+    line-height: var(--text-h2-lh);
+    letter-spacing: var(--text-h2-ls);
+    margin: 0;
+  }
+
+  .document {
+    max-width: 46rem;
+    padding-bottom: 6rem;
+    font-size: var(--text-body-size);
+    color: var(--text-muted);
+  }
+
+  .document :global(.lede) {
+    font-size: var(--text-lede-size);
+    color: var(--text-body);
+    margin-top: 0;
+  }
+
+  .document :global(h2) {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text-body);
+    margin: 3rem 0 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .document :global(h3) {
+    font-size: 1.12rem;
+    color: var(--text-body);
+    margin: 2rem 0 0.5rem;
+  }
+
+  .document :global(h3 code) {
+    font-size: var(--text-mono-size);
+    color: var(--text-eyebrow);
+    margin-left: 0.35rem;
+  }
+
+  .document :global(p) {
+    margin: 0 0 1rem;
+    line-height: 1.65;
+  }
+
+  .document :global(ul),
+  .document :global(ol) {
+    margin: 0 0 1rem;
+    padding-left: 1.2rem;
+  }
+
+  .document :global(li) {
+    margin-bottom: 0.45rem;
+    line-height: 1.6;
+  }
+
+  .document :global(strong) {
+    color: var(--text-body);
+  }
+
+  .document :global(a) {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .document :global(a:hover) {
+    color: var(--link-hover);
+  }
+
+  .document :global(code) {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-size);
+    color: var(--text-mono-accent);
+    background: var(--surface-code);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-tag);
+    padding: 0.08rem 0.28rem;
+  }
+
+  .document :global(table) {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: var(--text-small-size);
+  }
+
+  .document :global(caption) {
+    text-align: left;
+  }
+
+  .document :global(th),
+  .document :global(td) {
+    border-bottom: 1px solid var(--line);
+    padding: 0.5rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .document :global(th) {
+    border-bottom-color: var(--line-strong);
+    color: var(--text-eyebrow);
+    font-size: var(--text-tag-size);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .document :global(td) {
+    color: var(--text-muted);
+  }
+
+  .document :global(td code) {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 800px) {
+    .document-header {
+      padding-top: 4rem;
+    }
+
+    .document {
+      padding-bottom: 4rem;
+    }
+  }
+</style>
