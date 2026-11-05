@@ -480,6 +480,9 @@ for (const [route, html, text, desktop] of [
   assert(text.includes("Storage=external"), `${route} must say how to keep core files (Storage=none on every image).`);
   assert(text.includes("3 to 8 minutes after boot"), `${route} must give the first snosi-health run with its random delay (OnBootSec=3min, RandomizedDelaySec=5min).`);
   assert(!text.includes("about 3 minutes after boot"), `${route} must not drop the timer's random delay.`);
+  assert(text.includes("/etc/systemd/coredump.conf.d/90-debug.conf") && text.includes("sorts after") && text.includes("50-snosi.conf"), `${route} must name a coredump drop-in that sorts after the image's 50-snosi.conf (owner review of frostyard-org#75).`);
+  assert(text.includes("1 GiB or smaller"), `${route} must state the ProcessSizeMax=1G limit on the stack trace.`);
+  assert(!text.includes("in a drop-in file in"), `${route} must not suggest that any drop-in name works.`);
   for (const source of [
     "docs/adr/0029-snosi-health-records-problems.md",
     "mkosi.images/base/mkosi.extra/usr/bin/snosi-health",
@@ -489,7 +492,8 @@ for (const [route, html, text, desktop] of [
   }
   if (desktop) {
     assert(text.includes("select Problems") && text.includes("ChairLift sends nothing"), `${route} must describe the local ChairLift Problems page.`);
-    assert(text.includes("the image may be older than this feature") && text.includes("/etc/chairlift/config.yml"), `${route} must name both causes of a missing Problems page: an old image, or a ChairLift configuration that hides it.`);
+    assert(text.includes("a ChairLift older than v0.14.0") && text.includes("/etc/chairlift/config.yml"), `${route} must name both causes of a missing Problems page: a ChairLift older than v0.14.0, or a ChairLift configuration that hides it.`);
+    assert(text.includes("The page comes with ChairLift v0.14.0"), `${route} must say which ChairLift release has the Problems page (owner review of frostyard-org#75).`);
     for (const source of ["README.md", "docs/specs/problems-page.md"]) {
       assert(html.includes(`${problemsChairlift}/${source}`), `${route} must cite ChairLift ${source} at the Problems page pin.`);
     }
@@ -872,6 +876,8 @@ for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog
   assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
 }
 assert(chairliftText.includes("This guide follows ChairLift v0.13.0"), "/docs/tools/chairlift must follow ChairLift v0.13.0.");
+assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("ChairLift sends nothing"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, in the page table (owner review of frostyard-org#75).");
+assert(chairlift.indexOf("<td>Problems</td>") < chairlift.indexOf("<td>Help</td>"), "/docs/tools/chairlift must list Problems before Help, as the sidebar does.");
 assert(!chairliftText.includes("ChairLift does not install new Flatpak apps"), "/docs/tools/chairlift must not say ChairLift installs no Flatpak apps: the first-login setup installs them (frostyard-org#73 review).");
 assert(chairliftText.includes("The Applications page does not install new Flatpak apps"), "/docs/tools/chairlift must scope the Bazaar limit to the Applications page (frostyard-org#73 review).");
 assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');

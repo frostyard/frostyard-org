@@ -43,6 +43,7 @@ Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits. Before v0.13.0, `Ctrl+Q`
 | Updates | Stage the next system image. Install device firmware updates. Update Homebrew and its packages. Update Flatpak apps. Trust Homebrew taps. |
 | System | Read the OS information and the booted, staged, and rollback images. Open the health monitor. |
 | Features | Turn Updex features on and off, and update them. |
+| Problems | From v0.14.0. Read the problems recorded on this computer, with a hint for each. Copy the details or dismiss a problem. ChairLift sends nothing. The Snow, Snowfield, and Sundog pages say [what the image records](/docs/images/snow/#problems). |
 | Help | Open the project website, the issue tracker, and the community chat. |
 
 The Applications page does not install new Flatpak apps. It opens Bazaar for that.

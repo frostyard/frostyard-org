@@ -127,6 +127,7 @@ hour. It records:
 The records stay on this computer.
 
 To see them, open [ChairLift](/docs/tools/chairlift/) and select Problems.
+The page comes with ChairLift v0.14.0.
 Each row says what happened and when. Expand a row for a hint, the details,
 and the Copy details and Dismiss buttons. A dismissed problem shows again if
 it happens again. The page also lists crashes of your own programs and
@@ -144,14 +145,24 @@ and how many times it was seen. With no problems, it prints
 `No problems recorded` and the time of the last check. If the command is
 missing, the image is older than this feature: let it update, then reboot.
 
-If ChairLift has no Problems page, the image may be older than this feature:
-let it update, then reboot. On a current image, ChairLift hides the page when `/etc/chairlift/config.yml`
+If ChairLift has no Problems page, the image may carry a ChairLift older
+than v0.14.0: let it update, then reboot. On an image with ChairLift v0.14.0
+or later, ChairLift hides the page when `/etc/chairlift/config.yml`
 turns off all 3 of its groups, or when it shows a configuration error. Fix
 the file and restart ChairLift.
 
-A crash keeps no core file. The journal keeps the crash entry and its stack
-trace. To keep core files while you debug a crash, set `Storage=external` in
-a drop-in file in `/etc/systemd/coredump.conf.d/`.
+A crash keeps no core file. The journal keeps the crash entry. It has a stack
+trace only when the core is 1 GiB or smaller. To keep core files while you
+debug a crash, set `Storage=external` in
+`/etc/systemd/coredump.conf.d/90-debug.conf`:
+
+```ini
+[Coredump]
+Storage=external
+```
+
+The image sets `Storage=none` in `50-snosi.conf`, and the file that sorts last
+wins. Give your file a name that sorts after `50-snosi.conf`.
 
 ## What ships
 

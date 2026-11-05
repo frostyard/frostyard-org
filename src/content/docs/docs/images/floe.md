@@ -147,9 +147,18 @@ snosi-health --list
 problem in `/var/lib/snosi-health/details.json`. If the command is missing,
 the image is older than this feature: let it update, then reboot.
 
-A crash keeps no core file. The journal keeps the crash entry and its stack
-trace. To keep core files while you debug a crash, set `Storage=external` in
-a drop-in file in `/etc/systemd/coredump.conf.d/`.
+A crash keeps no core file. The journal keeps the crash entry. It has a stack
+trace only when the core is 1 GiB or smaller. To keep core files while you
+debug a crash, set `Storage=external` in
+`/etc/systemd/coredump.conf.d/90-debug.conf`:
+
+```ini
+[Coredump]
+Storage=external
+```
+
+The image sets `Storage=none` in `50-snosi.conf`, and the file that sorts last
+wins. Give your file a name that sorts after `50-snosi.conf`.
 
 ## What ships
 
