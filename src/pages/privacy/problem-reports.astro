@@ -46,7 +46,7 @@ const sources: Array<[string, string, string]> = [
   </ul>
 
   <h2 id="your-ip-address">Your IP address</h2>
-  <p>Your IP address is personal data. It reaches Cloudflare, which carries the report to <code>report.frostyard.org</code> for us as our processor, under its data processing agreement. The intake uses the address only to limit each address to 10 reports a minute, with a short-lived counter. It does not store, log or forward the address. The server that keeps reports never receives it: the proxy in front of that server removes the forwarding headers and keeps no log.</p>
+  <p>Your IP address is personal data. It reaches Cloudflare, which carries the report to <code>report.frostyard.org</code> for us as our processor, under its data processing agreement. The intake uses the address only to limit each address to 10 requests a minute, with a short-lived counter. It does not store, log or forward the address, and it stores no key made from it. The server that keeps reports never receives it: the proxy in front of that server removes the forwarding headers and keeps no log.</p>
   <p>Cloudflare's own security features can record the address of a request that they block or challenge, in Cloudflare's security events.</p>
 
   <h2 id="where-reports-go">Where reports go and how long we keep them</h2>
@@ -63,7 +63,7 @@ const sources: Array<[string, string, string]> = [
   <ul>
     <li><strong>Consent.</strong> Consent is the legal basis for reports (GDPR Article 6(1)(a)). You can withdraw it at any time: turn reporting off.</li>
     <li><strong>See what was sent.</strong> ChairLift lists the reports it sent, with each <code>report_id</code>. On Floe, the list is <code>/var/lib/snosi-health/sent.jsonl</code>.</li>
-    <li><strong>Delete a report.</strong> Send us its <code>report_id</code> and we delete that report. Backup snapshots keep it at most 7 more days. Without the <code>report_id</code> we cannot tell which report is yours, because reports hold no identifier (GDPR Article 11).</li>
+    <li><strong>Delete a report.</strong> Send us its <code>report_id</code> and we delete that report. GlitchTip stores each report under its <code>report_id</code>, so we can find it. Backup snapshots keep it at most 7 more days. Without the <code>report_id</code> we cannot tell which report is yours, because reports hold no identifier (GDPR Article 11).</li>
     <li><strong>Complain.</strong> You can complain to a data protection supervisory authority.</li>
     <li><strong>No automated decisions.</strong> Reports are not used to make any decision about you.</li>
   </ul>
