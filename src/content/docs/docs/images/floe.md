@@ -176,8 +176,9 @@ A timer sends once a day, at most 20 problems a day and 1 count a week. Crashes
 are never sent. `/var/lib/snosi-health/sent.jsonl` lists the sent reports,
 each with its `report_id`. A send run that posts at least 1 report and does not
 stop early drops the entries older than 90 days. Any other run drops nothing.
-After reporting is turned off, no run drops entries: the file keeps them until
-an administrator deletes it. On an older image, `snosi-health reporting status` prints the
+A run that starts after reporting is turned off drops nothing. Only a run
+already in progress can still finish its cleanup. After that, the file keeps
+its entries until an administrator deletes it. On an older image, `snosi-health reporting status` prints the
 usage text: let it update, then reboot.
 
 Read what a report holds and how to have one deleted in
