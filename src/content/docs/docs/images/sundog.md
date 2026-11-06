@@ -156,7 +156,8 @@ the file and restart ChairLift.
 From ChairLift v0.15.0, the Problems page has a **Send problem reports**
 switch. It is off until you turn it on, and each user decides for themselves.
 *Ask each time* shows you each report before it goes. *Send automatically*
-sends without asking. *Sent reports* lists what went out. Crash records stay
+sends without asking. *Sent reports* lists the 50 newest reports
+it sent. Crash records stay
 on this computer. The image gets ChairLift v0.15.0 with the next image release.
 
 If there is no switch, the image may carry a ChairLift older than v0.15.0

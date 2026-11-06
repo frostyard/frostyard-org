@@ -513,6 +513,7 @@ for (const [route, html, text, desktop] of [
   }
   if (desktop) {
     assert(text.includes("select Problems") && text.includes("ChairLift sends nothing until you turn reporting on"), `${route} must describe the ChairLift Problems page, which sends nothing until you turn reporting on (ChairLift v0.15.0: reporting is released).`);
+    assert(text.includes("lists the 50 newest reports") && !text.includes("lists what went out"), `${route} must say that Sent reports lists only the 50 newest reports (cross-review of frostyard-org#77: pageview.MaxSentRows = 50).`);
     assert(text.includes("Send problem reports") && text.includes("a ChairLift older than v0.15.0"), `${route} must describe the Send problem reports switch and the missing-switch cause (ChairLift v0.15.0: reporting is released).`);
     assert(html.includes("https://github.com/frostyard/chairlift/releases/tag/v0.15.0"), `${route} must link the ChairLift v0.15.0 release (ChairLift v0.15.0: reporting is released).`);
     assert(html.includes("https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/adr/0015-problems-page-and-opt-in-reporting.md"), `${route} must link ChairLift ADR-0015 at the v0.15.0 commit (ChairLift v0.15.0: reporting is released).`);
@@ -1528,6 +1529,8 @@ assert(privacyText.includes("When crash reports start, a crash report will name 
 // counts are per opted-in user; Flatpak crashes stay local; stored arrival
 // times, kept tag values, counts after deletion and KV totals are stated.
 assert(!privacyText.includes("no released Frostyard software sends reports"), "/privacy/problem-reports/ must not say that no software sends reports (ChairLift v0.15.0, snosi#1227: reporting is released).");
+assert(privacyText.includes("list shows the 50 newest reports it sent") && !privacyText.includes("list shows each report"), "/privacy/problem-reports/ must say that the Sent reports list shows only the 50 newest reports (cross-review of frostyard-org#77: pageview.MaxSentRows = 50).");
+assert(privacyText.includes("up to 500 reports from the last 90 days"), "/privacy/problem-reports/ must say how many report_ids ChairLift keeps (ChairLift reporting.MaxEntries = 500, RetainFor = 90 days).");
 assert(!privacyText.includes("come with a future release"), "/privacy/problem-reports/ must not call the controls future (ChairLift v0.15.0, snosi#1227: reporting is released).");
 assert(privacy.includes("https://github.com/frostyard/snosi/blob/main/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md"), "/privacy/problem-reports/ must link snosi ADR-0030 (snosi#1227: Floe sends reports).");
 for (const sentence of [
