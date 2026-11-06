@@ -135,7 +135,7 @@ Each row says what happened and when. Expand a row for a hint, the details,
 and the Copy details and Dismiss buttons. A dismissed problem shows again if
 it happens again. The page also lists crashes of your own programs and
 problems that Frostyard apps recorded in the last 90 days. ChairLift sends
-nothing.
+nothing until you turn reporting on.
 
 To read the system list in a terminal:
 
@@ -153,6 +153,22 @@ than v0.14.0: let it update, then reboot. On an image with ChairLift v0.14.0
 or later, ChairLift hides the page when `/etc/chairlift/config.yml`
 turns off all 3 of its groups, or when it shows a configuration error. Fix
 the file and restart ChairLift.
+
+### Send problem reports
+
+From ChairLift v0.15.0, the Problems page has a **Send problem reports**
+switch. It is off until you turn it on, and each user decides for themselves.
+*Ask each time* shows you each report before it goes. *Send automatically*
+sends without asking. *Sent reports* lists the 50 newest reports
+it sent. Crash records stay
+on this computer. The image gets ChairLift v0.15.0 with the next image release.
+The first-run setup can also show a Reporting step, with the switch off.
+
+If there is no switch, the image may carry a ChairLift older than v0.15.0
+(let it update, then reboot), or `/etc/chairlift/config.yml` turns off `problems_reporting_group`.
+Read what a report holds and how to have one deleted in
+[Problem reports](/privacy/problem-reports/). Read how ChairLift decides what
+to send in [ChairLift ADR-0015](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/adr/0015-problems-page-and-opt-in-reporting.md).
 
 A crash keeps no core file. The journal keeps the crash entry. It has a stack
 trace only when the core is 1 GiB or smaller. To keep core files while you
@@ -308,3 +324,12 @@ commit [`54124831081796ffdadd4e10644fdc20719bf723`](https://github.com/frostyard
 - [ChairLift `config.yml`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/config.yml)
 - [ChairLift `CONFIG.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/CONFIG.md)
 - [ChairLift `internal/views/pageview/problems.go`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/internal/views/pageview/problems.go)
+
+The reporting part was reviewed 2026-11-05 against ChairLift release v0.15.0
+commit [`e3e434a2843512c99538c08070bafd1c965eb7f8`](https://github.com/frostyard/chairlift/tree/e3e434a2843512c99538c08070bafd1c965eb7f8)
+([release](https://github.com/frostyard/chairlift/releases/tag/v0.15.0)).
+
+- [ChairLift `docs/adr/0015-problems-page-and-opt-in-reporting.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/adr/0015-problems-page-and-opt-in-reporting.md)
+- [ChairLift `docs/specs/problem-reporting.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/specs/problem-reporting.md)
+- [ChairLift `internal/views/pageview/reporting.go`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/internal/views/pageview/reporting.go)
+- [ChairLift `internal/window/firstrun_reporting.go`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/internal/window/firstrun_reporting.go)
