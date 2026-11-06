@@ -173,9 +173,10 @@ snosi-health reporting status
 ```
 
 A timer sends once a day, at most 20 problems a day and 1 count a week. Crashes
-are never sent. `/var/lib/snosi-health/sent.jsonl` lists the reports sent in
-the last 90 days, each with its `report_id`. After each send, it drops the
-entries older than 90 days. On an older image, `snosi-health reporting status` prints the
+are never sent. `/var/lib/snosi-health/sent.jsonl` lists the sent reports,
+each with its `report_id`. A send run that gets through all its reports drops
+the entries older than 90 days. A run that stops early drops nothing, so an
+older entry can stay until the next complete run. On an older image, `snosi-health reporting status` prints the
 usage text: let it update, then reboot.
 
 Read what a report holds and how to have one deleted in
