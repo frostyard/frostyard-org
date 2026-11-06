@@ -269,6 +269,15 @@ test("a sysext row without feature_version fails", () => {
   assert.match(errors[0], /feature_version/);
 });
 
+test("a held version item without its newest-checked prefix fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace("The newest version that the job checked: the app version", "The app version");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /The newest version that the job checked/);
+});
+
 test("a held version item without its detail fails", () => {
   const fixture = publicBugReportsHtml();
   const html = fixture.replace("the app version for an app problem, else each image with its newest image version", "");

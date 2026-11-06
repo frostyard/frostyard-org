@@ -51,7 +51,7 @@ const PUBLIC_BUG_REPORT_NEVER_SAYS = [
 // The held items that the "holds" part must state.
 const PUBLIC_BUG_REPORT_HOLDS_SAYS = [
   "The kind and the class of the problem",
-  "the app version for an app problem, else each image with its newest image version",
+  "The newest version that the job checked: the app version for an app problem, else each image with its newest image version.",
   "Never a list of versions",
   "A problem key: a short hash of the published values only",
   "The numbers of the matching issues in our GlitchTip",
