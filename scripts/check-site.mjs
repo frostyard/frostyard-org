@@ -1530,7 +1530,7 @@ assert(privacyText.includes("When crash reports start, a crash report will name 
 // times, kept tag values, counts after deletion and KV totals are stated.
 assert(!privacyText.includes("no released Frostyard software sends reports"), "/privacy/problem-reports/ must not say that no software sends reports (ChairLift v0.15.0, snosi#1227: reporting is released).");
 assert(privacyText.includes("list shows the 50 newest reports it sent") && !privacyText.includes("list shows each report"), "/privacy/problem-reports/ must say that the Sent reports list shows only the 50 newest reports (cross-review of frostyard-org#77: pageview.MaxSentRows = 50).");
-assert(privacyText.includes("up to 500 reports from the last 90 days"), "/privacy/problem-reports/ must say how many report_ids ChairLift keeps (ChairLift reporting.MaxEntries = 500, RetainFor = 90 days).");
+assert(privacyText.includes("ChairLift keeps the report_id of up to 500 sent reports") && !privacyText.includes("reports from the last 90 days"), "/privacy/problem-reports/ must say that ChairLift keeps up to 500 report_ids, with no rolling 90-day claim: its log trims 90 days before the newest entry, not before today (ChairLift reporting.MaxEntries, State.trim; re-review 1 of frostyard-org#77).");
 assert(!privacyText.includes("come with a future release"), "/privacy/problem-reports/ must not call the controls future (ChairLift v0.15.0, snosi#1227: reporting is released).");
 assert(privacy.includes("https://github.com/frostyard/snosi/blob/main/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md"), "/privacy/problem-reports/ must link snosi ADR-0030 (snosi#1227: Floe sends reports).");
 for (const sentence of [
