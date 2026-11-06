@@ -1,17 +1,18 @@
 # Repository configuration for the frostyard mill (spec-to-PR harness).
 
 [gates]
-# The repository has no formatter, linter, or unit-test command. Astro's
-# diagnostics provide static analysis. The validation build deliberately uses
+# The repository has no formatter or linter; `npm test` runs the unit tests.
+# Astro's diagnostics provide static analysis. The validation build deliberately uses
 # the committed extension snapshot, avoiding a network-dependent catalog
 # refresh and timestamp rewrite while compiling the Cloudflare Worker bundle.
 chunk = [
   "npm run check",
   "npm run build:check",
 ]
-# No hosted CI workflow exists. This single target runs every available local
-# health check in the same order and is the pre-ship gate.
-deep = ["npm run ci"]
+# `make ci` is the pre-ship gate. It runs every available local health check
+# in the same order, and CI (.github/workflows/ci.yml) runs the same target
+# (frostyard/core ADR-0022).
+deep = ["make ci"]
 
 [context]
 docs = ["AGENTS.md", "README.md"]

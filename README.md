@@ -19,9 +19,11 @@ network refresh. `npm run check` runs Astro diagnostics, and
 `npm run check:site` checks the built routes, docs navigation, source links, and
 existing route invariants. `npm test` runs the unit tests in `scripts/test/`.
 `npm run ci` runs the tests, the prose check, and the three checks above, in order.
-The GitHub Actions workflow `.github/workflows/ci.yml` runs `npm run ci` on each
-pull request and each push to `main`. The prose check fails when it finds no docs
-pages, and the site check fails when `dist/client/` has no built pages.
+Install the pinned Node release with `mise install`. `make verify` runs the
+template gate and then `npm run ci`. The GitHub Actions workflow
+`.github/workflows/ci.yml` runs `make ci` on each pull request and each push to
+`main`. The prose check fails when it finds no docs pages, and the site check
+fails when `dist/client/` has no built pages.
 
 The build refreshes the extension catalog from `https://repository.frostyard.org/ext/index`.
 For each extension, it takes the highest version in that extension's `SHA256SUMS`,
