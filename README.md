@@ -1,3 +1,4 @@
+<!-- readme-kind: website -->
 # frostyard.org
 
 This repository is the source of [frostyard.org](https://frostyard.org), the
@@ -6,6 +7,10 @@ with [snosi](https://github.com/frostyard/snosi), system extensions that add
 software to them, and the tools and apps that run on them. The site is an
 [Astro](https://astro.build) site with [Starlight](https://starlight.astro.build)
 docs, served by Cloudflare Workers.
+
+**Status:** in production.
+
+**Documentation:** [frostyard.org](https://frostyard.org)
 
 ## What the site covers
 
@@ -22,7 +27,14 @@ docs, served by Cloudflare Workers.
 - [Problem report statistics](https://frostyard.org/stats/) and the
   [problem report privacy page](https://frostyard.org/privacy/problem-reports/).
 
-## Quick start
+## Deploy
+
+Cloudflare Workers Builds builds `main` and deploys it to frostyard.org after
+each merge. A pull request gets a preview URL in its `Workers Builds:
+frostyard-org` check. [docs/development.md](docs/development.md#ci-and-deploy)
+describes CI and the deploy.
+
+## Develop
 
 You need [mise](https://mise.jdx.dev) and `make`.
 
@@ -35,12 +47,6 @@ make ci           # the full gate: tests, checks and an offline build
 
 [docs/development.md](docs/development.md) explains each command, the
 generated data files and the checks.
-
-## Deploy
-
-Cloudflare Workers Builds builds `main` and deploys it to frostyard.org after
-each merge. A pull request gets a preview URL in its `Workers Builds:
-frostyard-org` check.
 
 ## Where to go next
 
