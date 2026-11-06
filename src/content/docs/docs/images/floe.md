@@ -133,7 +133,7 @@ Any user can run it. Each line shows when the problem was last seen, its
 kind, a short summary, how many times it was seen, and whether the record is
 a valid problem report. With no problems, it prints `No problems recorded`
 and the time of the last check. Before the first check, it prints
-`No problem record yet`. `snosi-health` sends nothing.
+`No problem record yet`. `snosi-health --list` sends nothing.
 
 To check now instead of waiting for the next run:
 
@@ -146,6 +146,40 @@ snosi-health --list
 `sudo` group can read the full unit names and up to 5 journal messages for each
 problem in `/var/lib/snosi-health/details.json`. If the command is missing,
 the image is older than this feature: let it update, then reboot.
+
+### Send problem reports
+
+Floe can send problem reports. Reporting is off until you turn it on. Each
+login shows `Problem reporting is off. See snosi-health reporting --help.`
+until you choose.
+
+Any user can print the exact reports. This sends nothing:
+
+```bash
+snosi-health send --dry-run
+```
+
+Turn reporting on or off:
+
+```bash
+sudo snosi-health reporting on
+sudo snosi-health reporting off
+```
+
+Any user can see the choice:
+
+```bash
+snosi-health reporting status
+```
+
+A timer sends once a day, at most 20 problems a day and 1 count a week. Crashes
+are never sent. `/var/lib/snosi-health/sent.jsonl` lists each sent report with
+its `report_id`. On an older image, `snosi-health reporting status` prints the
+usage text: let it update, then reboot.
+
+Read what a report holds and how to have one deleted in
+[Problem reports](/privacy/problem-reports/). Read how Floe decides to send in
+[snosi ADR-0030](https://github.com/frostyard/snosi/blob/a1bf8d2547ecdfe78941e910bf604a30bffe6945/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md).
 
 A crash keeps no core file. The journal keeps the crash entry. It has a stack
 trace only when the core is 1 GiB or smaller. To keep core files while you
@@ -324,3 +358,9 @@ The Problems section was reviewed 2026-11-05 against snosi commit
 - [`shared/bootc-secure/mkosi.conf`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/shared/bootc-secure/mkosi.conf)
 - [`shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf`](https://github.com/frostyard/snosi/blob/b6e5e0769c605b920686c12bc7f0962caac10586/shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf)
 - systemd v262 [`man/coredump.conf.xml`](https://github.com/systemd/systemd/blob/v262/man/coredump.conf.xml) (drop-in order, `ProcessSizeMax=`, reloading `systemd-coredumpd.service`)
+
+The reporting part was reviewed 2026-11-05 against snosi commit [`a1bf8d2547ecdfe78941e910bf604a30bffe6945`](https://github.com/frostyard/snosi/tree/a1bf8d2547ecdfe78941e910bf604a30bffe6945) ([snosi#1227](https://github.com/frostyard/snosi/pull/1227)).
+
+- [`docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md`](https://github.com/frostyard/snosi/blob/a1bf8d2547ecdfe78941e910bf604a30bffe6945/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md)
+- [`mkosi.images/base/mkosi.extra/usr/bin/snosi-health`](https://github.com/frostyard/snosi/blob/a1bf8d2547ecdfe78941e910bf604a30bffe6945/mkosi.images/base/mkosi.extra/usr/bin/snosi-health)
+- [`shared/snosi-report/tree/usr/libexec/snosi-health-report`](https://github.com/frostyard/snosi/blob/a1bf8d2547ecdfe78941e910bf604a30bffe6945/shared/snosi-report/tree/usr/libexec/snosi-health-report)

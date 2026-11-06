@@ -512,7 +512,15 @@ for (const [route, html, text, desktop] of [
     assert(html.includes(`${problemsSnosi}/${source}`), `${route} must cite snosi ${source} at the snosi-health pin.`);
   }
   if (desktop) {
-    assert(text.includes("select Problems") && text.includes("ChairLift sends nothing"), `${route} must describe the local ChairLift Problems page.`);
+    assert(text.includes("select Problems") && text.includes("ChairLift sends nothing until you turn reporting on"), `${route} must describe the ChairLift Problems page, which sends nothing until you turn reporting on (ChairLift v0.15.0: reporting is released).`);
+    assert(text.includes("Send problem reports") && text.includes("a ChairLift older than v0.15.0"), `${route} must describe the Send problem reports switch and the missing-switch cause (ChairLift v0.15.0: reporting is released).`);
+    assert(html.includes("https://github.com/frostyard/chairlift/releases/tag/v0.15.0"), `${route} must link the ChairLift v0.15.0 release (ChairLift v0.15.0: reporting is released).`);
+    assert(html.includes("https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/adr/0015-problems-page-and-opt-in-reporting.md"), `${route} must link ChairLift ADR-0015 at the v0.15.0 commit (ChairLift v0.15.0: reporting is released).`);
+    if (route === "/docs/images/sundog") {
+      assert(!text.includes("Reporting step"), `${route} must not mention the first-run Reporting step: Sundog does not start the first-run setup (snosi ADR-0028).`);
+    } else {
+      assert(text.includes("Reporting step"), `${route} must mention the first-run Reporting step (ChairLift v0.15.0, snosi ADR-0028).`);
+    }
     assert(text.includes("a ChairLift older than v0.14.0") && text.includes("/etc/chairlift/config.yml"), `${route} must name both causes of a missing Problems page: a ChairLift older than v0.14.0, or a ChairLift configuration that hides it.`);
     assert(text.includes("The page comes with ChairLift v0.14.0"), `${route} must say which ChairLift release has the Problems page (owner review of frostyard-org#75).`);
     assert(html.includes("https://github.com/frostyard/chairlift/releases/tag/v0.14.0"), `${route} must link the ChairLift v0.14.0 release that ships the Problems page.`);
@@ -521,6 +529,11 @@ for (const [route, html, text, desktop] of [
     }
   } else {
     assert(!text.includes("select Problems"), `${route} must not send Floe users to ChairLift, which Floe does not ship.`);
+    for (const phrase of ["sudo snosi-health reporting on", "snosi-health reporting status", "snosi-health send --dry-run", "/var/lib/snosi-health/sent.jsonl", "Send problem reports"]) {
+      assert(text.includes(phrase), `${route} must name "${phrase}" (snosi#1227: Floe sends reports after an administrator agrees).`);
+    }
+    assert(html.includes("https://github.com/frostyard/snosi/blob/a1bf8d2547ecdfe78941e910bf604a30bffe6945/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md"), `${route} must link snosi ADR-0030 at commit a1bf8d25 (snosi#1227).`);
+    assert(!text.includes("snosi-health sends nothing."), `${route} must not say snosi-health sends nothing: only --list sends nothing (snosi#1227).`);
   }
 }
 
@@ -898,7 +911,8 @@ for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog
   assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
 }
 assert(chairliftText.includes("This guide follows ChairLift v0.13.0"), "/docs/tools/chairlift must follow ChairLift v0.13.0.");
-assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("ChairLift sends nothing"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, in the page table (owner review of frostyard-org#75).");
+assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("From v0.15.0, you can also send problem reports"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, and say that v0.15.0 sends reports after you turn reporting on (owner review of frostyard-org#75; ChairLift v0.15.0: reporting is released).");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.15.0"), "/docs/tools/chairlift must link the ChairLift v0.15.0 release (ChairLift v0.15.0: reporting is released).");
 assert(chairlift.indexOf("<td>Problems</td>") < chairlift.indexOf("<td>Help</td>"), "/docs/tools/chairlift must list Problems before Help, as the sidebar does.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md"), "/docs/tools/chairlift must cite the Problems page spec at its pin.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.14.0") && chairliftText.includes("ChairLift release v0.14.0 commit"), "/docs/tools/chairlift must cite the v0.14.0 release for the Problems page.");
@@ -1510,14 +1524,15 @@ assert(privacyText.includes("90 days"), "/privacy/problem-reports/ must state ho
 assert(!privacyText.includes("No file path, file name"), "/privacy/problem-reports/ must not promise that no file name is sent: crash reports send the program name.");
 assert(privacyText.includes("When crash reports start, a crash report will name only the program that crashed and its package.") && privacyText.includes("A Rust app problem names a source file of Frostyard's own code."), "/privacy/problem-reports/ must name the program and source-file exceptions under what is never sent.");
 // Owner reviews of frostyard-org#74 (Murbella, Duncan): the ChairLift and Floe
-// controls are future (T857 t19, t20); the preview is only for "Ask each time";
+// controls are released (ChairLift v0.15.0, snosi#1227); the preview is only for "Ask each time";
 // counts are per opted-in user; Flatpak crashes stay local; stored arrival
 // times, kept tag values, counts after deletion and KV totals are stated.
-assert(!privacyText.includes("go to the Problems page, and use"), "/privacy/problem-reports/ must not describe the unbuilt ChairLift switch in the present tense.");
+assert(!privacyText.includes("no released Frostyard software sends reports"), "/privacy/problem-reports/ must not say that no software sends reports (ChairLift v0.15.0, snosi#1227: reporting is released).");
+assert(!privacyText.includes("come with a future release"), "/privacy/problem-reports/ must not call the controls future (ChairLift v0.15.0, snosi#1227: reporting is released).");
+assert(privacy.includes("https://github.com/frostyard/snosi/blob/main/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md"), "/privacy/problem-reports/ must link snosi ADR-0030 (snosi#1227: Floe sends reports).");
 for (const sentence of [
-  "These steps work when the release that sends reports ships",
-  "ChairLift will show you the exact report before it sends it",
-  "it will send without asking",
+  "ChairLift shows you the exact report before it sends it",
+  "it sends without asking",
   "Counts are approximate",
   "a crash of a Flatpak app stays on your computer",
   "The intake and GlitchTip record the time a report arrives",
