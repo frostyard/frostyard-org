@@ -257,8 +257,8 @@ export function checkPublicBugReports(html) {
   }
 
   // The cutoff: exactly 1 real calendar date, and the words that say how to
-  // read it. The triage job of frostyard/problem-intake reads this date from
-  // the live page.
+  // read it. frostyard/problem-intake copies this date from the live page into
+  // triage/config.json (first_seen_cutoff).
   const cutoff = partFrom(html, "public-bug-reports-cutoff", /id="public-bug-reports-deletion"/);
   const times = [...cutoff.matchAll(/<time\b[^>]*\bdatetime="([^"]*)"/g)].map((match) => match[1]);
   if (times.length !== 1) errors.push(`the public bug reports cutoff part has ${times.length} time elements with a datetime: it must have exactly 1.`);

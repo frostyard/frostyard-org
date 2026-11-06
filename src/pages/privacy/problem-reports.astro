@@ -8,9 +8,10 @@ const intake = "https://github.com/frostyard/problem-intake/blob/main";
 // ADR-0074 at the commit that merged it, so this page cites the text it states.
 const adr0074 = "https://github.com/frostyard/core/blob/ed1fcbde60c63fcacd39d0e0db725f0b40e56a88/docs/adr/0074-publish-verified-fault-records-as-public-issues.md";
 const issueSearch = "https://github.com/search?q=org%3Afrostyard+label%3Aproblem-report&type=issues";
-// The publication cutoff. The triage job of frostyard/problem-intake reads this
-// date from the live page and files only faults first seen on or after 00:00 UTC
-// of it (ADR-0074). Change it only together with that job's configuration.
+// The publication cutoff (ADR-0074): the triage job files only faults first seen
+// on or after 00:00 UTC of this date. frostyard/problem-intake copies this date
+// into triage/config.json (first_seen_cutoff) from the live page. Change it only
+// together with that file, and never to a day before the page goes live.
 const cutoffIso = "2026-11-20";
 const cutoffText = new Date(`${cutoffIso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 const publicFields: Array<[string, string]> = [
