@@ -45,20 +45,55 @@ function cellsOf(line) {
   return line.replace(/^\|/, "").replace(/\|\s*$/, "").split("|").map((cell) => cell.trim());
 }
 
-// The rows of the section's table, and the errors in them. The first "|" line is
-// the header, and the line below it is the separator.
+const separatorCell = /^:?-+:?$/;
+
+// The fence marker of a line, or null. A fence closes on the same character,
+// with at least as many of them.
+function fenceRun(line) {
+  const match = line.trimStart().match(/^(`{3,}|~{3,})/);
+  return match ? match[1] : null;
+}
+
+// The rows of the first real table in the section, and the errors in them. A
+// table is a "|" line (the header) followed by a separator line. Fenced code
+// blocks are ignored, and so is everything after the table's last row.
 export function inventoryTable(text) {
-  const rows = [];
-  const errors = [];
-  let headerSeen = false;
+  const outside = [];
+  let fence = null;
   for (const line of inventorySection(text)) {
-    if (!line.startsWith("|")) continue;
-    const cells = cellsOf(line);
-    if (!headerSeen) {
-      headerSeen = true;
+    // A fence line, and every line inside a fence, becomes an empty line: it
+    // ends a table, as a fence does in rendered Markdown.
+    const run = fenceRun(line);
+    if (fence) {
+      if (run && run[0] === fence[0] && run.length >= fence.length) fence = null;
+      outside.push("");
       continue;
     }
-    if (cells.every((cell) => /^:?-+:?$/.test(cell))) continue;
+    if (run) {
+      fence = run;
+      outside.push("");
+      continue;
+    }
+    outside.push(line);
+  }
+
+  let header = -1;
+  for (let index = 0; index + 1 < outside.length; index += 1) {
+    const line = outside[index];
+    const next = outside[index + 1];
+    if (!line.startsWith("|") || !next.startsWith("|")) continue;
+    if (cellsOf(next).every((cell) => separatorCell.test(cell))) {
+      header = index;
+      break;
+    }
+  }
+  if (header === -1) return { rows: [], errors: ["no Page inventory table"] };
+
+  const rows = [];
+  const errors = [];
+  for (const line of outside.slice(header + 2)) {
+    if (!line.startsWith("|")) break;
+    const cells = cellsOf(line);
     const path = (cells[0] ?? "").match(singleBackticked)?.[1];
     const route = (cells[1] ?? "").match(singleBackticked)?.[1];
     if (path === undefined || !isPagePath(path)) {
@@ -157,4 +192,73 @@ test("only the table rows count, and they must be well formed", () => {
   ].join("\n");
   assert.equal(inventoryTable(broken).errors.length, 2, "a row with no page path or no route is an error");
   assert.deepEqual(inventoryTable(broken).rows, []);
+});
+
+test("the parser reads only the first real table outside fences", () => {
+  const files = ["src/pages/index.astro", "src/content/docs/docs/get-software.md"];
+  const header = ["| File | Route | Covers |", "| --- | --- | --- |"];
+  const row = (path, route) => `| \`${path}\` | \`${route}\` | A page. |`;
+
+  // The missing row sits in a fenced block right after the real table.
+  const fencedAfter = [
+    sectionHeading,
+    "",
+    ...header,
+    row("src/pages/index.astro", "/"),
+    "",
+    "```text",
+    row("src/content/docs/docs/get-software.md", "/docs/get-software/"),
+    "```",
+  ].join("\n");
+  assert.deepEqual(inventoryTable(fencedAfter).rows.map((entry) => entry.path), ["src/pages/index.astro"]);
+  assert.deepEqual(
+    filesMissingFromInventory(files, fencedAfter),
+    ["src/content/docs/docs/get-software.md"],
+    "a row inside a fenced block must not hide a missing page",
+  );
+
+  // A second table after a blank line is not part of the first table.
+  const secondTable = [
+    sectionHeading,
+    "",
+    ...header,
+    row("src/pages/index.astro", "/"),
+    "",
+    ...header,
+    row("src/content/docs/docs/get-software.md", "/docs/get-software/"),
+  ].join("\n");
+  assert.deepEqual(inventoryTable(secondTable).rows.map((entry) => entry.path), ["src/pages/index.astro"]);
+  assert.deepEqual(filesMissingFromInventory(files, secondTable), ["src/content/docs/docs/get-software.md"]);
+
+  // A fenced table before the real table is not the table.
+  const fencedBefore = [
+    sectionHeading,
+    "",
+    "~~~",
+    ...header,
+    row("src/content/docs/docs/get-software.md", "/docs/get-software/"),
+    "~~~",
+    ...header,
+    row("src/pages/index.astro", "/"),
+  ].join("\n");
+  assert.deepEqual(inventoryTable(fencedBefore).rows.map((entry) => entry.path), ["src/pages/index.astro"]);
+
+  // A fence right after the last row ends the table, also with no blank line,
+  // and a "|" line after the closing fence does not join it.
+  const fenceThenRow = [
+    sectionHeading,
+    "",
+    ...header,
+    row("src/pages/index.astro", "/"),
+    "```",
+    "text",
+    "```",
+    row("src/content/docs/docs/get-software.md", "/docs/get-software/"),
+  ].join("\n");
+  assert.deepEqual(inventoryTable(fenceThenRow).rows.map((entry) => entry.path), ["src/pages/index.astro"]);
+
+  // A fenced table and no real table is an error.
+  const fencedOnly = [sectionHeading, "", "```", ...header, row("src/pages/index.astro", "/"), "```"].join("\n");
+  assert.deepEqual(inventoryTable(fencedOnly), { rows: [], errors: ["no Page inventory table"] });
+  assert.deepEqual(inventoryTable(`${sectionHeading}\n\nSee \`src/pages/index.astro\`.`).errors, ["no Page inventory table"]);
 });
