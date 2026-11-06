@@ -96,7 +96,9 @@ field or enum value is a new version in a new file.
   touches one gets the label `risk:high` from
   `.github/workflows/risk-paths.yml` and declares risk tier 3 in the PR
   template. Add a path when you add a file of that kind (deploy, CI, a
-  published contract, a privacy promise).
+  published contract, a privacy promise). Each `why` starts with a category from
+  core's risk-paths spec (section B); `test/risk-paths-categories.test.mjs`
+  checks it.
 - Vendored files: `scripts/lib/risk-paths.mjs` and
   `scripts/check-corrections.mjs` are copies from frostyard/core, and
   `scripts/check-template.mjs` and `test/check-template.test.mjs` are copies

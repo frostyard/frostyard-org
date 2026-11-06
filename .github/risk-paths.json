@@ -27,39 +27,39 @@
     },
     {
       "glob": "mise.toml",
-      "why": "tool pins: the Node release that CI and the gate run"
+      "why": "update verification: the Node pin that mise installs locally and CI installs from"
     },
     {
       "glob": "mise.lock",
-      "why": "tool pins: the checksums of the pinned tools"
+      "why": "update verification: the checksums behind the Node pin; a lock edit changes what the gates run"
     },
     {
       "glob": "wrangler.jsonc",
-      "why": "deploy: the Cloudflare Worker configuration that Workers Builds deploys"
+      "why": "publication: the Cloudflare Worker configuration that Workers Builds deploys"
     },
     {
       "glob": "astro.config.mjs",
-      "why": "deploy: the Cloudflare adapter and the build output"
+      "why": "publication: the Cloudflare adapter and the build output that Workers Builds deploys"
     },
     {
       "glob": "package.json",
-      "why": "deploy: the build scripts (prebuild fetches) that Workers Builds runs"
+      "why": "publication: the build scripts (prebuild fetches) that Workers Builds runs"
     },
     {
       "glob": "package-lock.json",
-      "why": "supply chain: the locked dependencies of the deployed build"
+      "why": "publication: the locked dependencies of the deployed build"
     },
     {
       "glob": "public/schemas/**",
-      "why": "contract: the published problem report schema; version 1 is immutable"
+      "why": "publication: the published problem report schema; version 1 is immutable"
     },
     {
       "glob": "src/data/problem-report-schema-pin.json",
-      "why": "contract: the pin of the published schema copy"
+      "why": "publication: the pin of the published schema copy"
     },
     {
       "glob": "src/pages/privacy/**",
-      "why": "privacy: the public promise about problem report data"
+      "why": "publication: the public privacy promise about problem report data"
     }
   ]
 }
