@@ -23,7 +23,7 @@ const PUBLIC_BUG_REPORT_FIELDS = [
   { kind: "unit_failed", fields: ["unit", "result"], says: [] },
   { kind: "update_stage_failed", fields: ["error_class", "target_version"], says: [] },
   { kind: "booted_older_image", fields: ["how", "newer_version"], says: [] },
-  { kind: "sysext_update_failed", fields: ["feature", "outcome", "error_class", "version"], says: [] },
+  { kind: "sysext_update_failed", fields: ["feature", "outcome", "error_class", "version", "feature_version"], says: [] },
   { kind: "tpm_unlock", fields: ["outcome", "tpm_rc"], says: ["the variant"] },
   { kind: "integrity_error", fields: ["subsystem"], says: ["the variant"] },
 ];
@@ -45,14 +45,17 @@ const PUBLIC_BUG_REPORT_NEVER_SAYS = [
   "a user name",
   "a path on your computer",
   "free text",
+  "outside the 2 kinds above",
 ];
 
 // The held items that the "holds" part must state.
 const PUBLIC_BUG_REPORT_HOLDS_SAYS = [
   "The kind and the class of the problem",
+  "the app version for an app problem, else each image with its newest image version",
   "Never a list of versions",
   "A problem key: a short hash of the published values only",
-  "not report IDs",
+  "The numbers of the matching issues in our GlitchTip",
+  "These are GlitchTip's own issue numbers, not report IDs",
   "Later comments from the job hold only fixed text, a marker, and the fix releases and versions that it checked",
 ];
 

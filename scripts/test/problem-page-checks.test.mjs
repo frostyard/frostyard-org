@@ -52,7 +52,7 @@ function publicBugReportsHtml() {
     ["unit_failed", "<code>unit</code>, <code>result</code>"],
     ["update_stage_failed", "<code>error_class</code>, <code>target_version</code>"],
     ["booted_older_image", "<code>how</code>, <code>newer_version</code>"],
-    ["sysext_update_failed", "<code>feature</code>, <code>outcome</code>, <code>error_class</code> if the report has it, and the newest checked extension <code>version</code> if there is one"],
+    ["sysext_update_failed", "<code>feature</code>, <code>outcome</code>, <code>error_class</code> if the report has it, and the newest checked extension <code>version</code>, shown as <code>feature_version</code>, if there is one"],
     ["tpm_unlock", "<code>outcome</code>, <code>tpm_rc</code>, the variant"],
     ["integrity_error", "<code>subsystem</code>, the variant"],
   ]
@@ -66,7 +66,7 @@ function publicBugReportsHtml() {
 <h3 id="public-bug-reports-holds">What an issue holds</h3>
 <ul>
 <li>The kind and the class of the problem.</li>
-<li>The newest version that the job checked. Never a list of versions.</li>
+<li>The newest version that the job checked: the app version for an app problem, else each image with its newest image version. Never a list of versions.</li>
 <li>The fields of its kind in the table below, and no other field.</li>
 <li>A problem key: a short hash of the published values only.</li>
 <li>The numbers of the matching issues in our GlitchTip. These are GlitchTip's own issue numbers, not report IDs.</li>
@@ -239,6 +239,107 @@ test("a never item that is missing fails", () => {
   const errors = checkPublicBugReports(html);
   assert.equal(errors.length, 1);
   assert.match(errors[0], /retries/);
+});
+
+test("a missing kind row fails and names the kind", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace("<tr><td><code>unit_failed</code></td><td><code>unit</code>, <code>result</code></td></tr>", "");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /unit_failed/);
+});
+
+test("a tpm_unlock row without the variant fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace("<code>tpm_rc</code>, the variant</td>", "<code>tpm_rc</code></td>");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /tpm_unlock/);
+  assert.match(errors[0], /the variant/);
+});
+
+test("a sysext row without feature_version fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace(", shown as <code>feature_version</code>", "");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /feature_version/);
+});
+
+test("a held version item without its detail fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace("the app version for an app problem, else each image with its newest image version", "");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /the app version for an app problem/);
+});
+
+test("a held GlitchTip item without its first part fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace("The numbers of the matching issues in our GlitchTip", "");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /The numbers of the matching issues/);
+});
+
+test("a held GlitchTip item without its limit fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace("These are GlitchTip's own issue numbers, not report IDs", "");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /not report IDs/);
+});
+
+test("a never held line that is missing fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace("a host name, ", "");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /a host name/);
+});
+
+test("a never held limit that is missing fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace(" outside the 2 kinds above", "");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /outside the 2 kinds above/);
+});
+
+test("a page without the triage link fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace('<a href="https://github.com/frostyard/problem-intake/blob/main/docs/specs/triage.md">The triage job</a>', "The triage job");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /triage/);
+});
+
+test("a cutoff without the UTC time fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace(", 00:00 UTC", "");
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /00:00 UTC/);
+});
+
+test("a cutoff with 2 time elements fails", () => {
+  const fixture = publicBugReportsHtml();
+  const html = fixture.replace("</time>, 00:00 UTC", '</time> <time datetime="2026-11-21"></time>, 00:00 UTC');
+  assert.notEqual(html, fixture);
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /2 time elements/);
+  assert.equal(publicBugReportsCutoff(html), null);
 });
 
 test("a missing sentence of the section fails", () => {
