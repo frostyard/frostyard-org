@@ -2,6 +2,7 @@
 
 ## Development
 
+- Install the pinned tools (Node) with `mise install`.
 - Install the locked dependencies with `npm ci`.
 - Run the local development server with `npm run dev`.
 - Run Astro diagnostics with `npm run check`.
@@ -9,6 +10,10 @@
 - Build from the committed catalog snapshot with `npm run build:check`.
 - Run the unit tests in `scripts/test/` with `npm test`.
 - Run the complete local CI gate with `npm run ci`.
+- Run the repository gate with `make verify` (the template gate, then
+  `npm run ci`). `make check` is the same. `make ci BASE=origin/main` also
+  checks that `.memory/corrections.jsonl` is append-only. Run
+  `make ci BASE=origin/main` before you call a change complete.
 
 This repository has no separate formatter or linter.
 
@@ -54,10 +59,12 @@ field or enum value is a new version in a new file.
   deploys to production. A PR gets a preview URL in its
   `Workers Builds: frostyard-org` check.
 - GitHub Actions only tests. `.github/workflows/ci.yml` runs `npm ci` and
-  `npm run ci` on each PR and each push to `main`, as the check `ci`. It
-  builds from the committed catalog snapshot (`build:check` has no prebuild
-  step) and fails if `src/data/extensions.json` or
+  `make ci` (with the PR base) on each PR and each push to `main`, as the
+  check `ci`. It builds from the committed catalog snapshot (`build:check` has
+  no prebuild step) and fails if `src/data/extensions.json` or
   `src/data/problem-stats.json` changes. It does not deploy.
+- `.github/dependabot.yml` updates the actions and the npm dependencies
+  weekly.
 - One exception to the rule above: `.github/workflows/stats-rebuild.yml` posts
   to a Cloudflare Workers Builds deploy hook each Monday at 05:41 UTC, after
   the intake Worker's 03:23 UTC weekly aggregation, so `/stats/` shows the new
@@ -71,6 +78,32 @@ field or enum value is a new version in a new file.
   package. The build reads the published extension index at
   `https://repository.frostyard.org/ext/index` as display data (see
   "Generated files"). It is not a pinned dependency.
+
+## Agent instruction surface
+
+- `AGENTS.md` is the 1 canonical instruction file. `CLAUDE.md`, `GEMINI.md`,
+  `.cursorrules` and `.github/copilot-instructions.md` are relative symlinks to
+  it. `.agents` links to `docs/agents`, and `.claude/skills` links to
+  `.agents/skills`. Edit only `AGENTS.md` and `docs/agents/skills/`.
+  `make verify` checks the links.
+- `docs/README.md` links every Markdown file under `docs/`. A new skill gets a
+  line there, or `make verify` fails.
+- Blocker to guard: when a review finds a blocking point, the PR that fixes it
+  adds a guard (a test that fails without the fix, or an `AGENTS.md` rule when
+  no test can catch it) and appends 1 line to `.memory/corrections.jsonl` (see
+  `.memory/README.md`). The file is append-only.
+- Risk paths: `.github/risk-paths.json` lists the high-risk paths. A PR that
+  touches one gets the label `risk:high` from
+  `.github/workflows/risk-paths.yml` and declares risk tier 3 in the PR
+  template. Add a path when you add a file of that kind (deploy, CI, a
+  published contract, a privacy promise). Each `why` starts with a category from
+  core's risk-paths spec (section B); `test/risk-paths-categories.test.mjs`
+  checks it.
+- Vendored files: `scripts/lib/risk-paths.mjs` and
+  `scripts/check-corrections.mjs` are copies from frostyard/core, and
+  `scripts/check-template.mjs` and `test/check-template.test.mjs` are copies
+  from bketelsen/agentic-template. Never edit them by hand; `make verify`
+  checks the hashes of the 2 core copies.
 
 ## Learned agent skills
 

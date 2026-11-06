@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "paths": [
+    {
+      "glob": ".github/risk-paths.json",
+      "why": "governance: the high-risk path list"
+    },
+    {
+      "glob": ".github/workflows/**",
+      "why": "governance: CI, the risk-paths caller, the weekly deploy hook (stats-rebuild.yml) and token permissions"
+    },
+    {
+      "glob": "Makefile",
+      "why": "governance: the verify gate"
+    },
+    {
+      "glob": "scripts/check-template.mjs",
+      "why": "governance: the template verification gate"
+    },
+    {
+      "glob": "scripts/check-corrections.mjs",
+      "why": "governance: the corrections validation gate"
+    },
+    {
+      "glob": "scripts/lib/risk-paths.mjs",
+      "why": "governance: the vendored risk-path validator and matcher"
+    },
+    {
+      "glob": "mise.toml",
+      "why": "update verification: the Node pin that mise installs locally and CI installs from"
+    },
+    {
+      "glob": "mise.lock",
+      "why": "update verification: the checksums behind the Node pin; a lock edit changes what the gates run"
+    },
+    {
+      "glob": "wrangler.jsonc",
+      "why": "publication: the Cloudflare Worker configuration that Workers Builds deploys"
+    },
+    {
+      "glob": "astro.config.mjs",
+      "why": "publication: the Cloudflare adapter and the build output that Workers Builds deploys"
+    },
+    {
+      "glob": "package.json",
+      "why": "publication: the build scripts (prebuild fetches) that Workers Builds runs"
+    },
+    {
+      "glob": "package-lock.json",
+      "why": "publication: the locked dependencies of the deployed build"
+    },
+    {
+      "glob": "public/schemas/**",
+      "why": "publication: the published problem report schema; version 1 is immutable"
+    },
+    {
+      "glob": "src/data/problem-report-schema-pin.json",
+      "why": "publication: the pin of the published schema copy"
+    },
+    {
+      "glob": "src/pages/privacy/**",
+      "why": "publication: the public privacy promise about problem report data"
+    }
+  ]
+}

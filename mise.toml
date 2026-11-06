@@ -1,0 +1,8 @@
+# Tool pins for this repository (frostyard/core ADR-0043). mise.lock holds
+# the checksums. `mise install` gives the same versions locally and in CI.
+[settings]
+lockfile = true
+
+[tools]
+# Node runs the site build, its checks and the template gate. Node 24 LTS.
+node = "24.22.2"
