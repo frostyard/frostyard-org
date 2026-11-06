@@ -4,7 +4,7 @@ import { test } from "node:test";
 
 import { reportTable } from "../../src/lib/problem-report-table.mjs";
 import { validateStats } from "../../src/lib/problem-stats.mjs";
-import { checkPrivacyPage, checkStatsPage } from "../lib/problem-page-checks.mjs";
+import { checkPrivacyPage, checkPublicBugReports, checkStatsPage, publicBugReportsCutoff } from "../lib/problem-page-checks.mjs";
 import descriptions from "../../src/data/problem-report-descriptions.mjs";
 
 const schema = JSON.parse(await readFile(new URL("../../public/schemas/problem-report/v1.json", import.meta.url), "utf8"));
@@ -40,6 +40,65 @@ function withoutRow(html, kind, field) {
   parts[index] = before.replace(new RegExp(`<tr><td><code>${field}</code>.*?</tr>`), "");
   assert.notEqual(parts[index], before, `The fixture must have the row ${field} in ${kind}.`);
   return parts.join('<section class="kind">');
+}
+
+// The markup of the public bug reports section, copied from the built
+// /privacy/problem-reports/ page. It holds the statistics part before the
+// section, the section itself, and the rights part, because the check reads the
+// links that the statistics part and the rights part make to the section.
+function publicBugReportsHtml() {
+  const rows = [
+    ["app_problem", "<code>app_id</code>, <code>runtime</code>, <code>component</code>, and <code>code</code> (class <code>error</code>) or <code>frames</code> or <code>location</code> (class <code>panic</code>)"],
+    ["unit_failed", "<code>unit</code>, <code>result</code>"],
+    ["update_stage_failed", "<code>error_class</code>, <code>target_version</code>"],
+    ["booted_older_image", "<code>how</code>, <code>newer_version</code>"],
+    ["sysext_update_failed", "<code>feature</code>, <code>outcome</code>, <code>error_class</code> if the report has it, and the newest checked extension <code>version</code> if there is one"],
+    ["tpm_unlock", "<code>outcome</code>, <code>tpm_rc</code>, the variant"],
+    ["integrity_error", "<code>subsystem</code>, the variant"],
+  ]
+    .map(([kind, fields]) => `<tr><td><code>${kind}</code></td><td>${fields}</td></tr>`)
+    .join("");
+  return `<article>
+<h2 id="public-statistics">Public statistics</h2>
+<p>We publish weekly totals on the <a href="/stats/">statistics page</a>. A number from 1 to 4 is never published, and neither is a number that would let you work one out from the totals. We never publish single reports. The 1-to-4 rule covers the statistics: a <a href="#public-bug-reports">public bug report</a> holds no count, but it exists only because 1 or more reports came in.</p>
+<h2 id="public-bug-reports">Public bug reports</h2>
+<p>Anyone can read these issues: <a href="https://github.com/search?q=org%3Afrostyard+label%3Aproblem-report&amp;type=issues">list every public bug report</a>. <code>crash</code> and <code>count</code> reports never open an issue.</p>
+<h3 id="public-bug-reports-holds">What an issue holds</h3>
+<ul>
+<li>The kind and the class of the problem.</li>
+<li>The newest version that the job checked. Never a list of versions.</li>
+<li>The fields of its kind in the table below, and no other field.</li>
+<li>A problem key: a short hash of the published values only.</li>
+<li>The numbers of the matching issues in our GlitchTip. These are GlitchTip's own issue numbers, not report IDs.</li>
+<li>Later comments from the job hold only fixed text, a marker, and the fix releases and versions that it checked.</li>
+</ul>
+<table><thead><tr><th scope="col">Kind</th><th scope="col">Fields in the issue</th></tr></thead><tbody>${rows}</tbody></table>
+<h3 id="public-bug-reports-never">What an issue never holds</h3>
+<p>No issue, comment or status of the job holds:</p>
+<ul>
+<li>a <code>report_id</code>, an event ID, a <code>week</code> or a <code>client</code>;</li>
+<li>any count: no number of reports, no <code>count</code> bucket, no <code>retries</code>;</li>
+<li>any day;</li>
+<li><code>bootc_version</code>, <code>shipped</code>, or <code>secure</code> outside the 2 kinds above;</li>
+<li>a host name, a user name, a path on your computer, or free text.</li>
+</ul>
+<h3 id="public-bug-reports-residue">What an issue still tells</h3>
+<p>An issue tells that 1 or more computers with reporting turned on sent a report with these values. Its creation time tells about when the first report came. A rare image and version can point to the few computers that run it.</p>
+<h3 id="public-bug-reports-cutoff">Which faults are filed</h3>
+<p>The job files only faults that our GlitchTip first saw on or after <time datetime="2026-11-20">20 November 2026</time>, 00:00 UTC. A fault first seen before then is never filed.</p>
+<h3 id="public-bug-reports-deletion">Deletion and turning reporting off</h3>
+<p>Deleting a report, or turning reporting off, does not remove, change or close an issue.</p>
+<h2 id="your-rights">Your rights</h2>
+<ul>
+<li><strong>Consent.</strong> Consent is the legal basis for reports.</li>
+<li><strong>Delete a report.</strong> Send us its <code>report_id</code> and we delete that report. A <a href="#public-bug-reports">public bug report</a> also stays.</li>
+</ul>
+<h2 id="source">Source</h2>
+<ul>
+<li><a href="https://github.com/frostyard/core/blob/ed1fcbde60c63fcacd39d0e0db725f0b40e56a88/docs/adr/0074-publish-verified-fault-records-as-public-issues.md">Public bug reports</a>: frostyard/core ADR-0074.</li>
+<li><a href="https://github.com/frostyard/problem-intake/blob/main/docs/specs/triage.md">The triage job</a>.</li>
+</ul>
+</article>`;
 }
 
 function statsSnapshot(latest) {
@@ -120,6 +179,117 @@ test("a missing app ID fails and names it", () => {
   const errors = checkPrivacyPage(html, schema);
   assert.equal(errors.length, 1);
   assert.match(errors[0], /org\.frostyard\.nsl/);
+});
+
+// A table after the last kind must not stand in for a row that the last kind
+// lost, so a kind part stops at the next <h2.
+test("a kind part of the privacy page stops at the next heading", () => {
+  const html = `${withoutRow(privacyHtml(), "count", "channel")}<h2 id="after">After</h2><table><tbody><tr><td><code>channel</code></td><td><code>stable</code></td></tr></tbody></table>`;
+  const errors = checkPrivacyPage(html, schema);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /count/);
+  assert.match(errors[0], /channel/);
+});
+
+test("a public bug reports section that keeps its promises passes", () => {
+  assert.deepEqual(checkPublicBugReports(publicBugReportsHtml()), []);
+});
+
+test("publicBugReportsCutoff returns the date the page states", () => {
+  assert.equal(publicBugReportsCutoff(publicBugReportsHtml()), "2026-11-20");
+});
+
+test("a page without the public bug reports id fails", () => {
+  const html = publicBugReportsHtml().replace('<h2 id="public-bug-reports">', '<h2 id="public-bug-reports-x">');
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /id public-bug-reports/);
+});
+
+test("a page with 2 public bug reports ids fails", () => {
+  const html = publicBugReportsHtml().replace("</article>", '<div id="public-bug-reports"></div></article>');
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /2 elements/);
+});
+
+test("a kind row that names a field outside code fails", () => {
+  const html = publicBugReportsHtml().replace("<code>frames</code>", "frames");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /frames/);
+});
+
+test("a table row for a kind that never opens an issue fails", () => {
+  const html = publicBugReportsHtml().replace("</tbody>", "<tr><td><code>crash</code></td><td><code>exe</code></td></tr></tbody>");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /crash/);
+});
+
+test("a held item that is missing fails", () => {
+  const html = publicBugReportsHtml().replace(" Never a list of versions.", "");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /Never a list of versions/);
+});
+
+test("a never item that is missing fails", () => {
+  const html = publicBugReportsHtml().replace("<code>retries</code>", "retries");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /retries/);
+});
+
+test("a missing sentence of the section fails", () => {
+  const html = publicBugReportsHtml().replace(" A rare image and version can point to the few computers that run it.", "");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /A rare image and version/);
+});
+
+test("a cutoff without a time element fails", () => {
+  const html = publicBugReportsHtml().replace('<time datetime="2026-11-20">20 November 2026</time>', "20 November 2026");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /0 time elements/);
+  assert.equal(publicBugReportsCutoff(html), null);
+});
+
+test("a cutoff date that is not on the calendar fails", () => {
+  const html = publicBugReportsHtml().replace('datetime="2026-11-20"', 'datetime="2026-02-30"');
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /2026-02-30/);
+  assert.equal(publicBugReportsCutoff(html), null);
+});
+
+test("an ADR-0074 link on blob/main fails", () => {
+  const html = publicBugReportsHtml().replace("blob/ed1fcbde60c63fcacd39d0e0db725f0b40e56a88/", "blob/main/");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /ADR-0074/);
+});
+
+test("a page without the issue search link fails", () => {
+  const html = publicBugReportsHtml().replace('<a href="https://github.com/search?q=org%3Afrostyard+label%3Aproblem-report&amp;type=issues">list every public bug report</a>', "list every public bug report");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /every public bug report/);
+});
+
+test("a statistics part without the link to the section fails", () => {
+  const html = publicBugReportsHtml().replace('<a href="#public-bug-reports">public bug report</a> holds no count', "public bug report holds no count");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /public statistics part/);
+});
+
+test("a Delete a report item without the link to the section fails", () => {
+  const html = publicBugReportsHtml().replace('A <a href="#public-bug-reports">public bug report</a> also stays.', "A public bug report also stays.");
+  const errors = checkPublicBugReports(html);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /Delete a report/);
 });
 
 test("a stats page that renders every count passes", () => {

@@ -5,8 +5,28 @@ import { contact, controller } from "../../data/privacy-contact.mjs";
 
 const core = "https://github.com/frostyard/core/blob/main";
 const intake = "https://github.com/frostyard/problem-intake/blob/main";
+// ADR-0074 at the commit that merged it, so this page cites the text it states.
+const adr0074 = "https://github.com/frostyard/core/blob/ed1fcbde60c63fcacd39d0e0db725f0b40e56a88/docs/adr/0074-publish-verified-fault-records-as-public-issues.md";
+const issueSearch = "https://github.com/search?q=org%3Afrostyard+label%3Aproblem-report&type=issues";
+// The publication cutoff. The triage job of frostyard/problem-intake reads this
+// date from the live page and files only faults first seen on or after 00:00 UTC
+// of it (ADR-0074). Change it only together with that job's configuration.
+const cutoffIso = "2026-11-20";
+const cutoffText = new Date(`${cutoffIso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const publicFields: Array<[string, string]> = [
+  ["app_problem", "<code>app_id</code>, <code>runtime</code>, <code>component</code>, and <code>code</code> (class <code>error</code>) or <code>frames</code> or <code>location</code> (class <code>panic</code>)"],
+  ["unit_failed", "<code>unit</code>, <code>result</code>"],
+  ["update_stage_failed", "<code>error_class</code>, <code>target_version</code>"],
+  ["booted_older_image", "<code>how</code>, <code>newer_version</code>"],
+  ["sysext_update_failed", "<code>feature</code>, <code>outcome</code>, <code>error_class</code> if the report has it, and the newest checked extension <code>version</code> if there is one"],
+  ["tpm_unlock", "<code>outcome</code>, <code>tpm_rc</code>, the variant"],
+  ["integrity_error", "<code>subsystem</code>, the variant"],
+];
 const sources: Array<[string, string, string]> = [
   ["The decision", `${core}/docs/adr/0069-report-problems-local-first-opt-in-with-one-sender-per-host.md`, "frostyard/core ADR-0069: local first, opt-in, one sender per computer."],
+  ["Public bug reports", adr0074, "frostyard/core ADR-0074, at the commit that accepted it: which values of a fault may appear in a public issue."],
+  ["The triage job", `${intake}/docs/specs/triage.md`, "frostyard/problem-intake: how the job checks each value, files an issue, and follows the fix."],
+  ["Every public bug report", issueSearch, "GitHub search: org:frostyard label:problem-report."],
   ["The report format", `${core}/docs/specs/problem-report.md`, "frostyard/core: every field, every value, and the rules for new versions."],
   ["The app library", "https://github.com/frostyard/std/tree/main/problems", "frostyard/std: the Go package that writes app problems to the local journal. The Rust crate is in rust/."],
   ["The collector", "https://github.com/frostyard/snosi", "frostyard/snosi: snosi-health, which lists system problems and sends them on Floe."],
@@ -55,16 +75,55 @@ const sources: Array<[string, string, string]> = [
     <li><strong>Reports:</strong> the intake checks each report against the format, then forwards each problem report to GlitchTip, an error tracker on a server in the United States. The weekly count is not forwarded. GlitchTip keeps reports for 72 days. Its nightly cleanup and 7 days of backup snapshots can keep parts of a report up to about 88 days in all. Every report is deleted within 90 days. GlitchTip keeps each value it has seen in a report field, such as an image version or a program name, with no link to any report and with no end date.</li>
     <li><strong>Counts for the statistics:</strong> for each accepted report, the intake also writes 1 data point to Cloudflare Workers Analytics Engine. A data point holds only values from the report, such as the kind, the image and its version. It holds no <code>report_id</code> and no IP address. Cloudflare records the time it writes each point and keeps the points for about 3 months.</li>
     <li><strong>Weekly statistics:</strong> totals for each week, kept in Cloudflare Workers KV with no end date, and published.</li>
+    <li><strong>Public bug reports:</strong> GitHub issues about faults in Frostyard code, kept with no end date. They hold only checked values, no report. See <a href="#public-bug-reports">Public bug reports</a>.</li>
   </ul>
 
   <h2 id="public-statistics">Public statistics</h2>
-  <p>We publish weekly totals on the <a href="/stats/">statistics page</a>. A number from 1 to 4 is never published, and neither is a number that would let you work one out from the totals. We never publish single reports.</p>
+  <p>We publish weekly totals on the <a href="/stats/">statistics page</a>. A number from 1 to 4 is never published, and neither is a number that would let you work one out from the totals. We never publish single reports. The 1-to-4 rule covers the statistics: a <a href="#public-bug-reports">public bug report</a> holds no count, but it exists only because 1 or more reports came in.</p>
+
+  <h2 id="public-bug-reports">Public bug reports</h2>
+  <p>When reports show a fault in Frostyard code, a job can open a public GitHub issue for it, with the label <code>problem-report</code>, in the repository of the app or image that has the fault. Anyone can read these issues: <a href={issueSearch}>list every public bug report</a>. The job runs at most once a day and opens at most 1 issue for each problem. <code>crash</code> and <code>count</code> reports never open an issue.</p>
+  <p>Before the job publishes a value, it finds that value in a public source of Frostyard: a release tag, the source code at that tag, a published image tag, the published extension index, or the job's fixed list of Frostyard services and extensions. A value that fails its check is never published.</p>
+
+  <h3 id="public-bug-reports-holds">What an issue holds</h3>
+  <ul>
+    <li>The kind and the class of the problem.</li>
+    <li>The newest version that the job checked: the app version for an app problem, else each image with its newest image version. Never a list of versions.</li>
+    <li>The fields of its kind in the table below, and no other field.</li>
+    <li>A problem key: a short hash of the published values only.</li>
+    <li>The numbers of the matching issues in our GlitchTip. These are GlitchTip's own issue numbers, not report IDs.</li>
+    <li>Later comments from the job hold only fixed text, a marker, and the fix releases and versions that it checked.</li>
+  </ul>
+  <table>
+    <thead><tr><th scope="col">Kind</th><th scope="col">Fields in the issue</th></tr></thead>
+    <tbody>{publicFields.map(([kind, fields]) => <tr><td><code>{kind}</code></td><td set:html={fields} /></tr>)}</tbody>
+  </table>
+  <p>A Go frame of another module shows only its top package name. The variant tells if the image is the standard or the secure-boot image (the report's <code>secure</code>). Only <code>tpm_unlock</code> and <code>integrity_error</code> show it.</p>
+
+  <h3 id="public-bug-reports-never">What an issue never holds</h3>
+  <p>No issue, comment or status of the job holds:</p>
+  <ul>
+    <li>a <code>report_id</code>, an event ID, a <code>week</code> or a <code>client</code>;</li>
+    <li>any count: no number of reports, no <code>count</code> bucket, no <code>retries</code>;</li>
+    <li>any day;</li>
+    <li><code>bootc_version</code>, <code>shipped</code>, or <code>secure</code> outside the 2 kinds above;</li>
+    <li>a host name, a user name, a path on your computer, or free text.</li>
+  </ul>
+
+  <h3 id="public-bug-reports-residue">What an issue still tells</h3>
+  <p>An issue tells that 1 or more computers with reporting turned on sent a report with these values. Its creation time tells about when the first report came. A rare image and version can point to the few computers that run it.</p>
+
+  <h3 id="public-bug-reports-cutoff">Which faults are filed</h3>
+  <p>The job files only faults that our GlitchTip first saw on or after <time datetime={cutoffIso}>{cutoffText}</time>, 00:00 UTC. A fault first seen before then is never filed. If you turned reporting on before this section was published, you are not asked again: this section is the notice. You can turn reporting off at any time.</p>
+
+  <h3 id="public-bug-reports-deletion">Deletion and turning reporting off</h3>
+  <p>Deleting a report, or turning reporting off, does not remove, change or close an issue. An issue holds no identifier of a report, and only values that exist in Frostyard's public source.</p>
 
   <h2 id="your-rights">Your rights</h2>
   <ul>
     <li><strong>Consent.</strong> Consent is the legal basis for reports (GDPR Article 6(1)(a)). You can withdraw it at any time: turn reporting off.</li>
     <li><strong>See what was sent.</strong> ChairLift's <em>Sent reports</em> list shows the 50 newest reports it sent, each with its <code>report_id</code>. By default, ChairLift keeps the <code>report_id</code> of up to 500 sent reports in <code>~/.local/state/chairlift/reports.json</code>. On Floe, the list is <code>/var/lib/snosi-health/sent.jsonl</code>. A send run that posts at least 1 report and does not stop early drops the entries older than 90 days. Any other run drops nothing. A run that starts after reporting is turned off drops nothing. Only a run already in progress can still finish its cleanup. After that, the file keeps its entries until an administrator deletes it. (<a href="https://github.com/frostyard/snosi/blob/main/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md">snosi ADR-0030</a>).</li>
-    <li><strong>Delete a report.</strong> Send us its <code>report_id</code> and we delete that report. GlitchTip stores each report under its <code>report_id</code>, so we can find it. Backup snapshots keep it at most 7 more days. A deleted report stays in the statistics data points and the weekly totals, which hold no <code>report_id</code>. Without the <code>report_id</code> we cannot tell which report is yours, because reports hold no identifier (GDPR Article 11).</li>
+    <li><strong>Delete a report.</strong> Send us its <code>report_id</code> and we delete that report. GlitchTip stores each report under its <code>report_id</code>, so we can find it. Backup snapshots keep it at most 7 more days. A deleted report stays in the statistics data points and the weekly totals, which hold no <code>report_id</code>. A <a href="#public-bug-reports">public bug report</a> also stays. Without the <code>report_id</code> we cannot tell which report is yours, because reports hold no identifier (GDPR Article 11).</li>
     <li><strong>Complain.</strong> You can complain to a data protection supervisory authority.</li>
     <li><strong>No automated decisions.</strong> Reports are not used to make any decision about you.</li>
   </ul>

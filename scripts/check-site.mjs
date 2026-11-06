@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { access, readFile, readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
 
-import { checkPrivacyPage, checkStatsPage } from "./lib/problem-page-checks.mjs";
+import { checkPrivacyPage, checkPublicBugReports, checkStatsPage } from "./lib/problem-page-checks.mjs";
 
 // Astro 7 with the Cloudflare adapter writes the static site to dist/client.
 const dist = new URL("../dist/client/", import.meta.url);
@@ -1520,6 +1520,10 @@ for (const kind of reportSchema.properties.kind.enum) {
 // a field that 2 kinds share cannot hide a missing row (see the module).
 const privacyErrors = checkPrivacyPage(privacy, reportSchema);
 assert(privacyErrors.length === 0, `/privacy/problem-reports/ is incomplete: ${privacyErrors.join(" ")}`);
+// The public bug reports section promises which values a public issue holds and
+// which it never holds, so it must keep every one of them (see the module).
+const publicBugReportErrors = checkPublicBugReports(privacy);
+assert(publicBugReportErrors.length === 0, `/privacy/problem-reports/ breaks a promise of its public bug reports section: ${publicBugReportErrors.join(" ")}`);
 assert(privacyText.includes("90 days"), "/privacy/problem-reports/ must state how long a report is kept (90 days).");
 // frostyard-org#74 cross-review: crash.exe and app_problem.location are sent,
 // so "never sent" must scope file names to the user's files and name both.
