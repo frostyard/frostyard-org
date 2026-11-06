@@ -534,6 +534,7 @@ for (const [route, html, text, desktop] of [
       assert(text.includes(phrase), `${route} must name "${phrase}" (snosi#1227: Floe sends reports after an administrator agrees).`);
     }
     assert(html.includes("https://github.com/frostyard/snosi/blob/a1bf8d2547ecdfe78941e910bf604a30bffe6945/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md"), `${route} must link snosi ADR-0030 at commit a1bf8d25 (snosi#1227).`);
+    assert(text.includes("lists the reports sent in the last 90 days") && !text.includes("lists each sent report"), `${route} must say that sent.jsonl keeps only the last 90 days (owner review of frostyard-org#77 by Murbella: snosi-health-report KEEP_DAYS=90, prune_sent).`);
     assert(!text.includes("snosi-health sends nothing."), `${route} must not say snosi-health sends nothing: only --list sends nothing (snosi#1227).`);
   }
 }
@@ -1531,6 +1532,7 @@ assert(privacyText.includes("When crash reports start, a crash report will name 
 assert(!privacyText.includes("no released Frostyard software sends reports"), "/privacy/problem-reports/ must not say that no software sends reports (ChairLift v0.15.0, snosi#1227: reporting is released).");
 assert(privacyText.includes("list shows the 50 newest reports it sent") && !privacyText.includes("list shows each report"), "/privacy/problem-reports/ must say that the Sent reports list shows only the 50 newest reports (cross-review of frostyard-org#77: pageview.MaxSentRows = 50).");
 assert(privacyText.includes("ChairLift keeps the report_id of up to 500 sent reports") && !privacyText.includes("reports from the last 90 days"), "/privacy/problem-reports/ must say that ChairLift keeps up to 500 report_ids, with no rolling 90-day claim: its log trims 90 days before the newest entry, not before today (ChairLift reporting.MaxEntries, State.trim; re-review 1 of frostyard-org#77).");
+assert(privacyText.includes("It keeps the reports of the last 90 days: after each send, Floe drops older entries"), "/privacy/problem-reports/ must say that Floe's sent.jsonl keeps only the last 90 days (owner review of frostyard-org#77 by Murbella: snosi-health-report KEEP_DAYS=90, prune_sent).");
 assert(!privacyText.includes("come with a future release"), "/privacy/problem-reports/ must not call the controls future (ChairLift v0.15.0, snosi#1227: reporting is released).");
 assert(privacy.includes("https://github.com/frostyard/snosi/blob/main/docs/adr/0030-floe-sends-problem-reports-with-admin-consent.md"), "/privacy/problem-reports/ must link snosi ADR-0030 (snosi#1227: Floe sends reports).");
 for (const sentence of [
