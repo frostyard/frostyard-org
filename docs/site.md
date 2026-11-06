@@ -38,7 +38,7 @@ redirect in `astro.config.mjs`.
 | `src/pages/why-atomic.astro` | `/why-atomic/` | The atomic model and supported workload boundaries. |
 | `src/pages/tools.astro` | `/tools/` | The dedicated Firn, Updex, and ChairLift page. |
 | `src/pages/stats.astro` | `/stats/` | The weekly problem report counts. |
-| `src/pages/privacy/problem-reports.astro` | `/privacy/problem-reports/` | The privacy page for opt-in problem reports: what a report holds, how long it is kept, and your rights. |
+| `src/pages/privacy/problem-reports.astro` | `/privacy/problem-reports/` | The privacy page for opt-in problem reports: what a report holds, how long it is kept, what a public bug report holds, and your rights. |
 | `src/content/docs/docs/index.mdx` | `/docs/` | The docs landing page: the image choices, install and first boot, the software layers, and the source policy. |
 | `src/content/docs/docs/get-software.md` | `/docs/get-software/` | How to choose Flatpak, Homebrew, a system extension, or Distrobox to add software to a Frostyard image. |
 | `src/content/docs/docs/images/install-update.md` | `/docs/images/install-update/` | The shared procedure for every image: install with Firn, how updates arrive, update by hand, roll back, and move from an nbc or A/B install. |
