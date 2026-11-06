@@ -1,0 +1,77 @@
+# Development
+
+## Set up
+
+Install the pinned Node release, then the locked dependencies:
+
+```sh
+mise install
+npm ci
+npm run dev
+```
+
+`npm run dev` starts the local Astro server with live reload.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the local Astro development server. |
+| `npm run build` | Build the static site in `dist/client/`. It runs `prebuild`, so the generated data files are refreshed first. |
+| `npm run build:check` | Build the static site from the committed snapshots, with no refresh step. |
+| `npm run check` | Run the Astro diagnostics. |
+| `npm run check:site` | Check the built site: routes, docs navigation, source links, and the existing route invariants. It reads `dist/client/`, so build first. |
+| `npm run check:prose` | Run the banned-phrase check over the pages in `src/content/docs/`. |
+| `npm test` | Run the unit tests in `scripts/test/`. |
+| `npm run ci` | Run the complete local CI gate, in order: `npm test`, `npm run check:prose`, `npm run check`, `npm run build:check`, `npm run check:site`. |
+| `npm run sync:problem-schema` | Copy the pinned problem report schema into `public/schemas/problem-report/v1.json`, when its bytes match the pin. |
+| `npm run preview` | Build the site, then serve it with `wrangler dev`. |
+| `make verify` | Run the template gate (symlinks, docs index, risk paths, corrections format, vendored copies, and their tests), then `npm run ci`. |
+| `make check` | The same as `make verify`. |
+| `make ci BASE=origin/main` | `make verify`, then a check that `.memory/corrections.jsonl` is append-only against `BASE`. Run it before you call a change complete. |
+| `npm run deploy` | Build the site, then run `wrangler deploy`. Agents never run it. Brian deploys by merging to `main`. |
+
+The rules for agents are in [AGENTS.md](../AGENTS.md).
+
+## Generated data
+
+The build refreshes the extension catalog from
+`https://repository.frostyard.org/ext/index` and writes
+`src/data/extensions.json`. For each extension, it takes the highest version in
+that extension's `SHA256SUMS`, in Debian version order
+(`scripts/extension-versions.mjs`). It uses the committed catalog snapshot if
+the published repository is unavailable. `build:check` deliberately skips the
+refresh, so CI stays network-independent and does not rewrite the snapshot.
+
+`scripts/sync-problem-schema.mjs` (`npm run sync:problem-schema`) copies the
+pinned problem report schema from frostyard/core into
+`public/schemas/problem-report/v1.json`. It writes the copy only when the bytes
+match the sha256 in `src/data/problem-report-schema-pin.json`.
+
+`scripts/sync-problem-stats.mjs` runs in `prebuild`. It fetches the weekly
+counts from `https://report.frostyard.org/v1/stats`, checks them against the
+hiding rules, and writes `src/data/problem-stats.json`. When the service does
+not answer, the build uses the committed snapshot.
+
+Do not hand-edit a generated data file.
+
+## Checks
+
+Every docs page ends with commit-pinned Sources. Add or change a product fact
+only with a source file that supports it; do not invent commands or flags.
+
+`npm run check:prose` fails when it finds no docs pages, and it fails on a
+banned phrase from `scripts/prose-rules.json`.
+
+`npm run check:site` fails if a pilot page, a required section, a source link, a
+docs navigation link, or a Pagefind page disappears. It also fails when
+`dist/client/` has no built pages.
+
+## CI and deploy
+
+`.github/workflows/ci.yml` runs `make ci` on each pull request and each push to
+`main`.
+
+Cloudflare Workers Builds builds and deploys the site. A push to `main` deploys
+to production. A pull request gets a preview URL in its `Workers Builds:
+frostyard-org` check. Agents never deploy: the site ships when Brian merges.
