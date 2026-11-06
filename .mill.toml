@@ -15,7 +15,7 @@ chunk = [
 deep = ["make ci"]
 
 [context]
-docs = ["AGENTS.md", "README.md"]
+docs = ["AGENTS.md", "README.md", "docs/development.md", "docs/site.md"]
 skills_dir = "docs/agents/skills"
 
 [review]

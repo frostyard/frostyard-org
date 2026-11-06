@@ -1,187 +1,51 @@
 # frostyard.org
 
-Technical landing page for Frostyard's snosi operating system images and the
-Firn, Updex, and ChairLift tools that make their layered software model
-practical. The site also carries the `/docs/` operator documentation pilot.
+This repository is the source of [frostyard.org](https://frostyard.org), the
+website of Frostyard. Frostyard builds bootc operating system images on Debian
+with [snosi](https://github.com/frostyard/snosi), system extensions that add
+software to them, and the tools and apps that run on them. The site is an
+[Astro](https://astro.build) site with [Starlight](https://starlight.astro.build)
+docs, served by Cloudflare Workers.
 
-## Development
+## What the site covers
 
-Install the locked dependencies with `npm ci`:
+- [Images](https://frostyard.org/): [Snow](https://frostyard.org/snow/),
+  [Snowfield](https://frostyard.org/snowfield/),
+  [Sundog](https://frostyard.org/sundog/), [Floe](https://frostyard.org/floe/)
+  and the shared [Base](https://frostyard.org/base/).
+- [Install](https://frostyard.org/install/) and
+  [why atomic](https://frostyard.org/why-atomic/).
+- [Tools](https://frostyard.org/tools/): Firn, Updex and ChairLift.
+- [Documentation](https://frostyard.org/docs/): guides for each image, the
+  [system extension catalog](https://frostyard.org/docs/sysexts/), the apps
+  and the tools.
+- [Problem report statistics](https://frostyard.org/stats/) and the
+  [problem report privacy page](https://frostyard.org/privacy/problem-reports/).
+
+## Quick start
+
+You need [mise](https://mise.jdx.dev) and `make`.
 
 ```sh
-npm ci
-npm run dev
+mise install      # the pinned Node release
+npm ci            # the locked dependencies
+npm run dev       # a local server with live reload
+make ci           # the full gate: tests, checks and an offline build
 ```
 
-Use `npm run build` to produce the static site in `dist/client/`. Use
-`npm run build:check` to build from the committed extension snapshot without a
-network refresh. `npm run check` runs Astro diagnostics, and
-`npm run check:site` checks the built routes, docs navigation, source links, and
-existing route invariants. `npm test` runs the unit tests in `scripts/test/`.
-`npm run ci` runs the tests, the prose check, and the three checks above, in order.
-Install the pinned Node release with `mise install`. `make verify` runs the
-template gate and then `npm run ci`. The GitHub Actions workflow
-`.github/workflows/ci.yml` runs `make ci` on each pull request and each push to
-`main`. The prose check fails when it finds no docs pages, and the site check
-fails when `dist/client/` has no built pages.
+[docs/development.md](docs/development.md) explains each command, the
+generated data files and the checks.
 
-The build refreshes the extension catalog from `https://repository.frostyard.org/ext/index`.
-For each extension, it takes the highest version in that extension's `SHA256SUMS`,
-in Debian version order (`scripts/extension-versions.mjs`).
-It uses the committed catalog snapshot if the published repository is unavailable.
-`build:check` deliberately skips the refresh so CI stays network-independent and
-does not rewrite `src/data/extensions.json`. Do not hand-edit that generated file.
+## Deploy
 
-Two more scripts cover the problem report pages. `scripts/sync-problem-schema.mjs`
-(`npm run sync:problem-schema`) copies the pinned problem report schema from
-frostyard/core into `public/schemas/problem-report/v1.json`, and writes it only
-when the bytes match the sha256 in `src/data/problem-report-schema-pin.json`.
-`scripts/sync-problem-stats.mjs` runs in `prebuild`: it fetches the weekly counts
-from `https://report.frostyard.org/v1/stats`, checks them against the hiding
-rules, and writes `src/data/problem-stats.json`. When the service does not
-answer, the build uses the committed snapshot.
+Cloudflare Workers Builds builds `main` and deploys it to frostyard.org after
+each merge. A pull request gets a preview URL in its `Workers Builds:
+frostyard-org` check.
 
-## Documentation pilot
+## Where to go next
 
-Astro Starlight supplies the `/docs/` shell, sidebar, table of contents, search,
-code-copy controls, and light/dark theme. The docs content lives in
-`src/content/docs/docs/`; the nested `docs/` directory is intentional, because it
-scopes the injected Starlight routes under `/docs/` without changing the
-existing site routes, Cloudflare adapter, `wrangler.jsonc`, or `/cayo` redirect.
-
-- `src/content/docs/docs/index.mdx` is the docs landing page. It explains the
-  image choices, install and first boot, software layers, and the source policy.
-- `src/content/docs/docs/images/snow.md` covers the Snow GNOME image, its
-  composition, installation, first boot, updates, rollback, and support limits.
-- `src/content/docs/docs/images/snowfield.md` covers the Snowfield GNOME image
-  for Microsoft Surface devices, its Surface kernel, installation, first boot,
-  updates, rollback, and support limits.
-- `src/content/docs/docs/images/sundog.md` covers the Sundog KDE Plasma image,
-  its KDE packages and services, installation, first boot, updates, rollback,
-  and support limits.
-- `src/content/docs/docs/images/floe.md` covers the Floe headless server image,
-  its composition, installation, first boot, updates, rollback, containers, and
-  support limits.
-- `src/content/docs/docs/images/base.md` covers the shared Base layer, what
-  every image inherits from it, and why Base is not an installer choice.
-- `src/content/docs/docs/images/install-update.md` is the shared procedure for
-  every image: install with Firn, how updates arrive, update by hand, roll
-  back, and move from an nbc or A/B install.
-- `src/content/docs/docs/sysexts/dev.mdx` covers the Dev tools extension.
-- `src/content/docs/docs/sysexts/docker.mdx` covers the Docker CE extension.
-- `src/content/docs/docs/sysexts/incus.mdx` covers the Incus extension.
-- `src/content/docs/docs/sysexts/k3s.mdx` covers the k3s Kubernetes extension.
-- `src/content/docs/docs/sysexts/nix.mdx` covers the Nix package manager extension.
-- `src/content/docs/docs/sysexts/tailscale.mdx` covers the Tailscale extension.
-- `src/content/docs/docs/sysexts/vscode.mdx` covers the Visual Studio Code extension.
-- `src/content/docs/docs/sysexts/1password.mdx` covers the 1Password desktop extension.
-- `src/content/docs/docs/sysexts/1password-cli.mdx` covers the 1Password CLI extension.
-- `src/content/docs/docs/sysexts/bitwarden.mdx` covers the Bitwarden extension.
-- `src/content/docs/docs/sysexts/chatgpt.mdx` covers the ChatGPT extension.
-- `src/content/docs/docs/sysexts/claude-desktop.mdx` covers the Claude Desktop extension.
-- `src/content/docs/docs/sysexts/code-server.mdx` covers the code-server extension.
-- `src/content/docs/docs/sysexts/coder.mdx` covers the Coder extension.
-- `src/content/docs/docs/sysexts/debdev.mdx` covers the Debian development extension.
-- `src/content/docs/docs/sysexts/edge.mdx` covers the Microsoft Edge extension.
-- `src/content/docs/docs/sysexts/gitdesktop.mdx` covers the GitDesktop extension.
-- `src/content/docs/docs/sysexts/github-copilot.mdx` covers the GitHub Copilot extension.
-- `src/content/docs/docs/sysexts/himmelblau.mdx` covers the Himmelblau extension.
-- `src/content/docs/docs/sysexts/lemonade.mdx` covers the Lemonade extension.
-- `src/content/docs/docs/sysexts/localsend.mdx` covers the LocalSend extension.
-- `src/content/docs/docs/sysexts/moonlight.mdx` covers the Moonlight extension.
-- `src/content/docs/docs/sysexts/obsidian.mdx` covers the Obsidian extension.
-- `src/content/docs/docs/sysexts/paseo.mdx` covers the paseo extension.
-- `src/content/docs/docs/sysexts/pilothouse.mdx` covers the pilothouse extension.
-- `src/content/docs/docs/sysexts/maild.mdx` covers the Frostmail maild extension.
-- `src/content/docs/docs/sysexts/notesd.mdx` covers the Frostnotes notesd extension.
-- `src/content/docs/docs/sysexts/lodge.mdx` covers the lodge extension.
-- `src/content/docs/docs/sysexts/porterd.mdx` covers the Porter porterd extension.
-- `src/content/docs/docs/sysexts/readd.mdx` covers the frostread readd extension.
-- `src/content/docs/docs/sysexts/podman.mdx` covers the Podman + Distrobox extension.
-- `src/content/docs/docs/sysexts/sunshine.mdx` covers the Sunshine extension.
-- `src/content/docs/docs/sysexts/voxtype.mdx` covers the Voxtype extension.
-- `src/content/docs/docs/sysexts/index.mdx` is the system extension catalog.
-  It covers finding and enabling an extension, and lists every extension from
-  the checked catalog snapshot.
-- `src/content/docs/docs/sysexts/manage.md` covers the full lifecycle of any
-  extension: find, enable, check, update, and remove.
-- `src/content/docs/docs/tools/updex.md` covers Updex: features, components,
-  updates, the daemon, catalogs, and removal.
-- `src/content/docs/docs/tools/apt-repository.md` covers the Frostyard APT
-  repository, which feeds Frostyard image builds, and its unsupported use on
-  plain Debian 13 hosts: add it, install, update, roll back, and remove.
-- `src/content/docs/docs/apps/frostmail.md` covers Frostmail: where it runs, what works now, its limits, and deep links to its docs.
-- `src/content/docs/docs/apps/frostnotes.md` covers Frostnotes: where it runs, what is built, its limits, and deep links to its docs.
-- `src/content/docs/docs/apps/lodge.md` covers lodge: building it from source, installing it on a host, adding apps, agent tokens, and inference providers.
-- `src/content/docs/docs/apps/frostread.md` covers frostread: installing it on lodge's host, feeds, read later, saving a note, `readctl`, and agents.
-- `src/content/docs/docs/apps/porter.md` covers Porter: installing it on lodge's host, chat, routines, and what it can and cannot do.
-- `src/content/docs/docs/tools/nsl.md` covers nsl: host checks, install, machines, and removal.
-- `src/content/docs/docs/tools/igloo.md` covers the Igloo terminal: install, use, and update.
-- `src/content/docs/docs/tools/chairlift.md` covers ChairLift: the pages, everyday tasks, and install.
-- `src/content/docs/docs/tools/intuneme.md` covers intuneme: install, enrollment, daily use, upgrade, and removal.
-- `src/content/docs/docs/tools/firn.md` covers Firn: keeping the wizard's recipe, reinstalling from it, and the 2026-12-30 end of version 1 recipes.
-- `src/content.config.ts` defines the typed Starlight `docs` collection.
-- `src/components/starlight/MobileMenuToggle.astro` wraps the Starlight
-  component and mirrors its expanded state onto the visible button for
-  assistive technology. The default component still handles click and Escape.
-- `src/components/ExtensionSnapshot.astro` reads the checked
-  `src/data/extensions.json` snapshot for the extension pages. It renders
-  labels and versions as escaped text, shows the snapshot date and source, and
-  never derives a link from a catalog value. The snapshot version is the highest
-  version in `SHA256SUMS` when the snapshot was taken.
-- `src/components/ExtensionCatalog.astro` reads the same snapshot for the
-  catalog page. It renders labels, component names, and versions as escaped
-  text, builds no link from a catalog value, and links a guide only from the
-  docs collection.
-- `src/layouts/Site.astro` links the landing site navigation to `/docs/`.
-
-Every docs page ends with commit-pinned Sources. Add or change a product fact
-only with a source file that supports it; do not invent commands or flags.
-`npm run check:site` fails if a pilot page, required section, source link, docs
-navigation link, or Pagefind page disappears.
-
-## Page inventory
-
-`src/pages/index.astro` is the image and extension overview.
-`src/pages/base.astro` describes the shared image foundation.
-`src/pages/snow.astro` covers the general-purpose GNOME desktop.
-`src/pages/snowfield.astro` covers the GNOME desktop for Microsoft Surface.
-`src/pages/sundog.astro` covers the bootc-only KDE Plasma desktop.
-`src/pages/floe.astro` covers the headless server image.
-`src/pages/install.astro` provides the bootc-first Firn installation path and
-lifecycle guidance. `src/pages/why-atomic.astro` explains the atomic model and
-supported workload boundaries. `src/pages/tools.astro` is the dedicated Firn,
-Updex, and ChairLift page. `src/pages/stats.astro` is `/stats/`, the weekly
-problem report counts. `src/pages/privacy/problem-reports.astro` is
-`/privacy/problem-reports/`, the privacy page for opt-in problem reports: what
-a report holds, how long it is kept, and your rights.
-
-The docs pilot adds these content routes:
-
-`src/content/docs/docs/index.mdx` is `/docs/`.
-`src/content/docs/docs/images/snow.md` is `/docs/images/snow/`.
-`src/content/docs/docs/images/snowfield.md` is `/docs/images/snowfield/`.
-`src/content/docs/docs/images/sundog.md` is `/docs/images/sundog/`.
-`src/content/docs/docs/images/floe.md` is `/docs/images/floe/`.
-`src/content/docs/docs/images/base.md` is `/docs/images/base/`.
-`src/content/docs/docs/images/install-update.md` is `/docs/images/install-update/`.
-`src/content/docs/docs/sysexts/index.mdx` is `/docs/sysexts/`.
-`src/content/docs/docs/sysexts/dev.mdx` is `/docs/sysexts/dev/`.
-`src/content/docs/docs/sysexts/docker.mdx` is `/docs/sysexts/docker/`.
-`src/content/docs/docs/sysexts/incus.mdx` is `/docs/sysexts/incus/`.
-`src/content/docs/docs/sysexts/k3s.mdx` is `/docs/sysexts/k3s/`.
-`src/content/docs/docs/sysexts/nix.mdx` is `/docs/sysexts/nix/`.
-`src/content/docs/docs/sysexts/tailscale.mdx` is `/docs/sysexts/tailscale/`.
-`src/content/docs/docs/sysexts/vscode.mdx` is `/docs/sysexts/vscode/`.
-`src/content/docs/docs/sysexts/manage.md` is `/docs/sysexts/manage/`.
-`src/content/docs/docs/tools/updex.md` is `/docs/tools/updex/`.
-`src/content/docs/docs/apps/frostmail.md` is `/docs/apps/frostmail/`.
-`src/content/docs/docs/apps/frostnotes.md` is `/docs/apps/frostnotes/`.
-`src/content/docs/docs/apps/lodge.md` is `/docs/apps/lodge/`.
-`src/content/docs/docs/apps/frostread.md` is `/docs/apps/frostread/`.
-`src/content/docs/docs/apps/porter.md` is `/docs/apps/porter/`.
-`src/content/docs/docs/tools/nsl.md` is `/docs/tools/nsl/`.
-`src/content/docs/docs/tools/igloo.md` is `/docs/tools/igloo/`.
-`src/content/docs/docs/tools/chairlift.md` is `/docs/tools/chairlift/`.
-`src/content/docs/docs/tools/intuneme.md` is `/docs/tools/intuneme/`.
-`src/content/docs/docs/tools/firn.md` is `/docs/tools/firn/`.
+- [AGENTS.md](AGENTS.md): the rules for agents and contributors.
+- [docs/README.md](docs/README.md): the index of the repository docs, with
+  the development guide and the site map.
+- [SECURITY.md](SECURITY.md): report a vulnerability privately.
+- [LICENSE](LICENSE): MIT.

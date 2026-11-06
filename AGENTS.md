@@ -14,6 +14,8 @@
   `npm run ci`). `make check` is the same. `make ci BASE=origin/main` also
   checks that `.memory/corrections.jsonl` is append-only. Run
   `make ci BASE=origin/main` before you call a change complete.
+- `docs/development.md` explains each command and check; `docs/site.md` holds
+  the page inventory.
 
 This repository has no separate formatter or linter.
 
