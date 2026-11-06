@@ -150,7 +150,7 @@ the image is older than this feature: let it update, then reboot.
 ### Send problem reports
 
 Floe can send problem reports. Reporting is off until you turn it on. Each
-login shows `Problem reporting is off. See snosi-health reporting --help.`
+login shows ``Problem reporting is off. See `snosi-health reporting --help`.``
 until you choose.
 
 Any user can print the exact reports. This sends nothing:
