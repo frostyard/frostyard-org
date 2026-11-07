@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { access, readFile, readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
 
-import { checkPrivacyPage, checkPublicBugReports, checkStatsPage, textOf } from "./lib/problem-page-checks.mjs";
+import { checkPrivacyPage, checkPublicBugReports, checkStatsPage } from "./lib/problem-page-checks.mjs";
 
 // Astro 7 with the Cloudflare adapter writes the static site to dist/client.
 const dist = new URL("../dist/client/", import.meta.url);
@@ -35,6 +35,15 @@ function escapeHtml(value) {
 }
 
 assert(escapeHtml("<b>&") === "&lt;b&gt;&amp;", "The HTML escape helper must escape markup and ampersands.");
+
+function textOf(html) {
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function snapshotVersionMarkup(version) {
   return version
