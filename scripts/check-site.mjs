@@ -852,6 +852,7 @@ for (const url of [
 assert(nslText.includes("nsl sends nothing over the network"), "/docs/tools/nsl must say that nsl sends no problem records.");
 assert(nslText.includes("writes a record to your local systemd journal"), "/docs/tools/nsl must say that nsl writes problem records to the local journal.");
 assert(nsl.includes('href="/privacy/problem-reports/"'), "/docs/tools/nsl must link the problem reports privacy page.");
+assert(nslText.includes("To learn why nsl keeps them local, read nsl ADR-0023"), "/docs/tools/nsl must point the reader to nsl ADR-0023 from the problem records section.");
 assert(nsl.includes('href="https://frostyard.github.io/nsl/reference/limits/#problem-records"'), "/docs/tools/nsl must link nsl's problem records reference.");
 assert(nslText.includes("idle_timeout = 0"), "/docs/tools/nsl must say how to turn off the idle stop.");
 assert(nslText.includes("$XDG_CONFIG_HOME/nsl/nsl.conf"), "/docs/tools/nsl must give the nsl.conf path under XDG_CONFIG_HOME.");

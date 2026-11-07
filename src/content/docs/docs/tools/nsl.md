@@ -238,11 +238,11 @@ When a release build of nsl crashes or meets 1 of 4 internal errors, it writes a
 record to your local systemd journal. nsl sends nothing over the network, and
 it has no setting to turn the records off. On a desktop, ChairLift can show
 these records, and it sends a report only after you turn reporting on.
-[Problem reports](/privacy/problem-reports/) says what a report holds.
-[nsl ADR-0023](https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a93e6faf57ac228db8a6/docs/adr/0023-local-problem-records.md)
-explains why nsl records and never sends, and
-[nsl's limits page](https://frostyard.github.io/nsl/reference/limits/#problem-records)
-shows how to read the records.
+[Problem reports](/privacy/problem-reports/) says what a report holds. To read
+the records, see
+[nsl's limits page](https://frostyard.github.io/nsl/reference/limits/#problem-records).
+To learn why nsl keeps them local, read
+[nsl ADR-0023](https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a93e6faf57ac228db8a6/docs/adr/0023-local-problem-records.md).
 
 ## See also
 
