@@ -64,6 +64,13 @@ async function readRoute(pathname) {
   return readFile(routeFile(pathname), "utf8");
 }
 
+// Each id names a section heading that the page must render.
+function assertSections(route, html, ids) {
+  for (const id of ids) {
+    assert(html.includes(`id="${id}"`), `${route} must render the "${id}" section.`);
+  }
+}
+
 const docsRoutes = [
   "/docs",
   "/docs/images/snow",
@@ -287,11 +294,7 @@ for (const text of [
 ]) {
   assert(docsLanding.includes(text), `/docs must contain the section or statement "${text}".`);
 }
-for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/", "/docs/tools/chairlift/", "/docs/tools/intuneme/", "/docs/tools/firn/"]) {
-  assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
-}
-
-for (const route of ["/docs/images/install-update/"]) {
+for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/docs/images/base/", "/docs/sysexts/docker/", "/docs/sysexts/incus/", "/docs/sysexts/tailscale/", "/docs/sysexts/manage/", "/docs/tools/updex/", "/docs/tools/nsl/", "/docs/tools/igloo/", "/docs/tools/chairlift/", "/docs/tools/intuneme/", "/docs/tools/firn/", "/docs/images/install-update/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
@@ -303,7 +306,7 @@ assert(docsLanding.includes('href="/docs/tools/chairlift/#first-login-setup"'), 
 
 const snow = await readRoute("/docs/images/snow");
 const snowText = textOf(snow);
-for (const heading of [
+assertSections("/docs/images/snow", snow, [
   "install",
   "first-boot",
   "updates-and-rollback",
@@ -313,9 +316,7 @@ for (const heading of [
   "moving-from-an-nbc-or-ab-install",
   "see-also",
   "sources",
-]) {
-  assert(snow.includes(`id="${heading}"`), `/docs/images/snow must render the "${heading}" section.`);
-}
+]);
 for (const source of [
   "mkosi.profiles/snow/mkosi.conf",
   "shared/composition/snow/mkosi.conf",
@@ -355,7 +356,7 @@ assert(snowText.includes("linux-image-amd64/forky") && snowText.includes("trixie
 
 const floe = await readRoute("/docs/images/floe");
 const floeText = textOf(floe);
-for (const heading of [
+assertSections("/docs/images/floe", floe, [
   "install",
   "first-boot",
   "updates-and-rollback",
@@ -366,9 +367,7 @@ for (const heading of [
   "moving-from-an-nbc-or-ab-install",
   "see-also",
   "sources",
-]) {
-  assert(floe.includes(`id="${heading}"`), `/docs/images/floe must render the "${heading}" section.`);
-}
+]);
 for (const source of [
   "mkosi.profiles/floe/mkosi.conf",
   "shared/composition/floe/mkosi.conf",
@@ -402,7 +401,7 @@ assert(floeText.includes("Homebrew"), "/docs/images/floe must cover the Homebrew
 
 const snowfield = await readRoute("/docs/images/snowfield");
 const snowfieldText = textOf(snowfield);
-for (const heading of [
+assertSections("/docs/images/snowfield", snowfield, [
   "install",
   "first-boot",
   "updates-and-rollback",
@@ -413,9 +412,7 @@ for (const heading of [
   "moving-from-an-nbc-or-ab-install",
   "see-also",
   "sources",
-]) {
-  assert(snowfield.includes(`id="${heading}"`), `/docs/images/snowfield must render the "${heading}" section.`);
-}
+]);
 for (const source of [
   "README.md",
   "mkosi.profiles/snowfield/mkosi.conf",
@@ -444,7 +441,7 @@ assert(snowfield.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/
 
 const sundog = await readRoute("/docs/images/sundog");
 const sundogText = textOf(sundog);
-for (const heading of [
+assertSections("/docs/images/sundog", sundog, [
   "install",
   "first-boot",
   "updates-and-rollback",
@@ -455,9 +452,7 @@ for (const heading of [
   "troubleshooting",
   "see-also",
   "sources",
-]) {
-  assert(sundog.includes(`id="${heading}"`), `/docs/images/sundog must render the "${heading}" section.`);
-}
+]);
 for (const source of [
   "README.md",
   "mkosi.profiles/sundog/mkosi.conf",
@@ -541,7 +536,7 @@ for (const [route, html, text, desktop] of [
 
 const base = await readRoute("/docs/images/base");
 const baseText = textOf(base);
-for (const heading of [
+assertSections("/docs/images/base", base, [
   "the-layers",
   "what-base-gives-you",
   "updates",
@@ -551,9 +546,7 @@ for (const heading of [
   "choose-an-image",
   "see-also",
   "sources",
-]) {
-  assert(base.includes(`id="${heading}"`), `/docs/images/base must render the "${heading}" section.`);
-}
+]);
 assert(!base.includes('id="install"'), "/docs/images/base must not render an Install section.");
 for (const source of [
   "README.md",
@@ -580,7 +573,7 @@ assert(baseText.includes("not bootable"), "/docs/images/base must state that Bas
 
 const guide = await readRoute("/docs/images/install-update");
 const guideText = textOf(guide);
-for (const heading of [
+assertSections("/docs/images/install-update", guide, [
   "choose-an-image",
   "download-and-check-firn",
   "write-and-boot-the-installer",
@@ -597,9 +590,7 @@ for (const heading of [
   "troubleshooting",
   "see-also",
   "sources",
-]) {
-  assert(guide.includes(`id="${heading}"`), `/docs/images/install-update must render the "${heading}" section.`);
-}
+]);
 for (const source of [
   "README.md",
   "docs/installing.md",
@@ -630,7 +621,7 @@ assert(guideText.includes("Do not run bootc upgrade by hand"), "/docs/images/ins
 
 const updex = await readRoute("/docs/tools/updex");
 const updexText = textOf(updex);
-for (const heading of [
+assertSections("/docs/tools/updex", updex, [
   "check-your-version",
   "everyday-commands",
   "automatic-updates",
@@ -642,9 +633,7 @@ for (const heading of [
   "troubleshooting",
   "see-also",
   "sources",
-]) {
-  assert(updex.includes(`id="${heading}"`), `/docs/tools/updex must render the "${heading}" section.`);
-}
+]);
 for (const source of [
   "README.md",
   "docs/design/overview.md",
@@ -746,9 +735,7 @@ for (const page of lightPages) {
   const html = await readRoute(path);
   const text = textOf(html);
   lightHtml[page.route] = { html, text };
-  for (const heading of ["status", page.install, "documentation", "see-also", "sources"]) {
-    assert(html.includes(`id="${heading}"`), `${path} must render the "${heading}" section.`);
-  }
+  assertSections(path, html, ["status", page.install, "documentation", "see-also", "sources"]);
   assert(html.includes(`https://github.com/frostyard/${page.repo}/blob/${page.sha}/README.md`), `${path} must cite README.md at the pinned commit.`);
   assert(html.includes(`https://github.com/frostyard/${page.repo}/blob/main/${page.canonical}`), `${path} must link the canonical install doc ${page.canonical}.`);
   assert(text.includes(page.sentence), `${path} must say that it is pre-release.`);
@@ -798,7 +785,7 @@ assert(lightHtml.frostnotes.html.includes("https://github.com/frostyard/flatpak-
 
 const nsl = await readRoute("/docs/tools/nsl");
 const nslText = textOf(nsl);
-for (const heading of [
+assertSections("/docs/tools/nsl", nsl, [
   "before-you-start",
   "install",
   "create-your-first-machine",
@@ -810,9 +797,7 @@ for (const heading of [
   "problem-records",
   "see-also",
   "sources",
-]) {
-  assert(nsl.includes(`id="${heading}"`), `/docs/tools/nsl must render the "${heading}" section.`);
-}
+]);
 for (const source of [
   "README.md",
   "site/content/getting-started/install.md",
@@ -868,7 +853,7 @@ assert(nsl.includes("https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a
 
 const igloo = await readRoute("/docs/tools/igloo");
 const iglooText = textOf(igloo);
-for (const heading of [
+assertSections("/docs/tools/igloo", igloo, [
   "before-you-start",
   "install",
   "use-igloo",
@@ -876,9 +861,7 @@ for (const heading of [
   "troubleshooting",
   "see-also",
   "sources",
-]) {
-  assert(igloo.includes(`id="${heading}"`), `/docs/tools/igloo must render the "${heading}" section.`);
-}
+]);
 for (const source of ["README.md", "io.github.frostyard.Igloo.json", "agent/ptyxis-nsl.c"]) {
   assert(igloo.includes(`https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd/${source}`), `/docs/tools/igloo must cite ${source}.`);
 }
@@ -900,7 +883,7 @@ for (const [route, pageText] of [
 
 const chairlift = await readRoute("/docs/tools/chairlift");
 const chairliftText = textOf(chairlift);
-for (const heading of [
+assertSections("/docs/tools/chairlift", chairlift, [
   "which-images-have-it",
   "open-it",
   "what-each-page-does",
@@ -910,9 +893,7 @@ for (const heading of [
   "troubleshooting",
   "see-also",
   "sources",
-]) {
-  assert(chairlift.includes(`id="${heading}"`), `/docs/tools/chairlift must render the "${heading}" section.`);
-}
+]);
 for (const source of ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml", "internal/views/featurestatus/featurestatus.go", "internal/views/actionmsg/actionmsg.go"]) {
   assert(chairlift.includes(`https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/${source}`), `/docs/tools/chairlift must cite ${source}.`);
 }
@@ -951,7 +932,7 @@ assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/64245bc98
 
 const intuneme = await readRoute("/docs/tools/intuneme");
 const intunemeText = textOf(intuneme);
-for (const heading of [
+assertSections("/docs/tools/intuneme", intuneme, [
   "before-you-start",
   "install",
   "enroll-your-device",
@@ -963,9 +944,7 @@ for (const heading of [
   "troubleshooting",
   "see-also",
   "sources",
-]) {
-  assert(intuneme.includes(`id="${heading}"`), `/docs/tools/intuneme must render the "${heading}" section.`);
-}
+]);
 for (const source of ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md"]) {
   assert(intuneme.includes(`https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/${source}`), `/docs/tools/intuneme must cite ${source}.`);
 }
@@ -984,6 +963,21 @@ assert(intunemeText.includes("--disable-gpu-sandbox"), "/docs/tools/intuneme mus
 
 const catalog = JSON.parse(await readFile(new URL("../src/data/extensions.json", import.meta.url), "utf8"));
 const catalogDate = catalog.updatedAt.slice(0, 10);
+// The catalog entry of a guide page; the page must have one.
+function catalogEntry(page) {
+  const entry = catalog.extensions.find((item) => item.name === page.name);
+  assert(entry, `${page.route} must have a matching entry in the checked catalog.`);
+  return entry;
+}
+
+// The catalog snapshot component of a guide page.
+function assertSnapshot(route, html, entry) {
+  assert(html.includes("In the extension catalog"), `${route} must render the catalog snapshot component.`);
+  assert(html.includes(`>${escapeHtml(entry.label)}</dd>`), `${route} must render the escaped snapshot label.`);
+  assert(html.includes(snapshotVersionMarkup(entry.version)), `${route} must render the snapshot version with the expected markup.`);
+  assert(html.includes(catalogDate), `${route} must render the catalog snapshot date.`);
+}
+
 const catalogComponent = await readFile(new URL("../src/components/ExtensionSnapshot.astro", import.meta.url), "utf8");
 assert(!catalogComponent.includes("set:html"), "ExtensionSnapshot must not render catalog values as raw HTML.");
 assert(catalogComponent.includes("{entry.label}") && catalogComponent.includes("{entry.version}"), "ExtensionSnapshot must render catalog values as escaped expressions.");
@@ -1077,20 +1071,13 @@ const sysextPages = [
 for (const page of sysextPages) {
   const html = await readRoute(page.route);
   const text = textOf(html);
-  const entry = catalog.extensions.find((item) => item.name === page.name);
-  assert(entry, `${page.route} must have a matching entry in the checked catalog.`);
+  const entry = catalogEntry(page);
 
-  for (const heading of ["before-you-start", "update", "stop-updates-or-remove", "special-cases", "troubleshooting", "what-ships", "see-also", "sources"]) {
-    assert(html.includes(`id="${heading}"`), `${page.route} must render the "${heading}" section.`);
-  }
+  assertSections(page.route, html, ["before-you-start", "update", "stop-updates-or-remove", "special-cases", "troubleshooting", "what-ships", "see-also", "sources"]);
   assert(html.includes(`id="choose-${page.name}"`), `${page.route} must render a choice section.`);
   assert(html.includes(`id="enable-${page.name}"`), `${page.route} must render the enable section.`);
 
-  assert(html.includes("In the extension catalog"), `${page.route} must render the catalog snapshot component.`);
-  const escapedLabel = escapeHtml(entry.label);
-  assert(html.includes(`>${escapedLabel}</dd>`), `${page.route} must render the escaped snapshot label.`);
-  assert(html.includes(snapshotVersionMarkup(entry.version)), `${page.route} must render the snapshot version with the expected markup.`);
-  assert(html.includes(catalogDate), `${page.route} must render the catalog snapshot date.`);
+  assertSnapshot(page.route, html, entry);
   assert(html.includes("This is not always the"), `${page.route} must state that the listed version is not always the newest.`);
   assert(html.includes(page.command), `${page.route} must use the current Updex enable syntax.`);
   assert(html.includes("refresh_error"), `${page.route} must explain a failed refresh.`);
@@ -1267,17 +1254,11 @@ const commandPages = [
 for (const page of commandPages) {
   const html = await readRoute(page.route);
   const text = textOf(html);
-  const entry = catalog.extensions.find((item) => item.name === page.name);
-  assert(entry, `${page.route} must have a matching entry in the checked catalog.`);
+  const entry = catalogEntry(page);
 
-  for (const heading of ["before-you-start", page.enableId, page.useId, "update-and-remove", "troubleshooting", "what-ships", "see-also", "sources"]) {
-    assert(html.includes(`id="${heading}"`), `${page.route} must render the "${heading}" section.`);
-  }
+  assertSections(page.route, html, ["before-you-start", page.enableId, page.useId, "update-and-remove", "troubleshooting", "what-ships", "see-also", "sources"]);
 
-  assert(html.includes("In the extension catalog"), `${page.route} must render the catalog snapshot component.`);
-  assert(html.includes(`>${escapeHtml(entry.label)}</dd>`), `${page.route} must render the escaped snapshot label.`);
-  assert(html.includes(snapshotVersionMarkup(entry.version)), `${page.route} must render the snapshot version with the expected markup.`);
-  assert(html.includes(catalogDate), `${page.route} must render the catalog snapshot date.`);
+  assertSnapshot(page.route, html, entry);
   assert(html.includes(`>${escapeHtml(entry.name)}</code>`), `${page.route} must render the component name.`);
 
   assert(html.includes(`sudo updex features enable ${page.name} --now`), `${page.route} must use the current Updex enable syntax.`);
@@ -1317,7 +1298,7 @@ for (const route of ["/docs/tools/updex", "/docs/sysexts", "/docs/sysexts/manage
 
 const manage = await readRoute("/docs/sysexts/manage");
 const manageText = textOf(manage);
-for (const heading of [
+assertSections("/docs/sysexts/manage", manage, [
   "before-you-start",
   "find-an-extension",
   "enable-an-extension",
@@ -1330,9 +1311,7 @@ for (const heading of [
   "troubleshooting",
   "see-also",
   "sources",
-]) {
-  assert(manage.includes(`id="${heading}"`), `/docs/sysexts/manage must render the "${heading}" section.`);
-}
+]);
 for (const source of [
   "docs/design/sysexts.md",
   "docs/adr/0004-sysext-authoring-rules.md",
