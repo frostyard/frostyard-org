@@ -75,7 +75,7 @@ const ADR_0074 = /^https:\/\/github\.com\/frostyard\/core\/blob\/[0-9a-f]{40}\/d
 const ISSUE_SEARCH = "https://github.com/search?q=org%3Afrostyard+label%3Aproblem-report&amp;type=issues";
 const TRIAGE_SPEC = "https://github.com/frostyard/problem-intake/blob/main/docs/specs/triage.md";
 
-function textOf(html) {
+export function textOf(html) {
   return html
     .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
     .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
