@@ -807,6 +807,7 @@ for (const heading of [
   "update-and-remove",
   "igloo",
   "troubleshooting",
+  "problem-records",
   "see-also",
   "sources",
 ]) {
@@ -827,14 +828,15 @@ for (const source of [
   "config.go",
   "machines.go",
   "internal/protocol/protocol.go",
+  "docs/adr/0023-local-problem-records.md",
 ]) {
-  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/${source}`), `/docs/tools/nsl must cite ${source}.`);
+  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a93e6faf57ac228db8a6/${source}`), `/docs/tools/nsl must cite ${source}.`);
 }
 for (const source of ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"]) {
   assert(nsl.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/nsl must cite snosi ${source}.`);
 }
 assert(nsl.includes("https://github.com/frostyard/firn/blob/11133e6b801fc68a7490742244aa87e0313a8acd/internal/catalog/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
-assert(nslText.includes("This guide follows nsl v0.12.0"), "/docs/tools/nsl must follow nsl v0.12.0.");
+assert(nslText.includes("This guide follows nsl v0.13.0"), "/docs/tools/nsl must follow nsl v0.13.0.");
 assert(nslText.includes("systemd-nspawn containers in one shared"), "/docs/tools/nsl must say that machines are systemd-nspawn containers in the shared VM.");
 assert(nslText.includes("nsl boots that VM with systemd-vmspawn"), "/docs/tools/nsl must say that nsl boots the VM with systemd-vmspawn.");
 for (const url of [
@@ -847,6 +849,10 @@ for (const url of [
 ]) {
   assert(nsl.includes(`href="${url}"`), `/docs/tools/nsl must link ${url}.`);
 }
+assert(nslText.includes("nsl sends nothing over the network"), "/docs/tools/nsl must say that nsl sends no problem records.");
+assert(nslText.includes("writes a record to your local systemd journal"), "/docs/tools/nsl must say that nsl writes problem records to the local journal.");
+assert(nsl.includes('href="/privacy/problem-reports/"'), "/docs/tools/nsl must link the problem reports privacy page.");
+assert(nsl.includes('href="https://frostyard.github.io/nsl/reference/limits/#problem-records"'), "/docs/tools/nsl must link nsl's problem records reference.");
 assert(nslText.includes("idle_timeout = 0"), "/docs/tools/nsl must say how to turn off the idle stop.");
 assert(nslText.includes("$XDG_CONFIG_HOME/nsl/nsl.conf"), "/docs/tools/nsl must give the nsl.conf path under XDG_CONFIG_HOME.");
 assert(nsl.includes('href="https://frostyard.github.io/nsl/reference/machine-images/"'), "/docs/tools/nsl must link the nsl machine images reference.");
@@ -857,7 +863,7 @@ assert(nsl.includes("brew upgrade --cask frostyard/tap/nsl"), "/docs/tools/nsl m
 assert(nsl.includes('href="/docs/tools/igloo/"'), "/docs/tools/nsl must link the Igloo page.");
 assert(nsl.includes("https://frostyard.github.io/nsl/guides/desktop/#add-an-application-to-the-menu"), "/docs/tools/nsl must link the Desktop applications guide.");
 assert(nslText.includes("nsl app add"), "/docs/tools/nsl must explain nsl app add.");
-assert(nsl.includes("https://github.com/frostyard/nsl/blob/5bcf1a40336e5e7aeb03f9b448c296e3710724d6/site/content/guides/desktop.md"), "/docs/tools/nsl must cite site/content/guides/desktop.md at the v0.12.0 pin.");
+assert(nsl.includes("https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a93e6faf57ac228db8a6/site/content/guides/desktop.md"), "/docs/tools/nsl must cite site/content/guides/desktop.md at the v0.13.0 pin.");
 
 const igloo = await readRoute("/docs/tools/igloo");
 const iglooText = textOf(igloo);
