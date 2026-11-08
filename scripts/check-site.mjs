@@ -1,21 +1,11 @@
 import { createHash } from "node:crypto";
-import { access, readFile, readdir } from "node:fs/promises";
-import { join, relative } from "node:path";
+import { access, readFile } from "node:fs/promises";
 
 import { checkPrivacyPage, checkPublicBugReports, checkStatsPage } from "./lib/problem-page-checks.mjs";
+import { htmlFiles, pageName } from "./lib/site-files.mjs";
 
 // Astro 7 with the Cloudflare adapter writes the static site to dist/client.
 const dist = new URL("../dist/client/", import.meta.url);
-
-async function htmlFiles(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const nested = await Promise.all(entries.map(entry => {
-    const path = join(directory.pathname, entry.name);
-    if (entry.isDirectory()) return htmlFiles(new URL(`file://${path}/`));
-    return entry.name.endsWith(".html") ? [path] : [];
-  }));
-  return nested.flat();
-}
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -151,7 +141,7 @@ try {
 
 for (const file of files) {
   const html = await readFile(file, "utf8");
-  const page = `/${relative(dist.pathname, file)}`;
+  const page = pageName(dist, file);
   assert((html.match(/<h1(?:\s|>)/g) || []).length === 1, `${page} must contain exactly one h1.`);
   assert(!html.includes("frostyard/millhouse"), `${page} still links to Millhouse.`);
   // The superseded lifecycle date must not come back in page prose. The catalog
