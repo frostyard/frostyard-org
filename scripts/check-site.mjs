@@ -703,7 +703,7 @@ const lightPages = [
   {
     route: "frostmail",
     repo: "frostmail",
-    sha: "94b92304ff15653bc94ab47bb72e876a9c14294e",
+    sha: "88d71ce16bcc4035aa080a2a7ca46f441d92ac77",
     install: "install",
     canonical: "docs/design/desktop.md#installing-for-one-user",
     sentence: "Frostmail is pre-release",
@@ -768,6 +768,9 @@ for (const [route, extension] of Object.entries(extensionForApp)) {
 }
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
+assert(lightHtml.frostmail.text.includes("The latest release is v0.5.0"), "/docs/apps/frostmail must name release v0.5.0 as the latest.");
+assert(lightHtml.frostmail.text.includes("Follow Up section") && lightHtml.frostmail.text.includes("rail button"), "/docs/apps/frostmail must name the v0.5.0 Follow Up section and the lodge rail badge.");
+assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension still carries 0.4.1."), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension still carries 0.4.1.");
 assert(lightHtml.frostmail.text.includes("flatpak install --user frostyard org.frostyard.Frostmail"), "/docs/apps/frostmail must give the per-user Flatpak install command.");
 assert(lightHtml.frostmail.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostmail must link the Frostyard Flatpak remote README.");
 assert(lightHtml.frostnotes.text.includes("flatpak install --user frostyard org.frostyard.Frostnotes"), "/docs/apps/frostnotes must give the per-user Flatpak install command.");
@@ -932,16 +935,21 @@ assertSections("/docs/tools/intuneme", intuneme, [
   "upgrade",
   "remove",
   "troubleshooting",
+  "problem-records",
   "see-also",
   "sources",
 ]);
-for (const source of ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md"]) {
-  assert(intuneme.includes(`https://github.com/frostyard/intuneme/blob/257e19320ed532a56bbb0ea0c2d4f11dd10ed4e6/${source}`), `/docs/tools/intuneme must cite ${source}.`);
+for (const source of ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md", "site/reference/problem-records.md", "site/reference/helper-security.md", "docs/adr/0003-record-problems-with-std-problems.md"]) {
+  assert(intuneme.includes(`https://github.com/frostyard/intuneme/blob/e4d5265b3b4fef8ac4bcbee6521e32e39920f015/${source}`), `/docs/tools/intuneme must cite ${source}.`);
 }
 for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
   assert(intuneme.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/intuneme must cite snosi ${source}.`);
 }
-assert(intunemeText.includes("This guide follows intuneme v0.22.1"), "/docs/tools/intuneme must follow intuneme v0.22.1.");
+assert(intunemeText.includes("This guide follows intuneme v0.23.0"), "/docs/tools/intuneme must follow intuneme v0.23.0.");
+assert(intunemeText.includes("writes a record to your local systemd journal") && intunemeText.includes("intuneme sends nothing over the network"), "/docs/tools/intuneme must say that problem records stay in the local journal.");
+assert(intuneme.includes('href="https://frostyard.github.io/intuneme/reference/problem-records/"'), "/docs/tools/intuneme must link intuneme's problem records reference.");
+assert(intuneme.includes('href="/privacy/problem-reports/"'), "/docs/tools/intuneme must link the problem reports privacy page.");
+assert(intunemeText.includes("To learn why intuneme keeps them local, read intuneme ADR-0003"), "/docs/tools/intuneme must point the reader to intuneme ADR-0003 from the problem records section.");
 assert(intunemeText.includes("Snow, Snowfield, and Sundog already include the frostyard-intuneme package") && intunemeText.includes("Floe does not"), "/docs/tools/intuneme must name the images that have intuneme.");
 for (const command of ["intuneme init", "intuneme start", "intuneme open portal", "intuneme recreate", "intuneme destroy --all"]) {
   assert(intuneme.includes(`data-code="${command}`), `/docs/tools/intuneme must give the command ${command}.`);
