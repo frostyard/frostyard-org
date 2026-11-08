@@ -1,4 +1,7 @@
 # Keep SHA-pinned actions and the npm dependencies current (core ADR-0071, row B13).
+# Each entry has 1 group with `patterns: ["*"]`, so each entry opens at most
+# 1 version-update PR for each run (core ADR-0075). The group has no
+# `applies-to`, so security updates stay 1 PR each.
 version: 2
 
 updates:
@@ -8,6 +11,9 @@ updates:
       interval: weekly
     commit-message:
       prefix: "chore"
+    groups:
+      actions:
+        patterns: ["*"]
 
   - package-ecosystem: npm
     directory: /
@@ -15,3 +21,6 @@ updates:
       interval: weekly
     commit-message:
       prefix: "chore"
+    groups:
+      npm:
+        patterns: ["*"]
