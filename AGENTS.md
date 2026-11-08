@@ -66,7 +66,8 @@ field or enum value is a new version in a new file.
   no prebuild step) and fails if `src/data/extensions.json` or
   `src/data/problem-stats.json` changes. It does not deploy.
 - `.github/dependabot.yml` updates the actions and the npm dependencies
-  weekly.
+  weekly, in 1 grouped version-update PR for each ecosystem (core
+  ADR-0075). Security updates stay 1 PR each.
 - One exception to the rule above: `.github/workflows/stats-rebuild.yml` posts
   to a Cloudflare Workers Builds deploy hook each Monday at 05:41 UTC, after
   the intake Worker's 03:23 UTC weekly aggregation, so `/stats/` shows the new
