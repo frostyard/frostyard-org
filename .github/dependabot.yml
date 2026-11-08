@@ -2,6 +2,14 @@
 # Each entry has 1 group with `patterns: ["*"]`, so each entry opens at most
 # 1 version-update PR for each run (core ADR-0075). The group has no
 # `applies-to`, so security updates stay 1 PR each.
+#
+# typescript majors are ignored: `npm run check` runs `@astrojs/check`, and
+# its 0.9.12 peer range is `typescript@^5.0.0 || ^6.0.0`, so a bump to
+# TypeScript 7 fails `npm ci` with ERESOLVE. The ignore also holds back
+# TypeScript 6; minor and patch updates still come. Remove the ignore when
+# `@astrojs/check` accepts TypeScript 7. Cause:
+# https://github.com/frostyard/frostyard-org/pull/96
+# Upstream: https://github.com/withastro/astro/issues/17268
 version: 2
 
 updates:
@@ -21,6 +29,9 @@ updates:
       interval: weekly
     commit-message:
       prefix: "chore"
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     groups:
       npm:
         patterns: ["*"]
