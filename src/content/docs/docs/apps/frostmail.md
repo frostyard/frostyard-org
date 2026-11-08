@@ -34,9 +34,10 @@ Frostyard Homebrew tap. On a Frostyard image, the
 host.
 
 Release v0.5.0 adds a Follow Up section to the sidebar: sent mail with no reply
-for 3 days or more. In lodge v0.2.0 or later, Frostmail's rail button shows the
-unread count of your inboxes. The Flatpak and the `.deb` of v0.5.0 come from
-the same commit.
+for 3 days or more. With maild v0.5.0 on lodge's host and lodge v0.2.0 or
+later, Frostmail's rail button shows the unread count of your inboxes. The
+maild system extension still carries 0.4.1. The Flatpak and the `.deb` of
+v0.5.0 come from the same commit.
 
 The Flatpak carries `maild` and `mailctl`, and its launcher starts its own
 local `maild`. Local is the default, and [lodge](/docs/apps/lodge/) is a
@@ -132,7 +133,7 @@ Reviewed 2026-11-07.
 - Frostmail release v0.5.0 commit [`88d71ce16bcc4035aa080a2a7ca46f441d92ac77`](https://github.com/frostyard/frostmail/tree/88d71ce16bcc4035aa080a2a7ca46f441d92ac77), released 2026-11-07. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.5.0) attaches only `frostyard-maild_0.5.0_amd64.deb`. The tag `v0.5.0` is the commit of the release candidate `v0.5.0-rc.1`.
 - The Flatpak: the live Frostyard catalogue (its `Last-Modified` is 2026-11-07 20:55:15 GMT) lists `org.frostyard.Frostmail` at digest `sha256:0e6f1e07c475224c4a315d2705e9c867d2f6a19b33d5a83807c7257b747ec07b`, built from `88d71ce1`, with the release `0.5.0` in its AppStream data ([frostmail#152](https://github.com/frostyard/frostmail/pull/152) stamps it). [`packaging/flatpak/org.frostyard.Frostmail.json`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/packaging/flatpak/org.frostyard.Frostmail.json) (runtime `org.gnome.Platform` 51).
 - Follow Up: [frostmail#153](https://github.com/frostyard/frostmail/pull/153), [`docs/specs/ui.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/ui.md) (Sidebar, Follow Up) and [`docs/specs/parity.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/parity.md) (P-413).
-- The lodge badge: [frostmail#154](https://github.com/frostyard/frostmail/pull/154) and [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/lodge-app.md) (`badge`). lodge draws it from [lodge#45](https://github.com/frostyard/lodge/pull/45) (merge commit `58cd0c5`), which [lodge v0.2.0](https://github.com/frostyard/lodge/releases/tag/v0.2.0) contains.
+- The lodge badge: [frostmail#154](https://github.com/frostyard/frostmail/pull/154) and [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/lodge-app.md) (`badge`). lodge draws it from [lodge#45](https://github.com/frostyard/lodge/pull/45) (merge commit `58cd0c5`), which [lodge v0.2.0](https://github.com/frostyard/lodge/releases/tag/v0.2.0) contains. maild sends `badge` from v0.5.0: frostmail#154 is not in v0.4.1. The maild system extension: [snosi#1196](https://github.com/frostyard/snosi/pull/1196), merged 2026-10-31, pins maild 0.4.1, and [`SHA256SUMS`](https://repository.frostyard.org/ext/maild/SHA256SUMS), checked 2026-11-08, lists only 0.2.0, 0.3.0 and 0.4.1.
 - The release path: [`docs/adr/0048-tag-each-release-on-its-tested-candidates-commit.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/adr/0048-tag-each-release-on-its-tested-candidates-commit.md).
 - Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/apps.json) at `4828c9836d451aaa7376483737d25a764b4e17bd`, after [flatpak-index#6](https://github.com/frostyard/flatpak-index/pull/6), merged 2026-10-29.
 - Install text: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md) at `4828c9836d451aaa7376483737d25a764b4e17bd` ([flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7), merged 2026-10-30): the per-user remote and the Flathub user remote.

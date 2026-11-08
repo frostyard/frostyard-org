@@ -780,6 +780,7 @@ assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
 assert(lightHtml.frostmail.text.includes("The latest release is v0.5.0"), "/docs/apps/frostmail must name release v0.5.0 as the latest.");
 assert(lightHtml.frostmail.text.includes("Follow Up section") && lightHtml.frostmail.text.includes("rail button"), "/docs/apps/frostmail must name the v0.5.0 Follow Up section and the lodge rail badge.");
+assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension still carries 0.4.1."), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension still carries 0.4.1.");
 assert(lightHtml.frostmail.text.includes("flatpak install --user frostyard org.frostyard.Frostmail"), "/docs/apps/frostmail must give the per-user Flatpak install command.");
 assert(lightHtml.frostmail.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostmail must link the Frostyard Flatpak remote README.");
 assert(lightHtml.frostnotes.text.includes("flatpak install --user frostyard org.frostyard.Frostnotes"), "/docs/apps/frostnotes must give the per-user Flatpak install command.");
