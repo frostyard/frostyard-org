@@ -85,7 +85,7 @@ test("the committed problem report schema copy is the pinned byte copy", async (
 test("check-site fails when dist/client is empty", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs", "lib/site-files.mjs"]);
     await mkdir(join(root, "dist/client"), { recursive: true });
 
     const result = run(join(scriptsDir, "check-site.mjs"), root);
@@ -100,7 +100,7 @@ test("check-site fails when dist/client is empty", async () => {
 test("check-site fails when dist/client has only a non-HTML file", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs", "lib/site-files.mjs"]);
     await mkdir(join(root, "dist/client"), { recursive: true });
     await writeFile(join(root, "dist/client/_redirects"), "/cayo /floe 301\n");
 
@@ -116,7 +116,7 @@ test("check-site fails when dist/client has only a non-HTML file", async () => {
 test("check-site fails when dist is missing", async () => {
   const root = await fixtureDir();
   try {
-    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs"]);
+    const scriptsDir = await copyScripts(root, ["check-site.mjs", "lib/problem-page-checks.mjs", "lib/site-files.mjs"]);
 
     const result = run(join(scriptsDir, "check-site.mjs"), root);
 
