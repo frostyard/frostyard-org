@@ -261,8 +261,8 @@ function checkVendored() {
   const vendored = [
     {
       path: "scripts/lib/risk-paths.mjs",
-      source: "frostyard/core@1b02a129026329cef2b46d1fbd0465a863c1cd81:scripts/lib/risk-paths.mjs",
-      sha256: "81a4e51e29b6ae754fdb9cbdf5edc712c47c893e7eadc3bbd17102749e051ba0",
+      source: "frostyard/core@c996ea3fb54bcf1a3c621113522213702a7673e2:scripts/lib/risk-paths.mjs",
+      sha256: "6df0af009ff385467214f8df56aa5c5c92ac19ad26689b3344bb4d2654cdfa43",
     },
     {
       path: "scripts/check-corrections.mjs",
