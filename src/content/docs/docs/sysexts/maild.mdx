@@ -201,9 +201,10 @@ When the older version runs, read the journal:
 journalctl -u frostmail.service -n 50
 ```
 
-maild 0.4.1 adds no migration to 0.3.0, so a rollback from 0.4.1 to 0.3.0
-needs no restore. maild 0.3.0 migrates the database of 0.2.0, so a rollback
-from 0.3.0 to 0.2.0 needs a restore. If the journal shows
+maild 0.5.0 migrates the database of 0.4.1, so a rollback from 0.5.0 to 0.4.1
+needs a restore. maild 0.4.1 adds no migration to 0.3.0, so a rollback from
+0.4.1 to 0.3.0 needs no restore. maild 0.3.0 migrates the database of 0.2.0,
+so a rollback from 0.3.0 to 0.2.0 needs a restore. If the journal shows
 `database schema N is newer than this maild`, restore the state from your
 backup. Replace `ARCHIVE` with the path of the archive:
 
@@ -261,7 +262,7 @@ Each build checks the commands, the units, the secrets-key helper `/usr/libexec/
 
 ## Sources
 
-Reviewed 2026-11-01. snosi commit
+Reviewed 2026-11-01; maild 0.5.0 facts reviewed 2026-11-09. snosi commit
 [`9b0b1539ae547e45ad32bfb4f581444e9bc0734c`](https://github.com/frostyard/snosi/tree/9b0b1539ae547e45ad32bfb4f581444e9bc0734c);
 core commit
 [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
@@ -282,6 +283,7 @@ Updex v2.1.4 commit
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/docs/design/sysexts.md)
 - [snosi#1169](https://github.com/frostyard/snosi/pull/1169) (merged 2026-10-28), [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28) and [snosi#1175](https://github.com/frostyard/snosi/pull/1175) (merged 2026-10-28)
 - [snosi#1196](https://github.com/frostyard/snosi/pull/1196) (merged 2026-10-31) pins maild 0.4.1. `https://repository.frostyard.org/ext/maild/SHA256SUMS`, checked 2026-11-01, lists 0.2.0, 0.3.0 and 0.4.1.
+- [snosi#1257](https://github.com/frostyard/snosi/pull/1257) (merged 2026-11-09, merge commit `5e9d69d31552dce8040b5c3233b8a266b2156f4f`) pins maild 0.5.0. `https://repository.frostyard.org/ext/maild/SHA256SUMS`, checked 2026-11-09, lists 0.2.0, 0.3.0, 0.4.1 and 0.5.0. Frostmail v0.5.0 commit [`88d71ce16bcc4035aa080a2a7ca46f441d92ac77`](https://github.com/frostyard/frostmail/tree/88d71ce16bcc4035aa080a2a7ca46f441d92ac77) adds [`internal/store/migrations/0020_messages_unseen.sql`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/internal/store/migrations/0020_messages_unseen.sql); its [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/internal/store/store.go) keeps the schema refusal. v0.5.0 changes no file in `packaging/lodge/`.
 - core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md)
 - Frostmail [`packaging/lodge/frostmail.service`](https://github.com/frostyard/frostmail/blob/94b92304ff15653bc94ab47bb72e876a9c14294e/packaging/lodge/frostmail.service), [`packaging/lodge/frostmail.socket`](https://github.com/frostyard/frostmail/blob/94b92304ff15653bc94ab47bb72e876a9c14294e/packaging/lodge/frostmail.socket), [`packaging/lodge/frostmail-secrets-key.service`](https://github.com/frostyard/frostmail/blob/94b92304ff15653bc94ab47bb72e876a9c14294e/packaging/lodge/frostmail-secrets-key.service), [`packaging/lodge/make-secrets-key.sh`](https://github.com/frostyard/frostmail/blob/94b92304ff15653bc94ab47bb72e876a9c14294e/packaging/lodge/make-secrets-key.sh), [`packaging/lodge/sysusers.d-frostmail.conf`](https://github.com/frostyard/frostmail/blob/94b92304ff15653bc94ab47bb72e876a9c14294e/packaging/lodge/sysusers.d-frostmail.conf), [`cmd/mailctl/hello.go`](https://github.com/frostyard/frostmail/blob/94b92304ff15653bc94ab47bb72e876a9c14294e/cmd/mailctl/hello.go)
 - [Updex v2.1.4 `README.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; a link on an older image shows an update, and `features update` repoints it)

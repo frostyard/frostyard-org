@@ -23,7 +23,7 @@ and Porter.
 
 ## Status
 
-lodge is pre-release. The latest release is v0.2.0. Each release attaches
+lodge is pre-release. The latest release is v0.2.1. Each release attaches
 `frostyard-lodge_X.Y.Z_amd64.deb`, which the lodge system extension installs.
 The system extension can trail the latest release. The [catalog](/docs/sysexts/) lists the version it ships.
 On another host, you install lodge from the tarball that `make dist` builds. lodge v1 and its
@@ -34,6 +34,8 @@ inference layer are built.
 [Porter](/docs/apps/porter/) runs beside them, since 2026-10-20.
 
 v0.2.0 adds unread counts. An app can report a count of things you have not seen, such as unread mail. lodge shows it on the app's rail button, in the app's row of the switcher, and as a sum on the home-screen icon. The design, ADR-0020, is Proposed.
+
+v0.2.1 is a patch release: a security fix in a dependency, and dependency updates. It does not change lodge's behavior, its app contract, or its configuration.
 
 lodge is optional for the desktop apps. Frostnotes works on its own as a
 Flatpak. Frostmail and frostread follow the same rule when their Flatpaks
@@ -79,6 +81,7 @@ new build goes in.
 ## Documentation
 
 - [README](https://github.com/frostyard/lodge/blob/main/README.md): what lodge is and the current status.
+- [Documentation index](https://github.com/frostyard/lodge/blob/main/docs/README.md): the decisions, designs, specs, and plans.
 - [Packaging](https://github.com/frostyard/lodge/blob/main/packaging/README.md): build, install, first start, allow-lists, and agents on the host.
 - [Install layout](https://github.com/frostyard/lodge/blob/main/docs/specs/app-contract.md#install-layout): where an app's files go.
 - [MCP tokens and scope](https://github.com/frostyard/lodge/blob/main/docs/specs/app-contract.md#mcp-tokens-and-scope): what a token for an app lets an agent do.
@@ -104,8 +107,9 @@ newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 ## Sources
 
-Reviewed 2026-11-04.
+Reviewed 2026-11-09.
 
+- lodge v0.2.1 commit [`74a31e4856b5e44da4567c53307cb83cf1354bf1`](https://github.com/frostyard/lodge/tree/74a31e4856b5e44da4567c53307cb83cf1354bf1), released 2026-11-09 ([release](https://github.com/frostyard/lodge/releases/tag/v0.2.1)): a patch release with no change to behavior, the app contract, or the configuration. [`docs/README.md`](https://github.com/frostyard/lodge/blob/74a31e4856b5e44da4567c53307cb83cf1354bf1/docs/README.md). No cookies: [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/74a31e4856b5e44da4567c53307cb83cf1354bf1/docs/specs/lodge-http.md) (identity from WhoIs alone; no response carries `Set-Cookie`).
 - lodge v0.2.0 commit [`bd6fa7b391d08ce0de44d80a875e4a386e415985`](https://github.com/frostyard/lodge/tree/bd6fa7b391d08ce0de44d80a875e4a386e415985), released 2026-11-04 ([release](https://github.com/frostyard/lodge/releases/tag/v0.2.0)).
 - [`README.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/README.md)
 - [`packaging/README.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/packaging/README.md), [`packaging/install.sh`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/packaging/install.sh), [`packaging/tmpfiles.d/lodge.conf`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/packaging/tmpfiles.d/lodge.conf)
@@ -114,7 +118,7 @@ Reviewed 2026-11-04.
 - [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/specs/app-contract.md), [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/specs/lodge-http.md), [`docs/specs/inference.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/specs/inference.md)
 - [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/plans/0001-roadmap.md)
 - [`docs/specs/shell.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/specs/shell.md), [`docs/adr/0020-apps-report-an-unread-count-for-the-rail-in-their-health.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/adr/0020-apps-report-an-unread-count-for-the-rail-in-their-health.md), and [lodge#45](https://github.com/frostyard/lodge/pull/45).
-- `https://repository.frostyard.org/ext/lodge/SHA256SUMS`, checked 2026-11-04, lists only 0.1.0.
+- `https://repository.frostyard.org/ext/lodge/SHA256SUMS`, checked 2026-11-09, lists 0.1.0 and 0.2.1. [snosi#1257](https://github.com/frostyard/snosi/pull/1257), merged 2026-11-09 (merge commit `5e9d69d31552dce8040b5c3233b8a266b2156f4f`), pins lodge 0.2.1 and maild 0.5.0.
 - core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Accepted), Context; [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/plans/0010-suite-packaging.md) (Phase 3; Phase 4, lodge's host on Floe, is deferred)
 - frostmail commit [`df106558209fad29c63983710a1a646557064dd4`](https://github.com/frostyard/frostmail/tree/df106558209fad29c63983710a1a646557064dd4): [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0011-m8-mail-in-lodge.md)
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
