@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
-import { statsView, validateStats } from "../../src/lib/problem-stats.mjs";
+import { statsView, validateStats, weekCountText } from "../../src/lib/problem-stats.mjs";
 
 const schema = JSON.parse(await readFile(new URL("../../public/schemas/problem-report/v1.json", import.meta.url), "utf8"));
 
@@ -345,4 +345,11 @@ test("an empty table must have total 0", () => {
     const document = documentWithTable("app_problems", { group_by: "app_id", cell_by: "class", total, groups: {} });
     assert.throws(() => validateStats(document, schema), /must be 0 for a table with no groups/);
   }
+});
+
+test("the week count sentence is singular for 1 week", () => {
+  // frostyard.org/stats/ said "1 weeks are published" on 2026-11-09.
+  assert.equal(weekCountText(1), "1 week is published.");
+  assert.equal(weekCountText(2), "2 weeks are published.");
+  assert.equal(weekCountText(12), "12 weeks are published.");
 });
