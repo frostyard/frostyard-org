@@ -6,7 +6,7 @@
 import Document from "../layouts/Document.astro";
 import snapshot from "../data/problem-stats.json";
 import schema from "../../public/schemas/problem-report/v1.json";
-import { statsView, validateStats } from "../lib/problem-stats.mjs";
+import { statsView, validateStats, weekCountText } from "../lib/problem-stats.mjs";
 
 validateStats(snapshot, schema);
 const view = statsView(snapshot, schema);
@@ -34,7 +34,7 @@ const checked = fetchedAt === null ? null : fetchedAt.slice(0, 10);
     ) : (
       <>
         <p>
-          The latest week is <strong>{view.week}</strong>. {view.weekCount} weeks are published.
+          The latest week is <strong>{view.week}</strong>. {weekCountText(view.weekCount)}
         </p>
 
         {view.tables.map((table) => (

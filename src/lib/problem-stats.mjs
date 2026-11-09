@@ -304,6 +304,15 @@ function viewTable(name, table, axis) {
   };
 }
 
+// The sentence under the latest week: "1 week is published", "2 weeks are published".
+/**
+ * @param {number} count
+ * @returns {string}
+ */
+export function weekCountText(count) {
+  return count === 1 ? "1 week is published." : `${count} weeks are published.`;
+}
+
 // The view the stats page renders: the week, how many weeks are published, and
 // 1 table for each of the 3 tables. The empty view means the service has no
 // week yet.
