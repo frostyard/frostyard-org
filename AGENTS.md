@@ -95,13 +95,17 @@ field or enum value is a new version in a new file.
   adds a guard (a test that fails without the fix, or an `AGENTS.md` rule when
   no test can catch it) and appends 1 line to `.memory/corrections.jsonl` (see
   `.memory/README.md`). The file is append-only.
-- Risk paths: `.github/risk-paths.json` lists the high-risk paths. A PR that
-  touches one gets the label `risk:high` from
-  `.github/workflows/risk-paths.yml` and declares risk tier 3 in the PR
-  template. Add a path when you add a file of that kind (deploy, CI, a
-  published contract, a privacy promise). Each `why` starts with a category from
-  core's risk-paths spec (section B); `test/risk-paths-categories.test.mjs`
-  checks it.
+- Risk paths: `.github/risk-paths.json` (schema version 2, frostyard/core
+  ADR-0078) gives each path a level L1 to L4, with default L3. The caller
+  `.github/workflows/risk-paths.yml` runs core's `pr-triage.yml`: it adds the
+  label `level:L1` to `level:L4` of the strictest changed path, and
+  `risk:high` for L1 and L2. It also removes `ready-for-human` when the head
+  moves after the label or CI is not green when the label comes (ADR-0077). A
+  PR with `risk:high` declares risk tier 3 in the PR template. Add a path when
+  you add a file of that kind (deploy, CI, a published contract, a privacy
+  promise). Each `why` of an L1 or L2 entry starts with a category from core's
+  risk-paths spec (section B); `test/risk-paths-categories.test.mjs` checks
+  it, and also checks that the list and the caller are at L1 or L2 (rule C).
 - Vendored files: `scripts/lib/risk-paths.mjs` and
   `scripts/check-corrections.mjs` are copies from frostyard/core, and
   `scripts/check-template.mjs` and `test/check-template.test.mjs` are copies
