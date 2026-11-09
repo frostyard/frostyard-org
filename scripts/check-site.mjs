@@ -734,7 +734,7 @@ for (const page of lightPages) {
   }
   assert(!html.includes("data-code="), `${path} must not carry copied command blocks.`);
 }
-assert(lightHtml.lodge.text.includes("The latest release is v0.2.0"), "/docs/apps/lodge must name v0.2.0 as the latest release.");
+assert(lightHtml.lodge.text.includes("The latest release is v0.2.1") && lightHtml.lodge.text.includes("v0.2.1 is a patch release"), "/docs/apps/lodge must name v0.2.1 as the latest release, a patch release.");
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
 assert(lightHtml.porter.text.includes("The latest release is v0.2.0"), "/docs/apps/porter must name v0.2.0 as the latest release.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
@@ -770,7 +770,7 @@ assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
 assert(lightHtml.frostmail.text.includes("The latest release is v0.5.0"), "/docs/apps/frostmail must name release v0.5.0 as the latest.");
 assert(lightHtml.frostmail.text.includes("Follow Up section") && lightHtml.frostmail.text.includes("rail button"), "/docs/apps/frostmail must name the v0.5.0 Follow Up section and the lodge rail badge.");
-assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension still carries 0.4.1."), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension still carries 0.4.1.");
+assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension can trail the latest release.") && !/maild system extension still carries/.test(lightHtml.frostmail.text), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension can trail the latest release (the catalog lists its version).");
 assert(lightHtml.frostmail.text.includes("flatpak install --user frostyard org.frostyard.Frostmail"), "/docs/apps/frostmail must give the per-user Flatpak install command.");
 assert(lightHtml.frostmail.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostmail must link the Frostyard Flatpak remote README.");
 assert(lightHtml.frostnotes.text.includes("flatpak install --user frostyard org.frostyard.Frostnotes"), "/docs/apps/frostnotes must give the per-user Flatpak install command.");
@@ -1401,6 +1401,12 @@ for (const name of ["lodge", "porterd", "readd"]) {
   assert(text.includes(`The lab has not yet proven this for ${name}`), `${route} must say that the lab has not yet proven the live enable.`);
 }
 
+// maild 0.5.0 adds migration 0020: a rollback to 0.4.1 needs a restore.
+{
+  const maildText = textOf(await readRoute("/docs/sysexts/maild"));
+  assert(maildText.includes("maild 0.5.0 migrates the database of 0.4.1, so a rollback from 0.5.0 to 0.4.1 needs a restore."), "/docs/sysexts/maild must say that a rollback from 0.5.0 to 0.4.1 needs a restore.");
+}
+
 // The update sections of the suite guides that back lodge's apps.
 for (const [name, marker] of [
   ["lodge", "the database is at version N, newer than this lodge's M"],
@@ -1420,6 +1426,7 @@ for (const [name, marker] of [
   assert(sectionText.includes("systemctl mask --now"), `${route} must mask the units while the state is copied.`);
   assert(sectionText.includes("keeps its old binary until it restarts"), `${route} must say that the running daemon keeps its old binary until it restarts.`);
   assert(sectionText.includes(marker), `${route} must give the failure message "${marker}".`);
+  if (name === "lodge") assert(sectionText.includes("lodge 0.2.0 and 0.2.1 add no migration to 0.1.0"), `${route} must say that a rollback from 0.2.1 to 0.1.0 needs no restore.`);
   if (name === "lodge") assert(sectionText.includes("provider keys and sign-ins") && sectionText.includes("lodgectl provider login"), `${route} must say that a restore loses provider keys and can need a new codex sign-in.`);
   if (name === "porterd") assert(sectionText.includes("add routines.last_success:") && sectionText.includes("fill routines.last_success:"), `${route} must list every thread database error.`);
   assert(sectionText.indexOf("older than v2.1.3") !== -1 && sectionText.indexOf("older than v2.1.3") < sectionText.indexOf("To run the new version now"), `${route} must give the older-Updex commands before the restart step.`);
