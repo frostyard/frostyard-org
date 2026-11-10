@@ -1,6 +1,9 @@
 ---
 title: nsl
 description: "Install nsl on a Frostyard image, create your first Linux machine, and update or remove it."
+follows:
+  repo: frostyard/nsl
+  tag: v0.13.0
 ---
 
 nsl gives you WSL-style Linux machines on Linux: a systemd-nspawn container

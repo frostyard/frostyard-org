@@ -1,6 +1,9 @@
 ---
 title: Firn
 description: "Reinstall a Frostyard image from a saved Firn recipe, and move a version 1 recipe to version 2 before 2026-12-30."
+follows:
+  repo: frostyard/firn
+  tag: v0.11.0
 ---
 
 Firn is the Frostyard installer. It installs a bootc image from one TOML file,

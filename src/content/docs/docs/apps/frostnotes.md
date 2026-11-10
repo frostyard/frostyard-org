@@ -1,6 +1,9 @@
 ---
 title: Frostnotes
 description: "Frostnotes is a notes app in the spirit of Obsidian: plain markdown files, sync, a desktop app, and MCP for agents. Pre-release; install the desktop app from the Frostyard Flatpak remote."
+follows:
+  repo: frostyard/frostnotes
+  tag: v0.4.0
 ---
 
 Frostnotes is a notes app in the spirit of Obsidian. Your notes are plain

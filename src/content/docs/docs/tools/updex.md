@@ -1,6 +1,9 @@
 ---
 title: Updex
 description: "Manage Frostyard system extensions with Updex: list, enable, update, roll back, and remove them."
+follows:
+  repo: frostyard/updex
+  tag: v2.2.0
 ---
 
 Updex downloads, verifies, installs, updates, rolls back, and removes system

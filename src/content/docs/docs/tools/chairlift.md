@@ -1,6 +1,9 @@
 ---
 title: ChairLift
 description: "Use ChairLift on a Frostyard image to stage system updates, install device firmware updates, update Homebrew and Flatpak apps, toggle features, trust Homebrew taps, and run the first-login setup."
+follows:
+  repo: frostyard/chairlift
+  tag: v0.13.0
 ---
 
 ChairLift is a GTK4 and Libadwaita app for system chores on a Frostyard
