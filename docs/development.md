@@ -23,6 +23,7 @@ npm run dev
 | `npm run check:site` | Check the built site: routes, docs navigation, source links, and the existing route invariants. It reads `dist/client/`, so build first. |
 | `npm run check:prose` | Run the banned-phrase check over the pages in `src/content/docs/`. |
 | `npm test` | Run the unit tests in `scripts/test/`. |
+| `node scripts/check-release-drift.mjs` | Check app and tool guides against the latest GitHub releases. Needs the network. |
 | `npm run ci` | Run the complete local CI gate, in order: `npm test`, `npm run check:prose`, `npm run check`, `npm run build:check`, `npm run check:site`. |
 | `npm run sync:problem-schema` | Copy the pinned problem report schema into `public/schemas/problem-report/v1.json`, when its bytes match the pin. |
 | `npm run preview` | Build the site, then serve it with `wrangler dev`. |
@@ -54,6 +55,33 @@ hiding rules, and writes `src/data/problem-stats.json`. When the service does
 not answer, the build uses the committed snapshot.
 
 Do not hand-edit a generated data file.
+
+## Release drift
+
+App and tool guides with a release sentence carry a `follows` field in their
+frontmatter. Keep its tag equal to the release named in the page. When you add
+an app or tool guide that names a release, add this block after `description:`:
+
+```yaml
+follows:
+  repo: frostyard/nsl
+  tag: v0.13.0
+```
+
+Use an `owner/name` repository and a `vX.Y.Z` tag. The block accepts only
+`repo` and `tag`. Pages without a release sentence, such as Igloo and the APT
+repository guide, do not carry it.
+
+Run `node scripts/check-release-drift.mjs` from the repository root. It prints
+each tracked page, its tag, the latest published GitHub release tag, and
+`OK`, `BEHIND`, or `AHEAD`. It exits 0 when all tags match, 1 when any page is
+behind or ahead, and 2 on malformed frontmatter, a network or API error, or
+when no page carries `follows`. Its last line counts the pages it checked.
+
+Set `GITHUB_TOKEN` to authenticate requests and raise the GitHub rate limit.
+The script also works without a token. CI does not run it because it needs
+the network. `npm test` checks that `follows` matches each page's release
+sentence without the network.
 
 ## Checks
 

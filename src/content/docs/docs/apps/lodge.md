@@ -1,6 +1,9 @@
 ---
 title: lodge
 description: "lodge is the tailnet-only web shell that opens Notes, Mail, Read, and Porter from one address. Pre-release: it installs from a tarball."
+follows:
+  repo: frostyard/lodge
+  tag: v0.2.1
 ---
 
 lodge is a web shell for Frostyard's own apps. One address on your tailnet

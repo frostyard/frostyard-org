@@ -1,6 +1,9 @@
 ---
 title: Porter
 description: "Porter is the owner's assistant inside lodge: a chat panel that reads your apps and drafts but never sends. Pre-release: the only package is a `.deb` of the daemon for lodge."
+follows:
+  repo: frostyard/porter
+  tag: v0.2.0
 ---
 
 Porter is a personal assistant that runs inside [lodge](/docs/apps/lodge/).

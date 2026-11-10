@@ -1,6 +1,9 @@
 ---
 title: Frostmail
 description: "Frostmail is a mail client that works like Apple Mail.app, for Linux and Windows, with a daemon, an app, and a CLI. Pre-release; install the desktop app from the Frostyard Flatpak remote."
+follows:
+  repo: frostyard/frostmail
+  tag: v0.5.0
 ---
 
 Frostmail is a mail client that works like Apple Mail.app. It runs on Linux

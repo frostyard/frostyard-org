@@ -1,6 +1,9 @@
 ---
 title: frostread
 description: "frostread is a tailnet-only feed reader and read-later list that runs behind lodge as Read. Pre-release: the only package is a `.deb` for lodge's host."
+follows:
+  repo: frostyard/frostread
+  tag: v0.5.0
 ---
 
 frostread is a feed reader and a read-later list that only your tailnet can

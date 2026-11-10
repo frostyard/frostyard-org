@@ -1,6 +1,9 @@
 ---
 title: intuneme
 description: "Run Microsoft Intune for a managed work device on a Frostyard image: install intuneme, enroll, and use it every day."
+follows:
+  repo: frostyard/intuneme
+  tag: v0.23.0
 ---
 
 intuneme runs Microsoft Intune, the Microsoft Identity Broker, and Microsoft
