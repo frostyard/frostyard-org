@@ -257,7 +257,7 @@ Updex checks all names first. A bad name stops the command, changes nothing, and
 - `feature '<name>' is not enabled; run 'updex features enable <name>' first`
 - `feature '<name>' is masked`
 
-The refresh after the update still activates every pending link on the host, also the links of features you did not name. Before the refresh, a warning lists those links. To leave them alone, add `--no-refresh`. The new versions, also those of the features you named, then run after the next boot.
+The refresh after the update still activates every link to a version that does not run yet, including the links of features you did not name. Before the refresh, a warning lists those links. To leave them alone, add `--no-refresh`. Then all new versions, including those you named, run after the next boot.
 
 ### An extension that needs a newer image
 

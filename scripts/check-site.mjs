@@ -1351,6 +1351,7 @@ assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.2.0")
 assert(manageText.includes("sudo updex features update &lt;name&gt;..."), "/docs/sysexts/manage must give the named-feature update command.");
 assert(manageText.includes("updex features check &lt;name&gt;..."), "/docs/sysexts/manage must give the named-feature check command.");
 assert(manage.includes("https://github.com/frostyard/updex/pull/481"), "/docs/sysexts/manage must cite the named-feature change.");
+assert(manageText.includes("is not enabled; run") && manageText.includes("including the links of features you did not name"), "/docs/sysexts/manage must give a bad-name error and say that the refresh still activates the links of features you did not name.");
 assert(manageText.includes("activation did not finish"), "/docs/sysexts/manage must explain the Updex v2.1.3 activation message.");
 assert(manage.includes('id="roll-back"'), "/docs/sysexts/manage must render the roll back section.");
 assert(manageText.includes("sudo updex features rollback"), "/docs/sysexts/manage must give the rollback command.");

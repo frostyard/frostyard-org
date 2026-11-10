@@ -51,7 +51,7 @@ Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits. With every page visible,
 
 The Applications page does not install new Flatpak apps. It opens Bazaar for that.
 
-From v0.15.0, `chairlift --send-pending-reports` runs the automatic report send with no window. It sends nothing, and says why, when the reporting group is off, when reporting is off, or when the mode is **Ask each time**. With `--dry-run`, it prints the reports instead of sending them. It exits 1 after a configuration error or a failed send, and 0 otherwise. See [the Problems page settings](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/reference.md#problems-page-problems_page).
+From v0.15.0, `chairlift --send-pending-reports` sends pending problem reports with no window, as **Send automatically** does. It sends nothing, and says why, for example when reporting is off, when the mode is **Ask each time**, or when `problems_reporting_group` is off ([Hide a group or a page](#hide-a-group-or-a-page)). With `--dry-run`, it prints the reports instead of sending them. It exits 1 after a configuration error or a failed send, and 0 otherwise. See [the Problems page settings](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/reference.md#problems-page-problems_page).
 
 ## First-login setup
 
