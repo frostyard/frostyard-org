@@ -3,13 +3,13 @@ title: ChairLift
 description: "Use ChairLift on a Frostyard image to stage system updates, install device firmware updates, update Homebrew and Flatpak apps, toggle features, trust Homebrew taps, and run the first-login setup."
 follows:
   repo: frostyard/chairlift
-  tag: v0.13.0
+  tag: v0.15.0
 ---
 
 ChairLift is a GTK4 and Libadwaita app for system chores on a Frostyard
 desktop. It stages the next system image, updates Homebrew and Flatpak
 applications, installs device firmware updates, runs cleanups, and turns Updex features on and off. This guide
-follows ChairLift v0.13.0, which uses Updex v2.1.3 for the Features page.
+follows ChairLift v0.15.0, which uses Updex v2.1.3 for the Features page.
 
 ## Which images have it
 
@@ -35,7 +35,7 @@ chairlift --dry-run
 In that mode ChairLift changes nothing on the system.
 
 Keys: `Alt+1`, `Alt+2`, and so on open the pages in sidebar order. `F1` opens
-Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits. Before v0.13.0, `Ctrl+Q` did nothing.
+Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits. With every page visible, Help is also `Alt+7`. Before v0.13.0, `Ctrl+Q` did nothing.
 
 ## What each page does
 
@@ -50,6 +50,8 @@ Help, `Ctrl+?` lists the shortcuts, and `Ctrl+Q` quits. Before v0.13.0, `Ctrl+Q`
 | Help | Open the project website, the issue tracker, and the community chat. |
 
 The Applications page does not install new Flatpak apps. It opens Bazaar for that.
+
+From v0.15.0, `chairlift --send-pending-reports` runs the automatic report send with no window. It sends nothing, and says why, when the reporting group is off, when reporting is off, or when the mode is **Ask each time**. With `--dry-run`, it prints the reports instead of sending them. It exits 1 after a configuration error or a failed send, and 0 otherwise. See [the Problems page settings](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/reference.md#problems-page-problems_page).
 
 ## First-login setup
 
@@ -79,7 +81,7 @@ Without an internet connection, the setup skips the app step, and you can still 
 
 To hide the app step, set `first_run_apps_group` to `enabled: false` under `first_run_page` ([Hide a group or a page](#hide-a-group-or-a-page)). The app list is `/usr/share/snow/first-run/apps.json`, and `apps_path` changes it.
 
-See [first-run settings](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/reference.md#first-run-page-first_run_page) and [how the first run works](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/design/overview.md#first-run-mode).
+See [first-run settings](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/reference.md#first-run-page-first_run_page) and [how the first run works](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/design/overview.md#first-run-mode).
 
 ## Everyday tasks
 
@@ -120,7 +122,7 @@ You install 1 device at a time, and only 1 install runs at a time. ChairLift ask
 
 A device that fwupd does not update now, for example with the lid closed, on battery power, or after an update error, stays in the list with its reason and no install button. fwupd, not ChairLift, asks for authentication, with its own PolicyKit actions.
 
-After the install, ChairLift reads the device's own state: an update that fwupd did not apply shows as an error, and the device stays in the list. See [Firmware Updates](https://github.com/frostyard/chairlift/blob/main/docs/reference.md#updates-page-updates_page) for the details.
+After the install, ChairLift reads the device's own state: an update that fwupd did not apply shows as an error, and the device stays in the list. See [Firmware Updates](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/reference.md#updates-page-updates_page) for the details.
 
 To hide the group, set `firmware_updates_group` to `enabled: false` under `updates_page` ([Hide a group or a page](#hide-a-group-or-a-page)).
 
@@ -219,7 +221,7 @@ applications_page:
 
 Restart ChairLift. The Brew Search group is gone. A page disappears when all of its
 groups are off, and Help always stays. The
-[configuration reference](https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/CONFIG.md)
+[configuration reference](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/CONFIG.md)
 lists every page and group.
 
 ## Update and roll back
@@ -322,8 +324,9 @@ says the tool is unavailable.
 
 ## Sources
 
-Reviewed 2026-11-05.
+Reviewed 2026-11-10.
 
+- Followed release: ChairLift release v0.15.0 commit [`e3e434a2843512c99538c08070bafd1c965eb7f8`](https://github.com/frostyard/chairlift/tree/e3e434a2843512c99538c08070bafd1c965eb7f8): [`README.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/README.md), [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/CONFIG.md), [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/reference.md), [`docs/design/overview.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/design/overview.md), [`go.mod`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/go.mod), [`internal/reporting/cli.go`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/internal/reporting/cli.go).
 - Problem reporting: ChairLift release v0.15.0 commit [`e3e434a2843512c99538c08070bafd1c965eb7f8`](https://github.com/frostyard/chairlift/tree/e3e434a2843512c99538c08070bafd1c965eb7f8), released 2026-11-05 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.15.0)); [chairlift#267](https://github.com/frostyard/chairlift/pull/267): [`docs/adr/0015-problems-page-and-opt-in-reporting.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/adr/0015-problems-page-and-opt-in-reporting.md), [`docs/specs/problem-reporting.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/specs/problem-reporting.md).
 - The Problems page: ChairLift release v0.14.0 commit [`54124831081796ffdadd4e10644fdc20719bf723`](https://github.com/frostyard/chairlift/tree/54124831081796ffdadd4e10644fdc20719bf723), released 2026-11-05 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.14.0)); [chairlift#266](https://github.com/frostyard/chairlift/pull/266): [`README.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/README.md), [`docs/adr/0015-problems-page-and-opt-in-reporting.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/adr/0015-problems-page-and-opt-in-reporting.md), [`docs/specs/problems-page.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md), [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/CONFIG.md).
 - ChairLift release v0.13.0 commit [`7aada596112fb0ed833a5ed99b7c62c5f4411b4c`](https://github.com/frostyard/chairlift/tree/7aada596112fb0ed833a5ed99b7c62c5f4411b4c), released 2026-11-04 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.13.0)); [chairlift#260](https://github.com/frostyard/chairlift/pull/260), [chairlift#262](https://github.com/frostyard/chairlift/pull/262), [chairlift#264](https://github.com/frostyard/chairlift/pull/264), [chairlift#265](https://github.com/frostyard/chairlift/pull/265).
