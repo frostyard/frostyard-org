@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { readFollows, statedVersion, compareTags, driftStatus, formatReport, parseLatestRelease, releaseHttpError } from "../lib/release-drift.mjs";
+import { readFollows, statedVersion, statedVersions, compareTags, driftStatus, formatReport, parseLatestRelease, releaseFetchError, releaseHttpError } from "../lib/release-drift.mjs";
 
 const block = inner => `---\ntitle: Test\n${inner}\n---\n`;
 const follows = { repo: "frostyard/nsl", tag: "v0.13.0" };
@@ -44,6 +44,8 @@ test("statedVersion reads release sentences, including wrapped sentences", () =>
   assert.equal(statedVersion(block('description: "The latest release is v1.0.0"') + "No release sentence."), null);
   assert.equal(statedVersion("Install v1.2.3."), null);
   assert.equal(statedVersion("The latest release is v1.2.3-rc1."), null);
+  assert.deepEqual(statedVersions("This guide follows nsl v0.13.0.\nThe latest release is v0.14.0."), ["v0.13.0", "v0.14.0"]);
+  assert.deepEqual(statedVersions("Release v0.3.0 adds a pane."), []);
 });
 
 test("compareTags uses numeric components, including large values", () => {
@@ -80,9 +82,16 @@ test("HTTP errors explain rate limits and missing releases", () => {
   for (const status of [403, 429]) {
     assert.match(releaseHttpError("owner/repo", status, "0"), /owner\/repo: GitHub rate limit.*GITHUB_TOKEN/);
   }
-  assert.match(releaseHttpError("owner/repo", 404, null), /no published release.*404/);
+  assert.match(releaseHttpError("owner/repo", 404, null), /not found or no published release.*404/);
+  assert.match(releaseHttpError("owner/repo", 401, null), /credentials.*GITHUB_TOKEN/);
+  assert.match(releaseHttpError("owner/repo", 403, "10"), /secondary rate limit/);
+  const timeout = new Error("The operation was aborted due to timeout");
+  timeout.name = "TimeoutError";
+  assert.equal(releaseFetchError("owner/repo", timeout, 15), "owner/repo: GitHub did not answer within 15 seconds");
+  assert.equal(releaseFetchError("owner/repo", new Error("owner/repo: HTTP 500"), 15), "owner/repo: HTTP 500");
+  assert.equal(releaseFetchError("owner/repo", new TypeError("fetch failed"), 15), "owner/repo: fetch failed");
   assert.match(releaseHttpError("owner/repo", 500, null), /request failed.*500/);
-  assert.doesNotMatch(releaseHttpError("owner/repo", 403, "10"), /rate limit/);
+  assert.doesNotMatch(releaseHttpError("owner/repo", 403, "10"), /rate limit reached/);
 });
 
 async function realPages(directory) {
@@ -99,10 +108,11 @@ test("real app and tool follows tags match their release sentences in both direc
     for (const path of await realPages(directory)) {
       const text = await readFile(path, "utf8");
       const metadata = readFollows(text);
-      const stated = statedVersion(text);
-      if (metadata || stated) {
+      const stated = statedVersions(text);
+      if (metadata || stated.length) {
         assert.ok(metadata, `${path}: release sentence needs follows`);
-        assert.equal(metadata.tag, stated, `${path}: follows must match the release sentence`);
+        assert.ok(stated.length, `${path}: follows needs a release sentence`);
+        for (const version of stated) assert.equal(metadata.tag, version, `${path}: follows must match every release sentence`);
         count++;
       }
     }

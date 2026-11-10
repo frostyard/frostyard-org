@@ -9,7 +9,9 @@
 // tracked page.
 import { readdir, readFile } from "node:fs/promises";
 import { resolve, relative, join } from "node:path";
-import { readFollows, driftStatus, formatReport, parseLatestRelease, releaseHttpError } from "./lib/release-drift.mjs";
+import { readFollows, driftStatus, formatReport, parseLatestRelease, releaseFetchError, releaseHttpError } from "./lib/release-drift.mjs";
+
+const TIMEOUT_SECONDS = 15;
 
 async function pages(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -42,12 +44,12 @@ async function main() {
     if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
     try {
       const response = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, {
-        headers, signal: AbortSignal.timeout(15000),
+        headers, signal: AbortSignal.timeout(TIMEOUT_SECONDS * 1000),
       });
       if (!response.ok) throw new Error(releaseHttpError(repo, response.status, response.headers.get("x-ratelimit-remaining")));
       releases.set(repo, parseLatestRelease(await response.json()));
     } catch (error) {
-      throw new Error(error.message.startsWith(`${repo}:`) ? error.message : `${repo}: ${error.message}`);
+      throw new Error(releaseFetchError(repo, error, TIMEOUT_SECONDS));
     }
   }
   const rows = tracked.map(({ page, follows }) => {

@@ -32,8 +32,16 @@ export function readFollows(text) {
   return { repo: values.repo, tag: values.tag };
 }
 
+const RELEASE_SENTENCE = /(?:\bguide\s+follows\s+\S+\s+|\bThe\s+latest\s+release\s+is\s+)(v[0-9]+\.[0-9]+\.[0-9]+)(?![0-9A-Za-z+-]|\.[0-9])/g;
+
+/** Every version that the page body states in a release sentence, in order. */
+export function statedVersions(text) {
+  return [...frontmatter(text).body.matchAll(RELEASE_SENTENCE)].map(match => match[1]);
+}
+
+/** The version of the first release sentence, or null. */
 export function statedVersion(text) {
-  return frontmatter(text).body.match(/(?:\bguide\s+follows\s+\S+\s+|\bThe\s+latest\s+release\s+is\s+)(v[0-9]+\.[0-9]+\.[0-9]+)(?![0-9A-Za-z+-]|\.[0-9])/)?.[1] ?? null;
+  return statedVersions(text)[0] ?? null;
 }
 
 export function compareTags(a, b) {
@@ -70,6 +78,17 @@ export function releaseHttpError(repo, status, remaining) {
   if ((status === 403 || status === 429) && remaining === "0") {
     return `${repo}: GitHub rate limit reached (HTTP ${status}); set GITHUB_TOKEN or wait for the limit to reset`;
   }
-  if (status === 404) return `${repo}: no published release found (HTTP 404)`;
+  if (status === 403 || status === 429) {
+    return `${repo}: GitHub refused the request (HTTP ${status}), possibly a secondary rate limit; wait, then try again`;
+  }
+  if (status === 401) return `${repo}: GitHub rejected the credentials (HTTP 401); check GITHUB_TOKEN or unset it`;
+  if (status === 404) return `${repo}: repository not found or no published release (HTTP 404)`;
   return `${repo}: GitHub release request failed (HTTP ${status})`;
+}
+
+/** The message for a fetch that threw: name a timeout plainly. */
+export function releaseFetchError(repo, error, seconds) {
+  if (error?.name === "TimeoutError") return `${repo}: GitHub did not answer within ${seconds} seconds`;
+  const message = error?.message ?? String(error);
+  return message.startsWith(`${repo}:`) ? message : `${repo}: ${message}`;
 }

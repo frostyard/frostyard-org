@@ -60,7 +60,8 @@ Do not hand-edit a generated data file.
 
 App and tool guides with a release sentence carry a `follows` field in their
 frontmatter. Keep its tag equal to the release named in the page. When you add
-an app or tool guide that names a release, add this block after `description:`:
+an app or tool guide that names a release, add this block to its frontmatter,
+for example after `description:`:
 
 ```yaml
 follows:
@@ -75,13 +76,19 @@ repository guide, do not carry it.
 Run `node scripts/check-release-drift.mjs` from the repository root. It prints
 each tracked page, its tag, the latest published GitHub release tag, and
 `OK`, `BEHIND`, or `AHEAD`. It exits 0 when all tags match, 1 when any page is
-behind or ahead, and 2 on malformed frontmatter, a network or API error, or
+behind or ahead, and 2 on a malformed `follows` block, a network or API error, or
 when no page carries `follows`. Its last line counts the pages it checked.
 
 Set `GITHUB_TOKEN` to authenticate requests and raise the GitHub rate limit.
 The script also works without a token. CI does not run it because it needs
-the network. `npm test` checks that `follows` matches each page's release
-sentence without the network.
+the network. GitHub picks the latest release by date, not by version: a patch
+to an older line, published after a newer release, makes current pages show
+`AHEAD`.
+
+`npm test` checks, without the network, that `follows` matches each release
+sentence of the page. It knows 2 forms: "guide follows <Name> vX.Y.Z", with a
+1-word name, and "The latest release is vX.Y.Z". Use 1 of them for the release
+line of a new guide, or the check does not see it.
 
 ## Checks
 
