@@ -893,7 +893,10 @@ for (const source of ["README.md", "docs/index.md", "docs/reference.md", "CONFIG
 for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
   assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
 }
-assert(chairliftText.includes("This guide follows ChairLift v0.13.0"), "/docs/tools/chairlift must follow ChairLift v0.13.0.");
+assert(chairliftText.includes("This guide follows ChairLift v0.15.0"), "/docs/tools/chairlift must follow ChairLift v0.15.0.");
+assert(chairliftText.includes("Alt+7"), "/docs/tools/chairlift must give the Help shortcut with every page visible.");
+assert(chairliftText.includes("chairlift --send-pending-reports"), "/docs/tools/chairlift must give the automatic report command.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/CONFIG.md"), "/docs/tools/chairlift must link the configuration reference at v0.15.0.");
 assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("From v0.15.0, you can also send problem reports"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, and say that v0.15.0 sends reports after you turn reporting on (owner review of frostyard-org#75; ChairLift v0.15.0: reporting is released).");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.15.0"), "/docs/tools/chairlift must link the ChairLift v0.15.0 release (ChairLift v0.15.0: reporting is released).");
 assert(chairlift.indexOf("<td>Problems</td>") < chairlift.indexOf("<td>Help</td>"), "/docs/tools/chairlift must list Problems before Help, as the sidebar does.");
@@ -1341,10 +1344,14 @@ for (const source of [
   "sysext/manager.go",
   "systemd/unit.go",
 ]) {
-  assert(manage.includes(`https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/${source}`), `/docs/sysexts/manage must cite ${source}.`);
+  assert(manage.includes(`https://github.com/frostyard/updex/blob/725cd46b8933c31e71a0acc3a7a8959a9be078f6/${source}`), `/docs/sysexts/manage must cite ${source}.`);
 }
-assert(manageText.includes("This guide follows Updex v2.1.4"), "/docs/sysexts/manage must follow Updex v2.1.4.");
-assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.1.4"), "/docs/sysexts/manage must link the Updex v2.1.4 release.");
+assert(manageText.includes("This guide follows Updex v2.2.0"), "/docs/sysexts/manage must follow Updex v2.2.0.");
+assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.2.0"), "/docs/sysexts/manage must link the Updex v2.2.0 release.");
+assert(manageText.includes("sudo updex features update &lt;name&gt;..."), "/docs/sysexts/manage must give the named-feature update command.");
+assert(manageText.includes("updex features check &lt;name&gt;..."), "/docs/sysexts/manage must give the named-feature check command.");
+assert(manage.includes("https://github.com/frostyard/updex/pull/481"), "/docs/sysexts/manage must cite the named-feature change.");
+assert(manageText.includes("is not enabled; run") && manageText.includes("including the links of features you did not name"), "/docs/sysexts/manage must give a bad-name error and say that the refresh still activates the links of features you did not name.");
 assert(manageText.includes("activation did not finish"), "/docs/sysexts/manage must explain the Updex v2.1.3 activation message.");
 assert(manage.includes('id="roll-back"'), "/docs/sysexts/manage must render the roll back section.");
 assert(manageText.includes("sudo updex features rollback"), "/docs/sysexts/manage must give the rollback command.");
