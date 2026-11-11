@@ -1,5 +1,5 @@
-// File helpers for the site check. They take directory URLs and return plain
-// file system paths. A URL's pathname is percent-encoded, so a checkout path
+// Helpers for the site check. The file helpers take directory URLs and return
+// plain file system paths. A URL's pathname is percent-encoded, so a checkout path
 // with a space or a non-ASCII character must go through fileURLToPath, never
 // through URL.pathname or a `file://` template (frostyard-org#92).
 import { readdir } from "node:fs/promises";
@@ -20,4 +20,15 @@ export async function htmlFiles(directory) {
 // the path relative to the dist directory URL, with a leading slash.
 export function pageName(dist, file) {
   return `/${relative(fileURLToPath(dist), file)}`;
+}
+
+// The visible text of a page: scripts, styles and tags removed, white space
+// folded to single spaces.
+export function textOf(html) {
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }

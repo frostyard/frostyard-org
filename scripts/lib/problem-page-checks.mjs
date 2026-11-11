@@ -13,6 +13,8 @@
 // is checked here too, on the built HTML only, so a text edit that drops a
 // promise fails the site check.
 
+import { textOf } from "./site-files.mjs";
+
 const TABLE_NAMES = ["reports", "app_problems", "installs"];
 
 // The closed list of the kinds that a public bug report can hold, and the
@@ -74,15 +76,6 @@ const PUBLIC_BUG_REPORT_SAYS = [
 const ADR_0074 = /^https:\/\/github\.com\/frostyard\/core\/blob\/[0-9a-f]{40}\/docs\/adr\/0074-publish-verified-fault-records-as-public-issues\.md$/;
 const ISSUE_SEARCH = "https://github.com/search?q=org%3Afrostyard+label%3Aproblem-report&amp;type=issues";
 const TRIAGE_SPEC = "https://github.com/frostyard/problem-intake/blob/main/docs/specs/triage.md";
-
-function textOf(html) {
-  return html
-    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 // The first-column cells of the field tables: a <td> whose first child is the
 // <code> element that names the field.
