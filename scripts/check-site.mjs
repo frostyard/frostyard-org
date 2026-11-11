@@ -52,6 +52,14 @@ function assertSections(route, html, ids) {
   }
 }
 
+// Each source is a path in a pinned tree: blobBase is the
+// "https://github.com/<owner>/<repo>/blob/<commit>" URL, with no final slash.
+function assertCites(route, html, blobBase, sources, label = "") {
+  for (const source of sources) {
+    assert(html.includes(`${blobBase}/${source}`), `${route} must cite ${label}${source}.`);
+  }
+}
+
 const docsRoutes = [
   "/docs",
   "/docs/images/snow",
@@ -298,7 +306,7 @@ assertSections("/docs/images/snow", snow, [
   "see-also",
   "sources",
 ]);
-for (const source of [
+assertCites("/docs/images/snow", snow, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", [
   "mkosi.profiles/snow/mkosi.conf",
   "shared/composition/snow/mkosi.conf",
   "shared/packages/snow/mkosi.conf",
@@ -308,9 +316,7 @@ for (const source of [
   "docs/installing.md",
   "docs/bootc-secure-operations.md",
   "docs/nbc-to-bootc-migration.md",
-]) {
-  assert(snow.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/images/snow must cite ${source}.`);
-}
+]);
 assert(snowText.includes("have passed fresh installs in a lab VM") && snowText.includes("not hardware qualification"), "/docs/images/snow must state the fresh-install test limit.");
 assert(snowText.includes("There is no in-place conversion"), "/docs/images/snow must state the migration limit.");
 assert(!snowText.includes("Boot presentation"), "/docs/images/snow must not carry the removed boot-presentation row.");
@@ -349,7 +355,7 @@ assertSections("/docs/images/floe", floe, [
   "see-also",
   "sources",
 ]);
-for (const source of [
+assertCites("/docs/images/floe", floe, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", [
   "mkosi.profiles/floe/mkosi.conf",
   "shared/composition/floe/mkosi.conf",
   "shared/packages/floe/mkosi.conf",
@@ -367,9 +373,7 @@ for (const source of [
   "docs/nbc-to-bootc-migration.md",
   "docs/design/overview.md",
   "docs/design/testing.md",
-]) {
-  assert(floe.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/images/floe must cite ${source}.`);
-}
+]);
 assert(floeText.includes("Floe starts without a desktop"), "/docs/images/floe must state that Floe has no desktop.");
 assert(floeText.includes("Floe has no core Flatpak set"), "/docs/images/floe must state that Floe has no core Flatpak set.");
 assert(floeText.includes("linux-image-amd64/forky"), "/docs/images/floe must name the kernel selection.");
@@ -394,7 +398,7 @@ assertSections("/docs/images/snowfield", snowfield, [
   "see-also",
   "sources",
 ]);
-for (const source of [
+assertCites("/docs/images/snowfield", snowfield, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", [
   "README.md",
   "mkosi.profiles/snowfield/mkosi.conf",
   "shared/kernel/surface/mkosi.conf",
@@ -407,9 +411,7 @@ for (const source of [
   "docs/nbc-to-bootc-migration.md",
   "docs/design/overview.md",
   "docs/design/testing.md",
-]) {
-  assert(snowfield.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/images/snowfield must cite ${source}.`);
-}
+]);
 assert(snowfieldText.includes("untested on representative Surface hardware"), "/docs/images/snowfield must state the Surface hardware limit.");
 assert(snowfieldText.includes("gate was waived for catalog inclusion"), "/docs/images/snowfield must state the Surface hardware gate waiver.");
 assert(snowfieldText.includes("same desktop as Snow"), "/docs/images/snowfield must say it shares the Snow desktop.");
@@ -434,7 +436,7 @@ assertSections("/docs/images/sundog", sundog, [
   "see-also",
   "sources",
 ]);
-for (const source of [
+assertCites("/docs/images/sundog", sundog, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", [
   "README.md",
   "mkosi.profiles/sundog/mkosi.conf",
   "shared/composition/sundog/mkosi.conf",
@@ -452,9 +454,7 @@ for (const source of [
   "docs/design/sysexts.md",
   "docs/design/testing.md",
   "docs/adr/0016-name-kde-bootc-product-sundog.md",
-]) {
-  assert(sundog.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/images/sundog must cite ${source}.`);
-}
+]);
 assert(sundogText.includes("ships only as a bootc image"), "/docs/images/sundog must state that Sundog is bootc only.");
 assert(sundogText.includes("Plasma on Wayland is the only desktop session"), "/docs/images/sundog must state the Wayland-only session limit.");
 assert(sundogText.includes("kde-plasma-desktop") && sundogText.includes("sddm-theme-breeze"), "/docs/images/sundog must name the KDE packages.");
@@ -529,7 +529,7 @@ assertSections("/docs/images/base", base, [
   "sources",
 ]);
 assert(!base.includes('id="install"'), "/docs/images/base must not render an Install section.");
-for (const source of [
+assertCites("/docs/images/base", base, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", [
   "README.md",
   "mkosi.conf",
   "mkosi.images/base/mkosi.conf",
@@ -543,9 +543,7 @@ for (const source of [
   "docs/installing.md",
   "docs/design/overview.md",
   "docs/design/sysexts.md",
-]) {
-  assert(base.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/images/base must cite ${source}.`);
-}
+]);
 assert(baseText.includes("Base is not an installer choice"), "/docs/images/base must state that Base is not an installer choice.");
 assert(baseText.includes("Firn offers only Snow, Snowfield, Sundog, and Floe"), "/docs/images/base must list the four installer choices.");
 assert(baseText.includes("snosi-update-status") && baseText.includes("/usr/lib/sysupdate."), "/docs/images/base must name the status tool and the extension definitions.");
@@ -572,7 +570,7 @@ assertSections("/docs/images/install-update", guide, [
   "see-also",
   "sources",
 ]);
-for (const source of [
+assertCites("/docs/images/install-update", guide, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", [
   "README.md",
   "docs/installing.md",
   "docs/nbc-to-bootc-migration.md",
@@ -585,9 +583,7 @@ for (const source of [
   "mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.service",
   "mkosi.images/base/mkosi.extra/usr/lib/systemd/system/bootc-update-stage.timer",
   "mkosi.images/base/mkosi.extra/usr/bin/snosi-update-status",
-]) {
-  assert(guide.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/images/install-update must cite ${source}.`);
-}
+]);
 for (const href of ["/docs/", "/docs/images/snow/", "/docs/images/snowfield/", "/docs/images/sundog/", "/docs/images/floe/", "/install"]) {
   assert(guide.includes(`href="${href}"`), `/docs/images/install-update must link ${href}.`);
 }
@@ -615,7 +611,7 @@ assertSections("/docs/tools/updex", updex, [
   "see-also",
   "sources",
 ]);
-for (const source of [
+assertCites("/docs/tools/updex", updex, "https://github.com/frostyard/updex/blob/725cd46b8933c31e71a0acc3a7a8959a9be078f6", [
   "README.md",
   "docs/design/overview.md",
   "docs/adr/0007-daemon-stages-never-activates.md",
@@ -631,16 +627,12 @@ for (const source of [
   "updex/rollback.go",
   "updex/daemon.go",
   "updex/catalog.go",
-]) {
-  assert(updex.includes(`https://github.com/frostyard/updex/blob/725cd46b8933c31e71a0acc3a7a8959a9be078f6/${source}`), `/docs/tools/updex must cite ${source}.`);
-}
-for (const source of [
+]);
+assertCites("/docs/tools/updex", updex, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", [
   "mkosi.images/base/mkosi.conf",
   "mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature",
   "docs/design/sysexts.md",
-]) {
-  assert(updex.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/updex must cite snosi ${source}.`);
-}
+], "snosi ");
 assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.0.4"), "/docs/tools/updex must link the Updex v2.0.4 release.");
 assert(updex.includes("https://github.com/frostyard/updex/pull/445"), "/docs/tools/updex must link Updex PR #445.");
 assert(updexText.includes("Extension docker (version 5+29.9.1-1~debian.13~trixie) is active. Removing requires --force and a reboot to take effect."), "/docs/tools/updex must show the exact removal refusal message.");
@@ -782,7 +774,7 @@ assertSections("/docs/tools/nsl", nsl, [
   "see-also",
   "sources",
 ]);
-for (const source of [
+assertCites("/docs/tools/nsl", nsl, "https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a93e6faf57ac228db8a6", [
   "README.md",
   "site/content/getting-started/install.md",
   "site/content/getting-started/first-machine.md",
@@ -798,12 +790,8 @@ for (const source of [
   "machines.go",
   "internal/protocol/protocol.go",
   "docs/adr/0023-local-problem-records.md",
-]) {
-  assert(nsl.includes(`https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a93e6faf57ac228db8a6/${source}`), `/docs/tools/nsl must cite ${source}.`);
-}
-for (const source of ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"]) {
-  assert(nsl.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/nsl must cite snosi ${source}.`);
-}
+]);
+assertCites("/docs/tools/nsl", nsl, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"], "snosi ");
 assert(nsl.includes("https://github.com/frostyard/firn/blob/11133e6b801fc68a7490742244aa87e0313a8acd/internal/catalog/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
 assert(nslText.includes("This guide follows nsl v0.13.0"), "/docs/tools/nsl must follow nsl v0.13.0.");
 assert(nslText.includes("systemd-nspawn containers in one shared"), "/docs/tools/nsl must say that machines are systemd-nspawn containers in the shared VM.");
@@ -846,9 +834,7 @@ assertSections("/docs/tools/igloo", igloo, [
   "see-also",
   "sources",
 ]);
-for (const source of ["README.md", "io.github.frostyard.Igloo.json", "agent/ptyxis-nsl.c"]) {
-  assert(igloo.includes(`https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd/${source}`), `/docs/tools/igloo must cite ${source}.`);
-}
+assertCites("/docs/tools/igloo", igloo, "https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd", ["README.md", "io.github.frostyard.Igloo.json", "agent/ptyxis-nsl.c"]);
 assert(igloo.includes("https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo"), "/docs/tools/igloo must cite the Snow Flathub remote.");
 assert(iglooText.includes("nsl 0.8.0 or later"), "/docs/tools/igloo must state the nsl 0.8.0 requirement.");
 assert(iglooText.includes("The Flatpak does not bundle nsl"), "/docs/tools/igloo must state that the Flatpak does not bundle nsl.");
@@ -878,12 +864,8 @@ assertSections("/docs/tools/chairlift", chairlift, [
   "see-also",
   "sources",
 ]);
-for (const source of ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml", "internal/views/featurestatus/featurestatus.go", "internal/views/actionmsg/actionmsg.go"]) {
-  assert(chairlift.includes(`https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464/${source}`), `/docs/tools/chairlift must cite ${source}.`);
-}
-for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
-  assert(chairlift.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/chairlift must cite snosi ${source}.`);
-}
+assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464", ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml", "internal/views/featurestatus/featurestatus.go", "internal/views/actionmsg/actionmsg.go"]);
+assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"], "snosi ");
 assert(chairliftText.includes("This guide follows ChairLift v0.15.0"), "/docs/tools/chairlift must follow ChairLift v0.15.0.");
 assert(chairliftText.includes("Alt+7"), "/docs/tools/chairlift must give the Help shortcut with every page visible.");
 assert(chairliftText.includes("chairlift --send-pending-reports"), "/docs/tools/chairlift must give the automatic report command.");
@@ -933,12 +915,8 @@ assertSections("/docs/tools/intuneme", intuneme, [
   "see-also",
   "sources",
 ]);
-for (const source of ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md", "site/reference/problem-records.md", "site/reference/helper-security.md", "docs/adr/0003-record-problems-with-std-problems.md"]) {
-  assert(intuneme.includes(`https://github.com/frostyard/intuneme/blob/e4d5265b3b4fef8ac4bcbee6521e32e39920f015/${source}`), `/docs/tools/intuneme must cite ${source}.`);
-}
-for (const source of ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"]) {
-  assert(intuneme.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/tools/intuneme must cite snosi ${source}.`);
-}
+assertCites("/docs/tools/intuneme", intuneme, "https://github.com/frostyard/intuneme/blob/e4d5265b3b4fef8ac4bcbee6521e32e39920f015", ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md", "site/reference/problem-records.md", "site/reference/helper-security.md", "docs/adr/0003-record-problems-with-std-problems.md"]);
+assertCites("/docs/tools/intuneme", intuneme, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"], "snosi ");
 assert(intunemeText.includes("This guide follows intuneme v0.23.0"), "/docs/tools/intuneme must follow intuneme v0.23.0.");
 assert(intunemeText.includes("writes a record to your local systemd journal") && intunemeText.includes("intuneme sends nothing over the network"), "/docs/tools/intuneme must say that problem records stay in the local journal.");
 assert(intuneme.includes('href="https://frostyard.github.io/intuneme/reference/problem-records/"'), "/docs/tools/intuneme must link intuneme's problem records reference.");
@@ -1304,7 +1282,7 @@ assertSections("/docs/sysexts/manage", manage, [
   "see-also",
   "sources",
 ]);
-for (const source of [
+assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", [
   "docs/design/sysexts.md",
   "docs/adr/0004-sysext-authoring-rules.md",
   "mkosi.images/base/mkosi.conf",
@@ -1314,10 +1292,8 @@ for (const source of [
   "mkosi.images/docker/required-paths.txt",
   "shared/sysext/postoutput/sysext-postoutput.sh",
   "shared/sysext/finalize/sysext-required-paths.sh",
-]) {
-  assert(manage.includes(`https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/${source}`), `/docs/sysexts/manage must cite ${source}.`);
-}
-for (const source of [
+]);
+assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/updex/blob/725cd46b8933c31e71a0acc3a7a8959a9be078f6", [
   "README.md",
   "docs/design/overview.md",
   "docs/specs/config-reference.md",
@@ -1334,9 +1310,7 @@ for (const source of [
   "manifest/gpg.go",
   "sysext/manager.go",
   "systemd/unit.go",
-]) {
-  assert(manage.includes(`https://github.com/frostyard/updex/blob/725cd46b8933c31e71a0acc3a7a8959a9be078f6/${source}`), `/docs/sysexts/manage must cite ${source}.`);
-}
+]);
 assert(manageText.includes("This guide follows Updex v2.2.0"), "/docs/sysexts/manage must follow Updex v2.2.0.");
 assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.2.0"), "/docs/sysexts/manage must link the Updex v2.2.0 release.");
 assert(manageText.includes("sudo updex features update &lt;name&gt;..."), "/docs/sysexts/manage must give the named-feature update command.");
