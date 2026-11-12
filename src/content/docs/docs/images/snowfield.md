@@ -201,9 +201,9 @@ desktop composition, the linux-surface kernel, and the image output format.
 | --- | --- |
 | Base | Debian Trixie userspace, systemd, the hourly update stager, Updex, and the system-extension definitions |
 | Bootc runtime | `bootc`, `libostree-1-1`, and the packages OCI bootc needs |
-| Desktop | Snow's GNOME desktop: GNOME Shell, GDM, Nautilus, Ptyxis, PipeWire, CUPS, Flatpak, and the desktop integration packages |
+| Desktop | Snow's GNOME desktop: GNOME Shell, GDM, Nautilus, Ptyxis, GNOME System Monitor, PipeWire, CUPS, Flatpak, and the desktop integration packages |
 | Kernel | `linux-image-surface`, `linux-headers-surface`, `libwacom-surface`, and `iptsd` |
-| Core Flatpak set | Snow's list: the Bazaar App Store, MissionCenter, Extension Manager, DistroShelf, and a set of GNOME apps |
+| Core Flatpak set | Snow's list: the Bazaar App Store, Extension Manager, DistroShelf, and a set of GNOME apps |
 | Containers | Podman and Distrobox, plus `systemd-container` and the Frostyard Intune integration |
 
 The table shows the main layers only. Snowfield reuses Snow's composition, so
@@ -303,6 +303,7 @@ Reviewed 2026-10-27 against snosi commit
 - [`docs/design/testing.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/testing.md)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- System monitor, reviewed 2026-11-12 against snosi commit [`d368cf7cd3228f8c6e864d1e69876debf0bc9b93`](https://github.com/frostyard/snosi/tree/d368cf7cd3228f8c6e864d1e69876debf0bc9b93) ([snosi#1280](https://github.com/frostyard/snosi/pull/1280)): [`flatpaks/snow.json`](https://github.com/frostyard/snosi/blob/d368cf7cd3228f8c6e864d1e69876debf0bc9b93/flatpaks/snow.json), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/d368cf7cd3228f8c6e864d1e69876debf0bc9b93/shared/packages/snow/mkosi.conf)
 - First-login setup, reviewed 2026-11-05 against snosi commit [`770f9a3c82c4bb7348f6c477fce08febf25554af`](https://github.com/frostyard/snosi/tree/770f9a3c82c4bb7348f6c477fce08febf25554af) ([snosi#1224](https://github.com/frostyard/snosi/pull/1224)): [`docs/adr/0028-first-login-runs-chairlift-first-run.md`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/docs/adr/0028-first-login-runs-chairlift-first-run.md), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/packages/snow/mkosi.conf)
 
 The Problems section was reviewed 2026-11-05 against snosi commit
