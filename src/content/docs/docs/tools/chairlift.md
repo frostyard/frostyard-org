@@ -110,9 +110,10 @@ See [first-run settings](https://github.com/frostyard/chairlift/blob/1cf6c02252a
 2. On the system image card, press **Stage**. When no newer image is offered, press **Check and stage** on the card instead.
 3. Enter your administrator password when you are asked.
 
-ChairLift downloads the next image and stages it. The Overview then shows
-**Restart to finish** in place of its main action, and the status bar shows
-`<version> staged`. The new version starts at your next restart.
+ChairLift downloads the next image and stages it. The status bar shows
+`<version> staged`. When no other update can run and no job runs, the
+Overview shows **Restart to finish** as its main action. The new version
+starts at your next restart.
 
 The card needs `/usr/libexec/bootc-update-stage` on a bootc system, or
 `/usr/lib/snosi/native-ab` and `/usr/libexec/snosi-sysupdate-stage` on a native
@@ -168,12 +169,15 @@ and [Manage system extensions](/docs/sysexts/manage/).
 
 One run updates every feature that is on. The toast says what happened:
 
-- At least one feature updated: `Features updated. Changes apply after reboot.`
-- Every feature was already current: `Features are already up to date.`
+- The update succeeds, every feature updated or was already current, and at
+  least one updated: `Features updated. Changes apply after reboot.`
+- The update succeeds, and every feature was already current:
+  `Features are already up to date.`
 - No feature is on: `No enabled features to update.`
 - A feature waits, is held, or failed: the toast names those features with
   their reasons, under `Waiting for a newer OS image:`, `Held by a rollback:`,
-  or `Failed:`, and it stays on screen until you close it.
+  or `Failed:`, and the features that updated, under `Updated:`. It stays on
+  screen until you close it.
 - The update fails: the toast reports the error, and stays on screen.
 
 A feature waits when a downloaded revision needs a newer OS image than the
@@ -312,8 +316,8 @@ left out of the page, or says the tool is unavailable.
 | A feature row says `waiting for a newer OS image` | `sudo bootc status` | A downloaded revision needs a newer OS image. Stage a system update and restart. The next feature update links it. If a newer image is already staged, restart into it. |
 | The feature toast says `Extensions merged, but activation did not finish` | The toast | The extensions are in place. Restart the computer to finish. |
 | A Homebrew upgrade fails and mentions an untrusted tap | The Homebrew card on Updates | Press **Trust tap** on the tap's banner, then upgrade again. |
-| The Flatpak card says an installation `could not be checked` | `flatpak remotes --user` or `--system`, then `flatpak remote-ls --updates --app` for each remote | A remote that an installed app comes from did not answer. ChairLift lists the updates from the other remotes. Try again when that remote answers. |
-| The Flatpak card says `Flatpak not installed` | `flatpak --version` | Install Flatpak, then press **Check now**. A cleanup whose tool is missing is left out of Maintenance too. |
+| The Flatpak card says an installation `could not be checked` | `flatpak remotes --user` or `flatpak remotes --system`, then `flatpak remote-ls --updates --app --user REMOTE` (or `--system`) for each remote | A remote that an installed app comes from did not answer. ChairLift lists the updates from the other remotes. Try again when that remote answers. |
+| Updates has no Flatpak card | `flatpak --version` | Flatpak is not installed. Install it, then restart ChairLift. A cleanup whose tool is missing is left out of Maintenance too. |
 | ChairLift asks for a password | The prompt | Staging an image and changing a feature need administrator authentication. ChairLift installs no passwordless rule. |
 
 ## See also

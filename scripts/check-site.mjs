@@ -881,6 +881,10 @@ assert(!chairliftText.includes("ChairLift does not install new Flatpak apps"), "
 assert(chairliftText.includes("The Apps page does not install new Flatpak apps"), "/docs/tools/chairlift must scope the Bazaar limit to the Apps page (frostyard-org#73 review).");
 assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');
 assert(chairliftText.includes("waiting for a newer OS image") && chairliftText.includes("needs image &gt;= VERSION"), "/docs/tools/chairlift must explain a feature that waits for a newer OS image.");
+assert(chairliftText.includes("and the features that updated, under `Updated:`".replace(/`/g, "")) && chairliftText.includes("every feature updated or was already current, and at least one updated"), "/docs/tools/chairlift must give the success toast only when no feature waits, is held or failed, and name the Updated: list of a mixed outcome (review of frostyard-org#107; ChairLift v0.16.0 actionmsg.go).");
+assert(!chairliftText.includes("Flatpak not installed") && !/Install Flatpak, then press Check now/.test(chairliftText), "/docs/tools/chairlift must not show a Flatpak card for a missing Flatpak: ChairLift v0.16.0 leaves an unavailable source out (review of frostyard-org#107).");
+assert(chairliftText.includes("flatpak remote-ls --updates --app --user REMOTE"), "/docs/tools/chairlift must check one remote in one installation (review of frostyard-org#107).");
+assert(chairliftText.includes("When no other update can run and no job runs, the Overview shows Restart to finish"), "/docs/tools/chairlift must say when the Overview shows Restart to finish (review of frostyard-org#107; ChairLift v0.16.0 heroStateOf).");
 assert(chairliftText.includes("ChairLift v0.16.0 builds with Go 1.27.4"), "/docs/tools/chairlift must name the Go 1.27.4 security fix.");
 assert(chairliftText.includes("Snow, Snowfield, and Sundog install ChairLift") && chairliftText.includes("Floe does not"), "/docs/tools/chairlift must name the images that have ChairLift.");
 assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chairlift must give the dry-run command.");
