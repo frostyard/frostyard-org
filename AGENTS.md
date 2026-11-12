@@ -107,6 +107,8 @@ field or enum value is a new version in a new file.
   promise). Each `why` of an L1 or L2 entry starts with a category from core's
   risk-paths spec (section B); `test/risk-paths-categories.test.mjs` checks
   it, and also checks that the list and the caller are at L1 or L2 (rule C).
+  `test/risk-paths-privacy.test.mjs` checks that the files of the privacy and
+  `/stats/` promises are at L1; add a new file of that kind to its list too.
 - Vendored files: `scripts/lib/risk-paths.mjs` and
   `scripts/check-corrections.mjs` are copies from frostyard/core, and
   `scripts/check-template.mjs` and `test/check-template.test.mjs` are copies

@@ -81,6 +81,51 @@
       "glob": "src/pages/privacy/**",
       "level": "L1",
       "why": "publication: the public privacy promise about problem report data"
+    },
+    {
+      "glob": "public/_redirects",
+      "level": "L1",
+      "why": "publication: serves /privacy and /frostmail with status 200 at the URLs that the Frostmail Google OAuth branding check fetches"
+    },
+    {
+      "glob": "src/data/privacy-contact.mjs",
+      "level": "L1",
+      "why": "publication: the controller and the contact address that the privacy pages show"
+    },
+    {
+      "glob": "src/data/problem-report-descriptions.mjs",
+      "level": "L1",
+      "why": "publication: what each problem report field holds, as the privacy page states it"
+    },
+    {
+      "glob": "src/lib/problem-report-table.mjs",
+      "level": "L1",
+      "why": "publication: builds the privacy page's table of problem report fields"
+    },
+    {
+      "glob": "src/components/ProblemReportTable.astro",
+      "level": "L1",
+      "why": "publication: renders the privacy page's table of problem report fields"
+    },
+    {
+      "glob": "src/lib/problem-stats.mjs",
+      "level": "L1",
+      "why": "publication: the small-count guard: a count from 1 to 4 never reaches /stats/"
+    },
+    {
+      "glob": "scripts/sync-problem-stats.mjs",
+      "level": "L1",
+      "why": "publication: fetches the /stats/ snapshot and keeps it only when the small-count guard accepts it"
+    },
+    {
+      "glob": "src/pages/stats.astro",
+      "level": "L1",
+      "why": "publication: the /stats/ page and its promise about small counts"
+    },
+    {
+      "glob": "scripts/lib/problem-page-checks.mjs",
+      "level": "L1",
+      "why": "publication: the site-check assertions that guard the privacy and /stats/ promises"
     }
   ]
 }
