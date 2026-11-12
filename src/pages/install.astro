@@ -1,5 +1,4 @@
 ---
-import LifecycleNotice from "../components/LifecycleNotice.astro";
 import Site from "../layouts/Site.astro";
 const products = [
   ["Snow", "GNOME desktop", "/snow"],
@@ -33,8 +32,6 @@ const artifacts = [
     <div><p class="eyebrow"><i></i> Four bootc products</p><h2 id="choose-product">Pick the role.<br />Keep the supported path.</h2></div>
     <div class="product-grid">{products.map(([name, role, href], index) => <a href={href}><b>0{index + 1}</b><strong>{name}</strong><span>{role}</span></a>)}</div>
   </section>
-
-  <LifecycleNotice />
 
   <section class="verification" aria-labelledby="verify-installer">
     <div>
