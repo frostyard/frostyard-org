@@ -317,7 +317,7 @@ left out of the page, or says the tool is unavailable.
 | The feature toast says `Extensions merged, but activation did not finish` | The toast | The extensions are in place. Restart the computer to finish. |
 | A Homebrew upgrade fails and mentions an untrusted tap | The Homebrew card on Updates | Press **Trust tap** on the tap's banner, then upgrade again. |
 | The Flatpak card says an installation `could not be checked` | `flatpak remotes --user` or `flatpak remotes --system`, then `flatpak remote-ls --updates --app --user REMOTE` (or `--system`) for each remote | A remote that an installed app comes from did not answer. ChairLift lists the updates from the other remotes. Try again when that remote answers. |
-| Updates has no Flatpak card | `flatpak --version` | Flatpak is not installed. Install it, then restart ChairLift. A cleanup whose tool is missing is left out of Maintenance too. |
+| Updates has no Flatpak card | `flatpak --version`, then `flatpak_updates_group` under `updates_page` in `/etc/chairlift/config.yml` | If Flatpak is missing, install it, then restart ChairLift. A cleanup whose tool is missing is left out of Maintenance too. If Flatpak is installed, the group is set to `enabled: false`: turn it on and restart ChairLift. |
 | ChairLift asks for a password | The prompt | Staging an image and changing a feature need administrator authentication. ChairLift installs no passwordless rule. |
 
 ## See also
