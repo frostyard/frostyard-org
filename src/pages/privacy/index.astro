@@ -46,7 +46,7 @@ const sources: Array<[string, string, string]> = [
 
   <h3 id="frostmail-access">What Frostmail accesses</h3>
   <p>When you add a Google account, Frostmail signs in with Google OAuth. It asks for the Gmail scope, and for the scope of each other service that you turn on. When you add a Gmail account, you choose Contacts, Calendars and Tasks. All 3 start checked.</p>
-  <p>No Frostmail release includes a Frostyard Google client yet. Until one does, you sign in with a Google client that you create in your own Google Cloud project, and Google shows the app name that you set in that project, at sign-in and in your Google Account. The scopes, the storage and the promises on this page are the same for both clients.</p>
+  <p>No Frostmail release includes a Frostyard Google client yet. Until one does, you sign in with a Google client that you create in your own Google Cloud project, and Google shows the app name of that project's OAuth consent screen (<em>Google Auth Platform</em> &gt; <em>Branding</em>), at sign-in and in your Google Account. It does not show the name of the OAuth client. The scopes, the storage and the promises on this page are the same for both clients.</p>
   <table class="scopes">
     <thead><tr><th scope="col">Scope</th><th scope="col">Service</th><th scope="col">Use</th></tr></thead>
     <tbody>{scopes.map(([scope, service, use]) => <tr><td><code>{scope}</code></td><td>{service}</td><td>{use}</td></tr>)}</tbody>
@@ -92,7 +92,7 @@ const sources: Array<[string, string, string]> = [
 
   <h3 id="frostmail-remove">Revoke access and delete your data</h3>
   <ul>
-    <li><strong>Revoke access.</strong> Open your Google Account, then <em>Security</em> &gt; <em>Your connections to third-party apps &amp; services</em> (<a href="https://myaccount.google.com/connections">myaccount.google.com/connections</a>). Select Frostmail, or the app name that you set in your own Google Cloud project, and remove its access. Frostmail then cannot reach your Google data.</li>
+    <li><strong>Revoke access.</strong> Open your Google Account, then <em>Security</em> &gt; <em>Your connections to third-party apps &amp; services</em> (<a href="https://myaccount.google.com/connections">myaccount.google.com/connections</a>). Select Frostmail, or the app name of your own OAuth consent screen, and remove its access. Frostmail then cannot reach your Google data.</li>
     <li><strong>Remove an account.</strong> In Frostmail, choose <em>Settings</em> &gt; <em>Accounts</em> &gt; <em>Remove Account</em>, or run <code>mailctl account rm ID</code>. Frostmail deletes the account's messages, contacts, events and tasks from its database, and tries to delete its password and refresh token. The message files in the data folder, the cache, and the names and organizations in the People list can stay. To remove them, delete all local data as below. The mail on Google's servers does not change.</li>
     <li><strong>Delete all local data.</strong> Quit Frostmail, and keep it closed until you finish: an open app starts <code>maild</code> again. Then stop <code>maild</code>, so that it does not write the files again:
       <ul>

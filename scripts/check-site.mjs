@@ -237,6 +237,10 @@ assert(sitePrivacyText.includes("A token with the ;write scope also lets the age
 // internal/render/remote.go CheckRedirect), so the page must not promise that
 // a tracker is never contacted.
 assert(sitePrivacyText.includes("but it does not check the target of a redirect") && !sitePrivacyText.includes("Known trackers are never fetched") && !sitePrivacyText.includes("Known trackers stay blocked"), "/privacy must not promise that known trackers are never fetched: a redirect target gets no tracker check.");
+// Owner re-review of frostyard-org#113 at 912855f: Google shows the app name
+// of the OAuth consent screen (Branding), never the OAuth client's name
+// (Frostmail v0.7.0 docs/design/accounts.md, a personal Google client).
+assert(sitePrivacyText.includes("Google shows the app name of that project's OAuth consent screen") && sitePrivacyText.includes("It does not show the name of the OAuth client.") && sitePrivacyText.includes("the app name of your own OAuth consent screen") && !sitePrivacyText.includes("name of your own Google client"), "/privacy must say that Google shows the consent screen's app name, not the OAuth client's name.");
 assert(!sitePrivacyText.includes("not Frostmail, at sign-in"), "/privacy must not say that Google never shows Frostmail: Google shows the app name that the user set in their own project.");
 assert(sitePrivacyText.includes("No Frostmail release includes a Frostyard Google client yet."), "/privacy must not imply that a Frostyard Google client ships today: users of Frostmail v0.7.0 sign in with their own client.");
 assert(sitePrivacyText.includes("On Linux, only your user can read it (mode 0600).") && !sitePrivacyText.includes("readable only by your user"), "/privacy must limit the 0600 promise of secrets.json to Linux (Windows checks no mode).");
