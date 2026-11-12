@@ -145,6 +145,7 @@ runs as the system user `frostmail` on lodge's host. To check the release
 
 ## See also
 
+- [Frostmail privacy policy](/privacy)
 - [lodge](/docs/apps/lodge/)
 - [Frostnotes](/docs/apps/frostnotes/)
 - [Porter](/docs/apps/porter/)

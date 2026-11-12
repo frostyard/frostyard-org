@@ -17,6 +17,7 @@ export default defineConfig({
       disable404Route: true,
       components: {
         MobileMenuToggle: "./src/components/starlight/MobileMenuToggle.astro",
+        Footer: "./src/components/starlight/Footer.astro",
       },
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
       sidebar: [

@@ -1,8 +1,8 @@
 ---
 import "../styles/global.css";
-interface Props { title: string; description: string; active?: string; footerLabel?: string; footerHref?: string }
-const { title, description, active, footerLabel = "github.com/frostyard/snosi ↗", footerHref = "https://github.com/frostyard/snosi" } = Astro.props;
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+interface Props { title: string; description: string; active?: string; footerLabel?: string; footerHref?: string; canonicalPath?: string }
+const { title, description, active, footerLabel = "github.com/frostyard/snosi ↗", footerHref = "https://github.com/frostyard/snosi", canonicalPath } = Astro.props;
+const canonicalUrl = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
 const links: Array<[string, string, string]> = [
   ["Images", "/#images", "images"],
   ["Install", "/install", "install"],
@@ -46,6 +46,7 @@ const links: Array<[string, string, string]> = [
     <footer>
       <a class="brand" href="/"><span class="flake">❄</span> frostyard</a>
       <p>Cold systems. Clear boundaries.</p>
+      <a class="footer-privacy" href="/privacy">Privacy</a>
       <a href={footerHref}>{footerLabel}</a>
     </footer>
   </body>

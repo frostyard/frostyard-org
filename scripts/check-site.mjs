@@ -200,6 +200,35 @@ assert(tools.includes("sudo updex features enable &lt;feature&gt; --now"), "Tool
 const redirects = await readFile(new URL("_redirects", dist), "utf8");
 assert(/^\/cayo\s+\/floe\s+301$/m.test(redirects), "/cayo must remain a permanent redirect to /floe.");
 
+// Google's OAuth branding check for Frostmail fetches the home page and the
+// privacy policy at the URLs entered in Google Auth Platform. Both must answer
+// 200 without a trailing slash, and every page must link the policy.
+assert(/^\/privacy\s+\/privacy\/\s+200$/m.test(redirects), "_redirects must serve /privacy/ at /privacy with status 200 (the Frostmail Google branding URL).");
+assert(/^\/frostmail\s+\/frostmail\/\s+200$/m.test(redirects), "_redirects must serve /frostmail/ at /frostmail with status 200.");
+for (const file of await htmlFiles(dist)) {
+  const html = await readFile(file, "utf8");
+  if (!html.includes("<footer")) continue;
+  assert(html.includes('href="/privacy"'), `${pageName(dist, file)} must link the privacy policy at /privacy in its footer.`);
+}
+const sitePrivacy = await readRoute("/privacy");
+// textOf puts a space where a tag was; a link before a comma or a full stop
+// must not change the sentence.
+const sitePrivacyText = textOf(sitePrivacy).replace(/ ([.,])/g, "$1");
+assert(sitePrivacyText.includes("Frostmail's use and transfer to any other app of information received from Google APIs will adhere to the Google API Services User Data Policy, including the Limited Use requirements."), "/privacy must carry Google's Limited Use statement for Frostmail word for word.");
+assert(sitePrivacy.includes('href="https://developers.google.com/terms/api-services-user-data-policy"'), "/privacy must link the Google API Services User Data Policy.");
+for (const scope of ["https://mail.google.com/", "https://www.googleapis.com/auth/carddav", "https://www.googleapis.com/auth/calendar", "https://www.googleapis.com/auth/tasks"]) {
+  assert(new RegExp(`<code[^>]*>${scope.replace(/[.\/]/g, "\\$&")}</code>`).test(sitePrivacy), `/privacy must name the Google scope ${scope} that Frostmail v0.7.0 requests.`);
+}
+assert(sitePrivacyText.includes("FROSTMAIL_SECRETS=file") && sitePrivacyText.includes("not encrypted"), "/privacy must say that FROSTMAIL_SECRETS=file keeps the secrets in a file that is not encrypted.");
+assert(sitePrivacy.includes('href="mailto:privacy@frostyard.org"'), "/privacy must link the privacy contact.");
+assert(sitePrivacy.includes('<link rel="canonical" href="https://frostyard.org/privacy">'), "/privacy must name https://frostyard.org/privacy as its canonical URL.");
+const frostmailHome = await readRoute("/frostmail");
+assert(/<h1[^>]*>Frostmail<\/h1>/.test(frostmailHome), "/frostmail/ must name the app Frostmail in its heading, as the OAuth consent screen does.");
+assert((frostmailHome.match(/href="\/privacy"/g) ?? []).length >= 2, "/frostmail/ must link the privacy policy at /privacy in its body, not only in the footer.");
+assert(frostmailHome.includes('href="/docs/apps/frostmail/#install"'), "/frostmail/ must link the install steps.");
+const siteHome = await readRoute("/");
+assert(siteHome.includes('href="/privacy"'), "/ must link the privacy policy at /privacy.");
+
 const docsBuilt = await htmlFiles(new URL("docs/", dist));
 assert(docsBuilt.length === docsRoutes.length, `The docs pilot must build exactly ${docsRoutes.length} pages.`);
 

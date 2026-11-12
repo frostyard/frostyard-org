@@ -1,0 +1,33 @@
+---
+// Frostmail's home page: the page that Frostmail's Google OAuth consent
+// screen names. It must stand alone: the app's name, what it does, where it
+// runs, how to get it, and a link to the privacy policy at /privacy.
+import Document from "../layouts/Document.astro";
+
+const repo = "https://github.com/frostyard/frostmail";
+---
+<Document title="Frostmail | Frostyard" description="Frostmail is a desktop mail client from Frostyard for Linux and Windows. It reads, searches and sends your mail, with your contacts, calendars and tasks beside it." eyebrow="App" heading="Frostmail" canonicalPath="/frostmail/">
+  <p class="lede">Frostmail is a desktop mail client from Frostyard, for Linux and Windows. It reads, searches and sends your mail, and it keeps your contacts, calendars and tasks beside it. It works like Apple Mail.app.</p>
+  <p>Frostmail is free and open source, under the MIT license. It is pre-release. The latest release is <a href={`${repo}/releases/tag/v0.7.0`}>v0.7.0</a>.</p>
+
+  <h2 id="what-it-does">What it does</h2>
+  <ul>
+    <li>Syncs, reads, searches and sends mail for Gmail, iCloud, Outlook.com and any IMAP account.</li>
+    <li>Shows and edits your contacts, calendars and tasks, over CardDAV, CalDAV, Google Tasks and Microsoft Graph. You answer invitations from the message.</li>
+    <li>Keeps a copy of your mail on your computer, with full-text search.</li>
+    <li>Rules, smart mailboxes, VIPs, Send Later and Remind Me.</li>
+  </ul>
+
+  <h2 id="google">Your Google account</h2>
+  <p>Frostmail signs in to Google with OAuth. It uses Gmail over IMAP and SMTP, and Google Contacts, Calendar and Tasks for the services that you turn on. Frostmail connects from your computer to Google. Frostyard runs no server in between, and Frostyard never receives your data. The <a href="/privacy">Frostmail privacy policy</a> lists each Google permission, where Frostmail keeps your data, and how to remove it.</p>
+
+  <h2 id="get-frostmail">Get Frostmail</h2>
+  <ul>
+    <li><strong>Linux:</strong> install the Flatpak <code>org.frostyard.Frostmail</code> from the Frostyard Flatpak remote. <a href="/docs/apps/frostmail/#install">The install steps</a> are in the Frostmail guide.</li>
+    <li><strong>Windows:</strong> build the installer from source. The <a href={`${repo}/blob/main/docs/design/desktop.md#windows`}>Windows build</a> has the steps.</li>
+    <li><strong>Source and documentation:</strong> <a href={repo}>github.com/frostyard/frostmail</a>, and the <a href="/docs/apps/frostmail/">Frostmail guide</a> on this site.</li>
+  </ul>
+
+  <h2 id="privacy">Privacy</h2>
+  <p>Read the <a href="/privacy">Frostmail privacy policy</a>.</p>
+</Document>

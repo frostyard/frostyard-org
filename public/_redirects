@@ -1,0 +1,6 @@
+# Cloudflare serves a page at /name/ and sends /name to it with a 307.
+# These pages must also answer 200 at /name, because the Google OAuth
+# branding check of Frostmail fetches the URLs as they are entered there.
+# A 200 rule serves the target page without a redirect.
+/privacy /privacy/ 200
+/frostmail /frostmail/ 200
