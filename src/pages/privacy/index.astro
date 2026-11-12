@@ -46,7 +46,7 @@ const sources: Array<[string, string, string]> = [
 
   <h3 id="frostmail-access">What Frostmail accesses</h3>
   <p>When you add a Google account, Frostmail signs in with Google OAuth. It asks for the Gmail scope, and for the scope of each other service that you turn on. When you add a Gmail account, you choose Contacts, Calendars and Tasks. All 3 start checked.</p>
-  <p>No Frostmail release includes a Frostyard Google client yet. Until one does, you sign in with a Google client that you create in your own Google Cloud project, and Google shows the name of that client, not Frostmail, at sign-in and in your Google Account. The scopes, the storage and the promises on this page are the same for both clients.</p>
+  <p>No Frostmail release includes a Frostyard Google client yet. Until one does, you sign in with a Google client that you create in your own Google Cloud project, and Google shows the app name that you set in that project, at sign-in and in your Google Account. The scopes, the storage and the promises on this page are the same for both clients.</p>
   <table class="scopes">
     <thead><tr><th scope="col">Scope</th><th scope="col">Service</th><th scope="col">Use</th></tr></thead>
     <tbody>{scopes.map(([scope, service, use]) => <tr><td><code>{scope}</code></td><td>{service}</td><td>{use}</td></tr>)}</tbody>
@@ -78,7 +78,7 @@ const sources: Array<[string, string, string]> = [
   <h3 id="frostmail-sharing">What leaves your computer</h3>
   <ul>
     <li><strong>Your mail provider.</strong> Frostmail talks to Google's servers: <code>imap.gmail.com</code>, <code>smtp.gmail.com</code>, and Google's CardDAV, CalDAV, Tasks and OAuth endpoints. Mail that you send goes to its recipients through Google.</li>
-    <li><strong>Remote images.</strong> Remote content in a message stays blocked until you choose <em>Load Remote Content</em>. Then Frostmail fetches it from the hosts that the message names, with no cookies and no <code>Referer</code>. Known trackers are never fetched.</li>
+    <li><strong>Remote images.</strong> Remote content in a message stays blocked until you choose <em>Load Remote Content</em>. Then Frostmail fetches it from the hosts that the message names, with no cookies and no <code>Referer</code>, and follows up to 3 redirects to other hosts. Frostmail does not fetch an image URL that it recognizes as a tracker, but it does not check the target of a redirect.</li>
     <li><strong>Unsubscribe.</strong> Frostmail contacts a sender to unsubscribe only when you click.</li>
     <li><strong>Account setup.</strong> For a provider that Frostmail does not know, setup asks the domain's own autoconfig server for its settings, with your address, and Thunderbird's ISPDB, with the domain only, and it looks up the domain's DNS SRV records. A <code>gmail.com</code> or <code>googlemail.com</code> address skips this step.</li>
     <li><strong>lodge, if you choose it.</strong> <a href="/docs/apps/lodge/">lodge</a> is a server that you run on your own host. If you connect Frostmail to it in Settings, the app uses a <code>maild</code> on that host, and your mail data lives there. Nothing turns this on for you.</li>
@@ -92,7 +92,7 @@ const sources: Array<[string, string, string]> = [
 
   <h3 id="frostmail-remove">Revoke access and delete your data</h3>
   <ul>
-    <li><strong>Revoke access.</strong> Open your Google Account, then <em>Security</em> &gt; <em>Your connections to third-party apps &amp; services</em> (<a href="https://myaccount.google.com/connections">myaccount.google.com/connections</a>). Select Frostmail, or the name of your own Google client, and remove its access. Frostmail then cannot reach your Google data.</li>
+    <li><strong>Revoke access.</strong> Open your Google Account, then <em>Security</em> &gt; <em>Your connections to third-party apps &amp; services</em> (<a href="https://myaccount.google.com/connections">myaccount.google.com/connections</a>). Select Frostmail, or the app name that you set in your own Google Cloud project, and remove its access. Frostmail then cannot reach your Google data.</li>
     <li><strong>Remove an account.</strong> In Frostmail, choose <em>Settings</em> &gt; <em>Accounts</em> &gt; <em>Remove Account</em>, or run <code>mailctl account rm ID</code>. Frostmail deletes the account's messages, contacts, events and tasks from its database, and tries to delete its password and refresh token. The message files in the data folder, the cache, and the names and organizations in the People list can stay. To remove them, delete all local data as below. The mail on Google's servers does not change.</li>
     <li><strong>Delete all local data.</strong> Quit Frostmail, and keep it closed until you finish: an open app starts <code>maild</code> again. Then stop <code>maild</code>, so that it does not write the files again:
       <ul>

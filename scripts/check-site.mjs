@@ -232,6 +232,12 @@ assert(sitePrivacyText.includes("The message files in the data folder, the cache
 // ;write and send mail with ;send, and no Frostmail release ships a Frostyard
 // Google client yet (Frostmail v0.7.0 docs/specs/lodge-app.md, internal/oauth/oauth.go).
 assert(sitePrivacyText.includes("A token with the ;write scope also lets the agent flag and move messages, write drafts, create and complete tasks, and set Remind Me.") && sitePrivacyText.includes("A token with the ;send scope also lets it send a draft.") && sitePrivacyText.includes("Porter, the lodge assistant, gets a ;write token"), "/privacy must say what an agent token with ;write and ;send can do, and that Porter has ;write.");
+// Extra cross-review of frostyard-org#113 at 912855f: the remote fetcher
+// follows redirects without the tracker check (Frostmail v0.7.0
+// internal/render/remote.go CheckRedirect), so the page must not promise that
+// a tracker is never contacted.
+assert(sitePrivacyText.includes("but it does not check the target of a redirect") && !sitePrivacyText.includes("Known trackers are never fetched") && !sitePrivacyText.includes("Known trackers stay blocked"), "/privacy must not promise that known trackers are never fetched: a redirect target gets no tracker check.");
+assert(!sitePrivacyText.includes("not Frostmail, at sign-in"), "/privacy must not say that Google never shows Frostmail: Google shows the app name that the user set in their own project.");
 assert(sitePrivacyText.includes("No Frostmail release includes a Frostyard Google client yet."), "/privacy must not imply that a Frostyard Google client ships today: users of Frostmail v0.7.0 sign in with their own client.");
 assert(sitePrivacyText.includes("On Linux, only your user can read it (mode 0600).") && !sitePrivacyText.includes("readable only by your user"), "/privacy must limit the 0600 promise of secrets.json to Linux (Windows checks no mode).");
 assert(sitePrivacy.includes('<link rel="canonical" href="https://frostyard.org/privacy">'), "/privacy must name https://frostyard.org/privacy as its canonical URL.");
