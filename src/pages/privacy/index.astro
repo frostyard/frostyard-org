@@ -69,7 +69,7 @@ const sources: Array<[string, string, string]> = [
         <li>On a Linux desktop, the desktop keyring (the Secret Service).</li>
         <li>On Windows, the file <code>secrets.dpapi</code>, sealed for your Windows sign-in.</li>
         <li>On a lodge host, the file <code>secrets.sealed</code>, encrypted with AES-256-GCM under a systemd credential.</li>
-        <li>With <code>FROSTMAIL_SECRETS=file</code>, which you set yourself, the file <code>secrets.json</code> beside the database. This file is <strong>not encrypted</strong>: it holds the secrets as plain text, readable only by your user (mode 0600). A build from source falls back to this file when the desktop has no keyring. The Flatpak never does.</li>
+        <li>With <code>FROSTMAIL_SECRETS=file</code>, which you set yourself, the file <code>secrets.json</code> beside the database. This file is <strong>not encrypted</strong>: it holds the secrets as plain text. On Linux, only your user can read it (mode 0600). On Windows, the permissions of your user profile folder protect it. A build from source falls back to this file when the desktop has no keyring. The Flatpak never does.</li>
       </ul>
     </li>
   </ul>
@@ -92,8 +92,15 @@ const sources: Array<[string, string, string]> = [
   <h3 id="frostmail-remove">Revoke access and delete your data</h3>
   <ul>
     <li><strong>Revoke access.</strong> Open your Google Account, then <em>Security</em> &gt; <em>Your connections to third-party apps &amp; services</em> (<a href="https://myaccount.google.com/connections">myaccount.google.com/connections</a>). Select Frostmail, and remove its access. Frostmail then cannot reach your Google data.</li>
-    <li><strong>Remove an account.</strong> In Frostmail, choose <em>Settings</em> &gt; <em>Accounts</em> &gt; <em>Remove Account</em>, or run <code>mailctl account rm ID</code>. Frostmail deletes the account's mail, contacts, calendars and tasks from its database, and tries to delete its password and refresh token. The mail on Google's servers does not change.</li>
-    <li><strong>Delete everything.</strong> For the Flatpak, run <code>flatpak uninstall --delete-data org.frostyard.Frostmail</code>. Its keyring items stay; <code>secret-tool clear application org.frostyard.Frostmail</code> removes them. For other installs, delete the folders listed above, and <code>secrets.json</code> if you use it.</li>
+    <li><strong>Remove an account.</strong> In Frostmail, choose <em>Settings</em> &gt; <em>Accounts</em> &gt; <em>Remove Account</em>, or run <code>mailctl account rm ID</code>. Frostmail deletes the account's messages, contacts, events and tasks from its database, and tries to delete its password and refresh token. The message files in the data folder, the cache, and the names and organizations in the People list can stay. To remove them, delete all local data as below. The mail on Google's servers does not change.</li>
+    <li><strong>Delete all local data.</strong> Quit Frostmail first.
+      <ul>
+        <li>The Flatpak: run <code>flatpak uninstall --delete-data org.frostyard.Frostmail</code>. Its keyring items stay; <code>secret-tool clear application org.frostyard.Frostmail</code> removes them.</li>
+        <li>A build from source on Linux: delete <code>~/.local/share/frostmail</code> and <code>~/.cache/frostmail</code>. Its keyring items stay; <code>secret-tool clear application frostmail</code> removes them. Its log lines are in the systemd journal, which drops them by its own retention.</li>
+        <li>Windows: delete <code>%LOCALAPPDATA%\Frostmail\Data</code> and <code>%LOCALAPPDATA%\Frostmail\Cache</code>. The secrets file is in <code>Data</code>.</li>
+        <li>A lodge host: its data is apart from your desktop's, and deleting the desktop's folders does not touch it. On the host, stop <code>frostmail.service</code>, and delete <code>/var/lib/frostmail</code> and <code>/var/cache/frostmail</code>. The secrets file is in <code>/var/lib/frostmail</code>.</li>
+      </ul>
+    </li>
   </ul>
 
   <h2 id="problem-reports">Problem reports</h2>

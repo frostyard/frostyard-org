@@ -221,6 +221,14 @@ for (const scope of ["https://mail.google.com/", "https://www.googleapis.com/aut
 }
 assert(sitePrivacyText.includes("FROSTMAIL_SECRETS=file") && sitePrivacyText.includes("not encrypted"), "/privacy must say that FROSTMAIL_SECRETS=file keeps the secrets in a file that is not encrypted.");
 assert(sitePrivacy.includes('href="mailto:privacy@frostyard.org"'), "/privacy must link the privacy contact.");
+// Cross-review of frostyard-org#113: the delete steps must cover every
+// install and its keyring namespace, account removal must not promise to
+// remove everything, and the 0600 mode holds on Unix only.
+for (const step of ["secret-tool clear application org.frostyard.Frostmail", "secret-tool clear application frostmail", "/var/lib/frostmail", "/var/cache/frostmail", "%LOCALAPPDATA%\\Frostmail\\Data"]) {
+  assert(sitePrivacyText.includes(step), `/privacy must give the delete step "${step}" (Frostmail v0.7.0 keeps data and secrets there).`);
+}
+assert(sitePrivacyText.includes("The message files in the data folder, the cache, and the names and organizations in the People list can stay."), "/privacy must say what an account removal leaves (Frostmail v0.7.0 DeleteAccount removes no blob and no people row).");
+assert(sitePrivacyText.includes("On Linux, only your user can read it (mode 0600).") && !sitePrivacyText.includes("readable only by your user"), "/privacy must limit the 0600 promise of secrets.json to Linux (Windows checks no mode).");
 assert(sitePrivacy.includes('<link rel="canonical" href="https://frostyard.org/privacy">'), "/privacy must name https://frostyard.org/privacy as its canonical URL.");
 const frostmailHome = await readRoute("/frostmail");
 assert(/<h1[^>]*>Frostmail<\/h1>/.test(frostmailHome), "/frostmail/ must name the app Frostmail in its heading, as the OAuth consent screen does.");
