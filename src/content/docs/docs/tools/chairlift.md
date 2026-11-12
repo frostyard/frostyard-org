@@ -70,7 +70,7 @@ Help is a dialog, not a page: `F1`, the main menu or the command palette opens
 it. It holds the links to the project website, the issue tracker and the
 community chat.
 
-From v0.15.0, `chairlift --send-pending-reports` sends pending problem reports with no window, as **Send automatically** does. It sends nothing, and says why, when reporting is off, when the mode is **Ask each time**, or when `problems_reporting_group` is off ([Hide a group or a page](#hide-a-group-or-a-page)). It exits 1 after a configuration error or a failed send, and 0 otherwise. See [the Problems page settings](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/reference.md#problems-page-problems_page-the-problems-page).
+From v0.15.0, `chairlift --send-pending-reports` sends pending problem reports with no window, as **Send automatically** does. It sends nothing, and says why, for example when reporting is off, when the mode is **Ask each time**, or when `problems_reporting_group` is off ([Hide a group or a page](#hide-a-group-or-a-page)). It exits 1 after a configuration error or a failed send, and 0 otherwise. See [the Problems page settings](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/reference.md#problems-page-problems_page-the-problems-page).
 
 ## First-login setup
 
@@ -112,8 +112,8 @@ See [first-run settings](https://github.com/frostyard/chairlift/blob/1cf6c02252a
 
 ChairLift downloads the next image and stages it. The status bar shows
 `<version> staged`. When no other update can run and no job runs, the
-Overview shows **Restart to finish** as its main action. The new version
-starts at your next restart.
+Overview headline says `Restart to finish`. ChairLift does not restart the
+computer. The new version starts when you restart it.
 
 The card needs `/usr/libexec/bootc-update-stage` on a bootc system, or
 `/usr/lib/snosi/native-ab` and `/usr/libexec/snosi-sysupdate-stage` on a native
@@ -141,7 +141,7 @@ From v0.12.0, the Updates page has a firmware card. It lists device firmware
 updates from the Linux Vendor Firmware Service (fwupd). It shows only when
 `fwupdmgr` is installed, and every Frostyard image installs fwupd.
 
-You install 1 device at a time. ChairLift asks you to confirm first: keep the computer on power and do not unplug the device. It does not restart the computer. When the device needs a restart or a shutdown, ChairLift says so, and you do it yourself.
+You install 1 device at a time. ChairLift asks you to confirm first: do not turn off or unplug the computer during the update, and keep the power connected. Some devices restart or disconnect while they update. It does not restart the computer. When the device needs a restart or a shutdown, ChairLift says so, and you do it yourself.
 
 A device that fwupd will not update now, for example with the lid closed or on battery power, stays in the list with its reason and no install button. fwupd, not ChairLift, asks for authentication, with its own PolicyKit actions.
 
@@ -314,7 +314,7 @@ left out of the page, or says the tool is unavailable.
 | No system image card on Updates | `sudo bootc status` and `ls /usr/libexec/bootc-update-stage` | The card needs a booted bootc deployment and that helper, or the native A/B marker and its helper. |
 | Features says **Feature Manager Not Available** | `updex features list` | Updex is not set up on this system. See [Updex](/docs/tools/updex/). |
 | A feature row says `waiting for a newer OS image` | `sudo bootc status` | A downloaded revision needs a newer OS image. Stage a system update and restart. The next feature update links it. If a newer image is already staged, restart into it. |
-| The feature toast says `Extensions merged, but activation did not finish` | The toast | The extensions are in place. Restart the computer to finish. |
+| The feature toast says `activation did not finish` | The toast | The extensions are in place. Restart the computer to finish. |
 | A Homebrew upgrade fails and mentions an untrusted tap | The Homebrew card on Updates | Press **Trust tap** on the tap's banner, then upgrade again. |
 | The Flatpak card says an installation `could not be checked` | `flatpak remotes --user` or `flatpak remotes --system`, then `flatpak remote-ls --updates --app --user REMOTE` (or `--system`) for each remote | A remote that an installed app comes from did not answer. ChairLift lists the updates from the other remotes. Try again when that remote answers. |
 | Updates has no Flatpak card | `flatpak --version`, then `flatpak_updates_group` under `updates_page` in `/etc/chairlift/config.yml` | If Flatpak is missing, install it, then restart ChairLift. A cleanup whose tool is missing is left out of Maintenance too. If Flatpak is installed, the group is set to `enabled: false`: turn it on and restart ChairLift. |
@@ -341,5 +341,6 @@ Reviewed 2026-11-11.
 - ChairLift release v0.12.0 commit [`64245bc9852c4171e9b55b46048d8cf64e7a0f47`](https://github.com/frostyard/chairlift/tree/64245bc9852c4171e9b55b46048d8cf64e7a0f47), released 2026-11-04 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.12.0)); [chairlift#257](https://github.com/frostyard/chairlift/pull/257), [chairlift#258](https://github.com/frostyard/chairlift/pull/258).
 - [`docs/adr/0012-firmware-updates-use-fwupds-own-polkit.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/adr/0012-firmware-updates-use-fwupds-own-polkit.md) (fwupd authenticates the install), [`docs/adr/0013-firmware-updates-are-on-by-default.md`](https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/adr/0013-firmware-updates-are-on-by-default.md).
 - snosi commit [`42677d1514096716069bbb13b785d9f5814b14be`](https://github.com/frostyard/snosi/tree/42677d1514096716069bbb13b785d9f5814b14be): [`mkosi.images/base/mkosi.conf`](https://github.com/frostyard/snosi/blob/42677d1514096716069bbb13b785d9f5814b14be/mkosi.images/base/mkosi.conf#L121-L123) (fwupd in every image).
-- snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf).
+- snosi commit [`55898754f678c81ae83c4e218679647311932be0`](https://github.com/frostyard/snosi/tree/55898754f678c81ae83c4e218679647311932be0) (`main` on 2026-11-12): [`mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage`](https://github.com/frostyard/snosi/blob/55898754f678c81ae83c4e218679647311932be0/mkosi.images/base/mkosi.extra/usr/libexec/bootc-update-stage) (the base image still has the bootc helper).
+- snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf).
 - [Duncan's review: package downgrade (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
