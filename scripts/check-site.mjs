@@ -228,6 +228,11 @@ for (const step of ["Quit Frostmail, and keep it closed until you finish", "Then
   assert(sitePrivacyText.includes(step), `/privacy must give the delete step "${step}" (Frostmail v0.7.0 keeps data and secrets there).`);
 }
 assert(sitePrivacyText.includes("The message files in the data folder, the cache, and the names and organizations in the People list can stay."), "/privacy must say what an account removal leaves (Frostmail v0.7.0 DeleteAccount removes no blob and no people row).");
+// Owner review of frostyard-org#113: an agent token can change data with
+// ;write and send mail with ;send, and no Frostmail release ships a Frostyard
+// Google client yet (Frostmail v0.7.0 docs/specs/lodge-app.md, internal/oauth/oauth.go).
+assert(sitePrivacyText.includes("A token with the ;write scope also lets the agent flag and move messages, write drafts, create and complete tasks, and set Remind Me.") && sitePrivacyText.includes("A token with the ;send scope also lets it send a draft.") && sitePrivacyText.includes("Porter, the lodge assistant, gets a ;write token"), "/privacy must say what an agent token with ;write and ;send can do, and that Porter has ;write.");
+assert(sitePrivacyText.includes("No Frostmail release includes a Frostyard Google client yet."), "/privacy must not imply that a Frostyard Google client ships today: users of Frostmail v0.7.0 sign in with their own client.");
 assert(sitePrivacyText.includes("On Linux, only your user can read it (mode 0600).") && !sitePrivacyText.includes("readable only by your user"), "/privacy must limit the 0600 promise of secrets.json to Linux (Windows checks no mode).");
 assert(sitePrivacy.includes('<link rel="canonical" href="https://frostyard.org/privacy">'), "/privacy must name https://frostyard.org/privacy as its canonical URL.");
 const frostmailHome = await readRoute("/frostmail");
