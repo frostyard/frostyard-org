@@ -3,7 +3,7 @@ title: Frostnotes
 description: "Frostnotes is a notes app in the spirit of Obsidian: plain markdown files, sync, a desktop app, and MCP for agents. Pre-release; install the desktop app from the Frostyard Flatpak remote."
 follows:
   repo: frostyard/frostnotes
-  tag: v0.4.0
+  tag: v0.5.0
 ---
 
 Frostnotes is a notes app in the spirit of Obsidian. Your notes are plain
@@ -12,10 +12,10 @@ want notes that sync between your devices and that agents can read and write.
 
 - `notesd` is a Go daemon. It watches your files and keeps a SQLite index.
 - Each device syncs with a self-hosted hub. There are no conflict copies.
-- The desktop app is Tauri v2 with a CodeMirror 6 editor. It is a sibling of
-  [Frostmail](/docs/apps/frostmail/).
-- The web app is the same UI, served by [lodge](/docs/apps/lodge/). A narrow
-  screen gets a phone layout.
+- The desktop app is a native Go app on MyGo and frostui, with live preview.
+  It is a sibling of [Frostmail](/docs/apps/frostmail/).
+- The web app is a React UI with a CodeMirror 6 editor, served by
+  [lodge](/docs/apps/lodge/). A narrow screen gets a phone layout.
 - Agents use MCP: `notesctl mcp` on your host, or lodge's `/mcp/notes` with
   a scoped token.
 - Obsidian vaults open as they are.
@@ -23,7 +23,7 @@ want notes that sync between your devices and that agents can read and write.
 
 ## Status
 
-Frostnotes is pre-release. The latest release is v0.4.0. Its Flatpak is in the
+Frostnotes is pre-release. The latest release is v0.5.0. Its Flatpak is in the
 [Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
 attaches `frostyard-notesd_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
 `notesd`, `notesctl`, the units, the `frostnotes` user, and the web build for
@@ -59,6 +59,15 @@ open the database after v0.3.2 has run.
 
 Release v0.4.0 adds a Tasks pane. It lists the vault's open tasks, the list items that start with `[ ]`, grouped by note. Select a task to open its note at that line. Agents get the MCP tool `list_tasks`. The app's details in the Flatpak remote now show 4 screenshots.
 
+Release v0.5.0 replaces the desktop app with a native Go app. Your notes,
+vaults, and sync stay. The first start of v0.5.0 opens the default layout:
+the open tabs and the app's preferences from v0.4.0 do not carry over. The
+native app draws math, plays audio and video in the vault, toggles a task in
+the reading view with undo, and follows block links. Its Settings have no
+Spellcheck control. notesd and the app also write their panics and a few
+coded errors to the local systemd journal, and send nothing over the network.
+To see them, run `journalctl MESSAGE_ID=8915bdd215c84cbab0c31c05a1a33e7e`.
+
 ## Install
 
 The desktop app is a Flatpak. It works on its own: you need no account,
@@ -85,7 +94,7 @@ Check the install:
 
 `flatpak info org.frostyard.Frostnotes`
 
-You see version 0.4.0. Frostnotes shows in the app grid. Update it with
+You see version 0.5.0. Frostnotes shows in the app grid. Update it with
 `flatpak update`. From v0.3.0, when you open a new window after
 `flatpak update`, the app replaces a `notesd` of an older build with the new
 one, and you need no logout. The update from v0.2.0 to v0.3.0 is different:
@@ -123,12 +132,12 @@ device.
 
 ### If notesd does not start
 
-If `notesd` does not start, the window says why, under "Reconnecting to
-notesd…". It shows the last line of `notesd.log`, or, when the Flatpak portal
-did not start `notesd`, the checks to run. It always shows the path of
+If `notesd` does not start, the window shows the connecting screen. Press
+Details to see why: the last line of `notesd.log`, or, when the Flatpak portal
+did not start `notesd`, the checks to run. It also shows the path of
 `notesd.log`.
 
-If the Flatpak portal did not start `notesd`, the window lists these
+If the Flatpak portal did not start `notesd`, Details names these
 commands:
 
 - `flatpak override --user --show org.frostyard.Frostnotes`
@@ -176,11 +185,9 @@ From the terminal, with your local vault's name as `VAULT`:
 
 ### Build from source
 
-`notesd` and `notesctl` also build from source with Go. You build the app in
-an [nsl](/docs/tools/nsl/) machine. See
-[Try it](https://github.com/frostyard/frostnotes/blob/main/README.md#try-it)
-and [Develop](https://github.com/frostyard/frostnotes/blob/main/README.md#develop)
-in the README.
+`notesd`, `notesctl`, and the desktop app build from source with Go. The
+desktop app needs GTK 3, Pango, and cairo when it runs. See
+[Development](https://github.com/frostyard/frostnotes/blob/main/docs/development.md).
 
 ### Install the hub on lodge's host
 
@@ -193,14 +200,14 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 - [README](https://github.com/frostyard/frostnotes/blob/main/README.md): what Frostnotes is and the current status.
 - [Frostyard Flatpak remote](https://github.com/frostyard/flatpak-index/blob/main/README.md): the remote and its apps.
-- [Try it](https://github.com/frostyard/frostnotes/blob/main/README.md#try-it): build, start `notesd`, add a vault, and connect an agent.
-- [Develop](https://github.com/frostyard/frostnotes/blob/main/README.md#develop): the nsl machine and the build targets.
+- [Development](https://github.com/frostyard/frostnotes/blob/main/docs/development.md): build, run notesd and the desktop app from source, and the gates.
 - [Vault](https://github.com/frostyard/frostnotes/blob/main/docs/design/vault.md): the files on disk, the index, writes, and versions.
 - [Sync](https://github.com/frostyard/frostnotes/blob/main/docs/design/sync.md): how devices and the hub merge edits.
 - [The hub behind lodge](https://github.com/frostyard/frostnotes/blob/main/docs/design/hub.md): how the hub runs in lodge, and how devices move to it.
 - [Moving from a host notesd](https://github.com/frostyard/frostnotes/blob/main/docs/design/app.md#operational-notes): the steps from a host `notesd` to the Flatpak.
 - [MCP](https://github.com/frostyard/frostnotes/blob/main/docs/specs/mcp.md): the tools an agent gets.
 - [Notes in lodge](https://github.com/frostyard/frostnotes/blob/main/docs/specs/lodge-app.md): the app contract with lodge.
+- [The desktop app in MyGo](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0009-mygo-desktop.md): the native app and how it differs from the web app.
 - [Roadmap](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0002-roadmap.md): what is done and what comes next.
 - [Notes inside lodge](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0006-m4-notes-inside-lodge.md): the plan and its phases.
 
@@ -223,11 +230,15 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 ## Sources
 
-Reviewed 2026-11-04.
+Reviewed 2026-11-11.
 
+- Frostnotes release v0.5.0 commit [`6458058e203ab91699e7d40d4fb03b06da534391`](https://github.com/frostyard/frostnotes/tree/6458058e203ab91699e7d40d4fb03b06da534391), released 2026-11-11. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.5.0) attaches only `frostyard-notesd_0.5.0_amd64.deb`.
+- The Flatpak at v0.5.0: the live Frostyard catalogue, checked 2026-11-11, lists `org.frostyard.Frostnotes` at digest `sha256:de45b565b583bff71af213cfcc28382c2735bf5e0dbf0d45a72071fd3f3529c1`, built from `6458058e`, with the release `0.5.0` in its AppStream data.
+- The native app: [frostnotes#145](https://github.com/frostyard/frostnotes/pull/145), [`docs/adr/0038-draw-the-desktop-app-natively-with-mygo-and-frostui.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/adr/0038-draw-the-desktop-app-natively-with-mygo-and-frostui.md) (the first native start opens the default layout; the webview's copy is not migrated), [`docs/plans/0009-mygo-desktop.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/plans/0009-mygo-desktop.md), [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/specs/ui.md) (In the native desktop app: the connecting screen's Details button, no Spellcheck in Settings), [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/design/app.md), [`docs/development.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/development.md), and [`README.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/README.md). Math [frostnotes#187](https://github.com/frostyard/frostnotes/pull/187), media [frostnotes#189](https://github.com/frostyard/frostnotes/pull/189), reading tasks and block links [frostnotes#190](https://github.com/frostyard/frostnotes/pull/190).
+- Problem records: [frostnotes#130](https://github.com/frostyard/frostnotes/pull/130) and [`docs/adr/0036-notesd-and-the-app-record-problems-in-the-journal.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/adr/0036-notesd-and-the-app-record-problems-in-the-journal.md); the `journalctl` command is in the README.
+- No database migration in v0.5.0: `internal/store/migrations` is the same as at v0.4.0. The notesd system extension: `https://repository.frostyard.org/ext/notesd/SHA256SUMS`, checked 2026-11-11, lists up to 0.4.0.
 - Frostnotes release v0.4.0 commit [`567513880a2f6526054225f9c43d45e9cace4275`](https://github.com/frostyard/frostnotes/tree/567513880a2f6526054225f9c43d45e9cace4275), released 2026-11-04. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.4.0) attaches only `frostyard-notesd_0.4.0_amd64.deb`.
 - v0.4.0's changes: [frostnotes#125](https://github.com/frostyard/frostnotes/pull/125) adds the Tasks pane and the `list_tasks` MCP tool. [frostnotes#127](https://github.com/frostyard/frostnotes/pull/127) adds screenshots. [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/specs/ui.md) and [`docs/specs/mcp.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/specs/mcp.md) describe the changes.
-- Frostyard Flatpak remote, checked 2026-11-04: `org.frostyard.Frostnotes` lists release 0.4.0, built from 567513880a2f6526054225f9c43d45e9cace4275.
 - v0.3.2's changes: [frostnotes#122](https://github.com/frostyard/frostnotes/pull/122) (the crash fix), [`docs/adr/0034-a-device-records-the-head-it-applies-before-it-changes-the-disk.md`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/docs/adr/0034-a-device-records-the-head-it-applies-before-it-changes-the-disk.md) (the design), and [`internal/store/migrations/0006_sync_applying.sql`](https://github.com/frostyard/frostnotes/blob/567513880a2f6526054225f9c43d45e9cace4275/internal/store/migrations/0006_sync_applying.sql) (the migration).
 - Frostnotes release v0.3.1 commit [`189ae2f7f435439943b0dfb62d3b4f9221724bf5`](https://github.com/frostyard/frostnotes/tree/189ae2f7f435439943b0dfb62d3b4f9221724bf5), released 2026-10-30. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.3.1) attaches only `frostyard-notesd_0.3.1_amd64.deb`.
 - v0.3.1's changes: [frostnotes#121](https://github.com/frostyard/frostnotes/pull/121) (the conflict version), [frostnotes#114](https://github.com/frostyard/frostnotes/pull/114) (the background answer), [`internal/store/migrations/0005_sync_push_base_hash.sql`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/internal/store/migrations/0005_sync_push_base_hash.sql) (the migration), and [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/docs/design/app.md) (section Operational notes, Moving from a host notesd).
@@ -235,7 +246,6 @@ Reviewed 2026-11-04.
 - [`docs/plans/0008-m6-the-standalone-desktop-app.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 4: G1, G2, G3, G5), [`docs/adr/0032-an-update-replaces-the-running-notesd.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/adr/0032-an-update-replaces-the-running-notesd.md), [`docs/adr/0033-a-setting-keeps-notesd-running-without-a-window.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/adr/0033-a-setting-keeps-notesd-running-without-a-window.md).
 - [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/specs/ui.md) (sections Connecting, Settings, Vault manager) and [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/docs/design/app.md) (section The Flatpak), and [`app/src/features/connecting/NotesdCause.tsx`](https://github.com/frostyard/frostnotes/blob/2d80734337b90f497c5b6f0c7e87038d2bc96b20/app/src/features/connecting/NotesdCause.tsx).
 - Plan 0008 at `main` [`edee4ee870e55981d8912a4ecfe146b6958abfdc`](https://github.com/frostyard/frostnotes/blob/edee4ee870e55981d8912a4ecfe146b6958abfdc/docs/plans/0008-m6-the-standalone-desktop-app.md) (Phase 3, Run 2: the update from v0.2.0 to v0.3.0, 2026-10-29).
-- The live Frostyard catalogue on 2026-11-02 lists `frostyard/frostnotes` at tag `latest`, digest `sha256:62675fdb8d0971d4b5c545ed8c983d9c1f034789789920e6d242cd90648f36b4`, the GHCR `v0.3.2` image, built from `a9982d24`, with AppStream release 0.3.2.
 - Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/ff27263767e7d95fc777a24592c1d5ff85931b82/apps.json) at `ff27263767e7d95fc777a24592c1d5ff85931b82`.
 - Install text: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md) at `4828c9836d451aaa7376483737d25a764b4e17bd` ([flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7), merged 2026-10-30): the per-user remote and the Flathub user remote.
 - The per-user remote: Brian's decisions T532a (2026-10-29) and T532b: every user adds the remote. A fresh Snow install has no `frostyard` remote, user or system (Murbella's check, T540).
