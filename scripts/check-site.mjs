@@ -224,7 +224,7 @@ assert(sitePrivacy.includes('href="mailto:privacy@frostyard.org"'), "/privacy mu
 // Cross-review of frostyard-org#113: the delete steps must cover every
 // install and its keyring namespace, account removal must not promise to
 // remove everything, and the 0600 mode holds on Unix only.
-for (const step of ["secret-tool clear application org.frostyard.Frostmail", "secret-tool clear application frostmail", "/var/lib/frostmail", "/var/cache/frostmail", "%LOCALAPPDATA%\\Frostmail\\Data"]) {
+for (const step of ["Stop maild first", "flatpak kill org.frostyard.Frostmail", "systemctl --user disable --now maild.service", "mailctl shutdown", "maild -autostart off", "secret-tool clear application org.frostyard.Frostmail", "secret-tool clear application frostmail", "/var/lib/frostmail", "/var/cache/frostmail", "%LOCALAPPDATA%\\Frostmail\\Data"]) {
   assert(sitePrivacyText.includes(step), `/privacy must give the delete step "${step}" (Frostmail v0.7.0 keeps data and secrets there).`);
 }
 assert(sitePrivacyText.includes("The message files in the data folder, the cache, and the names and organizations in the People list can stay."), "/privacy must say what an account removal leaves (Frostmail v0.7.0 DeleteAccount removes no blob and no people row).");
