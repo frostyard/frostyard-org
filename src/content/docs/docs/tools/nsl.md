@@ -3,14 +3,14 @@ title: nsl
 description: "Install nsl on a Frostyard image, create your first Linux machine, and update or remove it."
 follows:
   repo: frostyard/nsl
-  tag: v0.13.0
+  tag: v0.13.1
 ---
 
 nsl gives you WSL-style Linux machines on Linux: a systemd-nspawn container
 inside a systemd-vmspawn VM, with its own packages, services, and home. Use it
 when a project needs `apt`, `dnf`, or `pacman` and your host `/usr` is
 read-only. nsl is pre-release: commands and defaults can change between
-releases. This guide follows nsl v0.13.0; the full documentation is at
+releases. This guide follows nsl v0.13.1; the full documentation is at
 [frostyard.github.io/nsl](https://frostyard.github.io/nsl/).
 
 ## Before you start
@@ -254,8 +254,9 @@ To learn why nsl keeps them local, read
 
 ## Sources
 
-Reviewed 2026-11-06.
+Reviewed 2026-11-11.
 
+- nsl release v0.13.1 commit [`fe437dbcdbb01356d82c48e0d1f7a1b0c128ce02`](https://github.com/frostyard/nsl/tree/fe437dbcdbb01356d82c48e0d1f7a1b0c128ce02), released 2026-11-11 ([release](https://github.com/frostyard/nsl/releases/tag/v0.13.1)): the build moves to Go 1.27.4 for its security fixes ([nsl#103](https://github.com/frostyard/nsl/pull/103)), dependency updates, 2 refactors, and image recipes that carry the machine fixes nsl used to apply itself, with the same packages in each machine ([nsl#102](https://github.com/frostyard/nsl/pull/102)). No command or flag changes from v0.13.0, so the steps on this page and the v0.13.0 citations below still hold. The Frostyard tap's [`Casks/nsl.rb`](https://github.com/frostyard/homebrew-tap/blob/main/Casks/nsl.rb) is at 0.13.1 ([homebrew-tap#39](https://github.com/frostyard/homebrew-tap/pull/39), merged 2026-11-11).
 - nsl release v0.13.0 commit [`4d087c480a0ff1810ff1a93e6faf57ac228db8a6`](https://github.com/frostyard/nsl/tree/4d087c480a0ff1810ff1a93e6faf57ac228db8a6), released 2026-11-05 ([release](https://github.com/frostyard/nsl/releases/tag/v0.13.0)).
 - [`README.md`](https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a93e6faf57ac228db8a6/README.md)
 - [`AGENTS.md`](https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a93e6faf57ac228db8a6/AGENTS.md)
