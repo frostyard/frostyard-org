@@ -1,6 +1,5 @@
 ---
 import Site from "../layouts/Site.astro";
-import LifecycleNotice from "../components/LifecycleNotice.astro";
 import extensionCatalog from "../data/extensions.json";
 const heroScenes = ["moonlit-summit", "alpine-morning", "frozen-reflection", "blueprint"];
 const images = [
@@ -56,8 +55,6 @@ if (otherExtensions.length) extensionGroups.push({ name: "Also published", exten
     <article><span class="number">02</span><h2>Mutable where it counts</h2><p>Your data, configuration, containers, and projects live in persistent writable storage. The operating system does not get in their way.</p></article>
     <article><span class="number">03</span><h2>Tools without drift</h2><p>Add capabilities as system extensions, containers, or user-space package environments instead of turning the base into a snowball.</p></article>
   </section>
-
-  <LifecycleNotice />
 
   <section class="images section" id="images">
     <div class="section-heading"><p class="eyebrow"><span></span> Four bootc products</p><h2>Choose the terrain.<br />The foundation is shared.</h2><p>Each product starts from the same reproducible Debian base and takes a clear role from there.</p></div>

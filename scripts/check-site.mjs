@@ -173,7 +173,9 @@ for (const route of ["/base", "/snow", "/snowfield", "/sundog", "/floe"]) {
 assert(home.includes("Four bootc products"), "Home must identify the four bootc products.");
 assert(home.includes("bootc only"), "Home must identify Sundog as bootc-only.");
 assert(home.includes("Base feeds Floe, Snow, and Sundog"), "Home composition alternative must name all direct products.");
-assert(home.includes("September 30, 2026"), "Home must keep the lifecycle boundary discoverable.");
+// The native A/B and nbc end of support (September 30, 2026) has passed, so the
+// home page no longer carries the lifecycle notice.
+assert(!home.includes('id="native-eol"'), "Home must not render the past native A/B and nbc lifecycle notice.");
 const mobileNav = [...home.matchAll(/<details\b[^>]*>/g)].some((tag) => {
   const classAttribute = tag[0].match(/\bclass="([^"]*)"/);
   return classAttribute?.[1].split(/\s+/).includes("mobile-nav");
