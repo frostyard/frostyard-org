@@ -150,6 +150,9 @@ for (const file of files) {
     .split('<h2 id="sources"')[0]
     .replace(/<time\b[^>]*>[\s\S]*?<\/time>/g, " ");
   assert(!body.includes("2026-10-28"), `${page} contains the superseded lifecycle date.`);
+  // The native A/B and nbc end of support (September 30, 2026) has passed, so no
+  // page carries the lifecycle notice any more.
+  assert(!html.includes('id="native-eol"'), `${page} must not render the past native A/B and nbc lifecycle notice.`);
 
   for (const match of html.matchAll(/<a\b[^>]*\shref="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
     const href = match[1];
@@ -173,9 +176,6 @@ for (const route of ["/base", "/snow", "/snowfield", "/sundog", "/floe"]) {
 assert(home.includes("Four bootc products"), "Home must identify the four bootc products.");
 assert(home.includes("bootc only"), "Home must identify Sundog as bootc-only.");
 assert(home.includes("Base feeds Floe, Snow, and Sundog"), "Home composition alternative must name all direct products.");
-// The native A/B and nbc end of support (September 30, 2026) has passed, so the
-// home page no longer carries the lifecycle notice.
-assert(!home.includes('id="native-eol"'), "Home must not render the past native A/B and nbc lifecycle notice.");
 const mobileNav = [...home.matchAll(/<details\b[^>]*>/g)].some((tag) => {
   const classAttribute = tag[0].match(/\bclass="([^"]*)"/);
   return classAttribute?.[1].split(/\s+/).includes("mobile-nav");
@@ -194,7 +194,6 @@ for (const href of [
 ]) {
   assert(install.includes(`href="${href}"`), `/install must link to ${href}.`);
 }
-assert(install.includes("no in-place conversion"), "/install must state that migration is not in-place.");
 
 const tools = await readRoute("/tools");
 assert(tools.includes("sudo updex features enable &lt;feature&gt; --now"), "Tools must use current Updex syntax.");

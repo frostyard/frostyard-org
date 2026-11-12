@@ -39,7 +39,7 @@ redirect in `astro.config.mjs`.
 | `src/pages/snowfield.astro` | `/snowfield/` | The GNOME desktop for Microsoft Surface. |
 | `src/pages/sundog.astro` | `/sundog/` | The bootc-only KDE Plasma desktop. |
 | `src/pages/floe.astro` | `/floe/` | The headless server image. |
-| `src/pages/install.astro` | `/install/` | The bootc-first Firn installation path and lifecycle guidance. |
+| `src/pages/install.astro` | `/install/` | The bootc-first Firn installation path. |
 | `src/pages/why-atomic.astro` | `/why-atomic/` | The atomic model and supported workload boundaries. |
 | `src/pages/tools.astro` | `/tools/` | The dedicated Firn, Updex, and ChairLift page. |
 | `src/pages/stats.astro` | `/stats/` | The weekly problem report counts. |
