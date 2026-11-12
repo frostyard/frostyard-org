@@ -677,7 +677,7 @@ const lightPages = [
   {
     route: "porter",
     repo: "porter",
-    sha: "99ab9a393596b13e096a5c111a3c4f7ac7ac0429",
+    sha: "1f7185ff82a8d06097f31d20ef0e910a75008aef",
     install: "install",
     canonical: "docs/design/overview.md#operational-notes",
     sentence: "Porter is pre-release",
@@ -686,7 +686,7 @@ const lightPages = [
   {
     route: "frostmail",
     repo: "frostmail",
-    sha: "88d71ce16bcc4035aa080a2a7ca46f441d92ac77",
+    sha: "f505fcb8d5310d0a9ad245f3e906f10a61bcef15",
     install: "install",
     canonical: "docs/design/desktop.md#installing-for-one-user",
     sentence: "Frostmail is pre-release",
@@ -695,9 +695,9 @@ const lightPages = [
   {
     route: "frostnotes",
     repo: "frostnotes",
-    sha: "567513880a2f6526054225f9c43d45e9cace4275",
+    sha: "6458058e203ab91699e7d40d4fb03b06da534391",
     install: "install",
-    canonical: "README.md#try-it",
+    canonical: "docs/development.md",
     sentence: "Frostnotes is pre-release",
     links: ["/docs/apps/lodge/", "/docs/apps/frostmail/", "/docs/apps/porter/", "/docs/apps/frostread/", "/docs/tools/nsl/"],
   },
@@ -717,12 +717,12 @@ for (const page of lightPages) {
   }
   assert(!html.includes("data-code="), `${path} must not carry copied command blocks.`);
 }
-assert(lightHtml.lodge.text.includes("The latest release is v0.2.1") && lightHtml.lodge.text.includes("v0.2.1 is a patch release"), "/docs/apps/lodge must name v0.2.1 as the latest release, a patch release.");
+assert(lightHtml.lodge.text.includes("The latest release is v0.3.0") && lightHtml.lodge.text.includes("v0.2.1 is a patch release") && lightHtml.lodge.text.includes("reach a contrast of 4.5:1"), "/docs/apps/lodge must name v0.3.0 as the latest release, with its text contrast.");
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
-assert(lightHtml.porter.text.includes("The latest release is v0.2.0"), "/docs/apps/porter must name v0.2.0 as the latest release.");
+assert(lightHtml.porter.text.includes("The latest release is v0.3.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.3.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
 assert(lightHtml.frostread.text.includes("The latest release is v0.5.0") && lightHtml.frostread.text.includes("desktop shell are built"), "/docs/apps/frostread must name v0.5.0 and the desktop shell.");
-assert(lightHtml.frostnotes.text.includes("The latest release is v0.4.0") && lightHtml.frostnotes.text.includes("You see version 0.4.0") && lightHtml.frostnotes.text.includes("list_tasks"), "/docs/apps/frostnotes must name v0.4.0 and list_tasks.");
+assert(lightHtml.frostnotes.text.includes("The latest release is v0.5.0") && lightHtml.frostnotes.text.includes("You see version 0.5.0") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must name v0.5.0, list_tasks, and the reset layout of the native app.");
 for (const route of ["lodge", "frostread", "frostnotes"]) {
   assert(lightHtml[route].text.includes("The system extension can trail the latest release"), `/docs/apps/${route} must state that the system extension can trail the latest release.`);
 }
@@ -734,7 +734,7 @@ assert(lightHtml.frostnotes.text.includes("The hub moved behind lodge on 2026-10
 assert(!lightHtml.frostnotes.text.includes("moving behind lodge"), "/docs/apps/frostnotes must not say that the hub is still moving behind lodge.");
 for (const [route, doc] of [
   ["lodge", "lodge/blob/main/packaging/README.md"],
-  ["porter", "porter/blob/main/README.md"],
+  ["porter", "porter/blob/main/packaging/README.md"],
   ["frostread", "frostread/blob/main/README.md"],
 ]) {
   for (const section of ["update", "roll-back"]) {
@@ -751,7 +751,7 @@ for (const [route, extension] of Object.entries(extensionForApp)) {
 }
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
-assert(lightHtml.frostmail.text.includes("The latest release is v0.5.0"), "/docs/apps/frostmail must name release v0.5.0 as the latest.");
+assert(lightHtml.frostmail.text.includes("The latest release is v0.6.0") && lightHtml.frostmail.text.includes("native Go app"), "/docs/apps/frostmail must name release v0.6.0 as the latest, and the native app.");
 assert(lightHtml.frostmail.text.includes("Follow Up section") && lightHtml.frostmail.text.includes("rail button"), "/docs/apps/frostmail must name the v0.5.0 Follow Up section and the lodge rail badge.");
 assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension can trail the latest release.") && !/maild system extension still carries/.test(lightHtml.frostmail.text), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension can trail the latest release (the catalog lists its version).");
 assert(lightHtml.frostmail.text.includes("flatpak install --user frostyard org.frostyard.Frostmail"), "/docs/apps/frostmail must give the per-user Flatpak install command.");

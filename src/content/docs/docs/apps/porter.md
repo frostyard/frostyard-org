@@ -3,7 +3,7 @@ title: Porter
 description: "Porter is the owner's assistant inside lodge: a chat panel that reads your apps and drafts but never sends. Pre-release: the only package is a `.deb` of the daemon for lodge."
 follows:
   repo: frostyard/porter
-  tag: v0.2.0
+  tag: v0.3.0
 ---
 
 Porter is a personal assistant that runs inside [lodge](/docs/apps/lodge/).
@@ -24,21 +24,23 @@ lodge.
 
 ## Status
 
-Porter is pre-release. The latest release is v0.2.0. Each release attaches
+Porter is pre-release. The latest release is v0.3.0. Each release attaches
 one package, `frostyard-porterd_X.Y.Z_amd64.deb`, for lodge's host. On a
 Frostyard image, the [porterd system extension](/docs/sysexts/porterd/)
 installs it. Chat, routines, and reading from frostread are built and run on
-lodge's host, as lodge's `porter` app. From v0.2.0, you can run a routine at once from the Routines list in Activity. A run now has the rights and output of a scheduled run, and it does not move the routine's schedule. See [Run now](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now). The GitHub manager, the next planned
+lodge's host, as lodge's `porter` app. From v0.2.0, you can run a routine at once from the Routines list in Activity. A run now has the rights and output of a scheduled run, and it does not move the routine's schedule. See [Run now](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now). From v0.3.0, Porter's rail button in lodge shows how many capture and approval cards wait for you. The GitHub manager, the next planned
 phase, is not built.
 
 ## Install
 
 Porter runs as lodge's `porter` app, on lodge's host. You need
 [lodge](/docs/apps/lodge/), an inference alias that lodge routes to a model,
-and the apps Porter reads. The web bundle builds in an
-[nsl](/docs/tools/nsl/) machine, and `make lodge-package` stages the app, with
-`porterd` in `usr/bin`. lodge's own host keeps `porterd` in `/opt/lodge/bin`, so
-do not extract the staged tree onto `/` there. The
+and the apps Porter reads. The release `.deb` installs `porterd` as
+`/usr/bin/porterd`, with its units and the web bundle that lodge serves. On
+lodge's own host, you install the `.deb` by hand with
+`dpkg -i`. The
+[packaging README](https://github.com/frostyard/porter/blob/main/packaging/README.md)
+has the steps. The
 [operational notes](https://github.com/frostyard/porter/blob/main/docs/design/overview.md#operational-notes)
 cover the configuration, the tokens, and the agent socket. Step 5 of lodge's
 [packaging README](https://github.com/frostyard/lodge/blob/main/packaging/README.md)
@@ -55,16 +57,17 @@ download, run
 `gh attestation verify frostyard-porterd_X.Y.Z_amd64.deb --repo frostyard/porter`.
 
 On lodge's own host, which is installed by hand, follow
-[Update](https://github.com/frostyard/porter/blob/main/README.md#update) and
-[Roll back](https://github.com/frostyard/porter/blob/main/README.md#roll-back)
-in the README. The Update steps take a rollback archive before the new build
-goes in.
+[Update](https://github.com/frostyard/porter/blob/main/packaging/README.md#update) and
+[Roll back](https://github.com/frostyard/porter/blob/main/packaging/README.md#roll-back)
+in the packaging README. The Update steps check the package and take a
+rollback archive before the new `.deb` goes in.
 
 ## Documentation
 
 - [README](https://github.com/frostyard/porter/blob/main/README.md): what Porter is and what is built.
 - [Design overview](https://github.com/frostyard/porter/blob/main/docs/design/overview.md): how Porter works and what it reaches.
 - [Operational notes](https://github.com/frostyard/porter/blob/main/docs/design/overview.md#operational-notes): configuration, tokens, dependencies, and logs.
+- [Packaging](https://github.com/frostyard/porter/blob/main/packaging/README.md): the `.deb`, update, roll back, and the system extension.
 - [Limits](https://github.com/frostyard/porter/blob/main/README.md#limits): what Porter does not do, and what can go wrong.
 - [Routines](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md): how to write a routine.
 - [ADR-0004](https://github.com/frostyard/porter/blob/main/docs/adr/0004-porter-drafts-and-the-owner-sends.md): Porter drafts and the owner sends.
@@ -83,8 +86,9 @@ goes in.
 
 ## Sources
 
-Reviewed 2026-11-04.
+Reviewed 2026-11-11.
 
+- Porter v0.3.0 commit [`1f7185ff82a8d06097f31d20ef0e910a75008aef`](https://github.com/frostyard/porter/tree/1f7185ff82a8d06097f31d20ef0e910a75008aef), released 2026-11-11. Its [release](https://github.com/frostyard/porter/releases/tag/v0.3.0) attaches only `frostyard-porterd_0.3.0_amd64.deb`. It adds the rail badge ([porter#33](https://github.com/frostyard/porter/pull/33); [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/docs/design/overview.md), The rail badge) and moves lodge's host to the release `.deb` ([porter#26](https://github.com/frostyard/porter/pull/26); [`packaging/README.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/packaging/README.md), Update and Roll back). [`README.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/README.md) (Limits).
 - Porter v0.2.0 commit [`99ab9a393596b13e096a5c111a3c4f7ac7ac0429`](https://github.com/frostyard/porter/tree/99ab9a393596b13e096a5c111a3c4f7ac7ac0429), released 2026-11-03. Its [release](https://github.com/frostyard/porter/releases/tag/v0.2.0) attaches only `frostyard-porterd_0.2.0_amd64.deb`. It adds the run now ([porter#25](https://github.com/frostyard/porter/pull/25)).
 - [`README.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/README.md)
 - [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/plans/0001-roadmap.md), [`docs/specs/routines.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/specs/routines.md)
@@ -92,6 +96,6 @@ Reviewed 2026-11-04.
 - lodge commit [`bd6fa7b391d08ce0de44d80a875e4a386e415985`](https://github.com/frostyard/lodge/tree/bd6fa7b391d08ce0de44d80a875e4a386e415985): [`packaging/README.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/packaging/README.md)
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28, adds the lodge, readd, and porterd extensions.
-- snosi PR [snosi#1175](https://github.com/frostyard/snosi/pull/1175), merged 2026-10-28, pins porterd 0.1.1. `https://repository.frostyard.org/ext/porterd/SHA256SUMS`, checked 2026-11-04, lists 0.1.0, 0.1.1, and 0.2.0.
+- snosi PR [snosi#1175](https://github.com/frostyard/snosi/pull/1175), merged 2026-10-28, pins porterd 0.1.1. `https://repository.frostyard.org/ext/porterd/SHA256SUMS`, checked 2026-11-11, lists 0.1.0, 0.1.1, and 0.2.0.
 - core commit [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a): [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/plans/0010-suite-packaging.md) (Phase 2: the `.deb` is not registered with apt-publisher)
 - [`packaging/nfpm.yaml`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/packaging/nfpm.yaml) (the description says "Built for Snosi's sysext")
