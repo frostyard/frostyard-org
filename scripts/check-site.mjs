@@ -793,7 +793,7 @@ assertCites("/docs/tools/nsl", nsl, "https://github.com/frostyard/nsl/blob/4d087
 ]);
 assertCites("/docs/tools/nsl", nsl, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"], "snosi ");
 assert(nsl.includes("https://github.com/frostyard/firn/blob/11133e6b801fc68a7490742244aa87e0313a8acd/internal/catalog/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
-assert(nslText.includes("This guide follows nsl v0.13.0"), "/docs/tools/nsl must follow nsl v0.13.0.");
+assert(nslText.includes("This guide follows nsl v0.13.1"), "/docs/tools/nsl must follow nsl v0.13.1.");
 assert(nslText.includes("systemd-nspawn containers in one shared"), "/docs/tools/nsl must say that machines are systemd-nspawn containers in the shared VM.");
 assert(nslText.includes("nsl boots that VM with systemd-vmspawn"), "/docs/tools/nsl must say that nsl boots the VM with systemd-vmspawn.");
 for (const url of [
@@ -864,22 +864,24 @@ assertSections("/docs/tools/chairlift", chairlift, [
   "see-also",
   "sources",
 ]);
-assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/f29ae11b5d5abf20f1acb9d3c0f85e4146e00464", ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml", "internal/views/featurestatus/featurestatus.go", "internal/views/actionmsg/actionmsg.go"]);
+assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4", ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "docs/design/overview.md", "docs/design/package-managers.md", "docs/adr/0017-mygo-command-center-window.md", "go.mod", "internal/views/system.go", "internal/views/pageview/pageview.go", "internal/views/actionmsg/actionmsg.go", "internal/views/flatpakstatus/flatpakstatus.go", "internal/homebrew/trust.go"]);
 assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"], "snosi ");
-assert(chairliftText.includes("This guide follows ChairLift v0.15.0"), "/docs/tools/chairlift must follow ChairLift v0.15.0.");
-assert(chairliftText.includes("Alt+7"), "/docs/tools/chairlift must give the Help shortcut with every page visible.");
+assert(chairliftText.includes("This guide follows ChairLift v0.16.0"), "/docs/tools/chairlift must follow ChairLift v0.16.0.");
+for (const page of ["Overview", "Updates", "Apps", "Features", "Problems", "Maintenance"]) {
+  assert(chairlift.includes(`<td>${page}</td>`), `/docs/tools/chairlift must name the ${page} page of the rail (ChairLift v0.16.0: six pages in the rail).`);
+}
+assert(chairliftText.includes("Ctrl+K"), "/docs/tools/chairlift must give the command palette shortcut (ChairLift v0.16.0: the window has a command palette).");
 assert(chairliftText.includes("chairlift --send-pending-reports"), "/docs/tools/chairlift must give the automatic report command.");
-assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/CONFIG.md"), "/docs/tools/chairlift must link the configuration reference at v0.15.0.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/CONFIG.md"), "/docs/tools/chairlift must link the configuration reference at v0.16.0.");
 assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("From v0.15.0, you can also send problem reports"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, and say that v0.15.0 sends reports after you turn reporting on (owner review of frostyard-org#75; ChairLift v0.15.0: reporting is released).");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.15.0"), "/docs/tools/chairlift must link the ChairLift v0.15.0 release (ChairLift v0.15.0: reporting is released).");
-assert(chairlift.indexOf("<td>Problems</td>") < chairlift.indexOf("<td>Help</td>"), "/docs/tools/chairlift must list Problems before Help, as the sidebar does.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md"), "/docs/tools/chairlift must cite the Problems page spec at its pin.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.14.0") && chairliftText.includes("ChairLift release v0.14.0 commit"), "/docs/tools/chairlift must cite the v0.14.0 release for the Problems page.");
 assert(!chairliftText.includes("ChairLift does not install new Flatpak apps"), "/docs/tools/chairlift must not say ChairLift installs no Flatpak apps: the first-login setup installs them (frostyard-org#73 review).");
-assert(chairliftText.includes("The Applications page does not install new Flatpak apps"), "/docs/tools/chairlift must scope the Bazaar limit to the Applications page (frostyard-org#73 review).");
+assert(chairliftText.includes("The Apps page does not install new Flatpak apps"), "/docs/tools/chairlift must scope the Bazaar limit to the Apps page (frostyard-org#73 review).");
 assert(chairlift.includes('id="update-features"'), '/docs/tools/chairlift must render the "update-features" section.');
 assert(chairliftText.includes("waiting for a newer OS image") && chairliftText.includes("needs image &gt;= VERSION"), "/docs/tools/chairlift must explain a feature that waits for a newer OS image.");
-assert(chairliftText.includes("Go 1.26.10"), "/docs/tools/chairlift must name the Go 1.26.10 security fix.");
+assert(chairliftText.includes("ChairLift v0.16.0 builds with Go 1.27.4"), "/docs/tools/chairlift must name the Go 1.27.4 security fix.");
 assert(chairliftText.includes("Snow, Snowfield, and Sundog install ChairLift") && chairliftText.includes("Floe does not"), "/docs/tools/chairlift must name the images that have ChairLift.");
 assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chairlift must give the dry-run command.");
 assert(chairlift.includes('data-code="chairlift --first-run --dry-run"'), "/docs/tools/chairlift must give the first-run dry-run command.");

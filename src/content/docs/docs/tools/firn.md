@@ -3,14 +3,14 @@ title: Firn
 description: "Reinstall a Frostyard image from a saved Firn recipe, and move a version 1 recipe to version 2 before 2026-12-30."
 follows:
   repo: frostyard/firn
-  tag: v0.11.0
+  tag: v0.11.1
 ---
 
 Firn is the Frostyard installer. It installs a bootc image from one TOML file,
 the recipe. The terminal wizard and the graphical installer both write a
 recipe, and you can run the same install again from it without a wizard. This
-guide follows Firn v0.11.0. The full documentation is in the
-[Firn repository](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/docs/README.md).
+guide follows Firn v0.11.1. The full documentation is on the
+[Firn documentation site](https://frostyard.github.io/firn/).
 
 For a first install, follow
 [Install, update, and roll back](/docs/images/install-update/).
@@ -50,7 +50,8 @@ install.
    firn install --dry-run recipe.toml
    ```
 
-   The preflight changes no disk and needs no confirmation.
+   The preflight changes no disk and needs no confirmation. `-n` is the
+   short form of `--dry-run`.
 
 3. Install. The value of `--confirm` must match `[target].disk` in the recipe
    exactly:
@@ -70,14 +71,16 @@ A recipe can name the disk by a `/dev/disk/by-id/` path. Then give
 `--confirm` the same path, as the recipe writes it.
 
 To install another machine, or to change a choice, edit the recipe. The
-[recipe schema](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/docs/specs/recipe-schema.md)
-lists every field.
+[recipe reference](https://frostyard.github.io/firn/reference/recipe/)
+lists every field, and
+[Headless install with a recipe](https://frostyard.github.io/firn/guides/headless-install/)
+has the full steps.
 
 Firn detects Secure Boot, a TPM, and UEFI on its own. In a VM, or when the
 detection is wrong, set them with `--secure-boot`, `--tpm`, and `--uefi`. Each
 takes `auto`, `on`, or `off`. For a script, add `--json-progress`: Firn then
-writes each progress event as one JSON line, as the
-[progress protocol](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/docs/specs/progress-protocol.md)
+writes each progress event as one JSON line, as
+[Progress events](https://frostyard.github.io/firn/reference/progress/)
 describes. That output contains the recovery key, if the recipe makes one.
 Keep it out of ordinary logs.
 
@@ -116,21 +119,28 @@ the cutoff:
 4. Validate again. The warning is gone.
 
 The cutoff is built into Firn. No setting or environment variable moves it.
-Firn v0.11.0 has it. An older Firn release without it keeps accepting version
+Firn v0.11.0 and later have it. An older Firn release without it keeps accepting version
 1, and a Firn release before v0.6.0 cannot read version 2.
 
 ## See also
 
 - [Install, update, and roll back](/docs/images/install-update/)
-- [Firn README](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/README.md)
-- [Recipe schema](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/docs/specs/recipe-schema.md)
-- [Progress protocol](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/docs/specs/progress-protocol.md)
+- [Firn documentation](https://frostyard.github.io/firn/)
+- [Firn commands](https://frostyard.github.io/firn/reference/cli/)
+- [Recipe reference](https://frostyard.github.io/firn/reference/recipe/)
+- [Progress events](https://frostyard.github.io/firn/reference/progress/)
+- [Firn README](https://github.com/frostyard/firn/blob/main/README.md)
 
 ## Sources
 
-Reviewed 2026-11-03 against Firn v0.11.0, commit
+Reviewed 2026-11-11 against Firn v0.11.1, commit
+[`1427f44d0d559eebf484a6cb9a343e6c0d424d17`](https://github.com/frostyard/firn/tree/1427f44d0d559eebf484a6cb9a343e6c0d424d17),
+released 2026-11-11. Earlier review: 2026-11-03 against Firn v0.11.0, commit
 [`3e5007407e22fa24dd15c733f17be38d9dc4b446`](https://github.com/frostyard/firn/tree/3e5007407e22fa24dd15c733f17be38d9dc4b446).
 
+- [Firn v0.11.1 release](https://github.com/frostyard/firn/releases/tag/v0.11.1): the build moves to Go 1.27.4 for its security fixes ([firn#146](https://github.com/frostyard/firn/pull/146)), the documentation site ([firn#142](https://github.com/frostyard/firn/pull/142)), and `firn install` reads the common `--dry-run` (`-n`) flag ([`cmd/firn/install.go`](https://github.com/frostyard/firn/blob/1427f44d0d559eebf484a6cb9a343e6c0d424d17/cmd/firn/install.go), [`cmd/firn/root.go`](https://github.com/frostyard/firn/blob/1427f44d0d559eebf484a6cb9a343e6c0d424d17/cmd/firn/root.go)).
+- The documentation site, at v0.11.1: [`site/properdocs.yml`](https://github.com/frostyard/firn/blob/1427f44d0d559eebf484a6cb9a343e6c0d424d17/site/properdocs.yml) (`site_url: https://frostyard.github.io/firn/`), [`site/content/guides/headless-install.md`](https://github.com/frostyard/firn/blob/1427f44d0d559eebf484a6cb9a343e6c0d424d17/site/content/guides/headless-install.md) and [`site/content/reference/cli.md`](https://github.com/frostyard/firn/blob/1427f44d0d559eebf484a6cb9a343e6c0d424d17/site/content/reference/cli.md) (`--dry-run`, `-n`). Each linked page answered HTTP 200 on 2026-11-11.
+- [`README.md`](https://github.com/frostyard/firn/blob/1427f44d0d559eebf484a6cb9a343e6c0d424d17/README.md) at v0.11.1 links the documentation site.
 - [Firn v0.11.0 release](https://github.com/frostyard/firn/releases/tag/v0.11.0)
 - [`README.md`](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/README.md)
 - [`docs/specs/recipe-schema.md`](https://github.com/frostyard/firn/blob/3e5007407e22fa24dd15c733f17be38d9dc4b446/docs/specs/recipe-schema.md)
