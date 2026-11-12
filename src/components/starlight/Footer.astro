@@ -1,0 +1,23 @@
+---
+// Starlight's footer, plus the site-wide privacy link that every page of
+// frostyard.org carries (Site.astro has the same link for the other pages).
+import DefaultFooter from "@astrojs/starlight/components/Footer.astro";
+---
+
+<DefaultFooter />
+<p class="site-privacy"><a href="/privacy">Privacy</a></p>
+
+<style>
+  .site-privacy {
+    margin-top: 1.5rem;
+    font-size: var(--sl-text-sm);
+  }
+
+  .site-privacy a {
+    color: var(--sl-color-gray-3);
+  }
+
+  .site-privacy a:hover {
+    color: var(--sl-color-white);
+  }
+</style>

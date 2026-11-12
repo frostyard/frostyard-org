@@ -1,0 +1,128 @@
+---
+import Document from "../../layouts/Document.astro";
+import { contact, controller } from "../../data/privacy-contact.mjs";
+
+// The facts about Frostmail come from frostyard/frostmail at its release
+// v0.7.0. Pin every link to that commit, so the page cites the text it states.
+const fm = "https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490";
+const userDataPolicy = "https://developers.google.com/terms/api-services-user-data-policy";
+const limitedUse = "https://developers.google.com/terms/api-services-user-data-policy#limited-use";
+// The effective date of this policy. Change it with every change of a promise.
+const effectiveIso = "2026-11-12";
+const effectiveText = new Date(`${effectiveIso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const scopes: Array<[string, string, string]> = [
+  ["https://mail.google.com/", "Gmail", "Read, search, move, delete and send your mail over IMAP and SMTP."],
+  ["https://www.googleapis.com/auth/carddav", "Contacts", "Read and edit your Google contacts over CardDAV."],
+  ["https://www.googleapis.com/auth/calendar", "Calendars", "Read and edit your events and invitations over CalDAV."],
+  ["https://www.googleapis.com/auth/tasks", "Tasks", "Read and edit your Google Tasks lists."],
+];
+const sources: Array<[string, string, string]> = [
+  ["Google scopes", `${fm}/internal/oauth/oauth.go`, "the scopes and the Google endpoints; internal/oauth/manager.go asks only for the scopes of the services that are on."],
+  ["Providers", `${fm}/internal/providers/providers.go`, "the Gmail, CardDAV, CalDAV and Tasks servers."],
+  ["Storage", `${fm}/docs/design/storage.md`, "the database, the message files and the cache."],
+  ["Secrets", `${fm}/docs/design/accounts.md#secrets`, "every secrets store, and what an account removal deletes."],
+  ["The Flatpak's data", `${fm}/docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md`, "where the Flatpak keeps its data and its keyring items."],
+  ["Remote content", `${fm}/internal/render/remote.go`, "remote images stay blocked until you load them."],
+  ["Setup", `${fm}/internal/discover/run.go`, "the servers that account setup asks."],
+  ["Unsubscribe", `${fm}/docs/adr/0027-unsubscribe-with-one-click.md`, "nothing is sent without your click."],
+  ["lodge", `${fm}/docs/specs/lodge-app.md`, "maild on a lodge host, and the agent tools."],
+  ["Agent tools", `${fm}/docs/adr/0042-agents-get-calendar-task-and-contact-tools.md`, "what Porter reads, and its token."],
+  ["Problem records", `${fm}/docs/adr/0049-record-problems-in-the-local-journal.md`, "problems go to the local journal only."],
+];
+---
+<Document title="Privacy | Frostyard" description="The privacy policy of frostyard.org and of Frostmail: what Frostmail does with Google user data, where it keeps it, and how to remove it." eyebrow="Privacy" heading="Privacy policy" canonicalPath="/privacy">
+  <p class="lede">This policy covers the frostyard.org website and Frostmail, the Frostyard mail client. It says what data each one handles, where the data goes, and how you remove it. Problem reports have <a href="/privacy/problem-reports/">their own privacy page</a>.</p>
+  <p><strong>Effective date:</strong> <time datetime={effectiveIso}>{effectiveText}</time>.</p>
+
+  <h2 id="website">The frostyard.org website</h2>
+  <ul>
+    <li>The site has no accounts and no forms. It sets no cookies. It loads no analytics, advertising or tracking scripts.</li>
+    <li>Cloudflare hosts the site. Cloudflare processes each request, with your IP address, to serve the page and to protect the site. Cloudflare's dashboard shows us total traffic counts.</li>
+    <li>Pages outside <code>/docs/</code> load the Inter font from Google Fonts. Your browser fetches it from Google, which gets your IP address.</li>
+  </ul>
+
+  <h2 id="frostmail">Frostmail and Google user data</h2>
+  <p><a href="/frostmail/">Frostmail</a> is a mail client for Linux and Windows. It runs on your computer. Frostmail's daemon, <code>maild</code>, connects from your computer to your mail provider. Frostyard runs no server between Frostmail and Google, and Frostyard never receives your Google data.</p>
+
+  <h3 id="frostmail-access">What Frostmail accesses</h3>
+  <p>When you add a Google account, Frostmail signs in with Google OAuth. It asks for the Gmail scope, and for the scope of each other service that you turn on. When you add a Gmail account, you choose Contacts, Calendars and Tasks. All 3 start checked.</p>
+  <p>No Frostmail release includes a Frostyard Google client yet. Until one does, you sign in with a Google client that you create in your own Google Cloud project, and Google shows the app name of that project's OAuth consent screen (<em>Google Auth Platform</em> &gt; <em>Branding</em>), at sign-in and in your Google Account. It does not show the name of the OAuth client. The scopes, the storage and the promises on this page are the same for both clients.</p>
+  <table class="scopes">
+    <thead><tr><th scope="col">Scope</th><th scope="col">Service</th><th scope="col">Use</th></tr></thead>
+    <tbody>{scopes.map(([scope, service, use]) => <tr><td><code>{scope}</code></td><td>{service}</td><td>{use}</td></tr>)}</tbody>
+  </table>
+  <p>Frostmail asks for no other Google scope. It does not ask for your Google profile.</p>
+
+  <h3 id="frostmail-use">How Frostmail uses the data</h3>
+  <p>Frostmail uses your Google data only to show it to you, to search it, and to do what you ask: send, file or delete a message, edit a contact or an event, answer an invitation, or complete a task. Frostmail does not use Google data for advertising. Frostyard does not sell it, and does not use it to train AI or machine-learning models.</p>
+
+  <h3 id="frostmail-storage">Where Frostmail keeps it</h3>
+  <ul>
+    <li><strong>Mail, contacts, calendars and tasks</strong> stay on your computer, in a SQLite database with a search index, and in message files beside it. The database is not encrypted. The folders are:
+      <ul>
+        <li>The Flatpak on Linux: <code>~/.var/app/org.frostyard.Frostmail/</code>.</li>
+        <li>A build from source on Linux: <code>~/.local/share/frostmail</code> and <code>~/.cache/frostmail</code>.</li>
+        <li>Windows: <code>%LOCALAPPDATA%\Frostmail\Data</code> and <code>%LOCALAPPDATA%\Frostmail\Cache</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Tokens and passwords.</strong> Frostmail keeps the access token in memory only. It keeps the refresh token, any app password, and your own Google client secret in a secrets store:
+      <ul>
+        <li>On a Linux desktop, the desktop keyring (the Secret Service).</li>
+        <li>On Windows, the file <code>secrets.dpapi</code>, sealed for your Windows sign-in.</li>
+        <li>On a lodge host, the file <code>secrets.sealed</code>, encrypted with AES-256-GCM under a systemd credential.</li>
+        <li>With <code>FROSTMAIL_SECRETS=file</code>, which you set yourself, the file <code>secrets.json</code> beside the database. This file is <strong>not encrypted</strong>: it holds the secrets as plain text. On Linux, only your user can read it (mode 0600). On Windows, the permissions of your user profile folder protect it. A build from source falls back to this file when the desktop has no keyring. The Flatpak never does.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3 id="frostmail-sharing">What leaves your computer</h3>
+  <ul>
+    <li><strong>Your mail provider.</strong> Frostmail talks to Google's servers: <code>imap.gmail.com</code>, <code>smtp.gmail.com</code>, and Google's CardDAV, CalDAV, Tasks and OAuth endpoints. Mail that you send goes to its recipients through Google.</li>
+    <li><strong>Remote images.</strong> Remote content in a message stays blocked until you choose <em>Load Remote Content</em>. Then Frostmail fetches it from the hosts that the message names, with no cookies and no <code>Referer</code>, and follows up to 3 redirects to other hosts. Frostmail does not fetch an image URL that it recognizes as a tracker, but it does not check the target of a redirect.</li>
+    <li><strong>Unsubscribe.</strong> Frostmail contacts a sender to unsubscribe only when you click.</li>
+    <li><strong>Account setup.</strong> For a provider that Frostmail does not know, setup asks the domain's own autoconfig server for its settings, with your address, and Thunderbird's ISPDB, with the domain only, and it looks up the domain's DNS SRV records. A <code>gmail.com</code> or <code>googlemail.com</code> address skips this step.</li>
+    <li><strong>lodge, if you choose it.</strong> <a href="/docs/apps/lodge/">lodge</a> is a server that you run on your own host. If you connect Frostmail to it in Settings, the app uses a <code>maild</code> on that host, and your mail data lives there. Nothing turns this on for you.</li>
+    <li><strong>Agents on your lodge host, if you allow them.</strong> On a lodge host, an agent with an agent token that you issue in lodge can read your mail, contacts, calendars and tasks. A token with the <code>;write</code> scope also lets the agent flag and move messages, write drafts, create and complete tasks, and set Remind Me. A token with the <code>;send</code> scope also lets it send a draft. Porter, the lodge assistant, gets a <code>;write</code> token: it can flag, move and draft mail and create and complete tasks, but it cannot send mail. Porter sends its prompts, which can hold your data, to the model that you configure in lodge: a local model, or a model provider that you choose. That provider handles the text under its own terms. The Flatpak on its own, with no lodge, has no agent access.</li>
+    <li><strong>Problem records.</strong> Frostmail writes its own errors to the systemd journal on your computer, and sends nothing. On a Frostyard image, ChairLift sends a problem report only after you turn reporting on. A report holds no mail or Google data. See <a href="/privacy/problem-reports/">Problem reports</a>.</li>
+  </ul>
+  <p>Frostmail has no analytics, no telemetry and no ads. Frostyard does not sell, rent or transfer your Google data to anyone.</p>
+
+  <h3 id="limited-use">Limited Use</h3>
+  <p>Frostmail's use and transfer to any other app of information received from Google APIs will adhere to the <a href={userDataPolicy}>Google API Services User Data Policy</a>, including the <a href={limitedUse}>Limited Use requirements</a>.</p>
+
+  <h3 id="frostmail-remove">Revoke access and delete your data</h3>
+  <ul>
+    <li><strong>Revoke access.</strong> Open your Google Account, then <em>Security</em> &gt; <em>Your connections to third-party apps &amp; services</em> (<a href="https://myaccount.google.com/connections">myaccount.google.com/connections</a>). Select Frostmail, or the app name of your own OAuth consent screen, and remove its access. Frostmail then cannot reach your Google data.</li>
+    <li><strong>Remove an account.</strong> In Frostmail, choose <em>Settings</em> &gt; <em>Accounts</em> &gt; <em>Remove Account</em>, or run <code>mailctl account rm ID</code>. Frostmail deletes the account's messages, contacts, events and tasks from its database, and tries to delete its password and refresh token. The message files in the data folder, the cache, and the names and organizations in the People list can stay. To remove them, delete all local data as below. The mail on Google's servers does not change.</li>
+    <li><strong>Delete all local data.</strong> Quit Frostmail, and keep it closed until you finish: an open app starts <code>maild</code> again. Then stop <code>maild</code>, so that it does not write the files again:
+      <ul>
+        <li>The Flatpak: run <code>flatpak kill org.frostyard.Frostmail</code>, then <code>flatpak uninstall --delete-data org.frostyard.Frostmail</code>. Its keyring items stay; <code>secret-tool clear application org.frostyard.Frostmail</code> removes them.</li>
+        <li>A build from source on Linux: run <code>systemctl --user disable --now maild.service</code>, and <code>mailctl shutdown</code> for a <code>maild</code> that you started by hand. Then delete <code>~/.local/share/frostmail</code> and <code>~/.cache/frostmail</code>. Its keyring items stay; <code>secret-tool clear application frostmail</code> removes them. Its log lines are in the systemd journal, which drops them by its own retention.</li>
+        <li>Windows: run <code>maild -autostart off</code>, so that it does not start at sign-in, and <code>mailctl shutdown</code>, and check that both succeed. Then delete <code>%LOCALAPPDATA%\Frostmail\Data</code> and <code>%LOCALAPPDATA%\Frostmail\Cache</code>. The secrets file is in <code>Data</code>.</li>
+        <li>A lodge host: its data is apart from your desktop's, and deleting the desktop's folders does not touch it. On the host, stop <code>frostmail.service</code>, and delete <code>/var/lib/frostmail</code> and <code>/var/cache/frostmail</code>. The secrets file is in <code>/var/lib/frostmail</code>.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2 id="problem-reports">Problem reports</h2>
+  <p>Frostyard images and ChairLift can send short problem reports after you turn reporting on. <a href="/privacy/problem-reports/">Problem reports</a> says what a report holds, how long it is kept, and your rights.</p>
+
+  <h2 id="contact">Contact</h2>
+  <p>Controller: {controller}</p>
+  <p>Questions about this policy: <a href={`mailto:${contact}`}>{contact}</a></p>
+
+  <h2 id="changes">Changes</h2>
+  <p>When this policy changes, the effective date changes with it. The history of this page is in <a href="https://github.com/frostyard/frostyard-org/commits/main/src/pages/privacy/index.astro">frostyard/frostyard-org</a>.</p>
+
+  <h2 id="source">Source</h2>
+  <p>Frostmail is open source. These facts come from its release <a href="https://github.com/frostyard/frostmail/releases/tag/v0.7.0">v0.7.0</a>.</p>
+  <ul>{sources.map(([label, href, text]) => <li><a href={href}>{label}</a>: {text}</li>)}</ul>
+</Document>
+
+<style>
+  /* A scope is a long URL: let it wrap, so the table fits a phone. */
+  :global(.document .scopes td code) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+</style>

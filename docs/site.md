@@ -23,6 +23,11 @@ redirect in `astro.config.mjs`.
   text, builds no link from a catalog value, and links a guide only from the
   docs collection.
 - `src/layouts/Site.astro` links the landing site navigation to `/docs/`.
+  Its footer, on every page outside `/docs/`, links the privacy policy at
+  `/privacy`.
+- `src/components/starlight/Footer.astro` wraps Starlight's footer and adds
+  the same privacy link to every docs page. `scripts/check-site.mjs` fails
+  when a page with a footer has no link to `/privacy`.
 
 ## Page inventory
 
@@ -38,6 +43,8 @@ redirect in `astro.config.mjs`.
 | `src/pages/why-atomic.astro` | `/why-atomic/` | The atomic model and supported workload boundaries. |
 | `src/pages/tools.astro` | `/tools/` | The dedicated Firn, Updex, and ChairLift page. |
 | `src/pages/stats.astro` | `/stats/` | The weekly problem report counts. |
+| `src/pages/frostmail.astro` | `/frostmail/` | Frostmail's home page for its Google OAuth consent screen: what the app does, where it runs, how to get it, and the privacy link. `public/_redirects` also serves it at `/frostmail`. |
+| `src/pages/privacy/index.astro` | `/privacy/` | The privacy policy of the site and of Frostmail's Google user data, with the Limited Use statement. `public/_redirects` also serves it at `/privacy`, the URL that Google's branding check fetches. |
 | `src/pages/privacy/problem-reports.astro` | `/privacy/problem-reports/` | The privacy page for opt-in problem reports: what a report holds, how long it is kept, what a public bug report holds, and your rights. |
 | `src/content/docs/docs/index.mdx` | `/docs/` | The docs landing page: the image choices, install and first boot, the software layers, and the source policy. |
 | `src/content/docs/docs/get-software.md` | `/docs/get-software/` | How to choose Flatpak, Homebrew, a system extension, or Distrobox to add software to a Frostyard image. |

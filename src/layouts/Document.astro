@@ -10,12 +10,13 @@ interface Props {
   eyebrow: string;
   heading: string;
   active?: string;
+  canonicalPath?: string;
 }
 
-const { title, description, eyebrow, heading, active } = Astro.props;
+const { title, description, eyebrow, heading, active, canonicalPath } = Astro.props;
 ---
 
-<Site title={title} description={description} active={active}>
+<Site title={title} description={description} active={active} canonicalPath={canonicalPath}>
   <header class="document-header">
     <p class="eyebrow"><i></i> {eyebrow}</p>
     <h1>{heading}</h1>
