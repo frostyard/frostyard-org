@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const checker = join(repo, "scripts", "check-template.mjs");
+const coreSha = "c996ea3fb54bcf1a3c621113522213702a7673e2";
 const temporary = [];
 
 after(() => {
@@ -36,6 +37,7 @@ function fixture() {
   writeFileSync(join(root, "AGENTS.md"), "# Test instructions\n", "utf8");
   symlinkSync("AGENTS.md", join(root, "CLAUDE.md"));
   symlinkSync("AGENTS.md", join(root, "GEMINI.md"));
+  symlinkSync("AGENTS.md", join(root, ".cursorrules"));
   symlinkSync("../AGENTS.md", join(root, ".github", "copilot-instructions.md"));
   symlinkSync("../.agents/skills", join(root, ".claude", "skills"));
 
@@ -47,18 +49,34 @@ function fixture() {
   writeFileSync(join(root, "docs", "adr", "0001-x.md"), "# One\n", "utf8");
   writeFileSync(join(root, "docs", "adr", "TEMPLATE.md"), "# Template\n", "utf8");
 
+  // A list of schema version 2 (the template requires it) and a caller of
+  // core's pr-triage workflow, as the template ships them.
   writeFileSync(
     join(root, ".github", "risk-paths.json"),
     JSON.stringify({
-      schema_version: 1,
+      schema_version: 2,
+      default_level: "L3",
       paths: [
-        { glob: ".github/risk-paths.json", why: "governance: the high-risk path list" },
-        { glob: ".github/workflows/**", why: "governance: CI and the caller workflow" },
+        { glob: ".github/risk-paths.json", level: "L2", why: "governance: the high-risk path list" },
+        { glob: ".github/workflows/**", level: "L2", why: "governance: CI and the caller workflow" },
       ],
     }, null, 2) + "\n",
     "utf8",
   );
-  writeFileSync(join(root, ".github", "workflows", "risk-paths.yml"), "# caller stub\n", "utf8");
+  writeFileSync(join(root, ".github", "workflows", "risk-paths.yml"), [
+    "name: PR triage",
+    "on:",
+    "  pull_request_target:",
+    "    types: [opened, synchronize, reopened, edited, labeled]",
+    "permissions: {}",
+    "jobs:",
+    "  pr-triage:",
+    "    permissions:",
+    "      contents: read",
+    "      pull-requests: write",
+    `    uses: frostyard/core/.github/workflows/pr-triage.yml@${coreSha} # frostyard/core main`,
+    "",
+  ].join("\n"), "utf8");
 
   writeFileSync(
     join(root, ".memory", "corrections.jsonl"),
@@ -119,6 +137,21 @@ test("copilot instruction link to another file exits 1", (t) => {
   unlinkSync(join(root, ".github", "copilot-instructions.md"));
   writeFileSync(join(root, "other.md"), "other\n", "utf8");
   symlinkSync("../other.md", join(root, ".github", "copilot-instructions.md"));
+  assertFailure(run(root), "agent-symlinks");
+});
+
+test("cursorrules missing exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  unlinkSync(join(root, ".cursorrules"));
+  assertFailure(run(root), "agent-symlinks");
+});
+
+test(".cursorrules as a regular file exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  unlinkSync(join(root, ".cursorrules"));
+  writeFileSync(join(root, ".cursorrules"), "AGENTS.md\n", "utf8");
   assertFailure(run(root), "agent-symlinks");
 });
 
@@ -213,7 +246,7 @@ test("inline link with title exits 0", (t) => {
 test("unknown risk-path key exits 1", (t) => {
   const root = fixture();
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  writeFileSync(join(root, ".github", "risk-paths.json"), '{"schema_version":1,"paths":[],"unknown":true}\n', "utf8");
+  writeFileSync(join(root, ".github", "risk-paths.json"), '{"schema_version":2,"default_level":"L3","paths":[],"unknown":true}\n', "utf8");
   assertFailure(run(root), "risk-paths");
 });
 
@@ -235,10 +268,159 @@ test("risk-path list with no caller glob exits 1", (t) => {
   const root = fixture();
   t.after(() => rmSync(root, { recursive: true, force: true }));
   writeFileSync(join(root, ".github", "risk-paths.json"), JSON.stringify({
-    schema_version: 1,
-    paths: [{ glob: ".github/risk-paths.json", why: "governance: list" }],
+    schema_version: 2,
+    default_level: "L3",
+    paths: [{ glob: ".github/risk-paths.json", level: "L2", why: "governance: list" }],
   }) + "\n", "utf8");
-  assertFailure(run(root), "risk-paths");
+  assertFailure(run(root), "no glob matches the required path .github/workflows/risk-paths.yml");
+});
+
+test("risk-path list of schema version 1 exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, ".github", "risk-paths.json"), JSON.stringify({
+    schema_version: 1,
+    paths: [
+      { glob: ".github/risk-paths.json", why: "governance: the high-risk path list" },
+      { glob: ".github/workflows/**", why: "governance: CI and the caller workflow" },
+    ],
+  }) + "\n", "utf8");
+  assertFailure(run(root), "schema_version: must be 2 in this template");
+});
+
+test("risk-path entry with no level exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, ".github", "risk-paths.json"), JSON.stringify({
+    schema_version: 2,
+    default_level: "L3",
+    paths: [
+      { glob: ".github/risk-paths.json", level: "L2", why: "governance: the high-risk path list" },
+      { glob: ".github/workflows/**", why: "governance: CI and the caller workflow" },
+    ],
+  }) + "\n", "utf8");
+  assertFailure(run(root), 'paths\\[1\\]: missing key "level"');
+});
+
+test("risk-path list with no default level exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, ".github", "risk-paths.json"), JSON.stringify({
+    schema_version: 2,
+    paths: [{ glob: ".github/risk-paths.json", level: "L2", why: "governance: list" }],
+  }) + "\n", "utf8");
+  assertFailure(run(root), 'missing key "default_level"');
+});
+
+test("risk-path list with a bad default level exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, ".github", "risk-paths.json"), JSON.stringify({
+    schema_version: 2,
+    default_level: "L5",
+    paths: [{ glob: ".github/risk-paths.json", level: "L2", why: "governance: list" }],
+  }) + "\n", "utf8");
+  assertFailure(run(root), "default_level: must be 1 of L1, L2, L3, L4");
+});
+
+test("caller glob at level L3 exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, ".github", "risk-paths.json"), JSON.stringify({
+    schema_version: 2,
+    default_level: "L3",
+    paths: [
+      { glob: ".github/risk-paths.json", level: "L2", why: "governance: the high-risk path list" },
+      { glob: ".github/workflows/**", level: "L3", why: "governance: CI and the caller workflow" },
+    ],
+  }) + "\n", "utf8");
+  assertFailure(run(root), "must be L1 or L2");
+});
+
+test("caller that still pins core's risk-paths workflow exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, ".github", "workflows", "risk-paths.yml"), [
+    "name: Risk paths caller",
+    "on:",
+    "  pull_request_target:",
+    "permissions: {}",
+    "jobs:",
+    "  pr-triage:",
+    `    uses: frostyard/core/.github/workflows/risk-paths.yml@${coreSha}`,
+    "",
+  ].join("\n"), "utf8");
+  assertFailure(run(root), "the uses: of the job pr-triage must be frostyard/core/.github/workflows/pr-triage.yml@");
+});
+
+test("caller that renames the job exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const caller = join(root, ".github", "workflows", "risk-paths.yml");
+  writeFileSync(caller, readFileSync(caller, "utf8").replace("\n  pr-triage:\n", "\n  triage:\n"), "utf8");
+  assertFailure(run(root), "must run the reusable workflow in the job pr-triage");
+});
+
+test("caller with comments at indent 0 and 2 before uses exits 0", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const caller = join(root, ".github", "workflows", "risk-paths.yml");
+  const text = readFileSync(caller, "utf8");
+  const withComments = text.replace(
+    "\n    uses: ",
+    "\n  # Keep the reusable workflow SHA-pinned.\n# core ADR-0021\n\n    uses: ",
+  );
+  assert.notEqual(withComments, text);
+  writeFileSync(caller, withComments, "utf8");
+  assertClean(run(root));
+});
+
+test("caller with the pinned uses in another job exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, ".github", "workflows", "risk-paths.yml"), [
+    "name: PR triage",
+    "on:",
+    "  pull_request_target:",
+    "    types: [opened, synchronize, reopened, edited, labeled]",
+    "permissions: {}",
+    "jobs:",
+    "  pr-triage:",
+    "    runs-on: ubuntu-latest",
+    "    permissions:",
+    "      contents: read",
+    "    steps:",
+    "      - run: echo triage",
+    "  triage:",
+    "    permissions:",
+    "      contents: read",
+    "      pull-requests: write",
+    `    uses: frostyard/core/.github/workflows/pr-triage.yml@${coreSha} # frostyard/core main`,
+    "",
+  ].join("\n"), "utf8");
+  assertFailure(run(root), "the job pr-triage must set uses: at 4 spaces");
+});
+
+test("caller with the pinned uses inside a run block exits 1", (t) => {
+  const root = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, ".github", "workflows", "risk-paths.yml"), [
+    "name: PR triage",
+    "on:",
+    "  pull_request_target:",
+    "    types: [opened, synchronize, reopened, edited, labeled]",
+    "permissions: {}",
+    "jobs:",
+    "  pr-triage:",
+    "    runs-on: ubuntu-latest",
+    "    permissions:",
+    "      contents: read",
+    "    steps:",
+    "      - run: |",
+    `          uses: frostyard/core/.github/workflows/pr-triage.yml@${coreSha}`,
+    "",
+  ].join("\n"), "utf8");
+  assertFailure(run(root), "the job pr-triage must set uses: at 4 spaces");
 });
 
 test("correction with a sixth field exits 1", (t) => {
