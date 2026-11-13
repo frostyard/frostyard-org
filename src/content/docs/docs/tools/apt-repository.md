@@ -221,7 +221,7 @@ file from an earlier version of this page, remove it too:
 
 ## Sources
 
-Reviewed 2026-10-28.
+Reviewed 2026-10-28. The `forky` facts were updated 2026-11-13.
 
 - Intended use: core [ADR-0059](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md#context), section Context: the repository's intended consumers are Frostyard's images, and plain Debian hosts are not a supported use. Installed images carry no Frostyard APT source.
 - `image` component: [ADR-0059](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md), accepted by Brian on 2026-10-24 (core#162, accepted in core#163): the rule for `image`, the 7 packages, and step 6 (key URL, no pin, caveat for plain hosts). [ADR-0061](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0061-add-the-image-apt-component-on-the-first-publication-run.md) amends it: the first publication run adds `image`.
