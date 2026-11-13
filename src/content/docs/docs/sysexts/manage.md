@@ -353,7 +353,8 @@ every feature, and end with `named features`, for a run that named features.
 Each feature that did not update or stay current gets a line below it, with its
 outcome, for example `docker: failed (class network)` or
 `incus: needs_image (version <version>)`. A feature line from an earlier run
-ends with `at <time>`. With the timer installed and no record, the line reads
+adds `at <time>` when its time differs from the time on the `Last update`
+line. With the timer installed and no record, the line reads
 `Last update: none recorded`. An Updex older than v2.3.0 shows no `Last update`
 line.
 
