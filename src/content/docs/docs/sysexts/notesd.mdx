@@ -168,7 +168,8 @@ notesd refuses a database that a newer notesd migrated, and a rollback does not
 undo a migration. notesd 0.3.2 adds a migration to 0.3.1, so after 0.3.2 has
 run, notesd 0.3.1 refuses the database. notesd 0.3.1 adds a migration to 0.3.0,
 so after 0.3.1 has run, notesd 0.3.0 refuses the database. notesd 0.3.0 adds no
-migration to 0.2.0.
+migration to 0.2.0. notesd 0.4.0 to 0.6.0 add no migration to 0.3.2, so after
+one of them has run, notesd 0.3.2 still opens the database.
 
 When the older version runs, read the journal:
 
@@ -230,12 +231,12 @@ Each build checks the commands, the units, the sysusers file, the lodge app mani
 
 ## Sources
 
-Reviewed 2026-11-02. snosi commit
+Reviewed 2026-11-02; Frostnotes facts reviewed 2026-11-13. snosi commit
 [`cfd0dcb28f6761e972c3a5b95e87c847b2f3b510`](https://github.com/frostyard/snosi/tree/cfd0dcb28f6761e972c3a5b95e87c847b2f3b510);
 core commit
 [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
-Frostnotes v0.3.2 commit
-[`a9982d247adf644e882432e0c2485421b3d72be7`](https://github.com/frostyard/frostnotes/tree/a9982d247adf644e882432e0c2485421b3d72be7);
+Frostnotes `main` commit
+[`851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59`](https://github.com/frostyard/frostnotes/tree/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59);
 Updex v2.1.4 commit
 [`1843ea8ded298fbde42390a0c8b2842d09a92757`](https://github.com/frostyard/updex/tree/1843ea8ded298fbde42390a0c8b2842d09a92757).
 
@@ -252,10 +253,11 @@ Updex v2.1.4 commit
 - [snosi#1169](https://github.com/frostyard/snosi/pull/1169) (merged 2026-10-28), [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28) and [snosi#1175](https://github.com/frostyard/snosi/pull/1175) (merged 2026-10-28)
 - [snosi#1195](https://github.com/frostyard/snosi/pull/1195) (merged 2026-10-31) pins notesd 0.3.1. `https://repository.frostyard.org/ext/notesd/SHA256SUMS`, checked 2026-11-01, lists 0.2.0, 0.3.0 and 0.3.1.
 - [snosi#1199](https://github.com/frostyard/snosi/pull/1199) (merged 2026-11-02) pins notesd 0.3.2. It is the only commit after the old pin `9b0b1539ae547e45ad32bfb4f581444e9bc0734c`, and it changes only `shared/download/sysext-checksums.json`. `https://repository.frostyard.org/ext/notesd/SHA256SUMS`, checked 2026-11-02, lists 0.2.0, 0.3.0, 0.3.1 and 0.3.2.
+- [snosi#1257](https://github.com/frostyard/snosi/pull/1257) (merged 2026-11-09) pins notesd 0.4.0, and [snosi#1290](https://github.com/frostyard/snosi/pull/1290) (merged 2026-11-13) pins notesd 0.6.0. `https://repository.frostyard.org/ext/notesd/SHA256SUMS`, checked 2026-11-13, lists 0.2.0, 0.3.0, 0.3.1, 0.3.2, 0.4.0 and 0.6.0.
 - Frostnotes [`internal/store/migrations/0005_sync_push_base_hash.sql`](https://github.com/frostyard/frostnotes/blob/189ae2f7f435439943b0dfb62d3b4f9221724bf5/internal/store/migrations/0005_sync_push_base_hash.sql) (the migration that v0.3.1 adds)
-- Frostnotes [`internal/store/migrations/0006_sync_applying.sql`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/internal/store/migrations/0006_sync_applying.sql) (the migration that v0.3.2 adds)
+- Frostnotes [`internal/store/migrations/0006_sync_applying.sql`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/internal/store/migrations/0006_sync_applying.sql) (the migration that v0.3.2 adds). [`internal/store/migrations/`](https://github.com/frostyard/frostnotes/tree/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/internal/store/migrations) at `main` holds `0001_init.sql` to `0006_sync_applying.sql`, the same 6 as v0.3.2, v0.4.0, v0.5.0 and v0.6.0.
 - core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) and [`docs/adr/0063-uphold-notesds-service-as-well-as-its-socket.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0063-uphold-notesds-service-as-well-as-its-socket.md)
-- Frostnotes [`packaging/systemd/frostnotes.service`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/packaging/systemd/frostnotes.service), [`packaging/systemd/frostnotes-lodge.socket`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/packaging/systemd/frostnotes-lodge.socket), [`packaging/sysusers.d/frostnotes.conf`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/packaging/sysusers.d/frostnotes.conf), [`cmd/notesctl/root.go`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/cmd/notesctl/root.go)
+- Frostnotes [`packaging/systemd/frostnotes.service`](https://github.com/frostyard/frostnotes/blob/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/packaging/systemd/frostnotes.service), [`packaging/systemd/frostnotes-lodge.socket`](https://github.com/frostyard/frostnotes/blob/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/packaging/systemd/frostnotes-lodge.socket), [`packaging/sysusers.d/frostnotes.conf`](https://github.com/frostyard/frostnotes/blob/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/packaging/sysusers.d/frostnotes.conf), [`cmd/notesctl/root.go`](https://github.com/frostyard/frostnotes/blob/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/cmd/notesctl/root.go)
 - [Updex v2.1.4 `README.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; a link on an older image shows an update, and `features update` repoints it; a rollback records the newer version as rejected, and `features update` links nothing at or below it until `features rollback --clear`)
 - [Updex v2.1.4 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
 - snosi [`docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md) (attestation checked at pin time and in every CI build)
@@ -268,5 +270,5 @@ Updex v2.1.4 commit
 - Updex v2.1.4 [`updex/features.go`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/updex/features.go) (`activation did not finish`: the images are merged, and a reboot finishes the activation)
 - [Updex v2.1.4 release](https://github.com/frostyard/updex/releases/tag/v2.1.4)
 - lodge [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl reload` rereads the manifests), [`internal/apps/apps.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/apps/apps.go) (`PollEvery`, 15 seconds)
-- Frostnotes [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/internal/store/store.go) (the schema refusal), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/docs/design/sync.md) (back up the vault and data directories), [`cmd/notesd/main.go`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/cmd/notesd/main.go) and [`cmd/notesctl/hello.go`](https://github.com/frostyard/frostnotes/blob/a9982d247adf644e882432e0c2485421b3d72be7/cmd/notesctl/hello.go) (`hello` names `notesd <version>`)
+- Frostnotes [`internal/store/store.go`](https://github.com/frostyard/frostnotes/blob/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/internal/store/store.go) (the schema refusal), [`docs/design/sync.md`](https://github.com/frostyard/frostnotes/blob/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/docs/design/sync.md) (back up the vault and data directories), [`cmd/notesd/main.go`](https://github.com/frostyard/frostnotes/blob/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/cmd/notesd/main.go) and [`cmd/notesctl/hello.go`](https://github.com/frostyard/frostnotes/blob/851670ab3a3b89a6ded3ee276ffdb59c6b2c4e59/cmd/notesctl/hello.go) (`hello` names `notesd <version>`)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

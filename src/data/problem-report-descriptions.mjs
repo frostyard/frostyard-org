@@ -3,7 +3,8 @@
 // builds its data table from the schema and this map with
 // src/lib/problem-report-table.mjs, which fails the build when a kind or a
 // field has no description here, or when this map names one the schema lacks.
-// Facts: frostyard/core docs/specs/problem-report.md and plan T857 section 1.
+// Facts: frostyard/core docs/specs/problem-report.md and
+// docs/adr/0069-report-problems-local-first-opt-in-with-one-sender-per-host.md.
 
 export default {
   envelope: {
