@@ -33,8 +33,12 @@ frostread is pre-release. The latest release is v0.6.0, from 2026-11-13.
 Release v0.6.0 adds the desktop app, the Flatpak `org.frostyard.Frostread`.
 It is in the [Frostyard Flatpak remote](/docs/get-software/#flatpak). The app
 carries its own `readd` and is local by default. lodge is a connection you
-choose, and the app can move your data from lodge. In local mode, an article
-exports as a Markdown file.
+choose. The app copies nothing from lodge. To move from lodge, export your
+subscriptions as OPML and import them in the app. Your articles, stars, and
+saved links stay on lodge. In local mode, an article exports as a Markdown
+file. "Moving from lodge" in the
+[design overview](https://github.com/frostyard/frostread/blob/main/docs/design/overview.md#design)
+has the steps.
 
 Each release also attaches one package, `frostyard-readd_X.Y.Z_amd64.deb`,
 for lodge's host. On a Frostyard image, the
@@ -109,7 +113,7 @@ in the packaging README. The Update steps check the package and take a rollback 
 
 Reviewed 2026-11-13.
 
-- frostread v0.6.0 commit [`fb0ba067bdf4de5510e9d02fcf349f35f2977caf`](https://github.com/frostyard/frostread/tree/fb0ba067bdf4de5510e9d02fcf349f35f2977caf), released 2026-11-13 ([release](https://github.com/frostyard/frostread/releases/tag/v0.6.0)). Its release attaches only `frostyard-readd_0.6.0_amd64.deb`. Its notes list the Flatpak ([frostread#49](https://github.com/frostyard/frostread/pull/49), [frostread#50](https://github.com/frostyard/frostread/pull/50), [frostread#65](https://github.com/frostyard/frostread/pull/65)), the lodge connection ([frostread#54](https://github.com/frostyard/frostread/pull/54)), and the Markdown export in local mode and the move from lodge ([frostread#63](https://github.com/frostyard/frostread/pull/63)). v0.5.0 was released 2026-11-04 ([release](https://github.com/frostyard/frostread/releases/tag/v0.5.0)), v0.4.0 on 2026-11-03 ([release](https://github.com/frostyard/frostread/releases/tag/v0.4.0)).
+- frostread v0.6.0 commit [`fb0ba067bdf4de5510e9d02fcf349f35f2977caf`](https://github.com/frostyard/frostread/tree/fb0ba067bdf4de5510e9d02fcf349f35f2977caf), released 2026-11-13 ([release](https://github.com/frostyard/frostread/releases/tag/v0.6.0)). Its release attaches only `frostyard-readd_0.6.0_amd64.deb`. Its notes list the Flatpak ([frostread#49](https://github.com/frostyard/frostread/pull/49), [frostread#50](https://github.com/frostyard/frostread/pull/50), [frostread#65](https://github.com/frostyard/frostread/pull/65)), the lodge connection ([frostread#54](https://github.com/frostyard/frostread/pull/54)), and the Markdown export in local mode ([frostread#63](https://github.com/frostyard/frostread/pull/63)). Moving from lodge moves only the subscriptions, by OPML: [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/fb0ba067bdf4de5510e9d02fcf349f35f2977caf/docs/design/overview.md) ("Moving from lodge") and [ADR-0008](https://github.com/frostyard/frostread/blob/fb0ba067bdf4de5510e9d02fcf349f35f2977caf/docs/adr/0008-the-desktop-flatpak-carries-its-own-readd-and-lodge-is-a-connection.md) ("Moving from lodge: optional and explicit"). v0.5.0 was released 2026-11-04 ([release](https://github.com/frostyard/frostread/releases/tag/v0.5.0)), v0.4.0 on 2026-11-03 ([release](https://github.com/frostyard/frostread/releases/tag/v0.4.0)).
 - [`packaging/README.md`](https://github.com/frostyard/frostread/blob/fb0ba067bdf4de5510e9d02fcf349f35f2977caf/packaging/README.md): the `.deb` for lodge's host, the Flatpak `org.frostyard.Frostread`, and the runbooks.
 - [`packaging/flatpak/org.frostyard.Frostread.metainfo.xml`](https://github.com/frostyard/frostread/blob/fb0ba067bdf4de5510e9d02fcf349f35f2977caf/packaging/flatpak/org.frostyard.Frostread.metainfo.xml): the app works on its own and saves an article as a Markdown file.
 - The listing in the Frostyard Flatpak remote: [flatpak-index#16](https://github.com/frostyard/flatpak-index/pull/16), merged 2026-11-13, and flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/0886d3caf7f02d23d19bcc779c7e7d2feb1935a6/README.md) at `0886d3caf7f02d23d19bcc779c7e7d2feb1935a6` (the install line).
@@ -120,7 +124,7 @@ Reviewed 2026-11-13.
 - [frostread#40](https://github.com/frostyard/frostread/pull/40) adds source folders. [frostread#41](https://github.com/frostyard/frostread/pull/41) adds the rail badge.
 - [`internal/store/migrations/0003_source_folders.sql`](https://github.com/frostyard/frostread/blob/fb0ba067bdf4de5510e9d02fcf349f35f2977caf/internal/store/migrations/0003_source_folders.sql).
 - [`docs/plans/0002-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostread/blob/fb0ba067bdf4de5510e9d02fcf349f35f2977caf/docs/plans/0002-the-standalone-desktop-flatpak.md) (Status 2026-11-11: Phases 3 to 10 are done).
-- `https://repository.frostyard.org/ext/readd/SHA256SUMS`, checked 2026-11-04, lists up to 0.4.0.
+- `https://repository.frostyard.org/ext/readd/SHA256SUMS`, checked 2026-11-13, lists up to 0.5.0.
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`. ADR-0008 settles frostread's lodge mode: a connection.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28, adds the lodge, readd, and porterd extensions.
 - snosi PR [snosi#1196](https://github.com/frostyard/snosi/pull/1196), merged 2026-10-31, pins readd 0.3.0.
