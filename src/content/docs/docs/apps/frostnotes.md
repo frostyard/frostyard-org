@@ -3,7 +3,7 @@ title: Frostnotes
 description: "Frostnotes is a notes app in the spirit of Obsidian: plain markdown files, sync, a desktop app, and MCP for agents. Pre-release; install the desktop app from the Frostyard Flatpak remote."
 follows:
   repo: frostyard/frostnotes
-  tag: v0.5.0
+  tag: v0.6.0
 ---
 
 Frostnotes is a notes app in the spirit of Obsidian. Your notes are plain
@@ -23,7 +23,7 @@ want notes that sync between your devices and that agents can read and write.
 
 ## Status
 
-Frostnotes is pre-release. The latest release is v0.5.0. Its Flatpak is in the
+Frostnotes is pre-release. The latest release is v0.6.0. Its Flatpak is in the
 [Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
 attaches `frostyard-notesd_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
 `notesd`, `notesctl`, the units, the `frostnotes` user, and the web build for
@@ -68,6 +68,12 @@ Spellcheck control. notesd and the app also write their panics and a few
 coded errors to the local systemd journal, and send nothing over the network.
 To see them, run `journalctl MESSAGE_ID=8915bdd215c84cbab0c31c05a1a33e7e`.
 
+Release v0.6.0 draws the desktop app in the Frostyard look. In Settings,
+Appearance, Theme, Light picks Frostyard light and Dark picks Frostyard. System
+follows your desktop's light or dark style. The desktop's high contrast and text
+size apply, but its accent color no longer does. Live preview sets headings in
+Inter, bold, and puts the lines of code blocks on a code color.
+
 ## Install
 
 The desktop app is a Flatpak. It works on its own: you need no account,
@@ -94,7 +100,7 @@ Check the install:
 
 `flatpak info org.frostyard.Frostnotes`
 
-You see version 0.5.0. Frostnotes shows in the app grid. Update it with
+You see version 0.6.0. Frostnotes shows in the app grid. Update it with
 `flatpak update`. From v0.3.0, when you open a new window after
 `flatpak update`, the app replaces a `notesd` of an older build with the new
 one, and you need no logout. The update from v0.2.0 to v0.3.0 is different:
@@ -230,8 +236,12 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 ## Sources
 
-Reviewed 2026-11-11.
+Reviewed 2026-11-12.
 
+- Frostnotes release v0.6.0 commit [`b9c6c9006d666183f91313f79648f8323b8a61b0`](https://github.com/frostyard/frostnotes/tree/b9c6c9006d666183f91313f79648f8323b8a61b0), released 2026-11-12. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.6.0) attaches only `frostyard-notesd_0.6.0_amd64.deb`.
+- The Flatpak at v0.6.0: the live Frostyard catalogue (its `Last-Modified` is 2026-11-12 19:57:18 GMT) lists `org.frostyard.Frostnotes` at digest `sha256:6a4d13a462afe0e62a656f36c24bbe63d777b573dde6710dadab9114c487398b`, built from `b9c6c900`, with the release `0.6.0` in its AppStream data.
+- The Frostyard look: [frostnotes#202](https://github.com/frostyard/frostnotes/pull/202), [`docs/adr/0042-the-desktop-app-takes-frostuis-frostyard-look.md`](https://github.com/frostyard/frostnotes/blob/b9c6c9006d666183f91313f79648f8323b8a61b0/docs/adr/0042-the-desktop-app-takes-frostuis-frostyard-look.md) (Proposed), [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/b9c6c9006d666183f91313f79648f8323b8a61b0/docs/specs/ui.md) (In the native desktop app), [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/b9c6c9006d666183f91313f79648f8323b8a61b0/docs/design/app.md#the-native-look) (The native look), and [`README.md`](https://github.com/frostyard/frostnotes/blob/b9c6c9006d666183f91313f79648f8323b8a61b0/README.md). New screenshots: [frostnotes#204](https://github.com/frostyard/frostnotes/pull/204).
+- No database migration in v0.6.0: `internal/store/migrations` is the same as at v0.5.0. The notesd system extension: `https://repository.frostyard.org/ext/notesd/SHA256SUMS`, checked 2026-11-12, lists up to 0.4.0.
 - Frostnotes release v0.5.0 commit [`6458058e203ab91699e7d40d4fb03b06da534391`](https://github.com/frostyard/frostnotes/tree/6458058e203ab91699e7d40d4fb03b06da534391), released 2026-11-11. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.5.0) attaches only `frostyard-notesd_0.5.0_amd64.deb`.
 - The Flatpak at v0.5.0: the live Frostyard catalogue, checked 2026-11-11, lists `org.frostyard.Frostnotes` at digest `sha256:de45b565b583bff71af213cfcc28382c2735bf5e0dbf0d45a72071fd3f3529c1`, built from `6458058e`, with the release `0.5.0` in its AppStream data.
 - The native app: [frostnotes#145](https://github.com/frostyard/frostnotes/pull/145), [`docs/adr/0038-draw-the-desktop-app-natively-with-mygo-and-frostui.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/adr/0038-draw-the-desktop-app-natively-with-mygo-and-frostui.md) (the first native start opens the default layout; the webview's copy is not migrated), [`docs/plans/0009-mygo-desktop.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/plans/0009-mygo-desktop.md), [`docs/specs/ui.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/specs/ui.md) (In the native desktop app: the connecting screen's Details button, no Spellcheck in Settings), [`docs/design/app.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/design/app.md), [`docs/development.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/docs/development.md), and [`README.md`](https://github.com/frostyard/frostnotes/blob/6458058e203ab91699e7d40d4fb03b06da534391/README.md). Math [frostnotes#187](https://github.com/frostyard/frostnotes/pull/187), media [frostnotes#189](https://github.com/frostyard/frostnotes/pull/189), reading tasks and block links [frostnotes#190](https://github.com/frostyard/frostnotes/pull/190).

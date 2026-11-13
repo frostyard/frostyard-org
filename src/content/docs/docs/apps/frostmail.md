@@ -3,7 +3,7 @@ title: Frostmail
 description: "Frostmail is a mail client that works like Apple Mail.app, for Linux and Windows, with a daemon, an app, and a CLI. Pre-release; install the desktop app from the Frostyard Flatpak remote."
 follows:
   repo: frostyard/frostmail
-  tag: v0.6.0
+  tag: v0.7.0
 ---
 
 Frostmail is a mail client that works like Apple Mail.app. It runs on Linux
@@ -27,7 +27,7 @@ daemon on your machine, and the app and the command line talk to it.
 
 ## Status
 
-Frostmail is pre-release. The latest release is v0.6.0. Its Flatpak,
+Frostmail is pre-release. The latest release is v0.7.0. Its Flatpak,
 `org.frostyard.Frostmail`, is in the
 [Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
 attaches `frostyard-maild_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
@@ -42,7 +42,7 @@ reply for 3 days or more. With maild v0.5.0 on lodge's host and lodge v0.2.0
 or later, Frostmail's rail button shows the unread count of your inboxes. The
 maild system extension can trail the latest release. The
 [catalog](/docs/sysexts/) lists the version it ships. The Flatpak and the
-`.deb` of v0.6.0 come from the same commit.
+`.deb` of v0.7.0 come from the same commit.
 
 Release v0.6.0 replaces the desktop app with a native Go app. Your mail,
 accounts, and the install steps stay the same. v0.6.0 adds database
@@ -55,6 +55,14 @@ sends when the text mentions an attachment that is missing. A search says how
 far it looked, and you choose each account's sync window in Settings. Erase
 Deleted Items and Erase Junk Mail remove old mail from Trash and Junk when you
 ask.
+
+Release v0.7.0 draws the desktop app in the Frostyard look: the Frostyard
+theme on a dark desktop, and Frostyard light otherwise. It follows the
+desktop's text size and high contrast, but not its accent color. Follow Up and
+the Outbox are now sections of the sidebar, after your accounts. In lodge's
+mail app, a `mailto` link in a message keeps only the address and the `to`,
+`cc`, `bcc`, `subject`, and `body` fields before it opens, as the desktop app
+does.
 
 From v0.6.0, `maild`, `mailctl`, and the app write their panics and a few
 coded errors to the local systemd journal. They send nothing over the
@@ -153,8 +161,12 @@ runs as the system user `frostmail` on lodge's host. To check the release
 
 ## Sources
 
-Reviewed 2026-11-11.
+Reviewed 2026-11-12.
 
+- Frostmail release v0.7.0 commit [`7db1e7b322695bc3d41662ddf0001c3ad05d1490`](https://github.com/frostyard/frostmail/tree/7db1e7b322695bc3d41662ddf0001c3ad05d1490), released 2026-11-12. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.7.0) attaches only `frostyard-maild_0.7.0_amd64.deb`. The tag `v0.7.0` is the commit of the release candidate `v0.7.0-rc.1`.
+- The Flatpak at v0.7.0: the live Frostyard catalogue (its `Last-Modified` is 2026-11-12 19:57:18 GMT) lists `org.frostyard.Frostmail` at digest `sha256:a28092da7134e578e135df3c5cbb86e30536c7f429c32d70b7706f0997d66fe5`, built from `7db1e7b3`, with the release `0.7.0` in its AppStream data.
+- v0.7.0's changes: the Frostyard look and the sidebar sections [frostmail#277](https://github.com/frostyard/frostmail/pull/277) (frostui v0.5.0), [`docs/specs/ui.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/specs/ui.md) (The desktop app; Sidebar, Follow Up), [`docs/plans/0015-mygo-desktop.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/plans/0015-mygo-desktop.md#the-frostyard-look) (The Frostyard look); the `mailto` filter [frostmail#264](https://github.com/frostyard/frostmail/pull/264), [frostmail#265](https://github.com/frostyard/frostmail/pull/265) and [`docs/adr/0056-filter-mailto-links-before-opening-them.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/adr/0056-filter-mailto-links-before-opening-them.md); [`README.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/README.md).
+- No database migration in v0.7.0: `internal/store/migrations` is the same as at v0.6.0. The maild system extension: `https://repository.frostyard.org/ext/maild/SHA256SUMS`, checked 2026-11-12, lists up to 0.5.0.
 - Frostmail release v0.6.0 commit [`f505fcb8d5310d0a9ad245f3e906f10a61bcef15`](https://github.com/frostyard/frostmail/tree/f505fcb8d5310d0a9ad245f3e906f10a61bcef15), released 2026-11-11. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.6.0) attaches only `frostyard-maild_0.6.0_amd64.deb`. The tag `v0.6.0` is the commit of the release candidate `v0.6.0-rc.1`.
 - The Flatpak at v0.6.0: the live Frostyard catalogue, checked 2026-11-11, lists `org.frostyard.Frostmail` at digest `sha256:6321577ba8ce08377d39bc5c161bf210748abecc267809b7f0f9fcd17e325214`, built from `f505fcb8`, with the release `0.6.0` in its AppStream data.
 - The native app: [frostmail#223](https://github.com/frostyard/frostmail/pull/223), [`docs/adr/0054-draw-the-desktop-app-natively-with-mygo-and-frostui.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/docs/adr/0054-draw-the-desktop-app-natively-with-mygo-and-frostui.md), [`docs/plans/0015-mygo-desktop.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/docs/plans/0015-mygo-desktop.md), [`README.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/README.md), and [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/docs/design/desktop.md) (Installing for one user, The Flatpak in CI, The Flatpak's own maild, Windows). `make install-app` depends on `desktop-build`, a Go build: [`Makefile`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/Makefile).

@@ -664,7 +664,7 @@ assertSections("/docs/tools/updex", updex, [
   "see-also",
   "sources",
 ]);
-assertCites("/docs/tools/updex", updex, "https://github.com/frostyard/updex/blob/725cd46b8933c31e71a0acc3a7a8959a9be078f6", [
+assertCites("/docs/tools/updex", updex, "https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc", [
   "README.md",
   "docs/design/overview.md",
   "docs/adr/0007-daemon-stages-never-activates.md",
@@ -694,8 +694,8 @@ assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name th
 assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
 assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
 assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
-assert(updexText.includes("This guide follows Updex v2.2.0"), "/docs/tools/updex must follow Updex v2.2.0.");
-assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.2.0"), "/docs/tools/updex must link the Updex v2.2.0 release.");
+assert(updexText.includes("This guide follows Updex v2.3.0"), "/docs/tools/updex must follow Updex v2.3.0.");
+assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.3.0"), "/docs/tools/updex must link the Updex v2.3.0 release.");
 assert(updexText.includes("sudo updex --dry-run daemon enable"), "/docs/tools/updex must explain the daemon dry run.");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");
 assert(updexText.includes("updex features rollback"), "/docs/tools/updex must give the rollback command.");
@@ -739,7 +739,7 @@ const lightPages = [
   {
     route: "frostmail",
     repo: "frostmail",
-    sha: "f505fcb8d5310d0a9ad245f3e906f10a61bcef15",
+    sha: "7db1e7b322695bc3d41662ddf0001c3ad05d1490",
     install: "install",
     canonical: "docs/design/desktop.md#installing-for-one-user",
     sentence: "Frostmail is pre-release",
@@ -748,7 +748,7 @@ const lightPages = [
   {
     route: "frostnotes",
     repo: "frostnotes",
-    sha: "6458058e203ab91699e7d40d4fb03b06da534391",
+    sha: "b9c6c9006d666183f91313f79648f8323b8a61b0",
     install: "install",
     canonical: "docs/development.md",
     sentence: "Frostnotes is pre-release",
@@ -775,7 +775,7 @@ assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/ma
 assert(lightHtml.porter.text.includes("The latest release is v0.3.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.3.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
 assert(lightHtml.frostread.text.includes("The latest release is v0.5.0") && lightHtml.frostread.text.includes("desktop shell are built"), "/docs/apps/frostread must name v0.5.0 and the desktop shell.");
-assert(lightHtml.frostnotes.text.includes("The latest release is v0.5.0") && lightHtml.frostnotes.text.includes("You see version 0.5.0") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must name v0.5.0, list_tasks, and the reset layout of the native app.");
+assert(lightHtml.frostnotes.text.includes("The latest release is v0.6.0") && lightHtml.frostnotes.text.includes("You see version 0.6.0") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must name v0.6.0, list_tasks, and the reset layout of the native app.");
 for (const route of ["lodge", "frostread", "frostnotes"]) {
   assert(lightHtml[route].text.includes("The system extension can trail the latest release"), `/docs/apps/${route} must state that the system extension can trail the latest release.`);
 }
@@ -804,7 +804,8 @@ for (const [route, extension] of Object.entries(extensionForApp)) {
 }
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
-assert(lightHtml.frostmail.text.includes("The latest release is v0.6.0") && lightHtml.frostmail.text.includes("native Go app"), "/docs/apps/frostmail must name release v0.6.0 as the latest, and the native app.");
+assert(lightHtml.frostmail.text.includes("The latest release is v0.7.0") && lightHtml.frostmail.text.includes("native Go app"), "/docs/apps/frostmail must name release v0.7.0 as the latest, and the native app.");
+assert(lightHtml.frostmail.text.includes("Release v0.7.0 draws the desktop app in the Frostyard look") && lightHtml.frostnotes.text.includes("Release v0.6.0 draws the desktop app in the Frostyard look"), "/docs/apps/frostmail and /docs/apps/frostnotes must name the Frostyard look of Frostmail v0.7.0 and Frostnotes v0.6.0.");
 assert(lightHtml.frostmail.text.includes("Follow Up section") && lightHtml.frostmail.text.includes("rail button"), "/docs/apps/frostmail must name the v0.5.0 Follow Up section and the lodge rail badge.");
 assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension can trail the latest release.") && !/maild system extension still carries/.test(lightHtml.frostmail.text), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension can trail the latest release (the catalog lists its version).");
 assert(lightHtml.frostmail.text.includes("flatpak install --user frostyard org.frostyard.Frostmail"), "/docs/apps/frostmail must give the per-user Flatpak install command.");
@@ -917,15 +918,16 @@ assertSections("/docs/tools/chairlift", chairlift, [
   "see-also",
   "sources",
 ]);
-assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4", ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "docs/design/overview.md", "docs/design/package-managers.md", "docs/adr/0017-mygo-command-center-window.md", "go.mod", "internal/views/system.go", "internal/views/pageview/pageview.go", "internal/views/actionmsg/actionmsg.go", "internal/views/flatpakstatus/flatpakstatus.go", "internal/homebrew/trust.go"]);
+assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964", ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml", "docs/design/overview.md", "docs/design/package-managers.md", "docs/design/frostui.md", ".goreleaser.yaml", "go.mod"]);
+assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4", ["docs/adr/0017-mygo-command-center-window.md", "internal/views/system.go", "internal/views/pageview/pageview.go", "internal/views/actionmsg/actionmsg.go", "internal/views/flatpakstatus/flatpakstatus.go", "internal/homebrew/trust.go"]);
 assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"], "snosi ");
-assert(chairliftText.includes("This guide follows ChairLift v0.16.0"), "/docs/tools/chairlift must follow ChairLift v0.16.0.");
+assert(chairliftText.includes("This guide follows ChairLift v0.17.1"), "/docs/tools/chairlift must follow ChairLift v0.17.1.");
 for (const page of ["Overview", "Updates", "Apps", "Features", "Problems", "Maintenance"]) {
   assert(chairlift.includes(`<td>${page}</td>`), `/docs/tools/chairlift must name the ${page} page of the rail (ChairLift v0.16.0: six pages in the rail).`);
 }
 assert(chairliftText.includes("Ctrl+K"), "/docs/tools/chairlift must give the command palette shortcut (ChairLift v0.16.0: the window has a command palette).");
 assert(chairliftText.includes("chairlift --send-pending-reports"), "/docs/tools/chairlift must give the automatic report command.");
-assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/CONFIG.md"), "/docs/tools/chairlift must link the configuration reference at v0.16.0.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/CONFIG.md"), "/docs/tools/chairlift must link the configuration reference at v0.17.1.");
 assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("From v0.15.0, you can also send problem reports"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, and say that v0.15.0 sends reports after you turn reporting on (owner review of frostyard-org#75; ChairLift v0.15.0: reporting is released).");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.15.0"), "/docs/tools/chairlift must link the ChairLift v0.15.0 release (ChairLift v0.15.0: reporting is released).");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md"), "/docs/tools/chairlift must cite the Problems page spec at its pin.");
@@ -943,7 +945,8 @@ assert(!/Restart to finish[^.]*(as its main action|button)/.test(chairliftText) 
 assert(chairliftText.includes("The feature toast says activation did not finish") && !chairliftText.includes("The feature toast says Extensions merged"), "/docs/tools/chairlift must quote the part that both activation toasts share: Extensions merged and Features merged (owner review of frostyard-org#107; ChairLift v0.16.0 actionmsg.go).");
 assert(chairliftText.includes("do not turn off or unplug the computer during the update, and keep the power connected") && !chairliftText.includes("do not unplug the device"), "/docs/tools/chairlift must give the firmware dialog's warning about the computer, not the device (owner review of frostyard-org#107; ChairLift v0.16.0 pageview.go).");
 assert(chairliftText.includes("It sends nothing, and says why, for example when reporting is off"), "/docs/tools/chairlift must not give the cases where --send-pending-reports sends nothing as a complete list (owner review of frostyard-org#107; ChairLift v0.16.0 internal/reporting/cli.go).");
-assert(chairliftText.includes("ChairLift v0.16.0 builds with Go 1.27.4"), "/docs/tools/chairlift must name the Go 1.27.4 security fix.");
+assert(chairliftText.includes("ChairLift v0.17.1 builds with Go 1.27.4"), "/docs/tools/chairlift must name the Go 1.27.4 security fix.");
+assert(chairliftText.includes("Mission Center, GNOME System Monitor, or KDE System Monitor") && chairliftText.includes("/usr/bin/pkexec") && chairliftText.includes("From v0.17.1, the Flatpak card no longer offers an update"), "/docs/tools/chairlift must name the system monitor list, the pkexec dependency, and the OCI Flatpak fix of ChairLift v0.17.x.");
 assert(chairliftText.includes("Snow, Snowfield, and Sundog install ChairLift") && chairliftText.includes("Floe does not"), "/docs/tools/chairlift must name the images that have ChairLift.");
 assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chairlift must give the dry-run command.");
 assert(chairlift.includes('data-code="chairlift --first-run --dry-run"'), "/docs/tools/chairlift must give the first-run dry-run command.");
@@ -1357,7 +1360,7 @@ assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/snosi/
   "shared/sysext/postoutput/sysext-postoutput.sh",
   "shared/sysext/finalize/sysext-required-paths.sh",
 ]);
-assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/updex/blob/725cd46b8933c31e71a0acc3a7a8959a9be078f6", [
+assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc", [
   "README.md",
   "docs/design/overview.md",
   "docs/specs/config-reference.md",
@@ -1375,8 +1378,9 @@ assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/updex/
   "sysext/manager.go",
   "systemd/unit.go",
 ]);
-assert(manageText.includes("This guide follows Updex v2.2.0"), "/docs/sysexts/manage must follow Updex v2.2.0.");
-assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.2.0"), "/docs/sysexts/manage must link the Updex v2.2.0 release.");
+assert(manageText.includes("This guide follows Updex v2.3.0"), "/docs/sysexts/manage must follow Updex v2.3.0.");
+assert(manageText.includes("Last update: none recorded") && manageText.includes("skipped_unreachable") && updexText.includes("/var/lib/updex/last-run.json"), "/docs/sysexts/manage and /docs/tools/updex must explain the Updex v2.3.0 last-run record and the Last update line.");
+assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.3.0"), "/docs/sysexts/manage must link the Updex v2.3.0 release.");
 assert(manageText.includes("sudo updex features update &lt;name&gt;..."), "/docs/sysexts/manage must give the named-feature update command.");
 assert(manageText.includes("updex features check &lt;name&gt;..."), "/docs/sysexts/manage must give the named-feature check command.");
 assert(manage.includes("https://github.com/frostyard/updex/pull/481"), "/docs/sysexts/manage must cite the named-feature change.");
