@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/pages/privacy/problem-reports.astro",
+  "correction": "The privacy page described crash reports as sent, but plan T857 S7 keeps crashes local in phases 1 and 2; and it said GlitchTip keeps field values with no duration, though they never expire. Say a schema kind is not sent yet when no sender sends it, and give a duration for everything kept; check-site asserts both sentences.",
+  "evidence": "Plan lead Duncan, plan T857 section 1 row S7 (2026-11-05); owner re-check by Murbella on frostyard-org#74 at 5ced2e7 (comment 6652464846); problem-intake ADR-0005",
+  "promoted_to": "scripts/check-site.mjs"
+}

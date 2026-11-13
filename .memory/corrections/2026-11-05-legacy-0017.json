@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "scripts/test/site-map.test.mjs",
+  "correction": "The page inventory test read every backticked path in docs/site.md, so a path in prose or a code block hid a missing table row, and it did not report how many items it checked. Parse only the first cell of the Page inventory table rows, and report the page-file and row counts.",
+  "evidence": "Cross-review of frostyard-org#86 at 04139fa (openai/gpt-6.1-sol)",
+  "promoted_to": "scripts/test/site-map.test.mjs"
+}

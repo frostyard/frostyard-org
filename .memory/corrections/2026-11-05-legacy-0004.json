@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "scripts/check-site.mjs",
+  "correction": "The privacy page field check searched the whole page, so a field shared by 2 kinds (error_class, outcome) could lose its row in 1 kind, and the stats check refused a valid week where every count is hidden. Check each kind's own table, and compare the rendered stats cells with the snapshot.",
+  "evidence": "Cross-review of frostyard-org#74 at 32307cc (openai/gpt-6.1-sol)",
+  "promoted_to": "scripts/test/problem-page-checks.test.mjs"
+}

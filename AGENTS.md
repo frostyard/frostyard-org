@@ -13,7 +13,9 @@
 - Run the complete local CI gate with `npm run ci`.
 - Run the repository gate with `make verify` (the template gate, then
   `npm run ci`). `make check` is the same. `make ci BASE=origin/main` also
-  checks that `.memory/corrections.jsonl` is append-only. Run
+  checks the records in `.memory/corrections/` against `BASE`: no record
+  removed or renamed, only an empty `promoted_to` filled, and the old single
+  corrections file does not come back. Run
   `make ci BASE=origin/main` before you call a change complete.
 - `docs/development.md` explains each command and check; `docs/site.md` holds
   the page inventory.
@@ -94,8 +96,9 @@ field or enum value is a new version in a new file.
   line there, or `make verify` fails.
 - Blocker to guard: when a review finds a blocking point, the PR that fixes it
   adds a guard (a test that fails without the fix, or an `AGENTS.md` rule when
-  no test can catch it) and appends 1 line to `.memory/corrections.jsonl` (see
-  `.memory/README.md`). The file is append-only.
+  no test can catch it) and adds 1 record file under `.memory/corrections/`
+  (name `<date>-pr-<N>-<words>.json`; see `.memory/README.md`). A record file
+  is never removed or renamed (frostyard/core ADR-0081).
 - Risk paths: `.github/risk-paths.json` (schema version 2, frostyard/core
   ADR-0078) gives each path a level L1 to L4, with default L3. The caller
   `.github/workflows/risk-paths.yml` runs core's `pr-triage.yml`: it adds the

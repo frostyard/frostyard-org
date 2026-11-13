@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/content/docs/docs/sysexts/manage.md",
+  "correction": "An output template on a page must give every field that the printing code can emit, and each case of the code path: Updex's Last update line prints also without a timer, prints none recorded only with the timer, and can carry class, named features, version and at fields. Read the printer and its test, not only the spec.",
+  "evidence": "Owner review of frostyard-org#118 at 0fffc7e (Lucilla; Updex v2.3.0 cmd/updex/daemon.go printLastUpdate, cmd/updex/daemon_status_test.go, updex/lastrun.go)",
+  "promoted_to": "scripts/check-site.mjs"
+}

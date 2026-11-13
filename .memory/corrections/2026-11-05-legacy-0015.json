@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/content/docs/docs/images/floe.md, src/pages/privacy/problem-reports.astro",
+  "correction": "The pages said that Floe's /var/lib/snosi-health/sent.jsonl lists each sent report. snosi-health-report drops the entries older than 90 days (KEEP_DAYS=90, prune_sent) only after a send run that posts at least 1 report and does not stop early; a run with nothing to post (reporting off, no valid problems.json, a held lock, 0 selected reports) and every early exit skip it, a run that starts after reporting is off prunes nothing, but a run already in progress still runs prune_sent after its last post without a new consent check. State the retention of every sent log from the sender's code, with the condition under which it runs; check-site asserts it.",
+  "evidence": "Owner review (Murbella) of frostyard-org#77 at ce1a4a2; snosi a1bf8d25 shared/snosi-report/tree/usr/libexec/snosi-health-report KEEP_DAYS and prune_sent (called only after the send loop); ADR-0030 sent.jsonl; cross-review re-review 3 at 88894bb; owner re-check (Murbella) at 9de4fae; re-review 4 at eba9122 (lines 287-300, 709-716)",
+  "promoted_to": "scripts/check-site.mjs"
+}

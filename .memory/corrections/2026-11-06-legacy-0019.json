@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-06",
+  "scope": "scripts/lib/problem-page-checks.mjs",
+  "correction": "A page promise check must cover each full promise, that is each held item and each never-held item and its limits. Each check needs its own negative test that changes only that item. A check on 1 phrase of a sentence let the rest of the sentence go, so a dropped detail or limit stayed hidden.",
+  "evidence": "Cross-review of frostyard-org#88 at 5630df3 (openai/gpt-6.1-sol)",
+  "promoted_to": "scripts/test/problem-page-checks.test.mjs"
+}

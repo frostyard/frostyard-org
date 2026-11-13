@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/content/docs/docs/images/{snow,snowfield,sundog,floe}.md",
+  "correction": "The pages told the reader to add a coredump drop-in but not to apply it. In systemd 262 a running systemd-coredumpd.service reads coredump.conf only at start or reload. Give the apply step (systemctl reload systemd-coredumpd.service, or a reboot) after any config change; check-site asserts it.",
+  "evidence": "Cross-review of frostyard-org#75 at 9a42cbb (openai/gpt-6.1-sol); systemd v262 man/coredump.conf.xml and units/systemd-coredumpd.service.in (Type=notify-reload)",
+  "promoted_to": "scripts/check-site.mjs"
+}

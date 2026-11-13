@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/content/docs/docs/tools/chairlift.md",
+  "correction": "The ChairLift page said ChairLift does not install new Flatpak apps. From v0.13.0 the first-login setup (`chairlift --first-run`) installs the apps the user picks. Scope a limit to the page or mode that has it; check-site asserts the scoped sentence.",
+  "evidence": "Cross-review of frostyard-org#73 at 0c6649c (openai/gpt-6.1-sol); chairlift v0.13.0 internal/firstrun/actions.go",
+  "promoted_to": "scripts/check-site.mjs"
+}

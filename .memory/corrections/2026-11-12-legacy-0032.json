@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/content/docs/docs/tools/chairlift.md, src/content/docs/docs/tools/updex.md, src/content/docs/docs/sysexts/manage.md",
+  "correction": "A sentence about what a release does after a run must carry the run's conditions from the code: ChairLift takes updated features off the list only after a live run that succeeds, and Updex writes no last-run record for a dry run or a refused feature name, and keeps a newer record on a busy run.",
+  "evidence": "Cross-review of frostyard-org#118 at 7b20d9b (ChairLift v0.17.1 internal/views/features.go; Updex v2.3.0 updex/features.go, updex/lastrun.go)",
+  "promoted_to": "scripts/check-site.mjs"
+}

@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-11",
+  "scope": "src/content/docs/docs/tools/chairlift.md",
+  "correction": "A page that quotes an app message must give the exact condition under which the app shows it, from the code at the followed tag: a success toast that only shows when nothing else waits, a card that the app leaves out when its tool is missing, a main action that other updates outrank, and a command that names the remote and the installation it checks.",
+  "evidence": "Cross-review of frostyard-org#107 at c792097 (ChairLift v0.16.0 actionmsg.go, store.go, overview.go, flatpak.go)",
+  "promoted_to": "scripts/check-site.mjs"
+}

@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/content/docs/docs/images/{snow,snowfield,sundog}.md",
+  "correction": "The pages said a missing ChairLift Problems page means the image is old. ChairLift also hides a page when its configuration turns off all its groups or fails to load. Name every cause of a missing feature that the source names; check-site asserts both causes.",
+  "evidence": "Cross-review of frostyard-org#75 at 99b240b (openai/gpt-6.1-sol); chairlift 5412483 CONFIG.md (Problems Page, fail-closed configuration)",
+  "promoted_to": "scripts/check-site.mjs"
+}

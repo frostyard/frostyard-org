@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/pages/privacy/index.astro",
+  "correction": "A privacy promise about deletion or file access must hold for every install and platform at the followed tag: name each data folder and keyring namespace (Flatpak, source build, Windows, lodge host), say what an account removal leaves, and limit a Unix file mode to Unix.",
+  "evidence": "Cross-review of frostyard-org#113 at 20affe5 (Frostmail v0.7.0 internal/secrets/options.go, mode_windows.go, internal/store/account.go, migrations/0007_pim.sql)",
+  "promoted_to": "scripts/check-site.mjs"
+}

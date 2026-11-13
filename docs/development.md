@@ -29,7 +29,7 @@ npm run dev
 | `npm run preview` | Build the site, then serve it with `wrangler dev`. |
 | `make verify` | Run the template gate (symlinks, docs index, risk paths, corrections format, vendored copies, and their tests), then `npm run ci`. |
 | `make check` | The same as `make verify`. |
-| `make ci BASE=origin/main` | `make verify`, then a check that `.memory/corrections.jsonl` is append-only against `BASE`. Run it before you call a change complete. |
+| `make ci BASE=origin/main` | `make verify`, then a check of `.memory/corrections/` against `BASE`: no record removed or renamed, only an empty `promoted_to` filled, and the old single corrections file does not come back. Run it before you call a change complete. |
 | `npm run deploy` | Build the site, then run `wrangler deploy`. Agents never run it. Brian deploys by merging to `main`. |
 
 The rules for agents are in [AGENTS.md](../AGENTS.md).
