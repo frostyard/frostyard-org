@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/pages/privacy/index.astro",
+  "correction": "A privacy promise about what a fetcher blocks must hold for every request it makes, redirects included: Frostmail checks the tracker list only on the image URL in the message, not on a redirect target, so the page must not say that trackers are never fetched.",
+  "evidence": "Extra cross-review of frostyard-org#113 at 912855f (Frostmail v0.7.0 internal/render/remote.go CheckRedirect, internal/render/render.go trackerURL)",
+  "promoted_to": "scripts/check-site.mjs"
+}

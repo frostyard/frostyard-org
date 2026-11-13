@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-08",
+  "scope": "src/content/docs/docs/apps/frostmail.md",
+  "correction": "A page that says which version of one component enables a feature must name every component that the feature needs, and say when the Frostyard package (system extension, APT, Flatpak) still carries an older version. The lodge rail badge needs maild v0.5.0 on lodge's host, not only lodge v0.2.0, and the maild system extension still carries 0.4.1.",
+  "evidence": "Owner review of frostyard-org#94 at 4f59e97 (Irulan, frostmail#154, snosi#1196)",
+  "promoted_to": "scripts/check-site.mjs"
+}

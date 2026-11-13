@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/pages/privacy/problem-reports.astro, src/content/docs/docs/images/{snow,snowfield,sundog}.md",
+  "correction": "The pages said that ChairLift's Sent reports list shows each sent report. It shows only the 50 newest (pageview.MaxSentRows); the log keeps up to 500 report_ids, and trims 90 days before its newest entry, not before today. Read the UI limit and the trim rule in the code, not only the spec, before you describe a list or a retention; check-site asserts it.",
+  "evidence": "Cross-review of frostyard-org#77 at 7657e5c (openai/gpt-6.1-sol); chairlift v0.15.0 internal/views/pageview/reporting.go MaxSentRows, internal/reporting/state.go MaxEntries and State.trim; re-review 1 at cf352cd",
+  "promoted_to": "scripts/check-site.mjs"
+}

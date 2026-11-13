@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-13",
+  "scope": "src/content/docs/docs/apps/frostread.md",
+  "correction": "Do not read a release-note title as a feature claim: frostread#63 says 'the move from lodge', but the desktop app copies nothing from lodge; only the subscriptions move, by a manual OPML export and import. Read the design doc of a feature before the page describes it.",
+  "evidence": "Owner fact review of frostyard-org#119 at e7de52e (Irulan; frostread v0.6.0 docs/design/overview.md, Moving from lodge; ADR-0008)",
+  "promoted_to": "scripts/check-site.mjs"
+}

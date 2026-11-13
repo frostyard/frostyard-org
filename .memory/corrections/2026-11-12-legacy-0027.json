@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/pages/privacy/index.astro",
+  "correction": "Steps that delete an app's local data must first stop each process that writes it, in each install: a Flatpak (flatpak kill), a systemd user service, a daemon started by hand, and a Windows daemon that outlives the app and starts at sign-in.",
+  "evidence": "Re-review 1 of frostyard-org#113 at 8dd50c9 (Frostmail v0.7.0 Makefile install, packaging/systemd/maild.service, internal/desktop/conn/local_windows.go DETACHED_PROCESS, cmd/mailctl/shutdown.go)",
+  "promoted_to": "scripts/check-site.mjs"
+}

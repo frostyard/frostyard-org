@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-07",
+  "scope": "scripts/",
+  "correction": "A script must turn a file URL into a file system path with fileURLToPath, and build a child URL with new URL(name, directory). URL.pathname is percent-encoded, so a path with a space or a non-ASCII character does not exist on disk.",
+  "evidence": "frostyard-org#92, found in the review of frostyard-org#91",
+  "promoted_to": "scripts/test/site-files.test.mjs"
+}

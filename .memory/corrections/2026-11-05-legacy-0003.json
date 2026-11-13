@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/lib/problem-stats.mjs",
+  "correction": "The /stats/ validator checked each count alone and accepted a table whose hidden cell could be found by subtraction (total 10, cells 9 and hidden), and it refused a valid empty table (total 0). Check every group and table equation and the bound rule of problem-intake docs/specs/stats.md, and accept total 0 only for a table with no groups.",
+  "evidence": "Cross-review of frostyard-org#74 at 32307cc (openai/gpt-6.1-sol); problem-intake src/suppress.ts and docs/specs/stats.md rules 3 to 7",
+  "promoted_to": "scripts/test/problem-stats.test.mjs"
+}
