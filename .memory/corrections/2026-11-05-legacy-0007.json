@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/pages/privacy/problem-reports.astro",
+  "correction": "The privacy page left out data the stores keep beyond the report: arrival times in Analytics Engine and GlitchTip, GlitchTip tag values kept for ever with no link to a report, counts that stay after a deletion, and weekly totals in Workers KV with no expiry; and /stats/ called the count table installs. State what each store keeps and for how long; check-site asserts the sentences.",
+  "evidence": "Owner review by Murbella on frostyard-org#74 at 8cec676 (comment 6652357532); problem-intake 9d353a4 docs/specs/stats.md, docs/runbook/glitchtip.md, ADR-0005, src/jobs.ts",
+  "promoted_to": "scripts/check-site.mjs"
+}

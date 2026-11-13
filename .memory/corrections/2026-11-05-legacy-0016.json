@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": ".github/risk-paths.json",
+  "correction": "9 risk-path entries named categories that core's risk-paths spec does not list (tool pins, deploy, supply chain, contract, privacy). Each why must start with a listed category (publication, update verification, governance, ...); core's validator does not check it, so a test does.",
+  "evidence": "Cross-review of frostyard-org#79 at ee0eb7a (openai/gpt-6.1-sol); frostyard/core docs/specs/risk-paths.md section B",
+  "promoted_to": "test/risk-paths-categories.test.mjs"
+}

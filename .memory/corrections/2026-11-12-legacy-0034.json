@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/content/docs/docs/sysexts/manage.md",
+  "correction": "When a printer adds a field only under a condition, the page states the condition: Updex adds at <time> to a carried feature line only when its time differs from the run's finished time, so the page must not say that every earlier-run line ends with it.",
+  "evidence": "Cross-review re-review 2 of frostyard-org#118 at 43532fc (Updex v2.3.0 cmd/updex/daemon.go printLastUpdate: feature.At != rec.Finished)",
+  "promoted_to": "scripts/check-site.mjs"
+}

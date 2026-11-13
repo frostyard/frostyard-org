@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "scripts/test/site-map.test.mjs",
+  "correction": "The page inventory parser still read table-shaped lines inside fenced code blocks and after the real table, so a row in a code block hid a missing page. Read only the first real table (header plus separator, outside fences) and its contiguous rows.",
+  "evidence": "Cross-review re-review 1 of frostyard-org#86 at 2fabbda (openai/gpt-6.1-sol)",
+  "promoted_to": "scripts/test/site-map.test.mjs"
+}

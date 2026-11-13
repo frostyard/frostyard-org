@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/pages/privacy/index.astro",
+  "correction": "Google's sign-in and the Third-party connections list show the app name of the OAuth consent screen (Google Auth Platform > Branding), never the OAuth client's name, which only the Cloud console shows. Name the consent screen, not the client, when a page says what the user sees.",
+  "evidence": "Owner re-review of frostyard-org#113 at 912855f (Irulan; Frostmail v0.7.0 docs/design/accounts.md, a personal Google client, steps 2 and 3)",
+  "promoted_to": "scripts/check-site.mjs"
+}

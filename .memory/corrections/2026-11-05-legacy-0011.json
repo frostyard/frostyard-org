@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/content/docs/docs/images/{snow,snowfield,sundog,floe}.md",
+  "correction": "The pages said any drop-in in /etc/systemd/coredump.conf.d/ with Storage=external keeps core files. systemd sorts /usr/lib and /etc drop-ins together by name and the last wins, so the file must sort after the image's 50-snosi.conf; ProcessSizeMax=1G also stops the stack trace for larger cores. Name the file (90-debug.conf) and the limit; check-site asserts both.",
+  "evidence": "Owner review (Murbella) of frostyard-org#75 at 184f323, comment 6652535236; snosi b6e5e07 shared/bootc-secure/tree/usr/lib/systemd/coredump.conf.d/50-snosi.conf; coredump.conf(5)",
+  "promoted_to": "scripts/check-site.mjs"
+}

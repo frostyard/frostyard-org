@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/pages/privacy/problem-reports.astro",
+  "correction": "The privacy page described the ChairLift switch, first-run step, preview and Sent reports list in the present tense, but they are T857 t19 and not built; the preview is only in Ask each time; the weekly count is per opted-in user, not per install; Flatpak crashes are never sent. Write unbuilt controls in the future tense and check each claim against the sender's code; check-site asserts the sentences.",
+  "evidence": "Owner review by Duncan on frostyard-org#74 at 8cec676 (comment 6652355326); chairlift internal/problems/coredump.go, internal/views/pageview/problems.go, plan T857 sections 1 to 3",
+  "promoted_to": "scripts/check-site.mjs"
+}

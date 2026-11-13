@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/pages/privacy/problem-reports.astro",
+  "correction": "The privacy page said no file name is sent and that Go frames come only from Frostyard and the standard library. crash.exe sends the program name, app_problem.location a Frostyard source file, and frames may come from frostmail's go-imap fork. A privacy promise must match every schema field; check-site asserts the scoped sentences.",
+  "evidence": "Cross-review of frostyard-org#74 at 32307cc (openai/gpt-6.1-sol); core docs/specs/problem-report.md S7 and S8",
+  "promoted_to": "scripts/check-site.mjs"
+}

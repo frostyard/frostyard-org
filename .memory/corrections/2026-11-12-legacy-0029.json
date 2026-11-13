@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/pages/privacy/index.astro",
+  "correction": "A privacy page that names an access grant must state everything the grant allows at the followed tag, not only reading: an agent token with ;write changes flags, folders, drafts, tasks and reminders, and with ;send sends mail. A page about an OAuth app must not imply that a client ships when no release has it.",
+  "evidence": "Owner review of frostyard-org#113 at 20affe5 and 8dd50c9 (Irulan; Frostmail v0.7.0 docs/specs/lodge-app.md MCP scopes, internal/oauth/oauth.go Google endpoint with no ClientID)",
+  "promoted_to": "scripts/check-site.mjs"
+}

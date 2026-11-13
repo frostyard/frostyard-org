@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/content/docs/docs/images/{snow,snowfield,sundog}.md, src/content/docs/docs/tools/chairlift.md",
+  "correction": "The image pages described the ChairLift Problems page from a merged commit with no release, and the ChairLift tool page did not list it. Name the release that brings a feature (v0.14.0) and update the tool page that the image pages link to in the same PR; check-site asserts both.",
+  "evidence": "Owner review (Duncan) of frostyard-org#75 at 184f323, comment 6652534449; chairlift v0.13.0 is the latest release and #266 (5412483) came after it",
+  "promoted_to": "scripts/check-site.mjs"
+}

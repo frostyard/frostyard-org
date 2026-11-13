@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-11",
+  "scope": "src/content/docs/docs/tools/chairlift.md",
+  "correction": "A troubleshooting row for a part that ChairLift leaves out must name every cause in the code: a missing tool and a configuration group that is turned off. A missing Flatpak card has both causes, and only one of them is fixed by an install.",
+  "evidence": "Re-review 1 of frostyard-org#107 at 5fda148 (ChairLift v0.16.0 internal/views/flatpak.go Source, store.go Sources)",
+  "promoted_to": "scripts/check-site.mjs"
+}

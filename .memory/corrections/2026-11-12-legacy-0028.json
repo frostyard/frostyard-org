@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/pages/privacy/index.astro",
+  "correction": "A step that stops a daemon must first close every client that starts it again: the Frostmail app reconnects and starts a new maild, so the delete steps say to quit the app and keep it closed before maild stops.",
+  "evidence": "Re-review 2 of frostyard-org#113 at a52714c (Frostmail v0.7.0 internal/desktop/conn/session.go Session.Run, internal/desktop/conn/local_windows.go dialLocal)",
+  "promoted_to": "scripts/check-site.mjs"
+}

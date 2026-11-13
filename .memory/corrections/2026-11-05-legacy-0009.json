@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-05",
+  "scope": "src/content/docs/docs/images/{snow,snowfield,sundog,floe}.md",
+  "correction": "The Problems sections said snosi-health runs about 3 minutes after boot. snosi-health.timer has OnBootSec=3min and RandomizedDelaySec=5min, so the first run comes 3 to 8 minutes after boot. Read every timer key, not only OnBootSec; check-site asserts the range.",
+  "evidence": "Cross-review of frostyard-org#75 at 99b240b (openai/gpt-6.1-sol); snosi b6e5e07 mkosi.images/base/mkosi.extra/usr/lib/systemd/system/snosi-health.timer",
+  "promoted_to": "scripts/check-site.mjs"
+}

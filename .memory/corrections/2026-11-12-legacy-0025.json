@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-12",
+  "scope": "src/content/docs/docs/tools/chairlift.md",
+  "correction": "Before a page quotes an app text or calls it a button, read the code that draws it at the followed tag: a hero headline is not a button, a quote must match every variant of a toast, a dialog warning must keep its subject (the computer, not the device), and a list of cases from a partial source keeps \"for example\". Text kept from an earlier page needs the same check.",
+  "evidence": "Owner review of frostyard-org#107 at e3f4fd1 (Duncan; ChairLift v0.16.0 overview.go, actionmsg.go, pageview.go, internal/reporting/cli.go)",
+  "promoted_to": "scripts/check-site.mjs"
+}
