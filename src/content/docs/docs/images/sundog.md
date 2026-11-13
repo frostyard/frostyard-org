@@ -199,11 +199,19 @@ composition, the backports kernel, and the image output format.
 | Bootc runtime | `bootc`, `libostree-1-1`, and the packages OCI bootc needs |
 | Desktop | Plasma 6 on Wayland with `kde-plasma-desktop`, `kwin-wayland`, SDDM, and the KDE applications below |
 | Kernel | `linux-image-amd64/forky` for now, with most firmware and Mesa from `trixie-backports` |
-| Core Flatpak set | Gwenview, Haruna, KCalc, KCharSelect, Okular, Skanpage, Weather, Kontainer, Bazaar, MissionCenter, Elisa, Filelight, KRDC, and KClock |
+| Core Flatpak set | Gwenview, Haruna, KCalc, KCharSelect, Okular, Skanpage, Weather, Kontainer, Bazaar, Elisa, Filelight, KRDC, and KClock |
 | Containers | Podman, Distrobox, and Buildah, plus `systemd-container` and the Frostyard Intune integration |
 
 The image carries its Flatpak list at
 `/usr/share/frostyard/sundog.core-flatpaks.json`.
+
+Mission Center is no longer in the core set. KDE System Monitor
+(`plasma-systemmonitor`) is part of the image. An image update does not
+remove a Mission Center copy that is already installed. To remove it:
+
+```bash
+flatpak uninstall io.missioncenter.MissionCenter
+```
 
 ### Desktop packages
 
@@ -329,6 +337,7 @@ Reviewed 2026-10-27 against snosi commit
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
 - [`docs/design/testing.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/testing.md)
 - [`docs/adr/0016-name-kde-bootc-product-sundog.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/adr/0016-name-kde-bootc-product-sundog.md)
+- System monitor, reviewed 2026-11-12 against snosi commit [`d368cf7cd3228f8c6e864d1e69876debf0bc9b93`](https://github.com/frostyard/snosi/tree/d368cf7cd3228f8c6e864d1e69876debf0bc9b93) ([snosi#1280](https://github.com/frostyard/snosi/pull/1280)): [`flatpaks/sundog.json`](https://github.com/frostyard/snosi/blob/d368cf7cd3228f8c6e864d1e69876debf0bc9b93/flatpaks/sundog.json), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/d368cf7cd3228f8c6e864d1e69876debf0bc9b93/shared/packages/sundog/mkosi.conf)
 
 The Problems section was reviewed 2026-11-05 against snosi commit
 [`b6e5e0769c605b920686c12bc7f0962caac10586`](https://github.com/frostyard/snosi/tree/b6e5e0769c605b920686c12bc7f0962caac10586) and ChairLift release v0.14.0

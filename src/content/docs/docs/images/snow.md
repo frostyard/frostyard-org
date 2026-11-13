@@ -198,15 +198,15 @@ desktop, a kernel, and the image output format.
 | --- | --- |
 | Base | Debian Trixie userspace, systemd, the hourly update stager, Updex, and the system-extension definitions |
 | Bootc runtime | `bootc`, `libostree-1-1`, and the packages OCI bootc needs |
-| Desktop | GNOME Shell, GDM, Nautilus, Ptyxis, PipeWire, CUPS, Flatpak, and the desktop integration packages |
+| Desktop | GNOME Shell, GDM, Nautilus, Ptyxis, GNOME System Monitor, PipeWire, CUPS, Flatpak, and the desktop integration packages |
 | Kernel | `linux-image-amd64/forky` for now, with most firmware and Mesa from `trixie-backports` |
-| Core Flatpak set | Bazaar, Mission Center, Extension Manager, DistroShelf, and a set of GNOME apps. The image carries the list and an OCI label; Firn installs the apps when the recipe includes the core set. |
+| Core Flatpak set | Bazaar, Extension Manager, DistroShelf, and a set of GNOME apps. The image carries the list and an OCI label; Firn installs the apps when the recipe includes the core set. |
 | Containers | Podman and Distrobox, plus `systemd-container` and the Frostyard Intune integration |
 
 The table shows the main layers only. Snow also carries Homebrew
 integration, `frostyard-chairlift` with its first-login setup, the Snow
 Plymouth theme, the hotedge and Logo Menu GNOME extensions, and the Bazaar companion
-build.
+build. The System Monitor item in Logo Menu opens GNOME System Monitor.
 
 Snow uses the `linux-image-amd64/forky` kernel until the Trixie backports
 kernel is complete. The build file for it is still called `backports`; the
@@ -217,6 +217,13 @@ of them to the Snow package list.
 The core Flatpak list is fixed at build time, and each build checks that the
 image's copy matches it. Flathub may no longer offer every app on the list
 when you install.
+
+Mission Center is no longer in the core set. An image update does not remove
+a copy that is already installed. To remove it:
+
+```bash
+flatpak uninstall io.missioncenter.MissionCenter
+```
 
 ## Choose Snow
 
@@ -286,6 +293,7 @@ Reviewed 2026-10-27 against snosi commit
 - [`docs/nbc-to-bootc-migration.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/nbc-to-bootc-migration.md)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
+- System monitor, reviewed 2026-11-12 against snosi commit [`d368cf7cd3228f8c6e864d1e69876debf0bc9b93`](https://github.com/frostyard/snosi/tree/d368cf7cd3228f8c6e864d1e69876debf0bc9b93) ([snosi#1280](https://github.com/frostyard/snosi/pull/1280)) and Logomenu commit [`c194ee6b55f039bd8cf5071e89ea28a795d4e870`](https://github.com/frostyard/Logomenu/tree/c194ee6b55f039bd8cf5071e89ea28a795d4e870) ([Logomenu#4](https://github.com/frostyard/Logomenu/pull/4)): [`flatpaks/snow.json`](https://github.com/frostyard/snosi/blob/d368cf7cd3228f8c6e864d1e69876debf0bc9b93/flatpaks/snow.json), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/d368cf7cd3228f8c6e864d1e69876debf0bc9b93/shared/packages/snow/mkosi.conf), [`shared/download/image-checksums.json`](https://github.com/frostyard/snosi/blob/d368cf7cd3228f8c6e864d1e69876debf0bc9b93/shared/download/image-checksums.json), Logomenu [`extension.js`](https://github.com/frostyard/Logomenu/blob/c194ee6b55f039bd8cf5071e89ea28a795d4e870/extension.js) and [`schemas/org.gnome.shell.extensions.logo-menu.gschema.xml`](https://github.com/frostyard/Logomenu/blob/c194ee6b55f039bd8cf5071e89ea28a795d4e870/schemas/org.gnome.shell.extensions.logo-menu.gschema.xml)
 - First-login setup, reviewed 2026-11-05 against snosi commit [`770f9a3c82c4bb7348f6c477fce08febf25554af`](https://github.com/frostyard/snosi/tree/770f9a3c82c4bb7348f6c477fce08febf25554af) ([snosi#1224](https://github.com/frostyard/snosi/pull/1224)): [`docs/adr/0028-first-login-runs-chairlift-first-run.md`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/docs/adr/0028-first-login-runs-chairlift-first-run.md), [`shared/snow/tree/etc/xdg/autostart/org.frostyard.ChairLift.FirstRun.desktop`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/snow/tree/etc/xdg/autostart/org.frostyard.ChairLift.FirstRun.desktop), [`shared/snow/tree/usr/share/snow/first-run/apps.json`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/snow/tree/usr/share/snow/first-run/apps.json), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/shared/packages/snow/mkosi.conf)
 
 The Problems section was reviewed 2026-11-05 against snosi commit
