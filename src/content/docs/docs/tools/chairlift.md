@@ -3,13 +3,13 @@ title: ChairLift
 description: "Use ChairLift on a Frostyard image to update the system image, features, Flatpak apps, Homebrew packages and device firmware in one window, and to read every command it runs."
 follows:
   repo: frostyard/chairlift
-  tag: v0.16.0
+  tag: v0.17.1
 ---
 
 ChairLift is the command center of a Frostyard desktop. In one window it
 updates the system image, the system features, Flatpak apps, Homebrew packages
 and device firmware, and it shows every command it runs. This guide follows
-ChairLift v0.16.0, which uses Updex v2.2.0 for the Features page.
+ChairLift v0.17.1, which uses Updex v2.2.0 for the Features page.
 
 ## Which images have it
 
@@ -26,6 +26,10 @@ chairlift
 
 The window has a top bar with the command palette, a rail of pages, a console
 that shows each command ChairLift runs and its output, and a status bar.
+
+From v0.17.0, ChairLift uses Frostyard's dark theme when your desktop is dark,
+and its light theme otherwise. It follows the desktop's text size and
+high-contrast setting, but not its accent color.
 
 | Key | What it does |
 | --- | --- |
@@ -56,7 +60,7 @@ the commands that would run.
 
 | Page | What you do there |
 | --- | --- |
-| Overview | Read the system image and its deployment chain, live processor and memory use, and recent changes. |
+| Overview | Read the system image and its deployment chain, live processor and memory use, and recent changes. From v0.17.0, its Open button starts the first system monitor that is installed: Mission Center, GNOME System Monitor, or KDE System Monitor. With none of them, the button does not show. |
 | Updates | Update the system image, features, Flatpak, Homebrew and firmware, one card per source. |
 | Apps | Update, open, pin or uninstall installed Flatpak apps and Homebrew packages. Install a bundle in Bundles, or search Homebrew in Find more. |
 | Features | Turn an Updex feature on or off, and update the features. |
@@ -70,7 +74,7 @@ Help is a dialog, not a page: `F1`, the main menu or the command palette opens
 it. It holds the links to the project website, the issue tracker and the
 community chat.
 
-From v0.15.0, `chairlift --send-pending-reports` sends pending problem reports with no window, as **Send automatically** does. It sends nothing, and says why, for example when reporting is off, when the mode is **Ask each time**, or when `problems_reporting_group` is off ([Hide a group or a page](#hide-a-group-or-a-page)). It exits 1 after a configuration error or a failed send, and 0 otherwise. See [the Problems page settings](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/reference.md#problems-page-problems_page-the-problems-page).
+From v0.15.0, `chairlift --send-pending-reports` sends pending problem reports with no window, as **Send automatically** does. It sends nothing, and says why, for example when reporting is off, when the mode is **Ask each time**, or when `problems_reporting_group` is off ([Hide a group or a page](#hide-a-group-or-a-page)). It exits 1 after a configuration error or a failed send, and 0 otherwise. See [the Problems page settings](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/reference.md#problems-page-problems_page-the-problems-page).
 
 ## First-login setup
 
@@ -100,7 +104,7 @@ Without an internet connection, the setup skips the app step, and you can still 
 
 To hide the app step, set `first_run_apps_group` to `enabled: false` under `first_run_page` ([Hide a group or a page](#hide-a-group-or-a-page)). The app list is `/usr/share/snow/first-run/apps.json`, and `apps_path` changes it.
 
-See [first-run settings](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/reference.md#first-run-page-first_run_page) and [how the first run works](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/design/overview.md#first-run-mode).
+See [first-run settings](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/reference.md#first-run-page-first_run_page) and [how the first run works](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/design/overview.md#first-run-mode).
 
 ## Everyday tasks
 
@@ -133,7 +137,12 @@ A pinned formula and a package from an untrusted tap are held: their button is
 disabled, and its tooltip gives the reason. Trust the tap to update its
 packages again ([Trust a Homebrew tap](#trust-a-homebrew-tap)).
 
-From v0.13.0, ChairLift checks each Flatpak remote on its own. When a remote that an installed app comes from does not answer, the card says `2 updates available; the system installation could not be checked`. When both checks fail and find no update, it says `Could not check for updates`, and the count from the last check stays. See [Update queries run per remote](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/design/package-managers.md#update-queries-run-per-remote).
+From v0.13.0, ChairLift checks each Flatpak remote on its own. When a remote that an installed app comes from does not answer, the card says `2 updates available; the system installation could not be checked`. When both checks fail and find no update, it says `Could not check for updates`, and the count from the last check stays. See [Update queries run per remote](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/design/package-managers.md#update-queries-run-per-remote).
+
+From v0.17.1, the Flatpak card no longer offers an update for an app from an
+OCI remote, such as the Frostyard remote, when the installed image is already
+the newest. Flatpak 1.16.6 lists such an app as an update forever, and
+`flatpak update` does nothing for it.
 
 ### Install a firmware update
 
@@ -145,7 +154,7 @@ You install 1 device at a time. ChairLift asks you to confirm first: do not turn
 
 A device that fwupd will not update now, for example with the lid closed or on battery power, stays in the list with its reason and no install button. fwupd, not ChairLift, asks for authentication, with its own PolicyKit actions.
 
-After the install, ChairLift reads the device's own state: an update that fwupd did not apply shows as an error, and the device stays in the list. [Firmware Updates](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/reference.md#updates-page-updates_page-the-updates-page) has the details.
+After the install, ChairLift reads the device's own state: an update that fwupd did not apply shows as an error, and the device stays in the list. [Firmware Updates](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/reference.md#updates-page-updates_page-the-updates-page) has the details.
 
 To hide the card, set `firmware_updates_group` to `enabled: false` under `updates_page` ([Hide a group or a page](#hide-a-group-or-a-page)).
 
@@ -179,6 +188,10 @@ One run updates every feature that is on. The toast says what happened:
   or `Failed:`, and the features that updated, under `Updated:`. It stays on
   screen until you close it.
 - The update fails: the toast reports the error, and stays on screen.
+
+From v0.17.0, after an update run that succeeds, each feature that updated
+leaves the list of updates at once, even when the check after the update
+fails. A failed run or a dry run keeps every item in the list.
 
 A feature waits when a downloaded revision needs a newer OS image than the
 one that boots next. Its row says `waiting for a newer OS image` and names
@@ -225,12 +238,12 @@ applications_page:
 Restart ChairLift. Find more is gone from Apps. A page disappears from the rail
 when all of its groups are off. The Overview always shows, so the window always
 has a page. The
-[configuration reference](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/CONFIG.md)
+[configuration reference](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/CONFIG.md)
 lists every page and group.
 
 ## Update and roll back
 
-ChairLift v0.16.0 builds with Go 1.27.4 for its security fixes.
+ChairLift v0.17.1 builds with Go 1.27.4 for its security fixes.
 
 On Snow, Snowfield, and Sundog, ChairLift is part of the image. It updates
 with the image: see [Stage a system update](#stage-a-system-update). It rolls
@@ -289,6 +302,11 @@ On Fedora or RHEL, run `rpm -q frostyard-chairlift` instead. ChairLift has no
 The window needs GTK 3, libepoxy with an OpenGL driver (Mesa), and Pango at run
 time. Without a GPU it draws on the CPU.
 
+From v0.17.0, each package depends on pkexec: `pkexec` for the `.deb`,
+`/usr/bin/pkexec` for the `.rpm`, and `polkit` for the `.apk`. A change that
+asks for your password also needs a PolicyKit authentication agent in your
+desktop session.
+
 To update the package, download the newer release package and
 `checksums.txt`, check the file, and install it with the command in the table.
 
@@ -325,13 +343,15 @@ left out of the page, or says the tool is unavailable.
 - [Updex](/docs/tools/updex/)
 - [Manage system extensions](/docs/sysexts/manage/)
 - [Snow](/docs/images/snow/)
-- [ChairLift user documentation](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/index.md)
+- [ChairLift user documentation](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/index.md)
 
 ## Sources
 
-Reviewed 2026-11-11.
+Reviewed 2026-11-12.
 
-- Followed release: ChairLift release v0.16.0 commit [`1cf6c02252aa9d36e0b4d8aca892502cf39844c4`](https://github.com/frostyard/chairlift/tree/1cf6c02252aa9d36e0b4d8aca892502cf39844c4), released 2026-11-11 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.16.0)): [`README.md`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/README.md), [`docs/index.md`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/index.md), [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/reference.md), [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/CONFIG.md), [`docs/design/overview.md`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/design/overview.md), [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/design/package-managers.md), [`go.mod`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/go.mod).
+- Followed release: ChairLift release v0.17.1 commit [`3f77c74692dc10d9ee4b536eb13afa87c09a2964`](https://github.com/frostyard/chairlift/tree/3f77c74692dc10d9ee4b536eb13afa87c09a2964), released 2026-11-12 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.17.1)): [`README.md`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/README.md), [`docs/index.md`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/index.md), [`docs/reference.md`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/reference.md), [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/CONFIG.md), [`config.yml`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/config.yml), [`docs/design/overview.md`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/design/overview.md), [`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/design/package-managers.md), [`docs/design/frostui.md`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/design/frostui.md), [`.goreleaser.yaml`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/.goreleaser.yaml), [`go.mod`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/go.mod). The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-11-12, lists `frostyard-chairlift` 0.17.1.
+- ChairLift release v0.17.0 commit [`67f49c623bc64f502316aa18fd1362daa310a3ec`](https://github.com/frostyard/chairlift/tree/67f49c623bc64f502316aa18fd1362daa310a3ec), released 2026-11-12 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.17.0)): the Frostyard look [chairlift#295](https://github.com/frostyard/chairlift/pull/295) (`docs/design/frostui.md`, The Frostyard look; the README), the system monitor list [chairlift#298](https://github.com/frostyard/chairlift/pull/298) (`config.yml`, `CONFIG.md` `health_group`), the pkexec dependency [chairlift#297](https://github.com/frostyard/chairlift/pull/297) (`.goreleaser.yaml`, `docs/index.md`), and the feature updates that leave the list [chairlift#293](https://github.com/frostyard/chairlift/pull/293) (`docs/design/package-managers.md`, The re-check after an update).
+- ChairLift v0.17.1: the OCI Flatpak update [chairlift#301](https://github.com/frostyard/chairlift/pull/301) ([`docs/design/package-managers.md`](https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/docs/design/package-managers.md#oci-remotes-list-the-installed-image-as-an-update), OCI remotes list the installed image as an update).
 - The command-center window, its six pages, its keys and its console: ChairLift release v0.16.0 commit [`1cf6c02252aa9d36e0b4d8aca892502cf39844c4`](https://github.com/frostyard/chairlift/tree/1cf6c02252aa9d36e0b4d8aca892502cf39844c4): [`docs/adr/0017-mygo-command-center-window.md`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/docs/adr/0017-mygo-command-center-window.md), [`internal/views/system.go`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/internal/views/system.go), [`internal/views/pageview/pageview.go`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/internal/views/pageview/pageview.go), [`internal/views/actionmsg/actionmsg.go`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/internal/views/actionmsg/actionmsg.go), [`internal/views/flatpakstatus/flatpakstatus.go`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/internal/views/flatpakstatus/flatpakstatus.go), [`internal/homebrew/trust.go`](https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4/internal/homebrew/trust.go).
 - Problem reporting: ChairLift release v0.15.0 commit [`e3e434a2843512c99538c08070bafd1c965eb7f8`](https://github.com/frostyard/chairlift/tree/e3e434a2843512c99538c08070bafd1c965eb7f8), released 2026-11-05 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.15.0)); [chairlift#267](https://github.com/frostyard/chairlift/pull/267): [`docs/adr/0015-problems-page-and-opt-in-reporting.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/adr/0015-problems-page-and-opt-in-reporting.md), [`docs/specs/problem-reporting.md`](https://github.com/frostyard/chairlift/blob/e3e434a2843512c99538c08070bafd1c965eb7f8/docs/specs/problem-reporting.md).
 - The Problems page: ChairLift release v0.14.0 commit [`54124831081796ffdadd4e10644fdc20719bf723`](https://github.com/frostyard/chairlift/tree/54124831081796ffdadd4e10644fdc20719bf723), released 2026-11-05 ([release](https://github.com/frostyard/chairlift/releases/tag/v0.14.0)); [chairlift#266](https://github.com/frostyard/chairlift/pull/266): [`README.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/README.md), [`docs/adr/0015-problems-page-and-opt-in-reporting.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/adr/0015-problems-page-and-opt-in-reporting.md), [`docs/specs/problems-page.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md), [`CONFIG.md`](https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/CONFIG.md).
