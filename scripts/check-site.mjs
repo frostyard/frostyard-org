@@ -343,8 +343,8 @@ assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile
 assert(docsLanding.includes("Updex v2.1.4"), "/docs must name the Updex v2.1.4 source pin.");
 assert(docsLanding.includes("https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md"), "/docs must cite the pinned Updex v2.1.4 README.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
-assert(!textOf(docsLanding).includes("snow-first-setup"), "/docs must not name snow-first-setup: snosi#1224 removed it (T843 t6).");
-assert(docsLanding.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs must point to the ChairLift first-login setup (T843 t6).");
+assert(!textOf(docsLanding).includes("snow-first-setup"), "/docs must not name snow-first-setup: snosi#1224 removed it.");
+assert(docsLanding.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs must point to the ChairLift first-login setup (snosi ADR-0028).");
 
 const snow = await readRoute("/docs/images/snow");
 const snowText = textOf(snow);
@@ -380,8 +380,8 @@ assert(!snowText.includes("userspace, systemd, bootc,"), "/docs/images/snow must
 assert(snowText.includes("Bootc runtime"), "/docs/images/snow must have a separate bootc-runtime row.");
 assert(snowText.includes("The table shows the main layers only"), "/docs/images/snow must scope the table to main layers.");
 assert(snowText.includes("Homebrew") && snowText.includes("frostyard-chairlift") && snowText.includes("first-login setup"), "/docs/images/snow must name key omitted components.");
-assert(snow.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs/images/snow must link the ChairLift first-login setup (T843 t6).");
-assert(!snowText.includes("snow-first-setup"), "/docs/images/snow must not list snow-first-setup: snosi#1224 removed it (T843 t6).");
+assert(snow.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs/images/snow must link the ChairLift first-login setup (snosi ADR-0028).");
+assert(!snowText.includes("snow-first-setup"), "/docs/images/snow must not list snow-first-setup: snosi#1224 removed it.");
 assert(snowText.includes("If you finished SNOW First Setup on an older Snow image, it does not open at all"), "/docs/images/snow must say that a finished SNOW First Setup skips the first-login setup.");
 assert(snowText.includes("untested on representative Surface hardware"), "/docs/images/snow must state that Snowfield is untested.");
 assert(snowText.includes("gate was waived for catalog inclusion"), "/docs/images/snow must state the Surface hardware gate waiver.");
@@ -472,8 +472,8 @@ assert(snowfieldText.includes("linux-image-surface") && snowfieldText.includes("
 assert(!snowfieldText.includes("linux-image-amd64/forky"), "/docs/images/snowfield must not claim the backports kernel.");
 assert(snowfieldText.includes("does not force a reboot"), "/docs/images/snowfield must state that the stager does not force a reboot.");
 assert(!snowfieldText.includes("A rollback also changes the image") && snowfieldText.includes("It waits for the next published image"), "/docs/images/snowfield must describe the rollback hold correctly.");
-assert(!snowfieldText.includes("snow-first-setup"), "/docs/images/snowfield must not list snow-first-setup: snosi#1224 removed it (T843 t6).");
-assert(snowfield.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs/images/snowfield must link the ChairLift first-login setup (T843 t6).");
+assert(!snowfieldText.includes("snow-first-setup"), "/docs/images/snowfield must not list snow-first-setup: snosi#1224 removed it.");
+assert(snowfield.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs/images/snowfield must link the ChairLift first-login setup (snosi ADR-0028).");
 
 const sundog = await readRoute("/docs/images/sundog");
 const sundogText = textOf(sundog);
@@ -524,7 +524,7 @@ for (const [route, html, text, desktop] of [
   ["/docs/images/sundog", sundog, sundogText, true],
   ["/docs/images/floe", floe, floeText, false],
 ]) {
-  assert(html.includes('id="problems"'), `${route} must render the "problems" section (T857 t14).`);
+  assert(html.includes('id="problems"'), `${route} must render the "problems" section (frostyard-org#75).`);
   assert(text.includes("snosi-health --list"), `${route} must name snosi-health --list.`);
   assert(text.includes("Storage=external"), `${route} must say how to keep core files (Storage=none on every image).`);
   assert(text.includes("3 to 8 minutes after boot"), `${route} must give the first snosi-health run with its random delay (OnBootSec=3min, RandomizedDelaySec=5min).`);
@@ -902,7 +902,7 @@ for (const [route, pageText] of [
   ["/docs/apps/frostnotes", lightHtml.frostnotes.text],
   ["/docs/tools/igloo", iglooText],
 ]) {
-  assert(!pageText.includes("flatpak remote-add --if-not-exists frostyard") && !pageText.includes("flatpak install frostyard "), `${route} must teach the per-user Frostyard remote (T532a).`);
+  assert(!pageText.includes("flatpak remote-add --if-not-exists frostyard") && !pageText.includes("flatpak install frostyard "), `${route} must teach the per-user Frostyard remote (flatpak-index README.md, Install apps).`);
   assert(pageText.includes("flatpak remote-add --user --if-not-exists flathub"), `${route} must give the per-user Flathub remote command.`);
 }
 
@@ -954,8 +954,8 @@ assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chair
 assert(chairlift.includes('data-code="chairlift --first-run --dry-run"'), "/docs/tools/chairlift must give the first-run dry-run command.");
 assert(chairlift.includes('data-code="chairlift-first-run --mark-done"'), "/docs/tools/chairlift must give the mark-done command.");
 assert(chairliftText.includes("first-run.done") && chairliftText.includes("snow-first-setup.done"), "/docs/tools/chairlift must name both first-run marker files.");
-assert(chairliftText.includes("Snow and Snowfield start it at login. Sundog does not."), "/docs/tools/chairlift must name the images that start the first-login setup (snosi ADR-0028, T843 t6).");
-assert(!chairliftText.includes("still start SNOW First Setup"), "/docs/tools/chairlift must not say that Snow still starts SNOW First Setup (T843 t6).");
+assert(chairliftText.includes("Snow and Snowfield start it at login. Sundog does not."), "/docs/tools/chairlift must name the images that start the first-login setup (snosi ADR-0028).");
+assert(!chairliftText.includes("still start SNOW First Setup"), "/docs/tools/chairlift must not say that Snow still starts SNOW First Setup (snosi ADR-0028).");
 assert(chairliftText.includes("Before v0.13.0"), "/docs/tools/chairlift must say that Ctrl+Q did nothing before v0.13.0.");
 assert(chairliftText.includes("the system installation could not be checked") && chairliftText.includes("Could not check for updates"), "/docs/tools/chairlift must describe per-installation Flatpak failures.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/7aada596112fb0ed833a5ed99b7c62c5f4411b4c/docs/adr/0014-first-run-mode.md"), "/docs/tools/chairlift must link the first-run ADR at the v0.13.0 commit.");
@@ -1472,6 +1472,7 @@ for (const [name, marker] of [
   assert(sectionText.includes(marker), `${route} must give the failure message "${marker}".`);
   if (name === "lodge") assert(sectionText.includes("lodge 0.2.0 and 0.2.1 add no migration to 0.1.0"), `${route} must say that a rollback from 0.2.1 to 0.1.0 needs no restore.`);
   if (name === "lodge") assert(sectionText.includes("provider keys and sign-ins") && sectionText.includes("lodgectl provider login"), `${route} must say that a restore loses provider keys and can need a new codex sign-in.`);
+  if (name === "readd") assert(sectionText.includes("readd 0.4.0 adds a migration") && sectionText.includes("readd 0.3.0 and earlier refuse the database"), `${route} must say that a rollback from 0.4.0 or later to 0.3.0 or earlier needs a restore.`);
   if (name === "porterd") assert(sectionText.includes("add routines.last_success:") && sectionText.includes("fill routines.last_success:"), `${route} must list every thread database error.`);
   assert(sectionText.indexOf("older than v2.1.3") !== -1 && sectionText.indexOf("older than v2.1.3") < sectionText.indexOf("To run the new version now"), `${route} must give the older-Updex commands before the restart step.`);
   const beforeRuns = html.indexOf('id="what-runs"');
@@ -1479,6 +1480,13 @@ for (const [name, marker] of [
   const enableText = textOf(html.slice(0, beforeRuns));
   assert(enableText.includes("activation did not finish"), `${route} must explain the "activation did not finish" message in the enable section.`);
   assert(enableText.includes("can be missing: reboot"), `${route} must say that users and groups can be missing until a reboot.`);
+}
+
+// A reader cannot open an internal planning ID (a T, 3 or 4 digits, and an
+// optional letter): Sources name a public record instead (frostyard-org#111).
+for (const route of docsRoutes) {
+  const ids = textOf(await readRoute(route)).match(/\bT\d{3,4}[a-z]?\b/g);
+  assert(!ids, `${route} must not name an internal planning ID (${ids?.join(", ")}); cite a public record.`);
 }
 
 // Every sysext guide states the Updex v2.1.3 refresh result and cites the current Updex pin.
@@ -1527,7 +1535,7 @@ for (const route of refreshGuideNames.map((name) => `/docs/sysexts/${name}`).con
   assert(!text.includes("Updex v2.1.2"), `${route} must not name Updex v2.1.2.`);
 }
 
-// The problem report pages (plan T857 t18). The schema copy is a byte copy of
+// The problem report pages (frostyard-org#74). The schema copy is a byte copy of
 // a pinned frostyard/core file, so the page cannot describe a field the schema
 // does not have, and the privacy page cannot lose a field it does have.
 const schemaPin = JSON.parse(await readFile(new URL("../src/data/problem-report-schema-pin.json", import.meta.url), "utf8"));
@@ -1599,10 +1607,10 @@ const statsSnapshot = JSON.parse(await readFile(new URL("../src/data/problem-sta
 const statsErrors = checkStatsPage(stats, statsSnapshot);
 assert(statsErrors.length === 0, `/stats/ does not match the snapshot: ${statsErrors.join(" ")}`);
 
-assert(privacyText.includes("Controller: Frostyard Privacy Admin") && privacy.includes('href="mailto:privacy@frostyard.org"'), "/privacy/problem-reports/ must name the controller and link the contact that Brian gave (T886a).");
+assert(privacyText.includes("Controller: Frostyard Privacy Admin") && privacy.includes('href="mailto:privacy@frostyard.org"'), "/privacy/problem-reports/ must name the controller and link the contact from src/data/privacy-contact.mjs.");
 
-// LAST: the privacy page needs the controller and the contact from Brian
-// (plan T857 section 6). Do not remove this assertion to make a build pass.
-assert(!privacyText.includes("PLACEHOLDER"), "/privacy/problem-reports/ still has a PLACEHOLDER: Brian must give the controller and the contact (plan T857 section 6).");
+// LAST: the privacy page needs the controller and the contact in
+// src/data/privacy-contact.mjs (frostyard-org#74). Do not remove this assertion to make a build pass.
+assert(!privacyText.includes("PLACEHOLDER"), "/privacy/problem-reports/ still has a PLACEHOLDER: set the controller and the contact in src/data/privacy-contact.mjs (frostyard-org#74).");
 
 console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);

@@ -192,8 +192,10 @@ When the older version runs, read the journal:
 journalctl -u frostread.service -n 50
 ```
 
-readd 0.2.0 and 0.3.0 add no migration to 0.1.0, so a rollback between
-these versions needs no restore.
+readd 0.4.0 adds a migration, for source folders. After 0.4.0 or 0.5.0 has
+run, readd 0.3.0 and earlier refuse the database. readd 0.5.0 adds no
+migration to 0.4.0, so a rollback from 0.5.0 to 0.4.0 needs no restore.
+readd 0.2.0 and 0.3.0 add no migration to 0.1.0.
 
 If it shows `database schema N is newer than this readd`, the newer readd
 migrated the database. Restore the state from your backup. Replace `ARCHIVE`
@@ -250,15 +252,16 @@ Each build checks the commands, the units, the sysusers file, the lodge app mani
 - [Frostnotes notesd](/docs/sysexts/notesd/)
 - [Frostmail maild](/docs/sysexts/maild/)
 - [Porter porterd](/docs/sysexts/porterd/)
+- [frostread packaging README](https://github.com/frostyard/frostread/blob/main/packaging/README.md#after-the-sysexts): readd on an image, and on a host without the extension.
 
 ## Sources
 
-Reviewed 2026-11-01. snosi commit
+Reviewed 2026-11-01; frostread facts reviewed 2026-11-13. snosi commit
 [`9b0b1539ae547e45ad32bfb4f581444e9bc0734c`](https://github.com/frostyard/snosi/tree/9b0b1539ae547e45ad32bfb4f581444e9bc0734c);
 core commit
 [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
-frostread v0.3.0 commit
-[`a800ed947935c30a888e1039830a29af774ab073`](https://github.com/frostyard/frostread/tree/a800ed947935c30a888e1039830a29af774ab073);
+frostread `main` commit
+[`7b062316f150ff6e0c146edff1c2b679f4b215d0`](https://github.com/frostyard/frostread/tree/7b062316f150ff6e0c146edff1c2b679f4b215d0);
 Updex v2.1.4 commit
 [`1843ea8ded298fbde42390a0c8b2842d09a92757`](https://github.com/frostyard/updex/tree/1843ea8ded298fbde42390a0c8b2842d09a92757).
 
@@ -273,11 +276,11 @@ Updex v2.1.4 commit
 - [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/shared/download/sysext-checksums.json)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/9b0b1539ae547e45ad32bfb4f581444e9bc0734c/docs/design/sysexts.md)
 - [snosi#1173](https://github.com/frostyard/snosi/pull/1173) (merged 2026-10-28, merge commit `0ede646cd878f82e91b891d9c3f6eba77227573b`) and [snosi#1175](https://github.com/frostyard/snosi/pull/1175) (merged 2026-10-28, merge commit `e423112908540aa3a8045fa9d8022a3742e3cd17`)
-- [snosi#1196](https://github.com/frostyard/snosi/pull/1196) (merged 2026-10-31) pins readd 0.3.0. `https://repository.frostyard.org/ext/readd/SHA256SUMS`, checked 2026-11-01, lists 0.1.0, 0.2.0 and 0.3.0.
-- frostread [`internal/store/migrations/`](https://github.com/frostyard/frostread/tree/a800ed947935c30a888e1039830a29af774ab073/internal/store/migrations) at v0.3.0 holds `0001_init.sql` and `0002_blob_orphans.sql`, the same as at v0.1.0
+- [snosi#1196](https://github.com/frostyard/snosi/pull/1196) (merged 2026-10-31) pins readd 0.3.0, [snosi#1209](https://github.com/frostyard/snosi/pull/1209) (merged 2026-11-03) pins readd 0.4.0, and [snosi#1257](https://github.com/frostyard/snosi/pull/1257) (merged 2026-11-09) pins readd 0.5.0. `https://repository.frostyard.org/ext/readd/SHA256SUMS`, checked 2026-11-13, lists 0.1.0, 0.2.0, 0.3.0, 0.4.0 and 0.5.0.
+- frostread [`internal/store/migrations/`](https://github.com/frostyard/frostread/tree/7b062316f150ff6e0c146edff1c2b679f4b215d0/internal/store/migrations) at `main` holds `0001_init.sql`, `0002_blob_orphans.sql` and `0003_source_folders.sql`. v0.1.0 to v0.3.0 hold only the first 2; v0.4.0 adds `0003_source_folders.sql` ([frostread#40](https://github.com/frostyard/frostread/pull/40)), and v0.5.0 and v0.6.0 add none.
 - core [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md)
-- frostread [`packaging/lodge/frostread.service`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/packaging/lodge/frostread.service), [`packaging/lodge/frostread.socket`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/packaging/lodge/frostread.socket), [`packaging/lodge/sysusers.d-frostread.conf`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/packaging/lodge/sysusers.d-frostread.conf), [`cmd/readctl/main.go`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/cmd/readctl/main.go)
-- frostread [`README.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/README.md) (Update and Roll back), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/docs/design/overview.md) (Backup), [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/a800ed947935c30a888e1039830a29af774ab073/internal/store/store.go) (the schema refusal)
+- frostread [`packaging/lodge/frostread.service`](https://github.com/frostyard/frostread/blob/7b062316f150ff6e0c146edff1c2b679f4b215d0/packaging/lodge/frostread.service), [`packaging/lodge/frostread.socket`](https://github.com/frostyard/frostread/blob/7b062316f150ff6e0c146edff1c2b679f4b215d0/packaging/lodge/frostread.socket), [`packaging/lodge/sysusers.d-frostread.conf`](https://github.com/frostyard/frostread/blob/7b062316f150ff6e0c146edff1c2b679f4b215d0/packaging/lodge/sysusers.d-frostread.conf), [`cmd/readctl/main.go`](https://github.com/frostyard/frostread/blob/7b062316f150ff6e0c146edff1c2b679f4b215d0/cmd/readctl/main.go)
+- frostread [`packaging/README.md`](https://github.com/frostyard/frostread/blob/7b062316f150ff6e0c146edff1c2b679f4b215d0/packaging/README.md#after-the-sysexts) (After the sysexts: back up, update and roll back on an image), [`docs/design/overview.md`](https://github.com/frostyard/frostread/blob/7b062316f150ff6e0c146edff1c2b679f4b215d0/docs/design/overview.md) (Backup), [`internal/store/store.go`](https://github.com/frostyard/frostread/blob/7b062316f150ff6e0c146edff1c2b679f4b215d0/internal/store/store.go) (the schema refusal)
 - lodge [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl reload` rereads the manifests), [`internal/apps/apps.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/apps/apps.go) (`PollEvery`, 15 seconds)
 - [Irulan's review (frostyard-org#58)](https://github.com/frostyard/frostyard-org/pull/58#issuecomment-6478694500)
 - [Updex v2.1.4 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
