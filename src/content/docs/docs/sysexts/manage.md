@@ -338,9 +338,13 @@ reads `none scheduled`. With no timer unit, the output is
 journalctl -u updex-update.service
 ```
 
-From v2.3.0, `Last update` reads the record that each `updex features update`
-writes, from the timer or from you. It stays after a reboot, and the time is in
-UTC. `<outcome>` is `completed`, `failed`, `skipped_busy` (another Updex
+From v2.3.0, `Last update` shows the last record that `updex features update`
+wrote, from the timer or from you. It stays after a reboot, and the time is in
+UTC. A dry run, and a command with a feature name that Updex refuses, write no
+record. A busy run records `skipped_busy`, unless the operation that held the
+lock already wrote a newer record. If Updex cannot write the record, it prints
+a warning and the update result does not change, so the line can show an older
+run. `<outcome>` is `completed`, `failed`, `skipped_busy` (another Updex
 operation ran), or `skipped_unreachable` (no update source answered). The timer
 exits 0 for the 2 skipped outcomes, so read this line, not the unit's result.
 Each feature that did not update or stay current gets a line below it, with its

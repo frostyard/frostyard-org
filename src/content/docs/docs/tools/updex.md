@@ -58,7 +58,8 @@ and the checks.
 
 From v2.3.0, each `updex features update` that is not a dry run writes its
 result to `/var/lib/updex/last-run.json`. The timer's runs write it too, and it
-stays after a reboot. `updex daemon status` shows it on a `Last update` line.
+stays after a reboot. A command with a feature name that Updex refuses writes
+no record. `updex daemon status` shows the last record on a `Last update` line.
 See [Automatic updates](/docs/sysexts/manage/#automatic-updates) for the output.
 
 On a system without the Frostyard image, the package ships the timer switched

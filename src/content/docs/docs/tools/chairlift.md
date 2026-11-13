@@ -189,8 +189,9 @@ One run updates every feature that is on. The toast says what happened:
   screen until you close it.
 - The update fails: the toast reports the error, and stays on screen.
 
-From v0.17.0, a feature that updated leaves the list of updates at once, even
-when the check after the update fails.
+From v0.17.0, after an update run that succeeds, each feature that updated
+leaves the list of updates at once, even when the check after the update
+fails. A failed run or a dry run keeps every item in the list.
 
 A feature waits when a downloaded revision needs a newer OS image than the
 one that boots next. Its row says `waiting for a newer OS image` and names
