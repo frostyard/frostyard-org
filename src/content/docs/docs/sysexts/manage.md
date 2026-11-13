@@ -332,7 +332,8 @@ and `Next run: none scheduled`. `<result>` is the result of
 `Last run: none recorded since boot`. With no timer scheduled, `Next run`
 reads `none scheduled`. With no timer unit, the output is
 `Auto-update daemon: not installed`, then
-`Run 'updex daemon enable' to enable automatic updates.` The run log is in the journal:
+`Run 'updex daemon enable' to enable automatic updates.`, then a `Last update`
+line when a record exists. The run log is in the journal:
 
 ```bash
 journalctl -u updex-update.service
@@ -347,9 +348,12 @@ a warning and the update result does not change, so the line can show an older
 run. `<outcome>` is `completed`, `failed`, `skipped_busy` (another Updex
 operation ran), or `skipped_unreachable` (no update source answered). The timer
 exits 0 for the 2 skipped outcomes, so read this line, not the unit's result.
+The parentheses can also start with `class <class>`, for a failure outside
+every feature, and end with `named features`, for a run that named features.
 Each feature that did not update or stay current gets a line below it, with its
 outcome, for example `docker: failed (class network)` or
-`incus: needs_image`. With no record, the line reads
+`incus: needs_image (version <version>)`. A feature line from an earlier run
+ends with `at <time>`. With the timer installed and no record, the line reads
 `Last update: none recorded`. An Updex older than v2.3.0 shows no `Last update`
 line.
 
