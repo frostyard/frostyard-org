@@ -1,10 +1,10 @@
 ---
 import Site from "../layouts/Site.astro";
-const facts = [["Desktop first", "GNOME, GDM, PipeWire, Ghostty, Flatpak, printing, remote desktop, and practical accessibility support are part of the image."], ["Current hardware stack", "The Debian backports kernel, graphics stack, and broad firmware set keep a workstation current without turning it into a rolling release."], ["Work-friendly layers", "ChairLift, Homebrew support, Podman, Distrobox, and system extensions give development and desktop software a place to live."]];
+const facts = [["Desktop first", "GNOME, GDM, PipeWire, Ptyxis, Flatpak, printing, remote desktop, and practical accessibility support are part of the image."], ["Current hardware stack", "A current Debian kernel, graphics stack, and broad firmware set keep a workstation current without turning it into a rolling release."], ["Work-friendly layers", "ChairLift, Homebrew support, Podman, Distrobox, and system extensions give development and desktop software a place to live."]];
 ---
 <Site title="Snow | Frostyard" description="A composed GNOME workstation from Frostyard." active="images" footerLabel="Explore tools →" footerHref="/tools">
   <header class="hero"><p class="eyebrow"><i></i> Snow · GNOME workstation</p><h1>A desktop that<br /><em>holds its shape.</em></h1><p class="lede">Snow is the everyday Frostyard workstation: a GNOME desktop with an atomic operating system below it and practical places for the tools above it.</p></header>
-  <section class="signal"><span>SNOW</span><p>GNOME desktop · Backports kernel · Atomic updates</p></section>
+  <section class="signal"><span>SNOW</span><p>GNOME desktop · Current Debian kernel · Atomic updates</p></section>
   <section class="facts">{facts.map(([title, body], index) => <article><b>0{index + 1}</b><h2>{title}</h2><p>{body}</p></article>)}</section>
   <section class="bottom"><div><p class="eyebrow"><i></i> For a daily machine</p><h2>Work on the surface.<br />Keep the system below calm.</h2></div><p>Use extensions for system-adjacent software, containers for development environments, and user-space package tools for everything personal. Snow keeps those choices separate without making them feel distant.</p></section>
 </Site>

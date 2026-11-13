@@ -42,9 +42,8 @@ v0.2.1 is a patch release: a security fix in a dependency, and dependency update
 
 v0.3.0 makes dim text easier to read. The secondary and tertiary text colours now reach a contrast of 4.5:1 on every surface, in light and dark. lodge also builds with Go 1.27.4, for its security fixes. v0.3.0 does not change lodge's app contract or its configuration.
 
-lodge is optional for the desktop apps. Frostnotes works on its own as a
-Flatpak. Frostmail and frostread follow the same rule when their Flatpaks
-ship. You opt into lodge for each app, and nothing turns it on for you.
+lodge is optional for the desktop apps. Frostnotes, Frostmail, and frostread
+work on their own as Flatpaks. You opt into lodge for each app, and nothing turns it on for you.
 Frostnotes can sync with the hub in lodge. Frostmail can use the `maild`
 behind lodge as its backend. The server side stays as this page says.
 
@@ -128,6 +127,7 @@ Reviewed 2026-11-11.
 - core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Accepted), Context; [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/plans/0010-suite-packaging.md) (Phase 3; Phase 4, lodge's host on Floe, is deferred)
 - frostmail commit [`df106558209fad29c63983710a1a646557064dd4`](https://github.com/frostyard/frostmail/tree/df106558209fad29c63983710a1a646557064dd4): [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0011-m8-mail-in-lodge.md)
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
+- The standalone Flatpaks of Frostnotes, Frostmail, and frostread: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/0886d3caf7f02d23d19bcc779c7e7d2feb1935a6/README.md) at `0886d3caf7f02d23d19bcc779c7e7d2feb1935a6`, section What it publishes.
 - snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28 (merge commit [`0ede646cd878f82e91b891d9c3f6eba77227573b`](https://github.com/frostyard/snosi/tree/0ede646cd878f82e91b891d9c3f6eba77227573b)), adds the lodge, readd, and porterd extensions.
 - core commit [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a): [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/plans/0010-suite-packaging.md) (Phase 2: the `.deb` is not registered with apt-publisher)
