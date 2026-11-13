@@ -49,13 +49,13 @@ them.
 ## Install
 
 The desktop app is a Flatpak. Add the Frostyard remote and the Flathub remote
-for your user, as [Get software](/docs/get-software/#flatpak) shows, then
-install it:
+for your user, as the
+[Frostyard Flatpak remote](https://github.com/frostyard/flatpak-index/blob/main/README.md#install)
+shows in its canonical steps, then install it:
 
 `flatpak install --user frostyard org.frostyard.Frostread`
 
-The [Frostyard Flatpak remote](https://github.com/frostyard/flatpak-index/blob/main/README.md#install)
-has the canonical steps. Floe has no Flatpak.
+Floe has no Flatpak ([Get software](/docs/get-software/#flatpak)).
 
 On lodge's host, frostread runs as lodge's `read` app, beside lodge and
 Notes. The web bundle builds in an [nsl](/docs/tools/nsl/) machine, and
