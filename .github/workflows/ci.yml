@@ -19,7 +19,7 @@ jobs:
           # The corrections check compares .memory/corrections/ with the
           # PR base, so the base commit must be in the clone.
           fetch-depth: 0
-      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           # mise.toml and mise.lock pin Node, the same way `mise install` does
           # locally.
