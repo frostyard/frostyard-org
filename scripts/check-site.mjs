@@ -787,6 +787,15 @@ for (const route of ["lodge", "frostnotes"]) {
   assert(lightHtml[route].text.includes("The system extension can trail the latest release"), `/docs/apps/${route} must state that the system extension can trail the latest release.`);
 }
 assert(lightHtml.lodge.text.includes("is retired since 2026-11-15") && lightHtml.lodge.text.includes("stay as notes in Frostnotes"), "/docs/apps/lodge must say that frostread is retired and that its saved articles stay as notes.");
+// readd is a system extension on a Frostyard image: Updex removes it, not apt (frostyard-org#127).
+assert(/On a Frostyard image, run\s+sudo updex features disable readd --now --force\s*, then reboot\./.test(lightHtml.lodge.text) && !/\bapt(-get)? (remove|purge)\b/.test(lightHtml.lodge.text), "/docs/apps/lodge must remove readd with Updex on a Frostyard image, never with apt.");
+{
+  // flatpak-index#20 drops the retired frostread from the Frostyard Flatpak remote.
+  const getSoftware = await readRoute("/docs/get-software");
+  const sourcesAt = getSoftware.indexOf('id="sources"');
+  const bodyText = textOf(getSoftware.slice(0, sourcesAt));
+  assert(sourcesAt !== -1 && /own Flatpak remote has 3 apps/.test(bodyText) && !/frostread/i.test(bodyText), "/docs/get-software must name the 3 apps of the Frostyard Flatpak remote and not frostread.");
+}
 assert(lightHtml.lodge.text.includes("On a Frostyard image, enable the lodge system extension") && lightHtml.lodge.text.includes("/usr is read-only on a Frostyard image."), "/docs/apps/lodge must state the lodge extension and the /usr limit.");
 assert(lightHtml.frostmail.html.includes('href="/docs/apps/lodge/"') && lightHtml.frostnotes.html.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
 assert(lightHtml.frostnotes.text.includes("The hub moved behind lodge on 2026-10-26"), "/docs/apps/frostnotes must say that the hub moved behind lodge.");
