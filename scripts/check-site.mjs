@@ -709,6 +709,8 @@ assert(!updex.includes("https://github.com/frostyard/updex/blob/v2.3.0/"), "/doc
 assert(!/https:\/\/github\.com\/frostyard\/updex\/blob\/v[^/"]+\/README\.md#/.test(updex), "/docs/tools/updex must not deep-link a README anchor; the v2.3.1 README has no reference sections.");
 assert(updex.includes("https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#install"), "/docs/tools/updex must link the v2.3.1 CLI reference install section.");
 assert(updexText.includes("updex-suite-switch.service"), "/docs/tools/updex must name the suite-switch unit.");
+// The other-suite cleanup keeps the newest image of each other suite, and keeps all of them on systemd < 258 (updex cli-reference "What the vacuum keeps").
+assert(updexText.includes("keep the newest one of each other suite") && updexText.includes("systemd older than 258"), "/docs/tools/updex must state what the other-suite cleanup keeps, including the systemd < 258 rule.");
 assert(updexText.includes("specifier %w is empty: os-release has no VERSION_ID"), "/docs/tools/updex must show the empty-specifier error.");
 assert(updexText.includes("sudo updex --dry-run daemon enable"), "/docs/tools/updex must explain the daemon dry run.");
 assert(updex.includes('href="/docs/sysexts/"'), "/docs/tools/updex must link the extension catalog page.");

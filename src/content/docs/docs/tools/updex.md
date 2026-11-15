@@ -68,8 +68,11 @@ forky, it links and merges the new suite's extension images at the first boot.
 On other boots it does nothing. A failed run tries again 5 minutes later, at
 most 3 times, and then stays failed until the next boot. Its log is
 `journalctl -u updex-suite-switch.service`. Later `features update` runs
-remove the old suite's images and keep the newest one, so a switch back needs
-no download. See [What the vacuum
+remove the images of other suites, but keep the newest one of each other
+suite, the linked image, and a merged image. A switch back can then link the
+kept image without a download. With systemd older than 258, as on Debian
+trixie, every other-suite image stays while the feature is merged. See [What
+the vacuum
 keeps](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#what-the-vacuum-keeps).
 
 On a system without the Frostyard image, the package ships the timer switched

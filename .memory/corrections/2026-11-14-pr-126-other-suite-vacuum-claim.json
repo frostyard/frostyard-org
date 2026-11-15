@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-14",
+  "scope": "docs",
+  "correction": "When a guide summarizes an Updex retention rule, state its exceptions (each other suite, linked and merged images, systemd older than 258) or link the rule without restating it; a short summary must not drop a condition.",
+  "evidence": "frostyard/frostyard-org#126, cross-review (openai/gpt-6.1-sol) of head a6edf5e8afc30d56baa25862380a7349d1fe5545: the other-suite cleanup line overstated what the vacuum removes",
+  "promoted_to": "scripts/check-site.mjs"
+}
