@@ -3,12 +3,12 @@ title: Updex
 description: "Manage Frostyard system extensions with Updex: list, enable, update, roll back, and remove them."
 follows:
   repo: frostyard/updex
-  tag: v2.3.0
+  tag: v2.3.1
 ---
 
 Updex downloads, verifies, installs, updates, rolls back, and removes system
 extension images. Every Frostyard bootc image ships it as the
-`frostyard-updex` package. This guide follows Updex v2.3.0.
+`frostyard-updex` package. This guide follows Updex v2.3.1.
 
 ## Check your version
 
@@ -30,7 +30,7 @@ image.
 | Enable a feature and download it | `sudo updex features enable <name> --now` | [Enable an extension](/docs/sysexts/manage/#enable-an-extension) |
 | See what you can update to | `updex features check` | [Update](/docs/sysexts/manage/#update) |
 | Install the newest versions | `sudo updex features update` | [Update](/docs/sysexts/manage/#update) |
-| Update or check only some extensions | `sudo updex features update <name>...`, `updex features check <name>...` | [Features and components](https://github.com/frostyard/updex/blob/v2.3.0/README.md#features-and-components) |
+| Update or check only some extensions | `sudo updex features update <name>...`, `updex features check <name>...` | [Naming features](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#naming-features) |
 | Go back to the previous version | `sudo updex features rollback <name>` | [Roll back](/docs/sysexts/manage/#roll-back) |
 | Stop updates, or remove an extension | `sudo updex features disable <name>` | [Stop updates or remove](/docs/sysexts/manage/#stop-updates-or-remove) |
 | Turn off automatic updates | `sudo systemctl mask --now updex-update.timer` | [Automatic updates](#automatic-updates) |
@@ -61,6 +61,19 @@ result to `/var/lib/updex/last-run.json`. The timer's runs write it too, and it
 stays after a reboot. A command with a feature name that Updex refuses writes
 no record. `updex daemon status` shows the last record on a `Last update` line.
 See [Automatic updates](/docs/sysexts/manage/#automatic-updates) for the output.
+
+From v2.3.1, a Frostyard image also enables `updex-suite-switch.service`.
+After you switch the image to a new Debian suite, for example from trixie to
+forky, it links and merges the new suite's extension images at the first boot.
+On other boots it does nothing. A failed run tries again 5 minutes later, at
+most 3 times, and then stays failed until the next boot. Its log is
+`journalctl -u updex-suite-switch.service`. Later `features update` runs
+remove the images of other suites, but keep the newest one of each other
+suite, the linked image, and a merged image. A switch back can then link the
+kept image without a download. With systemd older than 258, as on Debian
+trixie, every other-suite image stays while the feature is merged. See [What
+the vacuum
+keeps](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#what-the-vacuum-keeps).
 
 On a system without the Frostyard image, the package ships the timer switched
 off. Turn it on with `sudo updex daemon enable`. Preview the change first with
@@ -106,6 +119,9 @@ Extension docker (version 5+29.9.1-1~debian.13~trixie) is active. Removing requi
 When another enabled feature still needs a transfer, `disable --now` keeps it
 and prints `kept: still active through feature(s) <name>`.
 
+From v2.3.1, `disable --now` also removes the images of other suites. It needs
+`--force` when an image of another suite is merged.
+
 ## Install Updex on another system
 
 On a Frostyard image, Updex is already installed. It updates and rolls back
@@ -113,8 +129,8 @@ with the image. Follow [Install and update an image](/docs/images/install-update
 
 On another system, download the package for your system from the [Updex
 releases page](https://github.com/frostyard/updex/releases/latest), and check
-it before you install it. The [Updex README](https://github.com/frostyard/updex/blob/v2.3.0/README.md#installation) lists
-the artifacts and the checks. The host needs systemd with `systemd-sysext`,
+it before you install it. The [Updex CLI reference](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#install)
+lists the artifacts and the checks. The host needs systemd with `systemd-sysext`,
 and commands that change the system need root.
 
 ## Catalogs
@@ -127,30 +143,40 @@ configures none.
 Add a catalog with a `.catalog` file in `/etc/updex/catalogs.d/`, then run
 `updex catalog list` and `sudo updex catalog add <repo>/<name>`. A catalog
 sysext needs a GPG-signed `SHA256SUMS` by default. `AllowUnsigned=yes` in one
-`.catalog` file lets that catalog's own `Verify=` decide. See [Sysext
-catalogs](https://github.com/frostyard/updex/blob/v2.3.0/README.md#sysext-catalogs) and [Unsigned
-catalogs](https://github.com/frostyard/updex/blob/v2.3.0/README.md#unsigned-catalogs) for the file format, the checks,
-and the upgrade notes.
+`.catalog` file lets that catalog's own `Verify=` decide. See
+[Catalogs](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#catalogs)
+and [Unsigned
+catalogs](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#unsigned-catalogs)
+for the commands and the checks. See [Catalog
+files](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/config-reference.md#catalog-files-catalog)
+for the file format, and [Signature policy for catalog
+sysexts](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/config-reference.md#signature-policy-for-catalog-sysexts)
+for the upgrade notes.
 
 ## Reference
 
-- [Features and components](https://github.com/frostyard/updex/blob/v2.3.0/README.md#features-and-components): every
-  `features` command, the refresh warning, the minimum image version, and the
-  operation lock.
-- [Automatic updates](https://github.com/frostyard/updex/blob/v2.3.0/README.md#automatic-updates): the timer, its
-  schedule, and its status output.
-- [Global flags](https://github.com/frostyard/updex/blob/v2.3.0/README.md#global-flags): `--json`, `--dry-run`,
-  `--no-refresh`, and the others.
-- [JSON output](https://github.com/frostyard/updex/blob/v2.3.0/README.md#json-output): the result format for scripts.
-- [Rollback](https://github.com/frostyard/updex/blob/v2.3.0/docs/design/overview.md#rollback-adr-0016): the record, the
+- [CLI reference](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md):
+  every command, flag, and message.
+- [Features and components](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#features-and-components):
+  every `features` command. The sections after it cover the refresh warning,
+  the minimum image version, and the operation lock.
+- [Automatic updates](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#automatic-updates):
+  the timer, its schedule, the suite-switch unit, and the status output.
+- [Global flags](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#global-flags):
+  `--json`, `--dry-run`, `--no-refresh`, and the others.
+- [JSON output](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#json-output):
+  the result format for scripts.
+- [Configuration reference](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/config-reference.md):
+  the `.transfer`, `.feature`, and `.catalog` files.
+- [Rollback](https://github.com/frostyard/updex/blob/v2.3.1/docs/design/overview.md#rollback-adr-0016): the record, the
   hold, and the vacuum.
-- [Minimum image version](https://github.com/frostyard/updex/blob/v2.3.0/docs/design/overview.md#minimum-image-version-adr-0016):
+- [Minimum image version](https://github.com/frostyard/updex/blob/v2.3.1/docs/design/overview.md#minimum-image-version-adr-0016):
   how a revision that needs a newer image stays unlinked.
-- [Running and linked versions](https://github.com/frostyard/updex/blob/v2.3.0/docs/design/overview.md#status-running-and-linked-adr-0016):
+- [Running and linked versions](https://github.com/frostyard/updex/blob/v2.3.1/docs/design/overview.md#status-running-and-linked-adr-0016):
   the `RUNNING` and `LINKED` columns.
-- [Auto-update daemon](https://github.com/frostyard/updex/blob/v2.3.0/docs/design/overview.md#auto-update-daemon): the
+- [Auto-update daemon](https://github.com/frostyard/updex/blob/v2.3.1/docs/design/overview.md#auto-update-daemon): the
   units and the daemon commands.
-- [Last-run record](https://github.com/frostyard/updex/blob/v2.3.0/docs/specs/last-run-record.md): the outcomes and error classes that `Last update` shows.
+- [Last-run record](https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/last-run-record.md): the outcomes and error classes that `Last update` shows.
 
 ## Troubleshooting
 
@@ -162,6 +188,7 @@ and the upgrade notes.
 | `updex-update.service` shows `failed` | `journalctl -u updex-update.service` | A run that no update source answered exits 0 and logs `no update source is reachable; skipping this run`. A partial failure, a source that answered with an error, or a verification failure fails the unit until the next good run. |
 | The timer ran, but no version changed | `updex daemon status` | Read the `Last update` line. `skipped_busy`: another Updex operation ran. `skipped_unreachable`: no update source answered. The next run tries again. A feature line names the feature that failed and its error class. |
 | A catalog command says no catalogs are configured | `ls /etc/updex/catalogs.d/` | Create a `<name>.catalog` file with `SiteURL`. |
+| A `features` command fails with `specifier %w is empty: os-release has no VERSION_ID` | `grep VERSION_ID /etc/os-release` | The host's os-release has no `VERSION_ID`, as on Debian testing before its release, so Updex cannot pick the images of its suite. Fix the host's os-release or the transfer. From v2.3.1, `features update`, `check`, and `enable --now` stop with this error. `features list` shows it, and `disable` still works. |
 
 See [Manage system extensions](/docs/sysexts/manage/#troubleshooting) for the
 rollback, hold, and image-version rows.
@@ -177,8 +204,14 @@ rollback, hold, and image-version rows.
 
 ## Sources
 
-Reviewed 2026-11-12.
+Reviewed 2026-11-14.
 
+- Updex v2.3.1 commit [`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88), released 2026-11-14
+- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1)
+- v2.3.1 [`README.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/README.md), [`docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md), [`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/config-reference.md), and [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/design/overview.md)
+- [Updex PR #510: shorten the README](https://github.com/frostyard/updex/pull/510), [PR #515: clean up other-suite images in vacuum and disable](https://github.com/frostyard/updex/pull/515), [PR #516: fail loud on an empty specifier and link the running suite at boot](https://github.com/frostyard/updex/pull/516), [PR #518: refuse the vacuum when `ProtectVersion=` has an empty specifier](https://github.com/frostyard/updex/pull/518), and [PR #519: retry a failed suite-switch run at boot](https://github.com/frostyard/updex/pull/519)
+- [`docs/adr/0021-link-the-running-suites-images-at-boot-after-a-suite-switch.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0021-link-the-running-suites-images-at-boot-after-a-suite-switch.md) and [`docs/adr/0022-retry-a-failed-suite-switch-run-at-boot.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0022-retry-a-failed-suite-switch-run-at-boot.md)
+- snosi commit [`26aa1de41fd08299a9e0422d42a73f9822d7c799`](https://github.com/frostyard/snosi/tree/26aa1de41fd08299a9e0422d42a73f9822d7c799): [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/26aa1de41fd08299a9e0422d42a73f9822d7c799/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset) enables `updex-suite-switch.service`
 - Updex v2.3.0 commit [`2b2def7e81b861e4465ef8f5e180693ed6acd1fc`](https://github.com/frostyard/updex/tree/2b2def7e81b861e4465ef8f5e180693ed6acd1fc)
 - [Updex v2.3.0 release](https://github.com/frostyard/updex/releases/tag/v2.3.0)
 - [`README.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/README.md)
