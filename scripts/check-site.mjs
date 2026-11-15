@@ -789,6 +789,9 @@ for (const route of ["lodge", "frostnotes"]) {
 assert(lightHtml.lodge.text.includes("is retired since 2026-11-15") && lightHtml.lodge.text.includes("stay as notes in Frostnotes"), "/docs/apps/lodge must say that frostread is retired and that its saved articles stay as notes.");
 // readd is a system extension on a Frostyard image: Updex removes it, not apt (frostyard-org#127).
 assert(/On a Frostyard image, run\s+sudo updex features disable readd --now --force\s*, then reboot\./.test(lightHtml.lodge.text) && !/\bapt(-get)? (remove|purge)\b/.test(lightHtml.lodge.text), "/docs/apps/lodge must remove readd with Updex on a Frostyard image, never with apt.");
+// After the image update, base has no sysupdate.readd.d: Updex no longer knows
+// the feature, and only removing the files ends the merge (snosi#1314).
+assert(/feature (?:'|&#39;|&#x27;)readd(?:'|&#39;|&#x27;) not found/.test(lightHtml.lodge.text) && lightHtml.lodge.text.includes("sudo rm -f /var/lib/extensions/readd.raw /var/lib/extensions.d/readd.raw /var/lib/extensions.d/readd_*") && lightHtml.lodge.text.includes("/var/lib/frostread") && lightHtml.lodge.html.includes("https://github.com/frostyard/snosi/blob/main/docs/design/sysexts.md#readd-retired"), "/docs/apps/lodge must give the readd removal after the image update (feature not found, rm of the extension files), say what stays, and link snosi's readd (retired) section.");
 {
   // flatpak-index#20 drops the retired frostread from the Frostyard Flatpak remote.
   const getSoftware = await readRoute("/docs/get-software");
