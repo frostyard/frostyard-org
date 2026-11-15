@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-15",
+  "scope": "docs",
+  "correction": "On a Frostyard image, a suite app daemon is a system extension: give its removal as `sudo updex features disable <name> --now --force` and a reboot, never as an apt or package removal; a package removal applies only to a host that installed the .deb by hand.",
+  "evidence": "frostyard/frostyard-org#127, owner fact review (Irulan) of head c15a4940ab50cbca51322141ecd2e069b3ff9667: the frostread retirement sentence on /docs/apps/lodge/ said to remove the package, with no Updex step for readd on a Frostyard image",
+  "promoted_to": "scripts/check-site.mjs"
+}

@@ -231,7 +231,6 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 - [lodge](/docs/apps/lodge/)
 - [Frostmail](/docs/apps/frostmail/)
 - [Porter](/docs/apps/porter/)
-- [frostread](/docs/apps/frostread/)
 - [nsl](/docs/tools/nsl/)
 
 ## Sources
