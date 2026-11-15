@@ -1,16 +1,16 @@
 ---
 title: lodge
-description: "lodge is the tailnet-only web shell that opens Notes, Mail, Read, and Porter from one address. Pre-release: it installs from a tarball."
+description: "lodge is the tailnet-only web shell that opens Notes, Mail, and Porter from one address. Pre-release: it installs from a tarball."
 follows:
   repo: frostyard/lodge
   tag: v0.3.0
 ---
 
 lodge is a web shell for Frostyard's own apps. One address on your tailnet
-opens Notes, Mail, Read, and the assistant [Porter](/docs/apps/porter/). A
+opens Notes, Mail, and the assistant [Porter](/docs/apps/porter/). A
 quick switcher moves between them, and each app stays loaded in its frame.
-You need it to use those apps in a browser on your tailnet, and to run Read
-and Porter.
+You need it to use those apps in a browser on your tailnet, and to run
+Porter.
 
 - lodge is the only process on the network. It joins your tailnet as a node
   of its own, `lodge`, and signs browsers in by their tailnet identity.
@@ -33,8 +33,11 @@ On another host, you install lodge from the tarball that `make dist` builds. lod
 inference layer are built.
 [Frostnotes](/docs/apps/frostnotes/) as Notes and
 [Frostmail](/docs/apps/frostmail/) as Mail run behind it.
-[frostread](/docs/apps/frostread/) runs behind it as Read, since 2026-10-21.
 [Porter](/docs/apps/porter/) runs beside them, since 2026-10-20.
+frostread, the feed reader that ran behind lodge as Read, is retired since
+2026-11-15. The articles it saved stay as notes in Frostnotes. A lodge that
+still has its package lists Read until you remove the package and run
+`sudo lodgectl reload`.
 
 v0.2.0 adds unread counts. An app can report a count of things you have not seen, such as unread mail. lodge shows it on the app's rail button, in the app's row of the switcher, and as a sum on the home-screen icon. The design, ADR-0020, is Proposed.
 
@@ -42,15 +45,14 @@ v0.2.1 is a patch release: a security fix in a dependency, and dependency update
 
 v0.3.0 makes dim text easier to read. The secondary and tertiary text colours now reach a contrast of 4.5:1 on every surface, in light and dark. lodge also builds with Go 1.27.4, for its security fixes. v0.3.0 does not change lodge's app contract or its configuration.
 
-lodge is optional for the desktop apps. Frostnotes, Frostmail, and frostread
-work on their own as Flatpaks. You opt into lodge for each app, and nothing turns it on for you.
+lodge is optional for the desktop apps. Frostnotes and Frostmail work on
+their own as Flatpaks. You opt into lodge for each app, and nothing turns it on for you.
 Frostnotes can sync with the hub in lodge. Frostmail can use the `maild`
 behind lodge as its backend. The server side stays as this page says.
 
 Frostyard ships lodge and its app daemons as system extensions for Frostyard
 images: [lodge](/docs/sysexts/lodge/), [notesd](/docs/sysexts/notesd/),
-[maild](/docs/sysexts/maild/), [readd](/docs/sysexts/readd/), and
-[porterd](/docs/sysexts/porterd/).
+[maild](/docs/sysexts/maild/), and [porterd](/docs/sysexts/porterd/).
 
 ## Install
 
@@ -105,7 +107,6 @@ newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 - [Frostnotes](/docs/apps/frostnotes/)
 - [Frostmail](/docs/apps/frostmail/)
-- [frostread](/docs/apps/frostread/)
 - [Porter](/docs/apps/porter/)
 - [nsl](/docs/tools/nsl/)
 
@@ -126,8 +127,9 @@ Reviewed 2026-11-11.
 - `https://repository.frostyard.org/ext/lodge/SHA256SUMS`, checked 2026-11-11, lists 0.1.0 and 0.2.1. [snosi#1257](https://github.com/frostyard/snosi/pull/1257), merged 2026-11-09 (merge commit `5e9d69d31552dce8040b5c3233b8a266b2156f4f`), pins lodge 0.2.1 and maild 0.5.0.
 - core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Accepted), Context; [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/plans/0010-suite-packaging.md) (Phase 3; Phase 4, lodge's host on Floe, is deferred)
 - frostmail commit [`df106558209fad29c63983710a1a646557064dd4`](https://github.com/frostyard/frostmail/tree/df106558209fad29c63983710a1a646557064dd4): [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0011-m8-mail-in-lodge.md)
+- frostread is retired: lodge [lodge#80](https://github.com/frostyard/lodge/pull/80), merged 2026-11-15 (merge commit [`78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03`](https://github.com/frostyard/lodge/tree/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03)): [`site/content/guides/apps.md`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/site/content/guides/apps.md) (the package, `lodgectl reload`) and [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/docs/plans/0001-roadmap.md) (the saved articles stay as notes).
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
-- The standalone Flatpaks of Frostnotes, Frostmail, and frostread: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/0886d3caf7f02d23d19bcc779c7e7d2feb1935a6/README.md) at `0886d3caf7f02d23d19bcc779c7e7d2feb1935a6`, section What it publishes.
+- The standalone Flatpaks of Frostnotes and Frostmail: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/0886d3caf7f02d23d19bcc779c7e7d2feb1935a6/README.md) at `0886d3caf7f02d23d19bcc779c7e7d2feb1935a6`, section What it publishes.
 - snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28 (merge commit [`0ede646cd878f82e91b891d9c3f6eba77227573b`](https://github.com/frostyard/snosi/tree/0ede646cd878f82e91b891d9c3f6eba77227573b)), adds the lodge, readd, and porterd extensions.
 - core commit [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a): [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/plans/0010-suite-packaging.md) (Phase 2: the `.deb` is not registered with apt-publisher)

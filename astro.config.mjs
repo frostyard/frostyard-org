@@ -40,7 +40,6 @@ export default defineConfig({
                 { label: "Docker", slug: "docs/sysexts/docker" },
                 { label: "Frostmail maild", slug: "docs/sysexts/maild" },
                 { label: "Frostnotes notesd", slug: "docs/sysexts/notesd" },
-                { label: "frostread readd", slug: "docs/sysexts/readd" },
                 { label: "Himmelblau", slug: "docs/sysexts/himmelblau" },
                 { label: "Incus", slug: "docs/sysexts/incus" },
                 { label: "K3s", slug: "docs/sysexts/k3s" },
@@ -81,7 +80,6 @@ export default defineConfig({
             { label: "Frostmail", slug: "docs/apps/frostmail" },
             { label: "Frostnotes", slug: "docs/apps/frostnotes" },
             { label: "lodge", slug: "docs/apps/lodge" },
-            { label: "frostread", slug: "docs/apps/frostread" },
             { label: "Porter", slug: "docs/apps/porter" },
           ],
         },
@@ -101,6 +99,9 @@ export default defineConfig({
     }),
   ],
   redirects: {
-    "/cayo": { status: 301, destination: "/floe" }
+    "/cayo": { status: 301, destination: "/floe" },
+    // frostread is retired: lodge's page says so, and the manage page has the removal steps.
+    "/docs/apps/frostread": { status: 301, destination: "/docs/apps/lodge/" },
+    "/docs/sysexts/readd": { status: 301, destination: "/docs/sysexts/manage/" }
   }
 });

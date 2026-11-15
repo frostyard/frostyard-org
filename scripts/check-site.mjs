@@ -102,14 +102,12 @@ const docsRoutes = [
   "/docs/sysexts/pilothouse",
   "/docs/sysexts/podman",
   "/docs/sysexts/porterd",
-  "/docs/sysexts/readd",
   "/docs/sysexts/sunshine",
   "/docs/sysexts/voxtype",
   "/docs/tools/updex",
   "/docs/apps/frostmail",
   "/docs/apps/frostnotes",
   "/docs/apps/lodge",
-  "/docs/apps/frostread",
   "/docs/apps/porter",
   "/docs/tools/nsl",
   "/docs/tools/igloo",
@@ -200,6 +198,11 @@ assert(tools.includes("sudo updex features enable &lt;feature&gt; --now"), "Tool
 
 const redirects = await readFile(new URL("_redirects", dist), "utf8");
 assert(/^\/cayo\s+\/floe\s+301$/m.test(redirects), "/cayo must remain a permanent redirect to /floe.");
+
+// frostread is retired (lodge#80, porter#51): its 2 guides are gone, their
+// routes send the reader on, and no docs page links them.
+assert(/^\/docs\/apps\/frostread\/?\s+\/docs\/apps\/lodge\/\s+301$/m.test(redirects), "/docs/apps/frostread must redirect permanently to /docs/apps/lodge/.");
+assert(/^\/docs\/sysexts\/readd\/?\s+\/docs\/sysexts\/manage\/\s+301$/m.test(redirects), "/docs/sysexts/readd must redirect permanently to /docs/sysexts/manage/.");
 
 // Google's OAuth branding check for Frostmail fetches the home page and the
 // privacy policy at the URLs entered in Google Auth Platform. Both must answer
@@ -300,7 +303,6 @@ for (const route of docsRoutes) {
     "/docs/sysexts/pilothouse/",
     "/docs/sysexts/podman/",
     "/docs/sysexts/porterd/",
-    "/docs/sysexts/readd/",
     "/docs/sysexts/sunshine/",
     "/docs/sysexts/voxtype/",
     "/docs/tools/updex/",
@@ -308,7 +310,6 @@ for (const route of docsRoutes) {
     "/docs/apps/frostmail/",
     "/docs/apps/frostnotes/",
     "/docs/apps/lodge/",
-    "/docs/apps/frostread/",
     "/docs/apps/porter/",
     "/docs/tools/nsl/",
     "/docs/tools/igloo/",
@@ -720,7 +721,7 @@ assert(updexText.includes("PENDING REBOOT:"), "/docs/tools/updex must explain th
 assert(updex.includes("https://github.com/frostyard/updex/pull/481"), "/docs/tools/updex must link Updex PR #481.");
 assert(updexText.includes("From v2.2.0"), "/docs/tools/updex must name the v2.2.0 feature-name behavior.");
 
-for (const route of ["/docs/apps/frostmail/", "/docs/apps/frostnotes/", "/docs/apps/lodge/", "/docs/apps/frostread/", "/docs/apps/porter/"]) {
+for (const route of ["/docs/apps/frostmail/", "/docs/apps/frostnotes/", "/docs/apps/lodge/", "/docs/apps/porter/"]) {
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 
@@ -732,16 +733,7 @@ const lightPages = [
     install: "install",
     canonical: "packaging/README.md",
     sentence: "lodge is pre-release",
-    links: ["/docs/apps/porter/", "/docs/apps/frostread/", "/docs/apps/frostnotes/", "/docs/apps/frostmail/", "/docs/tools/nsl/"],
-  },
-  {
-    route: "frostread",
-    repo: "frostread",
-    sha: "fb0ba067bdf4de5510e9d02fcf349f35f2977caf",
-    install: "install",
-    canonical: "packaging/README.md#install-on-lodges-host",
-    sentence: "frostread is pre-release",
-    links: ["/docs/apps/lodge/", "/docs/apps/frostnotes/", "/docs/apps/porter/", "/docs/apps/frostmail/", "/docs/tools/nsl/"],
+    links: ["/docs/apps/porter/", "/docs/apps/frostnotes/", "/docs/apps/frostmail/", "/docs/tools/nsl/"],
   },
   {
     route: "porter",
@@ -750,7 +742,7 @@ const lightPages = [
     install: "install",
     canonical: "docs/design/overview.md#operational-notes",
     sentence: "Porter is pre-release",
-    links: ["/docs/apps/lodge/", "/docs/apps/frostread/", "/docs/apps/frostnotes/", "/docs/apps/frostmail/", "/docs/tools/nsl/"],
+    links: ["/docs/apps/lodge/", "/docs/apps/frostnotes/", "/docs/apps/frostmail/", "/docs/tools/nsl/"],
   },
   {
     route: "frostmail",
@@ -768,7 +760,7 @@ const lightPages = [
     install: "install",
     canonical: "docs/development.md",
     sentence: "Frostnotes is pre-release",
-    links: ["/docs/apps/lodge/", "/docs/apps/frostmail/", "/docs/apps/porter/", "/docs/apps/frostread/", "/docs/tools/nsl/"],
+    links: ["/docs/apps/lodge/", "/docs/apps/frostmail/", "/docs/apps/porter/", "/docs/tools/nsl/"],
   },
 ];
 const lightHtml = {};
@@ -790,28 +782,24 @@ assert(lightHtml.lodge.text.includes("The latest release is v0.3.0") && lightHtm
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
 assert(lightHtml.porter.text.includes("The latest release is v0.3.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.3.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
-assert(lightHtml.frostread.text.includes("The latest release is v0.6.0") && lightHtml.frostread.text.includes("flatpak install --user frostyard org.frostyard.Frostread"), "/docs/apps/frostread must name v0.6.0 and the per-user Flatpak install command.");
-assert(lightHtml.frostread.text.includes("export your subscriptions as OPML") && !/move your data from lodge|moves your data from lodge/i.test(lightHtml.frostread.text), "/docs/apps/frostread must say that only the subscriptions move from lodge, by OPML (frostread docs/design/overview.md, Moving from lodge).");
 assert(lightHtml.frostnotes.text.includes("The latest release is v0.6.0") && lightHtml.frostnotes.text.includes("You see version 0.6.0") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must name v0.6.0, list_tasks, and the reset layout of the native app.");
-for (const route of ["lodge", "frostread", "frostnotes"]) {
+for (const route of ["lodge", "frostnotes"]) {
   assert(lightHtml[route].text.includes("The system extension can trail the latest release"), `/docs/apps/${route} must state that the system extension can trail the latest release.`);
 }
+assert(lightHtml.lodge.text.includes("is retired since 2026-11-15") && lightHtml.lodge.text.includes("stay as notes in Frostnotes"), "/docs/apps/lodge must say that frostread is retired and that its saved articles stay as notes.");
 assert(lightHtml.lodge.text.includes("On a Frostyard image, enable the lodge system extension") && lightHtml.lodge.text.includes("/usr is read-only on a Frostyard image."), "/docs/apps/lodge must state the lodge extension and the /usr limit.");
-assert(lightHtml.frostread.text.includes("lodge shows it as the app Read"), "/docs/apps/frostread must say that lodge shows it as Read.");
-assert(!/repository (is|stays) private|private for now|pre-release, private/i.test(lightHtml.frostread.text), "/docs/apps/frostread must not call the repository private.");
 assert(lightHtml.frostmail.html.includes('href="/docs/apps/lodge/"') && lightHtml.frostnotes.html.includes('href="/docs/apps/lodge/"'), "/docs/apps/frostmail and /docs/apps/frostnotes must link the lodge page.");
 assert(lightHtml.frostnotes.text.includes("The hub moved behind lodge on 2026-10-26"), "/docs/apps/frostnotes must say that the hub moved behind lodge.");
 assert(!lightHtml.frostnotes.text.includes("moving behind lodge"), "/docs/apps/frostnotes must not say that the hub is still moving behind lodge.");
 for (const [route, doc] of [
   ["lodge", "lodge/blob/main/packaging/README.md"],
   ["porter", "porter/blob/main/packaging/README.md"],
-  ["frostread", "frostread/blob/main/packaging/README.md"],
 ]) {
   for (const section of ["update", "roll-back"]) {
     assert(lightHtml[route].html.includes(`https://github.com/frostyard/${doc}#${section}`), `/docs/apps/${route} must link the canonical ${section} section of ${doc}.`);
   }
 }
-const extensionForApp = { lodge: "lodge", porter: "porterd", frostread: "readd" };
+const extensionForApp = { lodge: "lodge", porter: "porterd" };
 for (const [route, extension] of Object.entries(extensionForApp)) {
   const path = `/docs/apps/${route}`;
   const page = lightHtml[route];
@@ -1437,7 +1425,7 @@ const pagefindEnglish = pagefindEntry.languages?.en;
 assert(pagefindEnglish, "The Pagefind index must contain an English language entry.");
 assert(pagefindEnglish.page_count === docsRoutes.length, `The Pagefind index must contain all ${docsRoutes.length} docs pages.`);
 
-for (const name of ["1password-cli", "1password", "bitwarden", "chatgpt", "claude-desktop", "code-server", "coder", "debdev", "edge", "gitdesktop", "github-copilot", "lemonade", "localsend", "lodge", "maild", "moonlight", "notesd", "obsidian", "paseo", "pilothouse", "podman", "porterd", "readd", "sunshine", "voxtype"]) {
+for (const name of ["1password-cli", "1password", "bitwarden", "chatgpt", "claude-desktop", "code-server", "coder", "debdev", "edge", "gitdesktop", "github-copilot", "lemonade", "localsend", "lodge", "maild", "moonlight", "notesd", "obsidian", "paseo", "pilothouse", "podman", "porterd", "sunshine", "voxtype"]) {
   const route = `/docs/sysexts/${name}`;
   const text = textOf(await readRoute(route));
   assert(!text.includes("has no rollback command") && !text.includes("planned `updex features rollback`") && !text.includes("planned updex features rollback"), `${route} must not say that Updex has no rollback command: Updex v2.1.3 ships it.`);
@@ -1445,7 +1433,7 @@ for (const name of ["1password-cli", "1password", "bitwarden", "chatgpt", "claud
 }
 
 // The suite service guides use the current enable syntax and start their units at boot.
-for (const name of ["notesd", "maild", "lodge", "readd", "porterd"]) {
+for (const name of ["notesd", "maild", "lodge", "porterd"]) {
   const route = `/docs/sysexts/${name}`;
   const text = textOf(await readRoute(route));
   assert(text.includes(`sudo updex features enable ${name} --now`), `${route} must use the current Updex enable syntax.`);
@@ -1454,8 +1442,8 @@ for (const name of ["notesd", "maild", "lodge", "readd", "porterd"]) {
   assert(!text.includes("RequisiteFeatures"), `${route} must not describe a RequisiteFeatures dependency.`);
 }
 
-// No lab run has enabled these three live yet. Remove this guard with the caveat when one does.
-for (const name of ["lodge", "porterd", "readd"]) {
+// No lab run has enabled these two live yet. Remove this guard with the caveat when one does.
+for (const name of ["lodge", "porterd"]) {
   const route = `/docs/sysexts/${name}`;
   const text = textOf(await readRoute(route));
   assert(text.includes(`The lab has not yet proven this for ${name}`), `${route} must say that the lab has not yet proven the live enable.`);
@@ -1470,7 +1458,6 @@ for (const name of ["lodge", "porterd", "readd"]) {
 // The update sections of the suite guides that back lodge's apps.
 for (const [name, marker] of [
   ["lodge", "the database is at version N, newer than this lodge's M"],
-  ["readd", "database schema N is newer than this readd"],
   ["porterd", "open thread database:"],
 ]) {
   const route = `/docs/sysexts/${name}`;
@@ -1488,7 +1475,6 @@ for (const [name, marker] of [
   assert(sectionText.includes(marker), `${route} must give the failure message "${marker}".`);
   if (name === "lodge") assert(sectionText.includes("lodge 0.2.0 and 0.2.1 add no migration to 0.1.0"), `${route} must say that a rollback from 0.2.1 to 0.1.0 needs no restore.`);
   if (name === "lodge") assert(sectionText.includes("provider keys and sign-ins") && sectionText.includes("lodgectl provider login"), `${route} must say that a restore loses provider keys and can need a new codex sign-in.`);
-  if (name === "readd") assert(sectionText.includes("readd 0.4.0 adds a migration") && sectionText.includes("readd 0.3.0 and earlier refuse the database"), `${route} must say that a rollback from 0.4.0 or later to 0.3.0 or earlier needs a restore.`);
   if (name === "porterd") assert(sectionText.includes("add routines.last_success:") && sectionText.includes("fill routines.last_success:"), `${route} must list every thread database error.`);
   assert(sectionText.indexOf("older than v2.1.3") !== -1 && sectionText.indexOf("older than v2.1.3") < sectionText.indexOf("To run the new version now"), `${route} must give the older-Updex commands before the restart step.`);
   const beforeRuns = html.indexOf('id="what-runs"');
@@ -1496,6 +1482,14 @@ for (const [name, marker] of [
   const enableText = textOf(html.slice(0, beforeRuns));
   assert(enableText.includes("activation did not finish"), `${route} must explain the "activation did not finish" message in the enable section.`);
   assert(enableText.includes("can be missing: reboot"), `${route} must say that users and groups can be missing until a reboot.`);
+}
+
+// frostread is retired: no docs page links its removed guides.
+for (const route of docsRoutes) {
+  const html = await readRoute(route);
+  for (const href of ["/docs/apps/frostread/", "/docs/sysexts/readd/"]) {
+    assert(!html.includes(`href="${href}"`), `${route} must not link the removed guide ${href}.`);
+  }
 }
 
 // A reader cannot open an internal planning ID (a T, 3 or 4 digits, and an
@@ -1535,7 +1529,6 @@ const refreshGuideNames = [
   "pilothouse",
   "podman",
   "porterd",
-  "readd",
   "sunshine",
   "tailscale",
   "voxtype",

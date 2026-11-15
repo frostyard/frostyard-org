@@ -15,8 +15,7 @@ you run lodge and want an assistant that works across your apps.
 - It keeps its memory and its scheduled prompts (routines) as notes in your
   vault.
 - It thinks through lodge's inference layer.
-- It reads [frostread](/docs/apps/frostread/) read-only, and it keeps one
-  continuous thread.
+- It keeps one continuous thread.
 
 Porter has no desktop app, and none is planned. No Porter Flatpak ships. Porter
 works only behind lodge: you need lodge, Tailscale, and the other apps on
@@ -27,8 +26,8 @@ lodge.
 Porter is pre-release. The latest release is v0.3.0. Each release attaches
 one package, `frostyard-porterd_X.Y.Z_amd64.deb`, for lodge's host. On a
 Frostyard image, the [porterd system extension](/docs/sysexts/porterd/)
-installs it. Chat, routines, and reading from frostread are built and run on
-lodge's host, as lodge's `porter` app. From v0.2.0, you can run a routine at once from the Routines list in Activity. A run now has the rights and output of a scheduled run, and it does not move the routine's schedule. See [Run now](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now). From v0.3.0, Porter's rail button in lodge shows how many capture and approval cards wait for you. The GitHub manager, the next planned
+installs it. Chat and routines are built and run on lodge's host, as lodge's
+`porter` app. Porter no longer reads frostread, which is retired. From v0.2.0, you can run a routine at once from the Routines list in Activity. A run now has the rights and output of a scheduled run, and it does not move the routine's schedule. See [Run now](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now). From v0.3.0, Porter's rail button in lodge shows how many capture and approval cards wait for you. The GitHub manager, the next planned
 phase, is not built.
 
 ## Install
@@ -73,7 +72,7 @@ rollback archive before the new `.deb` goes in.
 - [ADR-0004](https://github.com/frostyard/porter/blob/main/docs/adr/0004-porter-drafts-and-the-owner-sends.md): Porter drafts and the owner sends.
 - [ADR-0005](https://github.com/frostyard/porter/blob/main/docs/adr/0005-memory-and-routines-live-in-the-vault.md): memory and routines live in the vault.
 - [ADR-0006](https://github.com/frostyard/porter/blob/main/docs/adr/0006-one-continuous-thread.md): one continuous thread.
-- [ADR-0007](https://github.com/frostyard/porter/blob/main/docs/adr/0007-porter-reads-frostread-read-only.md): Porter reads frostread read-only.
+- [ADR-0008](https://github.com/frostyard/porter/blob/main/docs/adr/0008-porter-no-longer-reads-frostread.md): Porter no longer reads frostread.
 - [Roadmap](https://github.com/frostyard/porter/blob/main/docs/plans/0001-roadmap.md): what is built and what comes next.
 
 ## See also
@@ -81,7 +80,6 @@ rollback archive before the new `.deb` goes in.
 - [lodge](/docs/apps/lodge/)
 - [Frostnotes](/docs/apps/frostnotes/)
 - [Frostmail](/docs/apps/frostmail/)
-- [frostread](/docs/apps/frostread/)
 - [nsl](/docs/tools/nsl/)
 
 ## Sources
@@ -92,7 +90,8 @@ Reviewed 2026-11-11.
 - Porter v0.2.0 commit [`99ab9a393596b13e096a5c111a3c4f7ac7ac0429`](https://github.com/frostyard/porter/tree/99ab9a393596b13e096a5c111a3c4f7ac7ac0429), released 2026-11-03. Its [release](https://github.com/frostyard/porter/releases/tag/v0.2.0) attaches only `frostyard-porterd_0.2.0_amd64.deb`. It adds the run now ([porter#25](https://github.com/frostyard/porter/pull/25)).
 - [`README.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/README.md)
 - [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/plans/0001-roadmap.md), [`docs/specs/routines.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/specs/routines.md)
-- [`docs/adr/0004-porter-drafts-and-the-owner-sends.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/adr/0004-porter-drafts-and-the-owner-sends.md), [`docs/adr/0005-memory-and-routines-live-in-the-vault.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/adr/0005-memory-and-routines-live-in-the-vault.md), [`docs/adr/0006-one-continuous-thread.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/adr/0006-one-continuous-thread.md), [`docs/adr/0007-porter-reads-frostread-read-only.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/adr/0007-porter-reads-frostread-read-only.md)
+- [`docs/adr/0004-porter-drafts-and-the-owner-sends.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/adr/0004-porter-drafts-and-the-owner-sends.md), [`docs/adr/0005-memory-and-routines-live-in-the-vault.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/adr/0005-memory-and-routines-live-in-the-vault.md), [`docs/adr/0006-one-continuous-thread.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/docs/adr/0006-one-continuous-thread.md)
+- frostread is retired: [porter#51](https://github.com/frostyard/porter/pull/51), merged 2026-11-15 (merge commit [`301c35f8aa8092923f41d9b6da765a1c362572ad`](https://github.com/frostyard/porter/tree/301c35f8aa8092923f41d9b6da765a1c362572ad)): [`docs/adr/0008-porter-no-longer-reads-frostread.md`](https://github.com/frostyard/porter/blob/301c35f8aa8092923f41d9b6da765a1c362572ad/docs/adr/0008-porter-no-longer-reads-frostread.md) (Accepted).
 - lodge commit [`bd6fa7b391d08ce0de44d80a875e4a386e415985`](https://github.com/frostyard/lodge/tree/bd6fa7b391d08ce0de44d80a875e4a386e415985): [`packaging/README.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/packaging/README.md)
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28, adds the lodge, readd, and porterd extensions.

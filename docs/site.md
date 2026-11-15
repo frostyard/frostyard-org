@@ -64,7 +64,6 @@ redirect in `astro.config.mjs`.
 | `src/content/docs/docs/sysexts/docker.mdx` | `/docs/sysexts/docker/` | The Docker CE extension. |
 | `src/content/docs/docs/sysexts/maild.mdx` | `/docs/sysexts/maild/` | The Frostmail maild extension. |
 | `src/content/docs/docs/sysexts/notesd.mdx` | `/docs/sysexts/notesd/` | The Frostnotes notesd extension. |
-| `src/content/docs/docs/sysexts/readd.mdx` | `/docs/sysexts/readd/` | The frostread readd extension. |
 | `src/content/docs/docs/sysexts/himmelblau.mdx` | `/docs/sysexts/himmelblau/` | The Himmelblau extension. |
 | `src/content/docs/docs/sysexts/incus.mdx` | `/docs/sysexts/incus/` | The Incus extension. |
 | `src/content/docs/docs/sysexts/k3s.mdx` | `/docs/sysexts/k3s/` | The k3s Kubernetes extension. |
@@ -99,7 +98,6 @@ redirect in `astro.config.mjs`.
 | `src/content/docs/docs/apps/frostmail.md` | `/docs/apps/frostmail/` | Frostmail: where it runs, what works now, its limits, and deep links to its docs. |
 | `src/content/docs/docs/apps/frostnotes.md` | `/docs/apps/frostnotes/` | Frostnotes: where it runs, what is built, its limits, and deep links to its docs. |
 | `src/content/docs/docs/apps/lodge.md` | `/docs/apps/lodge/` | lodge: building it from source, installing it on a host, adding apps, agent tokens, and inference providers. |
-| `src/content/docs/docs/apps/frostread.md` | `/docs/apps/frostread/` | frostread: installing it on lodge's host, feeds, read later, saving a note, `readctl`, and agents. |
 | `src/content/docs/docs/apps/porter.md` | `/docs/apps/porter/` | Porter: installing it on lodge's host, chat, routines, and what it can and cannot do. |
 
 `scripts/test/site-map.test.mjs` fails when a page file is missing from this table, or when the table names a file that does not exist.
