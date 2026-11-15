@@ -10,7 +10,8 @@ lodge is a web shell for Frostyard's own apps. One address on your tailnet
 opens Notes, Mail, and the assistant [Porter](/docs/apps/porter/). A
 quick switcher moves between them, and each app stays loaded in its frame.
 You need it to use those apps in a browser on your tailnet, and to run
-Porter.
+Porter. The full user guide is on the
+[lodge documentation site](https://frostyard.github.io/lodge/).
 
 - lodge is the only process on the network. It joins your tailnet as a node
   of its own, `lodge`, and signs browsers in by their tailnet identity.
@@ -82,6 +83,9 @@ install writes only under `/usr`. Make the configuration directory yourself:
 [packaging README](https://github.com/frostyard/lodge/blob/main/packaging/README.md)
 has the build, the install, the first start, and the allow-lists.
 
+[Install lodge](https://frostyard.github.io/lodge/getting-started/install/)
+on the lodge documentation site covers both ways and the first start.
+
 ## Update and roll back
 
 On a Frostyard image, Updex updates and rolls back the lodge system extension.
@@ -99,6 +103,10 @@ new build goes in.
 
 ## Documentation
 
+- [lodge documentation](https://frostyard.github.io/lodge/): the user guide.
+- [Configure lodge](https://frostyard.github.io/lodge/guides/configure/): the configuration file, the allow-lists, tokens, and providers.
+- [The apps it hosts](https://frostyard.github.io/lodge/guides/apps/): Notes, Mail, and Porter.
+- [`lodgectl`](https://frostyard.github.io/lodge/reference/lodgectl/): the admin command.
 - [README](https://github.com/frostyard/lodge/blob/main/README.md): what lodge is and the current status.
 - [Documentation index](https://github.com/frostyard/lodge/blob/main/docs/README.md): the decisions, designs, specs, and plans.
 - [Packaging](https://github.com/frostyard/lodge/blob/main/packaging/README.md): build, install, first start, allow-lists, and agents on the host.
@@ -125,8 +133,9 @@ newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 ## Sources
 
-Reviewed 2026-11-11.
+Reviewed 2026-11-15.
 
+- lodge `main` at commit [`78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03`](https://github.com/frostyard/lodge/tree/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03), checked 2026-11-15. No release follows v0.3.0. [lodge#79](https://github.com/frostyard/lodge/pull/79) adds the user documentation site, [`site/properdocs.yml`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/site/properdocs.yml) (`site_url` `https://frostyard.github.io/lodge/`), and [`README.md`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/README.md) links it as its documentation. The site's home, Install, Configure lodge, The apps it hosts, and `lodgectl` pages answered HTTP 200 on 2026-11-15. Between v0.3.0 and this commit, `internal/store` does not change, and `packaging/README.md` only records the host update to v0.3.0.
 - lodge v0.3.0 commit [`0e4a5bd00cc4ebdee9eb8577a8f18d859516c1c8`](https://github.com/frostyard/lodge/tree/0e4a5bd00cc4ebdee9eb8577a8f18d859516c1c8), released 2026-11-11 ([release](https://github.com/frostyard/lodge/releases/tag/v0.3.0)): [lodge#62](https://github.com/frostyard/lodge/pull/62) (the text tokens, `@frostyard/lodge-ui` 0.7.0, which the shell imports), [lodge#63](https://github.com/frostyard/lodge/pull/63) (Go 1.27.4), and 2 refactors. [`docs/adr/0021-the-text-tokens-reach-4-5-to-1-on-every-surface.md`](https://github.com/frostyard/lodge/blob/0e4a5bd00cc4ebdee9eb8577a8f18d859516c1c8/docs/adr/0021-the-text-tokens-reach-4-5-to-1-on-every-surface.md) (Accepted 2026-11-10) and [`ui/CHANGELOG.md`](https://github.com/frostyard/lodge/blob/0e4a5bd00cc4ebdee9eb8577a8f18d859516c1c8/ui/CHANGELOG.md). Between v0.2.1 and v0.3.0, `docs/specs/app-contract.md`, the inference spec and `packaging/` do not change. ADR-0020 is still Proposed at v0.3.0.
 - lodge v0.2.1 commit [`74a31e4856b5e44da4567c53307cb83cf1354bf1`](https://github.com/frostyard/lodge/tree/74a31e4856b5e44da4567c53307cb83cf1354bf1), released 2026-11-09 ([release](https://github.com/frostyard/lodge/releases/tag/v0.2.1)): a patch release with no change to behavior, the app contract, or the configuration. [`docs/README.md`](https://github.com/frostyard/lodge/blob/74a31e4856b5e44da4567c53307cb83cf1354bf1/docs/README.md). No cookies: [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/74a31e4856b5e44da4567c53307cb83cf1354bf1/docs/specs/lodge-http.md) (identity from WhoIs alone; no response carries `Set-Cookie`).
 - lodge v0.2.0 commit [`bd6fa7b391d08ce0de44d80a875e4a386e415985`](https://github.com/frostyard/lodge/tree/bd6fa7b391d08ce0de44d80a875e4a386e415985), released 2026-11-04 ([release](https://github.com/frostyard/lodge/releases/tag/v0.2.0)).
@@ -137,7 +146,7 @@ Reviewed 2026-11-11.
 - [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/specs/app-contract.md), [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/specs/lodge-http.md), [`docs/specs/inference.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/specs/inference.md)
 - [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/design/overview.md), [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/plans/0001-roadmap.md)
 - [`docs/specs/shell.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/specs/shell.md), [`docs/adr/0020-apps-report-an-unread-count-for-the-rail-in-their-health.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/docs/adr/0020-apps-report-an-unread-count-for-the-rail-in-their-health.md), and [lodge#45](https://github.com/frostyard/lodge/pull/45).
-- `https://repository.frostyard.org/ext/lodge/SHA256SUMS`, checked 2026-11-11, lists 0.1.0 and 0.2.1. [snosi#1257](https://github.com/frostyard/snosi/pull/1257), merged 2026-11-09 (merge commit `5e9d69d31552dce8040b5c3233b8a266b2156f4f`), pins lodge 0.2.1 and maild 0.5.0.
+- `https://repository.frostyard.org/ext/lodge/SHA256SUMS`, checked 2026-11-15, lists 0.1.0, 0.2.1, and 0.3.0. [snosi#1257](https://github.com/frostyard/snosi/pull/1257), merged 2026-11-09 (merge commit `5e9d69d31552dce8040b5c3233b8a266b2156f4f`), pins lodge 0.2.1 and maild 0.5.0.
 - core commit [`28e7847642a05214415af6d8d2ddf7f3033682d5`](https://github.com/frostyard/core/tree/28e7847642a05214415af6d8d2ddf7f3033682d5): [`docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/adr/0058-ship-suite-desktop-apps-as-flatpaks-and-services-as-sysexts.md) (Status: Accepted), Context; [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/28e7847642a05214415af6d8d2ddf7f3033682d5/docs/plans/0010-suite-packaging.md) (Phase 3; Phase 4, lodge's host on Floe, is deferred)
 - frostmail commit [`df106558209fad29c63983710a1a646557064dd4`](https://github.com/frostyard/frostmail/tree/df106558209fad29c63983710a1a646557064dd4): [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/df106558209fad29c63983710a1a646557064dd4/docs/plans/0011-m8-mail-in-lodge.md)
 - frostread is retired: lodge [lodge#80](https://github.com/frostyard/lodge/pull/80), merged 2026-11-15 (merge commit [`78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03`](https://github.com/frostyard/lodge/tree/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03)): [`site/content/guides/apps.md`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/site/content/guides/apps.md) (the package, `lodgectl reload`), frostyard-org `src/content/docs/docs/sysexts/readd.mdx` at [`1937edbd5738d392882897da3c7bf53686f9fb2f`](https://github.com/frostyard/frostyard-org/blob/1937edbd5738d392882897da3c7bf53686f9fb2f/src/content/docs/docs/sysexts/readd.mdx#update-roll-back-and-remove) (remove readd with Updex, then reboot), and [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/docs/plans/0001-roadmap.md) (the saved articles stay as notes).

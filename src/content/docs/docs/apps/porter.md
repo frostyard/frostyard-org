@@ -27,8 +27,8 @@ Porter is pre-release. The latest release is v0.3.0. Each release attaches
 one package, `frostyard-porterd_X.Y.Z_amd64.deb`, for lodge's host. On a
 Frostyard image, the [porterd system extension](/docs/sysexts/porterd/)
 installs it. Chat and routines are built and run on lodge's host, as lodge's
-`porter` app. Porter no longer reads frostread, which is retired. From v0.2.0, you can run a routine at once from the Routines list in Activity. A run now has the rights and output of a scheduled run, and it does not move the routine's schedule. See [Run now](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now). From v0.3.0, Porter's rail button in lodge shows how many capture and approval cards wait for you. The GitHub manager, the next planned
-phase, is not built.
+`porter` app. Porter no longer reads frostread, which is retired. From v0.2.0, you can run a routine at once from the Routines list in Activity. A run now has the rights and output of a scheduled run, and it does not move the routine's schedule. See [Run now](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now). From v0.3.0, Porter's rail button in lodge shows how many capture and approval cards wait for you. The GitHub manager
+phase is parked until a GitHub manager app exists in lodge.
 
 ## Install
 
@@ -84,8 +84,9 @@ rollback archive before the new `.deb` goes in.
 
 ## Sources
 
-Reviewed 2026-11-11.
+Reviewed 2026-11-15.
 
+- Porter `main` at commit [`301c35f8aa8092923f41d9b6da765a1c362572ad`](https://github.com/frostyard/porter/tree/301c35f8aa8092923f41d9b6da765a1c362572ad), checked 2026-11-15. No release follows v0.3.0, and `packaging/` does not change after it. [porter#50](https://github.com/frostyard/porter/pull/50) makes this guide the user documentation that [`README.md`](https://github.com/frostyard/porter/blob/301c35f8aa8092923f41d9b6da765a1c362572ad/README.md) links. [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/301c35f8aa8092923f41d9b6da765a1c362572ad/docs/plans/0001-roadmap.md) (Status; Phase 4, parked 2026-11-13: the GitHub manager app does not exist) and [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/301c35f8aa8092923f41d9b6da765a1c362572ad/docs/design/overview.md) (Status: Phases 2 and 3 built and deployed on lodge's host at v0.3.0).
 - Porter v0.3.0 commit [`1f7185ff82a8d06097f31d20ef0e910a75008aef`](https://github.com/frostyard/porter/tree/1f7185ff82a8d06097f31d20ef0e910a75008aef), released 2026-11-11. Its [release](https://github.com/frostyard/porter/releases/tag/v0.3.0) attaches only `frostyard-porterd_0.3.0_amd64.deb`. It adds the rail badge ([porter#33](https://github.com/frostyard/porter/pull/33); [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/docs/design/overview.md), The rail badge) and moves lodge's host to the release `.deb` ([porter#26](https://github.com/frostyard/porter/pull/26); [`packaging/README.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/packaging/README.md), Update and Roll back). [`README.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/README.md) (Limits).
 - Porter v0.2.0 commit [`99ab9a393596b13e096a5c111a3c4f7ac7ac0429`](https://github.com/frostyard/porter/tree/99ab9a393596b13e096a5c111a3c4f7ac7ac0429), released 2026-11-03. Its [release](https://github.com/frostyard/porter/releases/tag/v0.2.0) attaches only `frostyard-porterd_0.2.0_amd64.deb`. It adds the run now ([porter#25](https://github.com/frostyard/porter/pull/25)).
 - [`README.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/README.md)
@@ -95,6 +96,6 @@ Reviewed 2026-11-11.
 - lodge commit [`bd6fa7b391d08ce0de44d80a875e4a386e415985`](https://github.com/frostyard/lodge/tree/bd6fa7b391d08ce0de44d80a875e4a386e415985): [`packaging/README.md`](https://github.com/frostyard/lodge/blob/bd6fa7b391d08ce0de44d80a875e4a386e415985/packaging/README.md)
 - Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
 - snosi PR [snosi#1173](https://github.com/frostyard/snosi/pull/1173), merged 2026-10-28, adds the lodge, readd, and porterd extensions.
-- snosi PR [snosi#1175](https://github.com/frostyard/snosi/pull/1175), merged 2026-10-28, pins porterd 0.1.1. `https://repository.frostyard.org/ext/porterd/SHA256SUMS`, checked 2026-11-11, lists 0.1.0, 0.1.1, and 0.2.0.
+- snosi PR [snosi#1175](https://github.com/frostyard/snosi/pull/1175), merged 2026-10-28, pins porterd 0.1.1. `https://repository.frostyard.org/ext/porterd/SHA256SUMS`, checked 2026-11-15, lists 0.1.0, 0.1.1, 0.2.0, and 0.3.0.
 - core commit [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a): [`docs/plans/0010-suite-packaging.md`](https://github.com/frostyard/core/blob/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a/docs/plans/0010-suite-packaging.md) (Phase 2: the `.deb` is not registered with apt-publisher)
 - [`packaging/nfpm.yaml`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/packaging/nfpm.yaml) (the description says "Built for Snosi's sysext")
