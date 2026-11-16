@@ -864,7 +864,7 @@ assertCites("/docs/tools/nsl", nsl, "https://github.com/frostyard/nsl/blob/4d087
 ]);
 assertCites("/docs/tools/nsl", nsl, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["mkosi.images/base/mkosi.conf", "shared/packages/snow/mkosi.conf"], "snosi ");
 assert(nsl.includes("https://github.com/frostyard/firn/blob/11133e6b801fc68a7490742244aa87e0313a8acd/internal/catalog/catalog.go"), "/docs/tools/nsl must cite the Firn default groups.");
-assert(nslText.includes("This guide follows nsl v0.13.1"), "/docs/tools/nsl must follow nsl v0.13.1.");
+assert(nslText.includes("This guide follows nsl v0.13.2"), "/docs/tools/nsl must follow nsl v0.13.2.");
 assert(nslText.includes("systemd-nspawn containers in one shared"), "/docs/tools/nsl must say that machines are systemd-nspawn containers in the shared VM.");
 assert(nslText.includes("nsl boots that VM with systemd-vmspawn"), "/docs/tools/nsl must say that nsl boots the VM with systemd-vmspawn.");
 for (const url of [
@@ -905,12 +905,14 @@ assertSections("/docs/tools/igloo", igloo, [
   "see-also",
   "sources",
 ]);
-assertCites("/docs/tools/igloo", igloo, "https://github.com/frostyard/igloo/blob/38d98cd171d4ffbbe4adfaa55818f503206866dd", ["README.md", "io.github.frostyard.Igloo.json", "agent/ptyxis-nsl.c"]);
+assertCites("/docs/tools/igloo", igloo, "https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522", ["README.md", "org.frostyard.Igloo.json", "agent/ptyxis-nsl.c", "docs/design/nsl-integration.md", "docs/adr/0003-rename-the-application-id.md"]);
 assert(igloo.includes("https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo"), "/docs/tools/igloo must cite the Snow Flathub remote.");
 assert(iglooText.includes("nsl 0.8.0 or later"), "/docs/tools/igloo must state the nsl 0.8.0 requirement.");
 assert(iglooText.includes("The Flatpak does not bundle nsl"), "/docs/tools/igloo must state that the Flatpak does not bundle nsl.");
 assert(igloo.includes('data-code="flatpak remote-add --user --if-not-exists frostyard'), "/docs/tools/igloo must give the per-user Frostyard remote command.");
-assert(igloo.includes('data-code="flatpak install --user frostyard io.github.frostyard.Igloo"'), "/docs/tools/igloo must give the per-user install command.");
+assert(igloo.includes('data-code="flatpak install --user frostyard org.frostyard.Igloo"'), "/docs/tools/igloo must give the per-user install command.");
+assert(!iglooText.includes("flatpak install --user frostyard io.github.frostyard.Igloo") && !iglooText.includes("flatpak uninstall io.github.frostyard.Igloo"), "/docs/tools/igloo must install and remove the application ID org.frostyard.Igloo (igloo ADR-0003).");
+assert(iglooText.includes("Import Machine"), "/docs/tools/igloo must say that the Machines page imports machines (igloo v51.0).");
 assert(iglooText.includes("Check Again"), "/docs/tools/igloo must mention the Check Again button.");
 assert(igloo.includes('href="/docs/tools/nsl/"'), "/docs/tools/igloo must link the nsl page.");
 for (const [route, pageText] of [
