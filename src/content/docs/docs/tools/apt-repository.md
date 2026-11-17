@@ -12,8 +12,10 @@ arm64, for example to install Updex. This page shows how. That use is not
 supported.
 
 This page covers Debian 13 only. The repository also publishes `forky`
-(Debian 14). System extensions do not work on plain Debian: use the `.deb`
-packages there.
+(Debian 14), a second suite beside `trixie`, not its successor. `trixie`
+stays the default. `forky` has fewer packages, and Frostyard has not yet
+tested install, update, and rollback on it. System extensions do not work on
+plain Debian: use the `.deb` packages there.
 
 ## Add the repository
 
@@ -80,9 +82,8 @@ Each codename (`trixie`, `forky`) publishes 2 components: `main` and `image`.
 Frostyard images need. Some replace a Debian package of the same name:
 `libostree-1-1`, `incus`, `incus-base`, `incus-client`, and `incus-extra`.
 Others depend on one of them: `bootc` links against that `libostree-1-1`, and
-`incus-ui-canonical` depends on `incus`. In `trixie`, `image` has these
-packages for amd64 only. In `forky`, `image` is empty. Frostyard
-image builds enable both components. Installed images have no Frostyard APT
+`incus-ui-canonical` depends on `incus`. In both codenames, `image` has these
+packages for amd64 only. Frostyard image builds enable both components. Installed images have no Frostyard APT
 source and update as a whole.
 
 Do not add `image` to a plain Debian host. A host that enables it by hand gets
@@ -220,14 +221,17 @@ file from an earlier version of this page, remove it too:
 
 ## Sources
 
-Reviewed 2026-10-28.
+Reviewed 2026-10-28. The `forky` facts were updated 2026-11-13.
 
 - Intended use: core [ADR-0059](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md#context), section Context: the repository's intended consumers are Frostyard's images, and plain Debian hosts are not a supported use. Installed images carry no Frostyard APT source.
 - `image` component: [ADR-0059](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0059-publish-image-only-packages-in-a-separate-apt-component.md), accepted by Brian on 2026-10-24 (core#162, accepted in core#163): the rule for `image`, the 7 packages, and step 6 (key URL, no pin, caveat for plain hosts). [ADR-0061](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0061-add-the-image-apt-component-on-the-first-publication-run.md) amends it: the first publication run adds `image`.
 - [Ben Sherman's review of core#162](https://github.com/frostyard/core/pull/162#issuecomment-6388139358): protection of plain hosts is a side effect, not a commitment, and no Incus downgrade advice.
 - apt-publisher commit [`d9337550b9a34e1246099c18747ee0080e84cbac`](https://github.com/frostyard/apt-publisher/tree/d9337550b9a34e1246099c18747ee0080e84cbac): [`docs/adr/0002-two-components-per-codename.md`](https://github.com/frostyard/apt-publisher/blob/d9337550b9a34e1246099c18747ee0080e84cbac/docs/adr/0002-two-components-per-codename.md), [`config/producers.tsv`](https://github.com/frostyard/apt-publisher/blob/d9337550b9a34e1246099c18747ee0080e84cbac/config/producers.tsv)
 - snosi commit [`90074e6db6cf59ac551db8637126c5feaa512866`](https://github.com/frostyard/snosi/tree/90074e6db6cf59ac551db8637126c5feaa512866): [`mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources`](https://github.com/frostyard/snosi/blob/90074e6db6cf59ac551db8637126c5feaa512866/mkosi.sandbox/etc/apt/sources.list.d/frostyard.sources) reads `Components: main image` after [snosi#1165](https://github.com/frostyard/snosi/pull/1165), merged 2026-10-27.
-- Live reads, 2026-10-28: [`dists/trixie/InRelease`](https://repository.frostyard.org/debian/dists/trixie/InRelease) (`Date: Wed, 28 Oct 2026 09:36:46 UTC`, `Components: image main`, `Origin: Frostyard`); `main` lists none of the 7 packages; `image` has them for amd64 only and is empty for arm64; [`dists/forky/InRelease`](https://repository.frostyard.org/debian/dists/forky/InRelease) (`Date: Mon, 26 Oct 2026 18:31:42 UTC`, `Components: image main`) with an empty `image` for every architecture; in `trixie/image/binary-amd64/Packages`, `bootc` has `Depends: libostree-1-1` and `incus-ui-canonical` has `Depends: incus`; [`debian/frostyard.gpg`](https://repository.frostyard.org/debian/frostyard.gpg) is a binary keyring with SHA256 `7c270b81dfc4084753c9aacadffe436c23f066301e2e0c371261889ee3e3557f` and fingerprint `432C 452C D2B7 F4FF 1B5D  2326 4DE6 A201 6E62 2F97`. `/public.key` still works.
+- `forky` beside `trixie`: core commit [`c5a7f2b3d5d55c3c3351cf2615799fc72d50f6fe`](https://github.com/frostyard/core/tree/c5a7f2b3d5d55c3c3351cf2615799fc72d50f6fe), [Plan 0009](https://github.com/frostyard/core/blob/c5a7f2b3d5d55c3c3351cf2615799fc72d50f6fe/docs/plans/0009-debian-publication-through-apt-publisher.md), the Suites line (`forky` is a 2nd suite beside `trixie`, not its successor; `trixie` stays the default) and Phase 6 (clean install, update and rollback on `forky` not yet proved).
+- `forky` producers: apt-publisher commit [`d6bf50664ba2b27f8130be6734556be5657180f4`](https://github.com/frostyard/apt-publisher/tree/d6bf50664ba2b27f8130be6734556be5657180f4) (apt-publisher#50, merged 2026-11-13): [`config/codenames.tsv`](https://github.com/frostyard/apt-publisher/blob/d6bf50664ba2b27f8130be6734556be5657180f4/config/codenames.tsv) gives `forky` `main,image`; [`config/producers.tsv`](https://github.com/frostyard/apt-publisher/blob/d6bf50664ba2b27f8130be6734556be5657180f4/config/producers.tsv) registers bootc-debian, incus, omarchy-apps and chairlift for `forky`.
+- Live reads, 2026-11-13: [`dists/forky/InRelease`](https://repository.frostyard.org/debian/dists/forky/InRelease) (`Date: Fri, 13 Nov 2026 20:47:00 UTC`, `Components: image main`); `forky/image/binary-amd64/Packages` lists the 7 packages as `~deb14` builds (`incus` `1:7.6-debian14-202611132003~deb14`, `bootc` `1.17.4-frostyard202611132023~deb14`, `libostree-1-1` `2026.6-frostyard202611132023~deb14`), and `image` for arm64 is empty in both codenames. `main` in `forky` has 8 package names and in `trixie` 15; Debian ships none of the names that lack the `frostyard-` prefix (`moonlight-qt`, `voxtype`, `igloo`, `kapsule`, `kapsule-gnome`; [madison](https://qa.debian.org/madison.php) finds none).
+- Live reads, 2026-10-28: [`dists/trixie/InRelease`](https://repository.frostyard.org/debian/dists/trixie/InRelease) (`Date: Wed, 28 Oct 2026 09:36:46 UTC`, `Components: image main`, `Origin: Frostyard`); `main` lists none of the 7 packages; `image` has them for amd64 only and is empty for arm64; in `trixie/image/binary-amd64/Packages`, `bootc` has `Depends: libostree-1-1` and `incus-ui-canonical` has `Depends: incus`; [`debian/frostyard.gpg`](https://repository.frostyard.org/debian/frostyard.gpg) is a binary keyring with SHA256 `7c270b81dfc4084753c9aacadffe436c23f066301e2e0c371261889ee3e3557f` and fingerprint `432C 452C D2B7 F4FF 1B5D  2326 4DE6 A201 6E62 2F97`. `/public.key` still works.
 - Incus database after an upgrade: [Incus, Upgrade Incus](https://linuxcontainers.org/incus/docs/main/installing/#upgrade-incus), read 2026-10-24.
 - core commit [`4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`](https://github.com/frostyard/core/tree/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c)
 - [`docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0055-publish-debian-packages-through-the-apt-publisher.md)
