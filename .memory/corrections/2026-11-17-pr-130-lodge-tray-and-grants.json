@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-17",
+  "scope": "docs",
+  "correction": "Say where a count shows, as the source says: Frostmail v0.8.0's tray menu shows the unread count and the icon only shows a dot; and give the upgrade step that a release note asks for, such as approving again each lodge grant made before v0.5.1.",
+  "evidence": "frostyard/frostyard-org#130, owner fact review (Irulan) of head 063c2ed7ec2bada493f954432390ed98e1729a88: /docs/apps/frostmail/ said the tray icon has the count (frostmail#336 puts it in the menu), and /docs/apps/lodge/ did not say that grants made before v0.5.1 are not in force until approved again (lodge packaging/README.md, Update)",
+  "promoted_to": "scripts/check-site.mjs"
+}

@@ -3,7 +3,7 @@ title: Frostmail
 description: "Frostmail is a mail client that works like Apple Mail.app, for Linux and Windows, with a daemon, an app, and a CLI. Pre-release; install the desktop app from the Frostyard Flatpak remote."
 follows:
   repo: frostyard/frostmail
-  tag: v0.7.0
+  tag: v0.8.0
 ---
 
 Frostmail is a mail client that works like Apple Mail.app. It runs on Linux
@@ -27,7 +27,7 @@ daemon on your machine, and the app and the command line talk to it.
 
 ## Status
 
-Frostmail is pre-release. The latest release is v0.7.0. Its Flatpak,
+Frostmail is pre-release. The latest release is v0.8.0. Its Flatpak,
 `org.frostyard.Frostmail`, is in the
 [Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
 attaches `frostyard-maild_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
@@ -42,7 +42,7 @@ reply for 3 days or more. With maild v0.5.0 on lodge's host and lodge v0.2.0
 or later, Frostmail's rail button shows the unread count of your inboxes. The
 maild system extension can trail the latest release. The
 [catalog](/docs/sysexts/) lists the version it ships. The Flatpak and the
-`.deb` of v0.7.0 come from the same commit.
+`.deb` of v0.8.0 come from the same commit.
 
 Release v0.6.0 replaces the desktop app with a native Go app. Your mail,
 accounts, and the install steps stay the same. v0.6.0 adds database
@@ -64,6 +64,16 @@ mail app, a `mailto` link in a message keeps only the address and the `to`,
 `cc`, `bcc`, `subject`, and `body` fields before it opens, as the desktop app
 does.
 
+Release v0.8.0 shows the All Inboxes unread count on the launcher icon, for
+docks that read it, and adds a tray icon whose menu shows that count, with a dot on the icon while
+mail is unread. *Close to tray*, in
+the General pane, keeps Frostmail running when you close its window; it is
+off until you turn it on. A new-mail notification on Linux offers Reply,
+Archive, and Trash. You can search the calendar, add a ticket or a booking
+from a message to your calendar, mark all messages in a mailbox as read, and
+choose how many preview lines the message list shows, from none to 5. The
+reader shows picture attachments as thumbnails.
+
 From v0.6.0, `maild`, `mailctl`, and the app write their panics and a few
 coded errors to the local systemd journal. They send nothing over the
 network. On a Frostyard image, [ChairLift](/docs/tools/chairlift/) can show
@@ -78,8 +88,8 @@ The first launch asks the Background portal to let `maild` run in the
 background and start at login. If you refuse, `maild` runs only while a window
 is open, so sync, Send Later, and notifications wait until you open the app.
 
-Mail in lodge is built and still in progress. Its last step, the move of a
-real mail store to lodge's host, has not run yet. Calendar, task, and contact
+Mail in lodge is built and still in progress. A real mail store moved to
+lodge's host by 2026-11-15. Calendar, task, and contact
 tools for agents are built. Google and Microsoft verification are planned.
 
 ## Install
@@ -161,8 +171,12 @@ runs as the system user `frostmail` on lodge's host. To check the release
 
 ## Sources
 
-Reviewed 2026-11-12.
+Reviewed 2026-11-16.
 
+- Frostmail release v0.8.0 commit [`f8e30d423768ef8b94c4eb21212b10538a461c55`](https://github.com/frostyard/frostmail/tree/f8e30d423768ef8b94c4eb21212b10538a461c55), released 2026-11-16. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.8.0) attaches only `frostyard-maild_0.8.0_amd64.deb`.
+- The Flatpak at v0.8.0: the live Frostyard catalogue, checked 2026-11-16, lists `org.frostyard.Frostmail` at digest `sha256:3c38a9abffc3ede871ffaeca0b3d591e412bccb7b3808de4f1018799a0558a11`, built from `f8e30d42`, with the release `0.8.0` in its AppStream data.
+- v0.8.0's changes: the launcher count [frostmail#335](https://github.com/frostyard/frostmail/pull/335) (Unity's `LauncherEntry` signal); the tray icon and *Close to tray*, off by default, [frostmail#336](https://github.com/frostyard/frostmail/pull/336); Reply, Archive, and Trash in a Linux notification [frostmail#315](https://github.com/frostyard/frostmail/pull/315); calendar search [frostmail#310](https://github.com/frostyard/frostmail/pull/310); Add to Calendar for a published event [frostmail#311](https://github.com/frostyard/frostmail/pull/311); Mark All Messages as Read [frostmail#314](https://github.com/frostyard/frostmail/pull/314); the preview lines, none to 5 [frostmail#313](https://github.com/frostyard/frostmail/pull/313); picture thumbnails [frostmail#312](https://github.com/frostyard/frostmail/pull/312). No database migration: `internal/store/migrations` is the same as at v0.7.0. The maild system extension: `https://repository.frostyard.org/ext/maild/SHA256SUMS`, checked 2026-11-16, lists up to 0.8.0.
+- Mail in lodge: [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/f8e30d423768ef8b94c4eb21212b10538a461c55/docs/plans/0011-m8-mail-in-lodge.md) (Status 2026-11-15: Phase 7's move is done, accepted without the recorded week of verifies) and [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostmail/blob/f8e30d423768ef8b94c4eb21212b10538a461c55/docs/plans/0002-roadmap.md) (M8 in progress).
 - Frostmail release v0.7.0 commit [`7db1e7b322695bc3d41662ddf0001c3ad05d1490`](https://github.com/frostyard/frostmail/tree/7db1e7b322695bc3d41662ddf0001c3ad05d1490), released 2026-11-12. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.7.0) attaches only `frostyard-maild_0.7.0_amd64.deb`. The tag `v0.7.0` is the commit of the release candidate `v0.7.0-rc.1`.
 - The Flatpak at v0.7.0: the live Frostyard catalogue (its `Last-Modified` is 2026-11-12 19:57:18 GMT) lists `org.frostyard.Frostmail` at digest `sha256:a28092da7134e578e135df3c5cbb86e30536c7f429c32d70b7706f0997d66fe5`, built from `7db1e7b3`, with the release `0.7.0` in its AppStream data.
 - v0.7.0's changes: the Frostyard look and the sidebar sections [frostmail#277](https://github.com/frostyard/frostmail/pull/277) (frostui v0.5.0), [`docs/specs/ui.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/specs/ui.md) (The desktop app; Sidebar, Follow Up), [`docs/plans/0015-mygo-desktop.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/plans/0015-mygo-desktop.md#the-frostyard-look) (The Frostyard look); the `mailto` filter [frostmail#264](https://github.com/frostyard/frostmail/pull/264), [frostmail#265](https://github.com/frostyard/frostmail/pull/265) and [`docs/adr/0056-filter-mailto-links-before-opening-them.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/adr/0056-filter-mailto-links-before-opening-them.md); [`README.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/README.md).
