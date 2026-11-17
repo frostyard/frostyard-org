@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-17",
+  "scope": "docs",
+  "correction": "When a feature has more than 1 control, name each control by its own label and place: igloo#27 grows the shared VM's disk with Grow the Shared VM’s Disk… under Host, and an isolated machine's disk with Grow Disk… in its menu.",
+  "evidence": "frostyard/frostyard-org#131, owner fact review (Duncan) of head 84b374efcb838c1adca544b6f2b64899e7156e15: the Igloo Sources said each VM has Grow Disk…, but igloo 1bb63dd shows Grow Disk… only for an isolated machine (src/ptyxis-machines-page.c) and a Host row for the shared VM (src/ptyxis-machines-page.ui)",
+  "promoted_to": "scripts/check-site.mjs"
+}
