@@ -1,4 +1,4 @@
-// Compare the release each app and tool guide follows with the latest release.
+// Compare the release each app, tool and sysext guide follows with the latest release.
 //
 // A page names the release it follows in its `follows` frontmatter
 // ({ repo, tag }). This script asks the GitHub API for each repository's
@@ -25,7 +25,7 @@ async function pages(directory) {
 async function main() {
   const root = process.cwd();
   const tracked = [];
-  for (const section of ["apps", "tools"]) {
+  for (const section of ["apps", "tools", "sysexts"]) {
     for (const path of await pages(resolve(root, "src/content/docs/docs", section))) {
       const page = relative(root, path);
       try {
@@ -36,7 +36,7 @@ async function main() {
       }
     }
   }
-  if (!tracked.length) throw new Error("No app or tool page carries follows frontmatter: nothing to check");
+  if (!tracked.length) throw new Error("No app, tool or sysext page carries follows frontmatter: nothing to check");
   const releases = new Map();
   for (const { follows: { repo } } of tracked) {
     if (releases.has(repo)) continue;

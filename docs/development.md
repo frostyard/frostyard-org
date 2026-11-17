@@ -23,7 +23,7 @@ npm run dev
 | `npm run check:site` | Check the built site: routes, docs navigation, source links, and the existing route invariants. It reads `dist/client/`, so build first. |
 | `npm run check:prose` | Run the banned-phrase check over the pages in `src/content/docs/`. |
 | `npm test` | Run the unit tests in `scripts/test/`. |
-| `node scripts/check-release-drift.mjs` | Check app and tool guides against the latest GitHub releases. Needs the network. |
+| `node scripts/check-release-drift.mjs` | Check app, tool and sysext guides against the latest GitHub releases. Needs the network. |
 | `npm run ci` | Run the complete local CI gate, in order: `npm test`, `npm run check:prose`, `npm run check`, `npm run build:check`, `npm run check:site`. |
 | `npm run sync:problem-schema` | Copy the pinned problem report schema into `public/schemas/problem-report/v1.json`, when its bytes match the pin. |
 | `npm run preview` | Build the site, then serve it with `wrangler dev`. |
@@ -58,10 +58,10 @@ Do not hand-edit a generated data file.
 
 ## Release drift
 
-App and tool guides with a release sentence carry a `follows` field in their
-frontmatter. Keep its tag equal to the release named in the page. When you add
-an app or tool guide that names a release, add this block to its frontmatter,
-for example after `description:`:
+App, tool and sysext guides with a release sentence carry a `follows` field in
+their frontmatter. Keep its tag equal to the release named in the page. When you
+add an app, tool or sysext guide that names a release, add this block to its
+frontmatter, for example after `description:`:
 
 ```yaml
 follows:
@@ -71,7 +71,8 @@ follows:
 
 Use an `owner/name` repository and a `vX.Y.Z` tag. The block accepts only
 `repo` and `tag`. Pages without a release sentence, such as Igloo and the APT
-repository guide, do not carry it.
+repository guide, do not carry it. The sysext guides follow `frostyard/updex`,
+because their commands are Updex commands.
 
 Run `node scripts/check-release-drift.mjs` from the repository root. It prints
 each tracked page, its tag, the latest published GitHub release tag, and

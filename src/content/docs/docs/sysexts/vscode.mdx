@@ -1,6 +1,9 @@
 ---
 title: Visual Studio Code
 description: Enable, update, and remove the Visual Studio Code system extension on a Frostyard desktop image.
+follows:
+  repo: frostyard/updex
+  tag: v2.3.1
 ---
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
@@ -26,6 +29,8 @@ You need:
 
 Visual Studio Code has no published test results on Frostyard images yet. Try
 it on a machine you can spare first.
+
+This guide follows Updex v2.3.1. Run `updex --version` to see yours.
 
 ## Enable Visual Studio Code
 
@@ -157,14 +162,14 @@ have. A later Base can break an older Visual Studio Code image.
 - [Dev tools system extension](/docs/sysexts/dev/)
 - [Manage system extensions](/docs/sysexts/manage/)
 - [Desktop applications in sysexts](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [Updex v2.1.4 command reference](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md)
+- [Updex v2.3.1 command reference](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md)
 
 ## Sources
 
-Reviewed 2026-10-27; Updex facts reviewed 2026-10-30. snosi commit
+Reviewed 2026-10-27; Updex facts reviewed 2026-11-16. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.1.4 commit
-[`1843ea8ded298fbde42390a0c8b2842d09a92757`](https://github.com/frostyard/updex/tree/1843ea8ded298fbde42390a0c8b2842d09a92757).
+Updex v2.3.1 commit
+[`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
 
 - [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/vscode/mkosi.conf)
 - [`mkosi.images/vscode/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/vscode/required-paths.txt)
@@ -174,10 +179,10 @@ Updex v2.1.4 commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.vscode.d/vscode.transfer)
 - [`docs/native-ab-prototype-history.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/native-ab-prototype-history.md)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [Updex v2.1.4 `README.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md)
-- [Updex v2.1.4 `updex/features.go`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/updex/features.go)
-- [Updex v2.1.4 release](https://github.com/frostyard/updex/releases/tag/v2.1.4)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
+- [Updex v2.3.1 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md)
+- [Updex v2.3.1 `updex/features.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/features.go)
+- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
 - [Murbella's live check on a merged host (frostyard-org#21 review)](https://github.com/frostyard/frostyard-org/pull/21#pullrequestreview-5619934232)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

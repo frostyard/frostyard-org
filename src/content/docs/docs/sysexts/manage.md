@@ -1,6 +1,9 @@
 ---
 title: Manage system extensions
 description: "Find, enable, check, update, roll back, and remove a system extension on a Frostyard bootc image."
+follows:
+  repo: frostyard/updex
+  tag: v2.3.1
 ---
 
 A system extension is an EROFS image that adds files to `/usr` only. Every
@@ -18,7 +21,7 @@ You need:
 - Network access to `https://repository.frostyard.org/ext/`.
 - Free space in `/var` for the download and the installed image.
 
-This guide follows Updex v2.3.0. Check your version:
+This guide follows Updex v2.3.1. Check your version:
 
 ```bash
 updex --version
@@ -196,8 +199,9 @@ a revision needs a newer running image, or Updex cannot check one. The links
 stay, and the change takes effect at the next boot. Do not run
 `systemd-sysext refresh` by hand: it merges a revision that the running image
 may not support, and it does not create the extension's users and groups. With `--json`, each feature result has
-`refresh_skipped` with this reason. See
-[Features and components](https://github.com/frostyard/updex/blob/v2.3.0/README.md#features-and-components)
+`refresh_skipped` with this reason. See [The link and an immediate refresh are
+checked against different
+images](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md#the-link-and-an-immediate-refresh-are-checked-against-different-images)
 for the refresh rules.
 
 Take the update at the next boot instead of now:
@@ -220,6 +224,13 @@ sudo updex features update --no-vacuum
 Without the option, Updex keeps the number of versions that the transfer sets
 in `InstancesMax`, which is 2 by default. It also keeps the linked image, the
 merged image, and a version that a rollback rejected.
+
+The image file names carry the OS version (`%w`), so each Debian suite has its
+own images. From v2.3.1, an update also removes the images of other suites, but
+keeps the newest one of each. A switch back can then link it without a
+download. With systemd older than 258, as on Debian trixie, every other-suite
+image stays while the extension is merged. See [What the vacuum
+keeps](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md#what-the-vacuum-keeps).
 
 Preview an update without a change:
 
@@ -269,7 +280,7 @@ exits 0.
 Update the image. [Install and update an image](/docs/images/install-update/)
 has the steps. The next Updex run links the staged revision. After a queued
 `bootc rollback`, Updex checks the revision against the rollback image.
-See [Minimum image version](https://github.com/frostyard/updex/blob/v2.3.0/docs/design/overview.md#minimum-image-version-adr-0016)
+See [Minimum image version](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/design/overview.md#minimum-image-version-adr-0016)
 for the rules.
 
 ### Automatic updates
@@ -288,6 +299,19 @@ without a battery always runs.
 No notice tells you that a run linked a new version. The desktop update
 notice (`bootc-update-notify`) covers image updates only, so no notice appears
 for an extension update. Check for one yourself.
+
+From v2.3.1, every Frostyard image also enables `updex-suite-switch.service`.
+After you switch the image to a new Debian suite, for example from trixie to
+forky, the links still name the old suite's images, and `systemd-sysext` does
+not merge them. At its first run on the new suite, the unit links and merges
+the new suite's images, downloading them when needed, so your extensions are
+back in that boot. On other boots it does nothing. A failed run tries again 5
+minutes later, at most 3 times, and then stays failed until the next boot. Its
+log is `journalctl -u updex-suite-switch.service`.
+
+As with the timer, a host that already runs Frostyard gets the unit from the
+second boot of the first image that carries it. Boot such an image once before
+you switch suites. Otherwise the unit runs from the second boot of the new suite.
 
 Check that the timer is on:
 
@@ -317,13 +341,16 @@ Auto-update daemon: installed
   Active: true
   Source: packaged
   Unit file: <path>
+  Suite switch at boot: true
   Schedule: <OnCalendar>
   Next run: <time>
   Last run: <time> (<result>)
   Last update: <time> <outcome> (refresh <state>)
 ```
 
-There is one `Unit file` line for each unit. On a Frostyard image, `Source` is
+There is one `Unit file` line for each unit. From v2.3.1, `Suite switch at boot`
+shows whether `updex-suite-switch.service` is enabled. The line is missing when
+the unit does not exist. On a Frostyard image, `Source` is
 `packaged` and the unit files are under `/usr/lib/systemd/system/`. A masked
 timer shows `Source: etc`, `Masked: yes`, the mask
 `/etc/systemd/system/updex-update.timer` as its `Unit file`, `Schedule: -`,
@@ -350,6 +377,8 @@ operation ran), or `skipped_unreachable` (no update source answered). The timer
 exits 0 for the 2 skipped outcomes, so read this line, not the unit's result.
 The parentheses can also start with `class <class>`, for a failure outside
 every feature, and end with `named features`, for a run that named features.
+From v2.3.1, a suite-switch run that finds a link to another suite's image shows
+`named features` too.
 Each feature that did not update or stay current gets a line below it, with its
 outcome, for example `docker: failed (class network)` or
 `incus: needs_image (version <version>)`. A feature line from an earlier run
@@ -393,7 +422,11 @@ now, and the mask survives image updates:
 sudo systemctl mask --now updex-update.timer
 ```
 
-`sudo updex daemon disable` also stops the timer. The output says
+The mask covers the timer only. After a suite switch,
+`updex-suite-switch.service` still links the new suite's images.
+
+`sudo updex daemon disable` also stops the timer. From v2.3.1, it also disables
+`updex-suite-switch.service`. The output says
 `Auto-update daemon disabled.` An image update can enable the timer again, so
 use the mask to keep it off. `updex daemon disable` does not remove a mask.
 
@@ -405,15 +438,16 @@ sudo updex daemon enable
 ```
 
 With the packaged units, Updex writes no unit file. It enables and starts the
-timer. The output says `Auto-update daemon enabled.`,
+timer. From v2.3.1, it also enables `updex-suite-switch.service`, unless that
+unit is masked. The output says `Auto-update daemon enabled.`,
 `Using the units shipped by the package; no unit file was written.`,
 `Updates run every 6 hours while on AC power and download new versions.`, and
 `Reboot required to activate downloaded extensions.` To preview the change,
 run `sudo updex --dry-run daemon enable`. Nothing changes.
 
 To stop updates of one extension, run `sudo updex features disable <name>`. See [Automatic
-updates](https://github.com/frostyard/updex/blob/v2.3.0/README.md#automatic-updates) for the schedule, the lock, and the
-other details.
+updates](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md#automatic-updates) for the schedule, the lock, the
+suite-switch unit, and the other details.
 
 ## Roll back
 
@@ -448,7 +482,7 @@ sudo updex features rollback --clear <name>
 The command changes no link. By default Updex keeps the two newest versions on
 disk (`InstancesMax`), plus the linked, the merged, and the rejected version.
 `--no-vacuum` keeps all of them. Your data in `/var` stays. See
-[Rollback](https://github.com/frostyard/updex/blob/v2.3.0/docs/design/overview.md#rollback-adr-0016) for the rules.
+[Rollback](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/design/overview.md#rollback-adr-0016) for the rules.
 
 An image rollback with `bootc rollback` does not roll back extensions. The
 links and the images are in `/var`, which every image version shares, so the
@@ -495,6 +529,14 @@ The version is the merged one. On systemd older than 258 it reads `unknown`. If
 Updex cannot read the merged state, it also refuses, and names the component
 with `merge state unknown`. `<name>` is the transfer name, the same as the
 feature name for Frostyard extensions.
+
+From v2.3.1, `disable --now` removes the extension's images of every Debian
+suite. It also refuses without `--force` when an image of another suite is
+merged:
+
+```text
+Extension <name> (image <file> of another suite) is active. Removing requires --force and a reboot to take effect.
+```
 
 An extension cannot provide files in `/etc` or `/var`. Your data in `/var` and
 your changes in `/etc` stay after a removal.
@@ -549,11 +591,13 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 | `features check` shows `UPDATE=error` | The command output and the network | Check the network and the published manifest. The command exits non-zero. Do not read the row as up to date. |
 | `enable --now` exits non-zero after the download | The output shows `sysext refresh failed` | If the output says `activation did not finish`, reboot. Otherwise reboot too: a refresh by hand does not create the extension's users and groups. Then check `systemd-sysext status`. |
 | A service is not active after `enable --now` | `systemctl status <name>.service` and `systemd-sysext status` | If the unit shows `start-limit-hit`, run `sudo systemctl reset-failed <name>.service`, then start it. Otherwise reboot, so that `reload-sysext.service` runs the setup, then check again. |
-| `disable --now` refuses with `is active` | The refusal names the extension and its version | Add `--force`, then reboot. |
+| `disable --now` refuses with `is active` | The refusal names the extension and its version, or its image of another suite | Add `--force`, then reboot. |
 | A signature check fails | The command output | Check the network and the published manifest. The publisher must provide `SHA256SUMS.gpg`. Never turn verification off. |
 | Every Frostyard download fails verification | `ls /etc/systemd/import-pubring.gpg` | If the file exists, Updex uses it instead of the image's key. Add the Frostyard key to it, or remove it. |
 | `updex-update.service` shows `failed` | `journalctl -u updex-update.service` | A download or check failed, a source answered with an error, or only some sources answered. The unit stays `failed` until the next good run. A run where no source answers is skipped and does not fail. |
 | The timer never runs | `updex daemon status` | If it shows `Masked: yes`, run `sudo systemctl unmask updex-update.timer`. If `Enabled` is false, run `sudo updex daemon enable`. |
+| An extension is missing after you switch the image to a new Debian suite | `journalctl -u updex-suite-switch.service` | The unit links the new suite's images at the first boot, and tries again at most 3 times. If the log shows no image of the new suite yet, wait until one is published, then reboot. If the log is empty, the unit was not enabled yet at that boot: reboot once more. |
+| A `features` command fails with `specifier %w is empty: os-release has no VERSION_ID` | `grep VERSION_ID /etc/os-release` | The host's os-release has no `VERSION_ID`, so Updex cannot pick the images of its suite. From v2.3.1, `features update`, `check`, and `enable --now` stop with this error, and `disable` still works. See [Updex troubleshooting](/docs/tools/updex/#troubleshooting). |
 
 ## See also
 
@@ -565,14 +609,14 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 
 ## Sources
 
-Reviewed 2026-11-12. snosi commit
+Reviewed 2026-11-12; Updex facts reviewed 2026-11-16. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.3.0 commit
-[`2b2def7e81b861e4465ef8f5e180693ed6acd1fc`](https://github.com/frostyard/updex/tree/2b2def7e81b861e4465ef8f5e180693ed6acd1fc).
+Updex v2.3.1 commit
+[`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
 
 - [`docs/integration-contracts.md`](https://github.com/frostyard/snosi/blob/90074e6db6cf59ac551db8637126c5feaa512866/docs/integration-contracts.md) (snosi `90074e6db6cf59ac551db8637126c5feaa512866`): `bootc-update-notify` reads `/run/snosi/` files from the image stager.
-- [`docs/plans/0001-automatic-sysext-updates.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/plans/0001-automatic-sysext-updates.md): Phase 8, the host check.
-- Masked timer status: updex [`updex/daemon.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/updex/daemon.go) (`daemonUnitFileInUse` reads `/etc/systemd/system/` first; `DaemonStatus` reads no schedule for a mask) and [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/cmd/updex/daemon.go) (`runDaemonStatus`).
+- [`docs/plans/0001-automatic-sysext-updates.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/plans/0001-automatic-sysext-updates.md): Phase 8, the host check.
+- Masked timer status: updex [`updex/daemon.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/daemon.go) (`daemonUnitFileInUse` reads `/etc/systemd/system/` first; `DaemonStatus` reads no schedule for a mask) and [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/cmd/updex/daemon.go) (`runDaemonStatus`).
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/user/bootc-update-notify.path`](https://github.com/frostyard/snosi/blob/90074e6db6cf59ac551db8637126c5feaa512866/mkosi.images/base/mkosi.extra/usr/lib/systemd/user/bootc-update-notify.path) (snosi `90074e6`): the notice watches `/run/snosi/update-staged` only.
 - Host check: the Plan 0001 Phase 8 steps ran on `framework`, 2026-10-27 (task record, 2026-10-28).
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
@@ -586,36 +630,44 @@ Updex v2.3.0 commit
 - [`mkosi.images/docker/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/docker/required-paths.txt)
 - [`shared/sysext/postoutput/sysext-postoutput.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/postoutput/sysext-postoutput.sh)
 - [`shared/sysext/finalize/sysext-required-paths.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-required-paths.sh)
-- [`README.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/README.md)
-- [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/design/overview.md)
-- [`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/specs/config-reference.md)
-- [`docs/adr/0007-daemon-stages-never-activates.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/adr/0007-daemon-stages-never-activates.md)
-- [`docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md)
+- [`README.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/README.md) and [`docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md) (the command reference moved there in v2.3.1)
+- [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/design/overview.md)
+- [`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/config-reference.md)
+- [`docs/adr/0007-daemon-stages-never-activates.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0007-daemon-stages-never-activates.md)
+- [`docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0015-detect-merged-sysexts-from-hierarchy-metadata.md)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
-- [`docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md)
-- [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md)
-- [`sysext/runner.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/sysext/runner.go) (`ErrActivationIncomplete`: `extensions merged, but activation did not finish`)
-- [`updex/imagegate.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/updex/imagegate.go) (`refreshGate`) and [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/design/overview.md#refresh-gate-the-running-image-adr-0016) (Refresh gate)
+- [`docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0018-skip-an-update-run-when-every-source-is-unreachable.md)
+- [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md)
+- [`sysext/runner.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/sysext/runner.go) (`ErrActivationIncomplete`: `extensions merged, but activation did not finish`)
+- [`updex/imagegate.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/imagegate.go) (`refreshGate`) and [`docs/design/overview.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/design/overview.md#refresh-gate-the-running-image-adr-0016) (Refresh gate)
 - [updex#481](https://github.com/frostyard/updex/pull/481): v2.2.0 adds feature names to `features update` and `features check`.
 - [Updex v2.2.0 release](https://github.com/frostyard/updex/releases/tag/v2.2.0)
-- The last-run record: [updex#488](https://github.com/frostyard/updex/pull/488), [updex#502](https://github.com/frostyard/updex/pull/502), [`docs/specs/last-run-record.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/specs/last-run-record.md) (the outcomes), and `printLastUpdate` in `cmd/updex/daemon.go` (the `Last update` line, `none recorded`, one line per feature that did not update or stay current).
+- The last-run record: [updex#488](https://github.com/frostyard/updex/pull/488), [updex#502](https://github.com/frostyard/updex/pull/502), [`docs/specs/last-run-record.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/last-run-record.md) (the outcomes), and `printLastUpdate` in `cmd/updex/daemon.go` (the `Last update` line, `none recorded`, one line per feature that did not update or stay current).
 - [updex#480](https://github.com/frostyard/updex/pull/480): in v2.1.4, `enable --now` and `rollback --now` advise a reboot after a failed refresh, and `disable --now` keeps the refresh advice (fixes [updex#479](https://github.com/frostyard/updex/issues/479)).
 - [Lucilla's review, frostyard-org#63](https://github.com/frostyard/frostyard-org/pull/63#issuecomment-6519217746): reboot, not a refresh by hand, after an `enable --now` refresh failure.
 - [`shared/sysext/finalize/sysext-upholds-guard.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-upholds-guard.sh)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
-- [`cmd/updex/components.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/cmd/updex/components.go)
-- [`cmd/updex/features.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/cmd/updex/features.go)
-- [`cmd/updex/features_run.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/cmd/updex/features_run.go)
-- [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/cmd/updex/daemon.go)
-- [`updex/features.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/updex/features.go)
-- [`updex/install.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/updex/install.go)
-- [`updex/rollback.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/updex/rollback.go)
-- [`updex/daemon.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/updex/daemon.go)
-- [`updex/list.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/updex/list.go)
-- [`manifest/gpg.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/manifest/gpg.go)
-- [`sysext/manager.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/sysext/manager.go)
-- [`systemd/unit.go`](https://github.com/frostyard/updex/blob/2b2def7e81b861e4465ef8f5e180693ed6acd1fc/systemd/unit.go)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`cmd/updex/components.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/cmd/updex/components.go)
+- [`cmd/updex/features.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/cmd/updex/features.go)
+- [`cmd/updex/features_run.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/cmd/updex/features_run.go)
+- [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/cmd/updex/daemon.go)
+- [`updex/features.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/features.go)
+- [`updex/install.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/install.go)
+- [`updex/rollback.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/rollback.go)
+- [`updex/daemon.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/daemon.go)
+- [`updex/list.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/list.go)
+- [`manifest/gpg.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/manifest/gpg.go)
+- [`sysext/manager.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/sysext/manager.go)
+- [`systemd/unit.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/systemd/unit.go)
 - [Updex v2.3.0 release](https://github.com/frostyard/updex/releases/tag/v2.3.0)
+- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1) (2026-11-14)
+- [updex#510](https://github.com/frostyard/updex/pull/510): v2.3.1 shortens the README and moves the command reference to `docs/specs/cli-reference.md`.
+- [updex#515](https://github.com/frostyard/updex/pull/515): the vacuum keeps the newest image of each other suite; `disable --now` removes the images of every suite and needs `--force` when one of another suite is merged; systemd older than 258 keeps every other-suite image (cli-reference "What the vacuum keeps").
+- [updex#516](https://github.com/frostyard/updex/pull/516) and [updex#519](https://github.com/frostyard/updex/pull/519): `updex-suite-switch.service` and its retries; the empty-specifier error ([`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/config-reference.md), "An empty specifier fails loud").
+- [`docs/adr/0021-link-the-running-suites-images-at-boot-after-a-suite-switch.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0021-link-the-running-suites-images-at-boot-after-a-suite-switch.md) and [`docs/adr/0022-retry-a-failed-suite-switch-run-at-boot.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0022-retry-a-failed-suite-switch-run-at-boot.md)
+- `Suite switch at boot`: `runDaemonStatus` in [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/cmd/updex/daemon.go); `daemon enable` and `daemon disable` enable and disable the unit: `enablePackagedDaemon` in [`updex/daemon.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/daemon.go).
+- snosi commit [`26aa1de41fd08299a9e0422d42a73f9822d7c799`](https://github.com/frostyard/snosi/tree/26aa1de41fd08299a9e0422d42a73f9822d7c799): [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/26aa1de41fd08299a9e0422d42a73f9822d7c799/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset) enables `updex-suite-switch.service`. On a host that already runs Frostyard, [`mkosi.images/base/mkosi.extra/usr/libexec/preset-reconcile`](https://github.com/frostyard/snosi/blob/26aa1de41fd08299a9e0422d42a73f9822d7c799/mkosi.images/base/mkosi.extra/usr/libexec/preset-reconcile) enables a newly preset unit at the first boot of the image that carries it, and the unit takes effect at the next boot.
+- [Lucilla's review, frostyard-org#132](https://github.com/frostyard/frostyard-org/pull/132#issuecomment-6934024962): the suite-switch unit runs from the second boot of the first image that carries it.
 - [`mkosi.images/gui-base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/gui-base/mkosi.conf)
 - [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/vscode/mkosi.conf)
 - [`shared/sysext/finalize/sysext-usr-only.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-usr-only.sh)
