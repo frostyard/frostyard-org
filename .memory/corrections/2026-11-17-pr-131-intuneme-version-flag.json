@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-17",
+  "scope": "docs",
+  "correction": "Give a CLI's version check as the command the release has: intuneme v0.24.0 has only the --version flag, so a page that says `intuneme version` gives the reader an unknown command.",
+  "evidence": "frostyard/frostyard-org#131, owner fact review (Duncan) of head 84b374efcb838c1adca544b6f2b64899e7156e15: the Edge banner row of /docs/tools/intuneme/ said `intuneme version`; a v0.24.0 build answers unknown command \"version\"",
+  "promoted_to": "scripts/check-site.mjs"
+}
