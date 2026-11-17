@@ -5,10 +5,44 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { readFollows, statedVersion, statedVersions, compareTags, driftStatus, formatReport, parseLatestRelease, releaseFetchError, releaseHttpError } from "../lib/release-drift.mjs";
+import { assertReleaseSentence, readFollows, statedVersion, statedVersions, compareTags, driftStatus, formatReport, parseLatestRelease, releaseFetchError, releaseHttpError } from "../lib/release-drift.mjs";
 
 const block = inner => `---\ntitle: Test\n${inner}\n---\n`;
 const follows = { repo: "frostyard/nsl", tag: "v0.13.0" };
+
+const escapeHtml = value => String(value)
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;")
+  .replace(/'/g, "&#39;");
+const releaseSentence = 'The latest release is <a href="https://github.com/frostyard/nsl/releases/tag/v0.13.0">v0.13.0</a>.';
+
+test("release sentence accepts the current metadata link and tag", () => {
+  assert.doesNotThrow(() => assertReleaseSentence(`<p>${releaseSentence}</p>`, follows, escapeHtml));
+});
+
+for (const [name, html] of [
+  ["stale tag", releaseSentence.replaceAll("v0.13.0", "v0.12.0")],
+  ["stale link text", releaseSentence.replace(">v0.13.0<", ">v0.12.0<")],
+  ["wrong URL", releaseSentence.replace("frostyard/nsl", "other/repo")],
+  ["missing sentence", "<p>No release here.</p>"],
+  ["duplicate sentence", releaseSentence + releaseSentence],
+]) {
+  test(`release sentence rejects ${name}`, () => {
+    assert.throws(() => assertReleaseSentence(html, follows, escapeHtml), {
+      name: "AssertionError",
+      message: /exactly one latest-release sentence.*frostyard\/nsl\/releases\/tag\/v0\.13\.0.*v0\.13\.0 as the link text/,
+    });
+  });
+}
+
+test("release sentence escapes metadata in the URL and link text", () => {
+  const metadata = { repo: 'owner/a&<>"\'', tag: 'v1&<>"\'' };
+  const html = 'The latest release is <a href="https://github.com/owner/a&amp;&lt;&gt;&quot;&#39;/releases/tag/v1&amp;&lt;&gt;&quot;&#39;">v1&amp;&lt;&gt;&quot;&#39;</a>.';
+  assert.doesNotThrow(() => assertReleaseSentence(html, metadata, escapeHtml));
+  assert.throws(() => assertReleaseSentence(html.replaceAll("&amp;", "&"), metadata, escapeHtml), /exactly one latest-release sentence/);
+});
 
 test("readFollows accepts the plain and quoted block mapping", () => {
   for (const quote of ["", "'", '"']) {

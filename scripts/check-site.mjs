@@ -3,6 +3,7 @@ import { access, readFile, readdir } from "node:fs/promises";
 
 import { checkPrivacyPage, checkPublicBugReports, checkStatsPage } from "./lib/problem-page-checks.mjs";
 import { htmlFiles, pageName, textOf } from "./lib/site-files.mjs";
+import { assertReleaseSentence, readFollows } from "./lib/release-drift.mjs";
 
 // Astro 7 with the Cloudflare adapter writes the static site to dist/client.
 const dist = new URL("../dist/client/", import.meta.url);
@@ -249,7 +250,10 @@ assert(!sitePrivacyText.includes("not Frostmail, at sign-in"), "/privacy must no
 assert(sitePrivacyText.includes("No Frostmail release includes a Frostyard Google client yet."), "/privacy must not imply that a Frostyard Google client ships today: users of Frostmail v0.7.0 sign in with their own client.");
 assert(sitePrivacyText.includes("On Linux, only your user can read it (mode 0600).") && !sitePrivacyText.includes("readable only by your user"), "/privacy must limit the 0600 promise of secrets.json to Linux (Windows checks no mode).");
 assert(sitePrivacy.includes('<link rel="canonical" href="https://frostyard.org/privacy">'), "/privacy must name https://frostyard.org/privacy as its canonical URL.");
+const frostmailFollows = readFollows(await readFile(new URL("../src/content/docs/docs/apps/frostmail.md", import.meta.url), "utf8"));
+assert(frostmailFollows, "/frostmail release check requires follows metadata in src/content/docs/docs/apps/frostmail.md.");
 const frostmailHome = await readRoute("/frostmail");
+assertReleaseSentence(frostmailHome, frostmailFollows, escapeHtml);
 assert(/<h1[^>]*>Frostmail<\/h1>/.test(frostmailHome), "/frostmail/ must name the app Frostmail in its heading, as the OAuth consent screen does.");
 assert((frostmailHome.match(/href="\/privacy"/g) ?? []).length >= 2, "/frostmail/ must link the privacy policy at /privacy in its body, not only in the footer.");
 assert(frostmailHome.includes('href="/docs/apps/frostmail/#install"'), "/frostmail/ must link the install steps.");
@@ -1670,4 +1674,4 @@ assert(privacyText.includes("Controller: Frostyard Privacy Admin") && privacy.in
 // src/data/privacy-contact.mjs (frostyard-org#74). Do not remove this assertion to make a build pass.
 assert(!privacyText.includes("PLACEHOLDER"), "/privacy/problem-reports/ still has a PLACEHOLDER: set the controller and the contact in src/data/privacy-contact.mjs (frostyard-org#74).");
 
-console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, and their internal routes.`);
+console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, 1 landing page release display, and their internal routes.`);
