@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-16",
+  "scope": "docs",
+  "correction": "When a guide says that a Frostyard image enables a unit by preset, say when it starts on a host that already runs Frostyard: snosi preset-reconcile enables the unit at the first boot of the image that carries it, and the unit runs from the next boot.",
+  "evidence": "frostyard/frostyard-org#132, owner review (Lucilla, updex) of head 1f96183bff4575be54bf55bc0bfc03ea68aaccf4: manage.md said that updex-suite-switch.service always runs at the first boot of the new suite",
+  "promoted_to": "scripts/check-site.mjs"
+}

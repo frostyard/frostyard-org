@@ -1,6 +1,9 @@
 ---
 title: GitHub Copilot
 description: Enable, update, roll back, and remove the GitHub Copilot system extension on Frostyard bootc images.
+follows:
+  repo: frostyard/updex
+  tag: v2.3.1
 ---
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
@@ -17,6 +20,8 @@ You need:
 - Free space in `/var` for the download and the installed image.
 
 The GitHub Copilot extension has no published test results on Frostyard images yet. Try it on a machine you can spare first.
+
+This guide follows Updex v2.3.1. Run `updex --version` to see yours.
 
 ## Enable GitHub Copilot
 
@@ -90,10 +95,10 @@ Each build checks that these paths are present: both commands, the `/usr/lib/Git
 
 ## Sources
 
-Reviewed 2026-10-27; Updex facts reviewed 2026-10-30. snosi commit
+Reviewed 2026-10-27; Updex facts reviewed 2026-11-16. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.1.4 commit
-[`1843ea8ded298fbde42390a0c8b2842d09a92757`](https://github.com/frostyard/updex/tree/1843ea8ded298fbde42390a0c8b2842d09a92757).
+Updex v2.3.1 commit
+[`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
 
 - [`mkosi.images/github-copilot/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/github-copilot/mkosi.conf)
 - [`mkosi.images/github-copilot/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/github-copilot/mkosi.postinst.chroot)
@@ -102,6 +107,6 @@ Updex v2.1.4 commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.github-copilot.d/github-copilot.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.github-copilot.d/github-copilot.feature)
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.github-copilot.d/github-copilot.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.github-copilot.d/github-copilot.transfer)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [Updex v2.1.4 `README.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md)
-- [Updex v2.1.4 release](https://github.com/frostyard/updex/releases/tag/v2.1.4)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
+- [Updex v2.3.1 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md)
+- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
