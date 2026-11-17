@@ -101,9 +101,9 @@ async function realPages(directory) {
     : /\.mdx?$/.test(entry.name) ? [join(directory, entry.name)] : []))).flat();
 }
 
-test("real app and tool follows tags match their release sentences in both directions", async () => {
+test("real app, tool and sysext follows tags match their release sentences in both directions", async () => {
   let count = 0;
-  for (const section of ["apps", "tools"]) {
+  for (const section of ["apps", "tools", "sysexts"]) {
     const directory = fileURLToPath(new URL(`../../src/content/docs/docs/${section}/`, import.meta.url));
     for (const path of await realPages(directory)) {
       const text = await readFile(path, "utf8");
@@ -117,13 +117,13 @@ test("real app and tool follows tags match their release sentences in both direc
       }
     }
   }
-  assert.ok(count > 0, "no app or tool page names a release");
+  assert.ok(count > 0, "no app, tool or sysext page names a release");
 });
 
 test("CLI fails when no page carries follows, without a network request", async () => {
   const root = await mkdtemp(join(tmpdir(), "release-drift-"));
   try {
-    for (const section of ["apps", "tools"]) {
+    for (const section of ["apps", "tools", "sysexts"]) {
       const directory = join(root, "src/content/docs/docs", section);
       await mkdir(directory, { recursive: true });
       await writeFile(join(directory, "page.mdx"), block("title: No release"));
@@ -131,7 +131,23 @@ test("CLI fails when no page carries follows, without a network request", async 
     const result = spawnSync(process.execPath, [fileURLToPath(new URL("../check-release-drift.mjs", import.meta.url))], { cwd: root, encoding: "utf8", timeout: 5000 });
     assert.equal(result.status, 2, result.stderr);
     assert.equal(result.stdout, "");
-    assert.match(result.stderr, /No app or tool page carries follows/);
+    assert.match(result.stderr, /No app, tool or sysext page carries follows/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("CLI checks the sysext guides, and fails on their malformed follows block", async () => {
+  const root = await mkdtemp(join(tmpdir(), "release-drift-sysexts-"));
+  try {
+    // The script reads all 3 section folders, so an empty apps and tools folder must exist.
+    for (const section of ["apps", "tools", "sysexts"]) await mkdir(join(root, "src/content/docs/docs", section), { recursive: true });
+    await writeFile(join(root, "src/content/docs/docs/sysexts", "page.mdx"), block("follows:\n  repo: frostyard/updex"));
+    const result = spawnSync(process.execPath, [fileURLToPath(new URL("../check-release-drift.mjs", import.meta.url))], { cwd: root, encoding: "utf8", timeout: 5000 });
+    // The malformed block fails before any fetch, so the test needs no network.
+    assert.equal(result.status, 2, result.stderr);
+    assert.equal(result.stdout, "");
+    assert.match(result.stderr, /sysexts\/page\.mdx: Malformed follows/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
