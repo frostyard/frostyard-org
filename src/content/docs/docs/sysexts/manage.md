@@ -303,11 +303,15 @@ for an extension update. Check for one yourself.
 From v2.3.1, every Frostyard image also enables `updex-suite-switch.service`.
 After you switch the image to a new Debian suite, for example from trixie to
 forky, the links still name the old suite's images, and `systemd-sysext` does
-not merge them. At the first boot of the new suite, the unit links and merges
+not merge them. At its first run on the new suite, the unit links and merges
 the new suite's images, downloading them when needed, so your extensions are
 back in that boot. On other boots it does nothing. A failed run tries again 5
 minutes later, at most 3 times, and then stays failed until the next boot. Its
 log is `journalctl -u updex-suite-switch.service`.
+
+As with the timer, a host that already runs Frostyard gets the unit from the
+second boot of the first image that carries it. Boot such an image once before
+you switch suites. Otherwise the unit runs from the second boot of the new suite.
 
 Check that the timer is on:
 
@@ -592,7 +596,7 @@ meant for Snow, Snowfield, and Sundog, not Floe.
 | Every Frostyard download fails verification | `ls /etc/systemd/import-pubring.gpg` | If the file exists, Updex uses it instead of the image's key. Add the Frostyard key to it, or remove it. |
 | `updex-update.service` shows `failed` | `journalctl -u updex-update.service` | A download or check failed, a source answered with an error, or only some sources answered. The unit stays `failed` until the next good run. A run where no source answers is skipped and does not fail. |
 | The timer never runs | `updex daemon status` | If it shows `Masked: yes`, run `sudo systemctl unmask updex-update.timer`. If `Enabled` is false, run `sudo updex daemon enable`. |
-| An extension is missing after you switch the image to a new Debian suite | `journalctl -u updex-suite-switch.service` | The unit links the new suite's images at the first boot, and tries again at most 3 times. If the log shows no image of the new suite yet, wait until one is published, then reboot. |
+| An extension is missing after you switch the image to a new Debian suite | `journalctl -u updex-suite-switch.service` | The unit links the new suite's images at the first boot, and tries again at most 3 times. If the log shows no image of the new suite yet, wait until one is published, then reboot. If the log is empty, the unit was not enabled yet at that boot: reboot once more. |
 | A `features` command fails with `specifier %w is empty: os-release has no VERSION_ID` | `grep VERSION_ID /etc/os-release` | The host's os-release has no `VERSION_ID`, so Updex cannot pick the images of its suite. From v2.3.1, `features update`, `check`, and `enable --now` stop with this error, and `disable` still works. See [Updex troubleshooting](/docs/tools/updex/#troubleshooting). |
 
 ## See also
@@ -662,7 +666,8 @@ Updex v2.3.1 commit
 - [updex#516](https://github.com/frostyard/updex/pull/516) and [updex#519](https://github.com/frostyard/updex/pull/519): `updex-suite-switch.service` and its retries; the empty-specifier error ([`docs/specs/config-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/config-reference.md), "An empty specifier fails loud").
 - [`docs/adr/0021-link-the-running-suites-images-at-boot-after-a-suite-switch.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0021-link-the-running-suites-images-at-boot-after-a-suite-switch.md) and [`docs/adr/0022-retry-a-failed-suite-switch-run-at-boot.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0022-retry-a-failed-suite-switch-run-at-boot.md)
 - `Suite switch at boot`: `runDaemonStatus` in [`cmd/updex/daemon.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/cmd/updex/daemon.go); `daemon enable` and `daemon disable` enable and disable the unit: `enablePackagedDaemon` in [`updex/daemon.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/daemon.go).
-- snosi commit [`26aa1de41fd08299a9e0422d42a73f9822d7c799`](https://github.com/frostyard/snosi/tree/26aa1de41fd08299a9e0422d42a73f9822d7c799): [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/26aa1de41fd08299a9e0422d42a73f9822d7c799/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset) enables `updex-suite-switch.service`.
+- snosi commit [`26aa1de41fd08299a9e0422d42a73f9822d7c799`](https://github.com/frostyard/snosi/tree/26aa1de41fd08299a9e0422d42a73f9822d7c799): [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/26aa1de41fd08299a9e0422d42a73f9822d7c799/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset) enables `updex-suite-switch.service`. On a host that already runs Frostyard, [`mkosi.images/base/mkosi.extra/usr/libexec/preset-reconcile`](https://github.com/frostyard/snosi/blob/26aa1de41fd08299a9e0422d42a73f9822d7c799/mkosi.images/base/mkosi.extra/usr/libexec/preset-reconcile) enables a newly preset unit at the first boot of the image that carries it, and the unit takes effect at the next boot.
+- [Lucilla's review, frostyard-org#132](https://github.com/frostyard/frostyard-org/pull/132#issuecomment-6934024962): the suite-switch unit runs from the second boot of the first image that carries it.
 - [`mkosi.images/gui-base/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/gui-base/mkosi.conf)
 - [`mkosi.images/vscode/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/vscode/mkosi.conf)
 - [`shared/sysext/finalize/sysext-usr-only.sh`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sysext/finalize/sysext-usr-only.sh)
