@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-16",
+  "scope": "docs",
+  "correction": "Name a GUI control by the label it shows in the release's .ui file, not by the title of the dialog that it opens: Igloo v51.0's Machines page imports with *Import…*, and Import Machine is only the dialog title.",
+  "evidence": "frostyard/frostyard-org#131, owner fact review (Duncan) of head b284bf5255f1b8dd994b6b367006fd588a91c650: /docs/tools/igloo/ said *Import Machine…*, a label that no control in igloo v51.0 src/ptyxis-machines-page.ui has",
+  "promoted_to": "scripts/check-site.mjs"
+}

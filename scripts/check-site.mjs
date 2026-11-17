@@ -912,7 +912,7 @@ assert(iglooText.includes("The Flatpak does not bundle nsl"), "/docs/tools/igloo
 assert(igloo.includes('data-code="flatpak remote-add --user --if-not-exists frostyard'), "/docs/tools/igloo must give the per-user Frostyard remote command.");
 assert(igloo.includes('data-code="flatpak install --user frostyard org.frostyard.Igloo"'), "/docs/tools/igloo must give the per-user install command.");
 assert(!iglooText.includes("flatpak install --user frostyard io.github.frostyard.Igloo") && !iglooText.includes("flatpak uninstall io.github.frostyard.Igloo"), "/docs/tools/igloo must install and remove the application ID org.frostyard.Igloo (igloo ADR-0003).");
-assert(iglooText.includes("Import Machine"), "/docs/tools/igloo must say that the Machines page imports machines (igloo v51.0).");
+assert(iglooText.includes("with Import…") && !iglooText.includes("Import Machine…"), "/docs/tools/igloo must name the Machines page import button Import… (igloo v51.0 src/ptyxis-machines-page.ui); Import Machine is only the dialog title.");
 assert(iglooText.includes("Check Again"), "/docs/tools/igloo must mention the Check Again button.");
 assert(igloo.includes('href="/docs/tools/nsl/"'), "/docs/tools/igloo must link the nsl page.");
 for (const [route, pageText] of [
@@ -1002,9 +1002,10 @@ assertSections("/docs/tools/intuneme", intuneme, [
   "see-also",
   "sources",
 ]);
-assertCites("/docs/tools/intuneme", intuneme, "https://github.com/frostyard/intuneme/blob/e4d5265b3b4fef8ac4bcbee6521e32e39920f015", ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md", "site/reference/problem-records.md", "site/reference/helper-security.md", "docs/adr/0003-record-problems-with-std-problems.md"]);
+assertCites("/docs/tools/intuneme", intuneme, "https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e", ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md", "site/reference/problem-records.md", "site/reference/helper-security.md", "docs/adr/0003-record-problems-with-std-problems.md"]);
 assertCites("/docs/tools/intuneme", intuneme, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"], "snosi ");
-assert(intunemeText.includes("This guide follows intuneme v0.23.0"), "/docs/tools/intuneme must follow intuneme v0.23.0.");
+assert(intunemeText.includes("This guide follows intuneme v0.24.0"), "/docs/tools/intuneme must follow intuneme v0.24.0.");
+assert(intunemeText.includes("image signature check failed"), "/docs/tools/intuneme must name the image signature check error (intuneme v0.24.0).");
 assert(intunemeText.includes("writes a record to your local systemd journal") && intunemeText.includes("intuneme sends nothing over the network"), "/docs/tools/intuneme must say that problem records stay in the local journal.");
 assert(intuneme.includes('href="https://frostyard.github.io/intuneme/reference/problem-records/"'), "/docs/tools/intuneme must link intuneme's problem records reference.");
 assert(intuneme.includes('href="/privacy/problem-reports/"'), "/docs/tools/intuneme must link the problem reports privacy page.");

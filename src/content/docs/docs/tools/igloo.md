@@ -66,7 +66,7 @@ with its distribution, tier, state, and default marker. It also lets you:
   from the signed nsl catalogue, isolation, default, and an optional username.
   It then runs `nsl create` in a terminal, so you see the downloads and the
   check, and offers to open the new machine.
-- Import a machine from an `nsl export` archive with *Import Machine…*.
+- Import a machine from an `nsl export` archive with *Import…*.
 - Open, start, stop, export, or remove a machine, and make it the default.
   *Export…* stops a running machine first, after you confirm.
 - Create a profile for a machine with *Edit Profile…*, for its own palette,
@@ -131,10 +131,10 @@ its installation guide.
 
 ## Sources
 
-Reviewed 2026-11-15.
+Reviewed 2026-11-16.
 
 - Igloo release v51.0 commit [`71b440d0bbe6837977dcf7a7a358862b3c610522`](https://github.com/frostyard/igloo/tree/71b440d0bbe6837977dcf7a7a358862b3c610522), tagged 2026-11-06 ([tag](https://github.com/frostyard/igloo/tree/v51.0)): the application ID becomes `org.frostyard.Igloo`, with an end-of-life rebase from `io.github.frostyard.Igloo` ([igloo#10](https://github.com/frostyard/igloo/pull/10)), and the Machines page exports and imports machines ([igloo#7](https://github.com/frostyard/igloo/pull/7)). On 2026-11-15, `ghcr.io/frostyard/igloo:latest`, the image the Frostyard remote serves, has the same digest as `v51.0` (`sha256:4ca67169dc6caf0a36711cb9447160a53efce42c93816406ae79dd0cb6051325`).
-- Igloo main commit [`a4224f8664dd13f77a42a2d95f560938551dd732`](https://github.com/frostyard/igloo/tree/a4224f8664dd13f77a42a2d95f560938551dd732), checked 2026-11-15: after v51.0 it adds logs and recovery to the Machines page ([igloo#15](https://github.com/frostyard/igloo/pull/15)), resumes an unfinished removal ([igloo#19](https://github.com/frostyard/igloo/pull/19)), and restores `nsl.conf` when `nsl config` cannot run ([igloo#20](https://github.com/frostyard/igloo/pull/20)). No tag carries them yet, so this page does not describe them.
+- Igloo main commit [`1bb63dd1182536633e7b484d93daa617d8d1f0c4`](https://github.com/frostyard/igloo/tree/1bb63dd1182536633e7b484d93daa617d8d1f0c4), checked 2026-11-16: after v51.0 it adds logs and recovery to the Machines page ([igloo#15](https://github.com/frostyard/igloo/pull/15)), resumes an unfinished removal ([igloo#19](https://github.com/frostyard/igloo/pull/19)), restores `nsl.conf` when `nsl config` cannot run ([igloo#20](https://github.com/frostyard/igloo/pull/20)), and shows the data disk of each VM with *Grow Disk…*, which runs `nsl resize` ([igloo#27](https://github.com/frostyard/igloo/pull/27)). No tag carries them yet, and the Flatpak image moves only on a tag ([`.github/workflows/flatpak.yml`](https://github.com/frostyard/igloo/blob/1bb63dd1182536633e7b484d93daa617d8d1f0c4/.github/workflows/flatpak.yml)), so this page does not describe them. On 2026-11-16, `latest` still has the `v51.0` digest.
 - [`README.md`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/README.md)
 - [`org.frostyard.Igloo.json`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/org.frostyard.Igloo.json)
 - [`meson.build`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/meson.build)
