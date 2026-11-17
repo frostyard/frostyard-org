@@ -9,7 +9,7 @@
 - Build the production site with `npm run build`.
 - Build from the committed catalog snapshot with `npm run build:check`.
 - Run the unit tests in `scripts/test/` with `npm test`.
-- Check app, tool and sysext guides with `node scripts/check-release-drift.mjs` (needs the network; not part of CI); keep `follows` equal to the page's release sentence.
+- Check app, tool and sysext guides with `node scripts/check-release-drift.mjs` (needs the network; not part of CI); keep `follows` equal to the page's release sentence. Run it again right before each push of a release update: a newer release can come out while you work.
 - Run the complete local CI gate with `npm run ci`.
 - Run the repository gate with `make verify` (the template gate, then
   `npm run ci`). `make check` is the same. `make ci BASE=origin/main` also

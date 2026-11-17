@@ -65,7 +65,8 @@ mail app, a `mailto` link in a message keeps only the address and the `to`,
 does.
 
 Release v0.8.0 shows the All Inboxes unread count on the launcher icon, for
-docks that read it, and adds a tray icon with that count. *Close to tray*, in
+docks that read it, and adds a tray icon whose menu shows that count, with a dot on the icon while
+mail is unread. *Close to tray*, in
 the General pane, keeps Frostmail running when you close its window; it is
 off until you turn it on. A new-mail notification on Linux offers Reply,
 Archive, and Trash. You can search the calendar, add a ticket or a booking

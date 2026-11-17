@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-17",
+  "scope": "docs",
+  "correction": "Run node scripts/check-release-drift.mjs again right before each push of a release update: lodge v0.5.2 came out 12 minutes before the push that named v0.5.1 as the latest release.",
+  "evidence": "frostyard/frostyard-org#130, owner fact review (Irulan) of head 063c2ed7ec2bada493f954432390ed98e1729a88: the lodge page said the latest release is v0.5.1, but v0.5.2 was published at 2026-11-17 01:17 UTC, before that head",
+  "promoted_to": "AGENTS.md"
+}
