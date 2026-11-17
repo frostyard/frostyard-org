@@ -2,13 +2,23 @@
 // Frostmail's home page: the page that Frostmail's Google OAuth consent
 // screen names. It must stand alone: the app's name, what it does, where it
 // runs, how to get it, and a link to the privacy policy at /privacy.
+import { getEntry } from "astro:content";
 import Document from "../layouts/Document.astro";
 
+const guide = await getEntry("docs", "docs/apps/frostmail");
+if (!guide) {
+  throw new Error("Frostmail home page requires the docs/apps/frostmail guide entry.");
+}
+const follows = guide.data.follows;
+if (!follows) {
+  throw new Error("Frostmail home page requires follows metadata in the docs/apps/frostmail guide.");
+}
+const releaseUrl = `https://github.com/${follows.repo}/releases/tag/${follows.tag}`;
 const repo = "https://github.com/frostyard/frostmail";
 ---
 <Document title="Frostmail | Frostyard" description="Frostmail is a desktop mail client from Frostyard for Linux and Windows. It reads, searches and sends your mail, with your contacts, calendars and tasks beside it." eyebrow="App" heading="Frostmail" canonicalPath="/frostmail/">
   <p class="lede">Frostmail is a desktop mail client from Frostyard, for Linux and Windows. It reads, searches and sends your mail, and it keeps your contacts, calendars and tasks beside it. It works like Apple Mail.app.</p>
-  <p>Frostmail is free and open source, under the MIT license. It is pre-release. The latest release is <a href={`${repo}/releases/tag/v0.7.0`}>v0.7.0</a>.</p>
+  <p>Frostmail is free and open source, under the MIT license. It is pre-release. The latest release is <a href={releaseUrl}>{follows.tag}</a>.</p>
 
   <h2 id="what-it-does">What it does</h2>
   <ul>

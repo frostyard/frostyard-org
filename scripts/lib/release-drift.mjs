@@ -1,3 +1,5 @@
+import assert from "node:assert/strict";
+
 export const REPO_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*$/;
 export const TAG_PATTERN = /^v[0-9]+\.[0-9]+\.[0-9]+$/;
 
@@ -30,6 +32,14 @@ export function readFollows(text) {
   }
   if (!REPO_PATTERN.test(values.repo ?? "") || !TAG_PATTERN.test(values.tag ?? "")) fail();
   return { repo: values.repo, tag: values.tag };
+}
+
+/** Check the landing page's exact release sentence using the caller's HTML escape helper. */
+export function assertReleaseSentence(html, follows, escapeHtml) {
+  const url = `https://github.com/${follows.repo}/releases/tag/${follows.tag}`;
+  const sentence = `The latest release is <a href="${escapeHtml(url)}">${escapeHtml(follows.tag)}</a>.`;
+  assert(html.split(sentence).length - 1 === 1,
+    `Release display must contain exactly one latest-release sentence linking to ${url} with ${follows.tag} as the link text, from the guide's follows metadata.`);
 }
 
 const RELEASE_SENTENCE = /(?:\bguide\s+follows\s+\S+\s+|\bThe\s+latest\s+release\s+is\s+)(v[0-9]+\.[0-9]+\.[0-9]+)(?![0-9A-Za-z+-]|\.[0-9])/g;
