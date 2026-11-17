@@ -3,7 +3,7 @@ title: lodge
 description: "lodge is the tailnet-only web shell that opens Notes, Mail, and Porter from one address. Pre-release: it installs from a tarball."
 follows:
   repo: frostyard/lodge
-  tag: v0.3.0
+  tag: v0.5.1
 ---
 
 lodge is a web shell for Frostyard's own apps. One address on your tailnet
@@ -27,7 +27,7 @@ Porter. The full user guide is on the
 
 ## Status
 
-lodge is pre-release. The latest release is v0.3.0. Each release attaches
+lodge is pre-release. The latest release is v0.5.1. Each release attaches
 `frostyard-lodge_X.Y.Z_amd64.deb`, which the lodge system extension installs.
 The system extension can trail the latest release. The [catalog](/docs/sysexts/) lists the version it ships.
 On another host, you install lodge from the tarball that `make dist` builds. lodge v1 and its
@@ -58,6 +58,20 @@ v0.2.0 adds unread counts. An app can report a count of things you have not seen
 v0.2.1 is a patch release: a security fix in a dependency, and dependency updates. It does not change lodge's behavior, its app contract, or its configuration.
 
 v0.3.0 makes dim text easier to read. The secondary and tertiary text colours now reach a contrast of 4.5:1 on every surface, in light and dark. lodge also builds with Go 1.27.4, for its security fixes. v0.3.0 does not change lodge's app contract or its configuration.
+
+v0.4.0 to v0.5.1 add the parts that apps built on
+[hearth](https://github.com/frostyard/hearth) use. An MCP client, such as an
+agent, can sign in with OAuth 2.1, and an admin approves or narrows what it
+may do on a consent page. One MCP gateway reaches those apps. An event
+broker, NATS with JetStream, delivers app events to the clients that a grant
+allows. From v0.5.0 the broker is on, unless the configuration turns it off.
+The designs,
+[ADR-0022](https://github.com/frostyard/lodge/blob/c3fe29ec096486dc59d436dff694a77c06951ab5/docs/adr/0022-lodge-embeds-a-nats-broker-for-app-events.md),
+[ADR-0023](https://github.com/frostyard/lodge/blob/c3fe29ec096486dc59d436dff694a77c06951ab5/docs/adr/0023-lodge-issues-agent-access-through-oauth-and-a-consent-page.md),
+and
+[ADR-0024](https://github.com/frostyard/lodge/blob/c3fe29ec096486dc59d436dff694a77c06951ab5/docs/adr/0024-agents-reach-apps-on-hearth-through-one-mcp-gateway.md),
+are Proposed. v0.4.0 and v0.5.1 each migrate the database, so an older lodge
+cannot open it afterwards. Back up first, as [Limits](#limits) says.
 
 lodge is optional for the desktop apps. Frostnotes and Frostmail work on
 their own as Flatpaks. You opt into lodge for each app, and nothing turns it on for you.
@@ -111,6 +125,7 @@ new build goes in.
 - [Documentation index](https://github.com/frostyard/lodge/blob/main/docs/README.md): the decisions, designs, specs, and plans.
 - [Packaging](https://github.com/frostyard/lodge/blob/main/packaging/README.md): build, install, first start, allow-lists, and agents on the host.
 - [Install layout](https://github.com/frostyard/lodge/blob/main/docs/specs/app-contract.md#install-layout): where an app's files go.
+- [OAuth, consent, and grants](https://github.com/frostyard/lodge/blob/c3fe29ec096486dc59d436dff694a77c06951ab5/docs/specs/oauth.md): how an agent signs in, and what an admin approves.
 - [MCP tokens and scope](https://github.com/frostyard/lodge/blob/main/docs/specs/app-contract.md#mcp-tokens-and-scope): what a token for an app lets an agent do.
 - [Badges](https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges): the unread counts in the rail.
 - [The agent socket](https://github.com/frostyard/lodge/blob/main/docs/specs/lodge-http.md#the-agent-socket): how agents on lodge's host connect.
@@ -133,9 +148,10 @@ newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 ## Sources
 
-Reviewed 2026-11-15.
+Reviewed 2026-11-16.
 
-- lodge `main` at commit [`78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03`](https://github.com/frostyard/lodge/tree/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03), checked 2026-11-15. No release follows v0.3.0. [lodge#79](https://github.com/frostyard/lodge/pull/79) adds the user documentation site, [`site/properdocs.yml`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/site/properdocs.yml) (`site_url` `https://frostyard.github.io/lodge/`), and [`README.md`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/README.md) links it as its documentation. The site's home, Install, Configure lodge, The apps it hosts, and `lodgectl` pages answered HTTP 200 on 2026-11-15. Between v0.3.0 and this commit, `internal/store` does not change, and `packaging/README.md` only records the host update to v0.3.0.
+- lodge v0.5.1 commit [`c3fe29ec096486dc59d436dff694a77c06951ab5`](https://github.com/frostyard/lodge/tree/c3fe29ec096486dc59d436dff694a77c06951ab5), released 2026-11-17 ([release](https://github.com/frostyard/lodge/releases/tag/v0.5.1)): a grant item holds for 1 major version of its app ([lodge#94](https://github.com/frostyard/lodge/pull/94), migration `internal/store/migrations/0006_grant_majors.sql`). v0.5.0, commit [`42388fb4d385c7cdc1cc9e786156018e051277db`](https://github.com/frostyard/lodge/tree/42388fb4d385c7cdc1cc9e786156018e051277db), released 2026-11-16 ([release](https://github.com/frostyard/lodge/releases/tag/v0.5.0)): the MCP gateway for apps on hearth ([lodge#85](https://github.com/frostyard/lodge/pull/85)), and grant-driven event subscriptions with the broker on unless the configuration turns it off ([lodge#91](https://github.com/frostyard/lodge/pull/91)); [`packaging/README.md`](https://github.com/frostyard/lodge/blob/c3fe29ec096486dc59d436dff694a77c06951ab5/packaging/README.md#update) (`/run/lodge/nats.sock`, `/var/lib/lodge/jetstream`, the forward migration) and [`packaging/config.example.json`](https://github.com/frostyard/lodge/blob/c3fe29ec096486dc59d436dff694a77c06951ab5/packaging/config.example.json). v0.4.0, commit [`6e89346a8cbcd000550d138ebcb61c6af4dcf014`](https://github.com/frostyard/lodge/tree/6e89346a8cbcd000550d138ebcb61c6af4dcf014), released 2026-11-16 ([release](https://github.com/frostyard/lodge/releases/tag/v0.4.0)): the embedded NATS broker ([lodge#81](https://github.com/frostyard/lodge/pull/81)), and the OAuth 2.1 server with the consent and grants pages ([lodge#82](https://github.com/frostyard/lodge/pull/82), migration `0005_oauth.sql`). At v0.5.1: [`docs/specs/oauth.md`](https://github.com/frostyard/lodge/blob/c3fe29ec096486dc59d436dff694a77c06951ab5/docs/specs/oauth.md), ADR-0022, ADR-0023 and ADR-0024 (each Status: Proposed), and [`README.md`](https://github.com/frostyard/lodge/blob/c3fe29ec096486dc59d436dff694a77c06951ab5/README.md). `https://repository.frostyard.org/ext/lodge/SHA256SUMS`, checked 2026-11-16, lists up to 0.4.0.
+- lodge `main` at commit [`78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03`](https://github.com/frostyard/lodge/tree/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03), checked 2026-11-15, the previous review. [lodge#79](https://github.com/frostyard/lodge/pull/79) adds the user documentation site, [`site/properdocs.yml`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/site/properdocs.yml) (`site_url` `https://frostyard.github.io/lodge/`), and [`README.md`](https://github.com/frostyard/lodge/blob/78f5e20dafbfdf4294d14a97ecc3c27fa65aaf03/README.md) links it as its documentation. The site's home, Install, Configure lodge, The apps it hosts, and `lodgectl` pages answered HTTP 200 on 2026-11-15. Between v0.3.0 and this commit, `internal/store` does not change, and `packaging/README.md` only records the host update to v0.3.0.
 - lodge v0.3.0 commit [`0e4a5bd00cc4ebdee9eb8577a8f18d859516c1c8`](https://github.com/frostyard/lodge/tree/0e4a5bd00cc4ebdee9eb8577a8f18d859516c1c8), released 2026-11-11 ([release](https://github.com/frostyard/lodge/releases/tag/v0.3.0)): [lodge#62](https://github.com/frostyard/lodge/pull/62) (the text tokens, `@frostyard/lodge-ui` 0.7.0, which the shell imports), [lodge#63](https://github.com/frostyard/lodge/pull/63) (Go 1.27.4), and 2 refactors. [`docs/adr/0021-the-text-tokens-reach-4-5-to-1-on-every-surface.md`](https://github.com/frostyard/lodge/blob/0e4a5bd00cc4ebdee9eb8577a8f18d859516c1c8/docs/adr/0021-the-text-tokens-reach-4-5-to-1-on-every-surface.md) (Accepted 2026-11-10) and [`ui/CHANGELOG.md`](https://github.com/frostyard/lodge/blob/0e4a5bd00cc4ebdee9eb8577a8f18d859516c1c8/ui/CHANGELOG.md). Between v0.2.1 and v0.3.0, `docs/specs/app-contract.md`, the inference spec and `packaging/` do not change. ADR-0020 is still Proposed at v0.3.0.
 - lodge v0.2.1 commit [`74a31e4856b5e44da4567c53307cb83cf1354bf1`](https://github.com/frostyard/lodge/tree/74a31e4856b5e44da4567c53307cb83cf1354bf1), released 2026-11-09 ([release](https://github.com/frostyard/lodge/releases/tag/v0.2.1)): a patch release with no change to behavior, the app contract, or the configuration. [`docs/README.md`](https://github.com/frostyard/lodge/blob/74a31e4856b5e44da4567c53307cb83cf1354bf1/docs/README.md). No cookies: [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/74a31e4856b5e44da4567c53307cb83cf1354bf1/docs/specs/lodge-http.md) (identity from WhoIs alone; no response carries `Set-Cookie`).
 - lodge v0.2.0 commit [`bd6fa7b391d08ce0de44d80a875e4a386e415985`](https://github.com/frostyard/lodge/tree/bd6fa7b391d08ce0de44d80a875e4a386e415985), released 2026-11-04 ([release](https://github.com/frostyard/lodge/releases/tag/v0.2.0)).
