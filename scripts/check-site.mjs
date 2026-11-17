@@ -341,8 +341,9 @@ for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/"
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
-assert(docsLanding.includes("Updex v2.1.4"), "/docs must name the Updex v2.1.4 source pin.");
-assert(docsLanding.includes("https://github.com/frostyard/updex/blob/1843ea8ded298fbde42390a0c8b2842d09a92757/README.md"), "/docs must cite the pinned Updex v2.1.4 README.");
+assert(docsLanding.includes("Updex v2.3.1"), "/docs must name the Updex v2.3.1 source pin, as the Updex and sysext guides do.");
+assert(docsLanding.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/README.md"), "/docs must cite the pinned Updex v2.3.1 README.");
+assert(!docsLanding.includes("1843ea8ded298fbde42390a0c8b2842d09a92757"), "/docs must not cite the old Updex v2.1.4 commit.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
 assert(!textOf(docsLanding).includes("snow-first-setup"), "/docs must not name snow-first-setup: snosi#1224 removed it.");
 assert(docsLanding.includes('href="/docs/tools/chairlift/#first-login-setup"'), "/docs must point to the ChairLift first-login setup (snosi ADR-0028).");
