@@ -88,7 +88,7 @@ background and start at login. If you refuse, `maild` runs only while a window
 is open, so sync, Send Later, and notifications wait until you open the app.
 
 Mail in lodge is built and still in progress. A real mail store moved to
-lodge's host on 2026-11-15. Calendar, task, and contact
+lodge's host by 2026-11-15. Calendar, task, and contact
 tools for agents are built. Google and Microsoft verification are planned.
 
 ## Install
