@@ -68,7 +68,8 @@ allows. From v0.5.0 the broker is on, unless the configuration turns it off.
 The designs, ADR-0022,
 ADR-0023, and ADR-0024, are Proposed. v0.4.0 and v0.5.1 each migrate the database, so an older lodge
 cannot open it afterwards. Back up first, as [Limits](#limits) says. v0.5.1
-holds each grant item for 1 major version of its app: after you update to
+holds each grant item for 1 major version of its app (for a version `0.y.z`,
+1 minor version): after you update to
 v0.5.1 or later, approve again each grant made before v0.5.1.
 
 v0.5.2 is a patch release. It fixes event delivery: the broker keeps each
