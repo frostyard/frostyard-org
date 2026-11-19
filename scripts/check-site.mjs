@@ -946,13 +946,15 @@ assertSections("/docs/tools/chairlift", chairlift, [
 assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964", ["README.md", "docs/index.md", "docs/reference.md", "CONFIG.md", "config.yml", "docs/design/overview.md", "docs/design/package-managers.md", "docs/design/frostui.md", ".goreleaser.yaml", "go.mod"]);
 assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/1cf6c02252aa9d36e0b4d8aca892502cf39844c4", ["docs/adr/0017-mygo-command-center-window.md", "internal/views/system.go", "internal/views/pageview/pageview.go", "internal/views/actionmsg/actionmsg.go", "internal/views/flatpakstatus/flatpakstatus.go", "internal/homebrew/trust.go"]);
 assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"], "snosi ");
-assert(chairliftText.includes("This guide follows ChairLift v0.17.1"), "/docs/tools/chairlift must follow ChairLift v0.17.1.");
+assertCites("/docs/tools/chairlift", chairlift, "https://github.com/frostyard/chairlift/blob/514660274f1e3649af5dbc3d2a085affc2a213e8", ["docs/index.md", "docs/reference.md", "docs/design/overview.md", "docs/design/package-managers.md", "config.yml#L11-L16", "CONFIG.md#L71-L77", "internal/views/overview.go#L21-L29", "internal/views/overview.go#L268-L306", "go.mod#L3-L12"]);
+assert(chairliftText.includes("This guide follows ChairLift v0.17.2"), "/docs/tools/chairlift must follow ChairLift v0.17.2.");
+assert(chairliftText.includes("which uses Updex v2.3.1 for the Features page"), "/docs/tools/chairlift must name its Updex v2.3.1 dependency.");
 for (const page of ["Overview", "Updates", "Apps", "Features", "Problems", "Maintenance"]) {
   assert(chairlift.includes(`<td>${page}</td>`), `/docs/tools/chairlift must name the ${page} page of the rail (ChairLift v0.16.0: six pages in the rail).`);
 }
 assert(chairliftText.includes("Ctrl+K"), "/docs/tools/chairlift must give the command palette shortcut (ChairLift v0.16.0: the window has a command palette).");
 assert(chairliftText.includes("chairlift --send-pending-reports"), "/docs/tools/chairlift must give the automatic report command.");
-assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/3f77c74692dc10d9ee4b536eb13afa87c09a2964/CONFIG.md"), "/docs/tools/chairlift must link the configuration reference at v0.17.1.");
+assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/514660274f1e3649af5dbc3d2a085affc2a213e8/CONFIG.md"), "/docs/tools/chairlift must link the configuration reference at v0.17.2.");
 assert(/<td>Problems<\/td>\s*<td>From v0\.14\.0\./.test(chairlift) && chairliftText.includes("From v0.15.0, you can also send problem reports"), "/docs/tools/chairlift must list the Problems page, from v0.14.0, and say that v0.15.0 sends reports after you turn reporting on (owner review of frostyard-org#75; ChairLift v0.15.0: reporting is released).");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/releases/tag/v0.15.0"), "/docs/tools/chairlift must link the ChairLift v0.15.0 release (ChairLift v0.15.0: reporting is released).");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/54124831081796ffdadd4e10644fdc20719bf723/docs/specs/problems-page.md"), "/docs/tools/chairlift must cite the Problems page spec at its pin.");
@@ -970,9 +972,10 @@ assert(!/Restart to finish[^.]*(as its main action|button)/.test(chairliftText) 
 assert(chairliftText.includes("The feature toast says activation did not finish") && !chairliftText.includes("The feature toast says Extensions merged"), "/docs/tools/chairlift must quote the part that both activation toasts share: Extensions merged and Features merged (owner review of frostyard-org#107; ChairLift v0.16.0 actionmsg.go).");
 assert(chairliftText.includes("do not turn off or unplug the computer during the update, and keep the power connected") && !chairliftText.includes("do not unplug the device"), "/docs/tools/chairlift must give the firmware dialog's warning about the computer, not the device (owner review of frostyard-org#107; ChairLift v0.16.0 pageview.go).");
 assert(chairliftText.includes("It sends nothing, and says why, for example when reporting is off"), "/docs/tools/chairlift must not give the cases where --send-pending-reports sends nothing as a complete list (owner review of frostyard-org#107; ChairLift v0.16.0 internal/reporting/cli.go).");
-assert(chairliftText.includes("ChairLift v0.17.1 builds with Go 1.27.4"), "/docs/tools/chairlift must name the Go 1.27.4 security fix.");
+assert(chairliftText.includes("ChairLift v0.17.2 builds with Go 1.27.4"), "/docs/tools/chairlift must name the Go 1.27.4 security fix.");
 assert(chairliftText.includes("after an update run that succeeds, each feature that updated") && chairliftText.includes("A failed run or a dry run keeps every item in the list"), "/docs/tools/chairlift must say that only a successful live run takes updated features off the list (cross-review of frostyard-org#118; ChairLift v0.17.1 internal/views/features.go, DryRun and err guard).");
-assert(chairliftText.includes("Mission Center, GNOME System Monitor, or KDE System Monitor") && chairliftText.includes("/usr/bin/pkexec") && chairliftText.includes("From v0.17.1, the Flatpak card no longer offers an update"), "/docs/tools/chairlift must name the system monitor list, the pkexec dependency, and the OCI Flatpak fix of ChairLift v0.17.x.");
+assert(chairliftText.includes("GNOME System Monitor, then KDE System Monitor by default") && chairliftText.includes("It starts the first installed app visible in the desktop menu") && chairliftText.includes("A custom health_group.app_id replaces that order") && chairliftText.includes("With no matching app, the button does not show"), "/docs/tools/chairlift must give the v0.17.2 monitor order, desktop-menu lookup, custom override, and hidden-button fallback.");
+assert(chairliftText.includes("/usr/bin/pkexec") && chairliftText.includes("From v0.17.1, the Flatpak card no longer offers an update"), "/docs/tools/chairlift must name the pkexec dependency and the historical OCI Flatpak fix of ChairLift v0.17.x.");
 assert(chairliftText.includes("Snow, Snowfield, and Sundog install ChairLift") && chairliftText.includes("Floe does not"), "/docs/tools/chairlift must name the images that have ChairLift.");
 assert(chairlift.includes('data-code="chairlift --dry-run"'), "/docs/tools/chairlift must give the dry-run command.");
 assert(chairlift.includes('data-code="chairlift --first-run --dry-run"'), "/docs/tools/chairlift must give the first-run dry-run command.");
@@ -991,6 +994,12 @@ assert(chairlift.includes('href="/docs/sysexts/manage/"'), "/docs/tools/chairlif
 assert(chairlift.includes('id="install-a-firmware-update"'), "/docs/tools/chairlift must render the install-a-firmware-update heading.");
 assert(chairliftText.includes("firmware_updates_group"), "/docs/tools/chairlift must explain firmware_updates_group.");
 assert(chairlift.includes("https://github.com/frostyard/chairlift/blob/64245bc9852c4171e9b55b46048d8cf64e7a0f47/docs/adr/0012-firmware-updates-use-fwupds-own-polkit.md"), "/docs/tools/chairlift must cite the firmware PolicyKit ADR.");
+
+const firn = await readRoute("/docs/tools/firn");
+const firnText = textOf(firn);
+assert(firnText.includes("guide follows Firn v0.13.0"), "/docs/tools/firn must follow Firn v0.13.0.");
+assert(firnText.includes("firn-gui --kiosk"), "/docs/tools/firn must give the opt-in kiosk command.");
+assert(firn.includes('href="https://frostyard.github.io/firn/guides/graphical-installer/#kiosk-mode"'), "/docs/tools/firn must link the canonical kiosk guide.");
 
 const intuneme = await readRoute("/docs/tools/intuneme");
 const intunemeText = textOf(intuneme);

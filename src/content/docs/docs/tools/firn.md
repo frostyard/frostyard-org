@@ -3,13 +3,13 @@ title: Firn
 description: "Reinstall a Frostyard image from a saved Firn recipe, and move a version 1 recipe to version 2 before 2026-12-30."
 follows:
   repo: frostyard/firn
-  tag: v0.12.0
+  tag: v0.13.0
 ---
 
 Firn is the Frostyard installer. It installs a bootc image from one TOML file,
 the recipe. The terminal wizard and the graphical installer both write a
 recipe, and you can run the same install again from it without a wizard. This
-guide follows Firn v0.12.0. The full documentation is on the
+guide follows Firn v0.13.0. The full documentation is on the
 [Firn documentation site](https://frostyard.github.io/firn/).
 
 For a first install, follow
@@ -19,6 +19,12 @@ From v0.12.0, the graphical installer draws in the Frostyard look, light or
 dark. It follows the desktop's text size and high-contrast setting, but not its
 accent color. The commands and recipes on this page do not change. See
 [The graphical installer](https://frostyard.github.io/firn/guides/graphical-installer/).
+
+From v0.13.0, you can run `firn-gui --kiosk` for kiosk mode. Close and
+`Ctrl+Q` do nothing. Use **Use the console installer** to leave the window;
+the end screen also offers **Power off** and **Restart**. See
+[Kiosk mode](https://frostyard.github.io/firn/guides/graphical-installer/#kiosk-mode)
+for the controls and their safety limits.
 
 ## Keep the recipe
 
@@ -138,6 +144,14 @@ Firn v0.11.0 and later have it. An older Firn release without it keeps accepting
 - [Firn README](https://github.com/frostyard/firn/blob/main/README.md)
 
 ## Sources
+
+Reviewed 2026-11-18 against Firn v0.13.0, commit
+[`92baf6ec4c72d68811575b685c82a62443c06803`](https://github.com/frostyard/firn/tree/92baf6ec4c72d68811575b685c82a62443c06803),
+released 2026-11-18.
+
+- [Firn v0.13.0 release](https://github.com/frostyard/firn/releases/tag/v0.13.0): kiosk mode in [`site/content/guides/graphical-installer.md`](https://github.com/frostyard/firn/blob/92baf6ec4c72d68811575b685c82a62443c06803/site/content/guides/graphical-installer.md#kiosk-mode), the opt-in flag in [`gui/cmd/firn-gui/main.go`](https://github.com/frostyard/firn/blob/92baf6ec4c72d68811575b685c82a62443c06803/gui/cmd/firn-gui/main.go#L50), close and quit guards in [`gui/internal/installer/app.go`](https://github.com/frostyard/firn/blob/92baf6ec4c72d68811575b685c82a62443c06803/gui/internal/installer/app.go#L262-L297), and end-screen actions in [`gui/internal/installer/installpage.go`](https://github.com/frostyard/firn/blob/92baf6ec4c72d68811575b685c82a62443c06803/gui/internal/installer/installpage.go#L216-L275).
+
+### Historical sources
 
 Reviewed 2026-11-12 against Firn v0.12.0, commit
 [`fa12545eef78dea25a4cb0b85b681c96fabbbf4e`](https://github.com/frostyard/firn/tree/fa12545eef78dea25a4cb0b85b681c96fabbbf4e),
