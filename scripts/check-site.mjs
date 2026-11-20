@@ -773,7 +773,8 @@ for (const page of lightPages) {
   const path = `/docs/apps/${page.route}`;
   const html = await readRoute(path);
   const text = textOf(html);
-  lightHtml[page.route] = { html, text };
+  const bodyHtml = html.split('<h2 id="sources"')[0];
+  lightHtml[page.route] = { html, text, bodyHtml, bodyText: textOf(bodyHtml) };
   assertSections(path, html, ["status", page.install, "documentation", "see-also", "sources"]);
   assert(html.includes(`https://github.com/frostyard/${page.repo}/blob/${page.sha}/README.md`), `${path} must cite README.md at the pinned commit.`);
   assert(html.includes(`https://github.com/frostyard/${page.repo}/blob/main/${page.canonical}`), `${path} must link the canonical install doc ${page.canonical}.`);
@@ -787,7 +788,18 @@ assert(lightHtml.lodge.text.includes("The latest release is v0.6.0") && lightHtm
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
 assert(lightHtml.porter.text.includes("The latest release is v0.3.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.3.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
-assert(lightHtml.frostnotes.text.includes("The latest release is v0.6.0") && lightHtml.frostnotes.text.includes("You see version 0.6.0") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must name v0.6.0, list_tasks, and the reset layout of the native app.");
+for (const [route, tag] of [["frostnotes", "v0.7.0"], ["frostmail", "v0.9.0"]]) {
+  const follows = readFollows(await readFile(new URL(`../src/content/docs/docs/apps/${route}.md`, import.meta.url), "utf8"));
+  assert(follows?.repo === `frostyard/${route}` && follows.tag === tag, `/docs/apps/${route} follows metadata must name frostyard/${route} at ${tag}.`);
+  assert(lightHtml[route].bodyText.includes(`The latest release is ${follows.tag}.`), `/docs/apps/${route} must render its follows version as the latest release before Sources.`);
+}
+assert(lightHtml.frostnotes.bodyText.includes("The latest release is v0.7.0") && lightHtml.frostnotes.bodyText.includes("You see version 0.7.0") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must name v0.7.0, install version 0.7.0, list_tasks, and the reset layout of the native app.");
+assert(/Release v0\.7\.0 adds note\.query\s*, notesctl query\s*, and the MCP tool query_notes/.test(lightHtml.frostnotes.bodyText) && lightHtml.frostnotes.bodyText.includes("Obsidian Bases subset"), "/docs/apps/frostnotes must name note.query, notesctl query, and query_notes as shipped for an Obsidian Bases subset.");
+for (const doc of ["bases.md", "mcp.md#queries"]) {
+  assert(lightHtml.frostnotes.bodyHtml.includes(`href="https://github.com/frostyard/frostnotes/blob/main/docs/specs/${doc}"`), `/docs/apps/frostnotes must link the canonical ${doc} before Sources.`);
+}
+assert(lightHtml.frostnotes.bodyText.includes("There is no graph view or base view in the apps yet.") && lightHtml.frostnotes.bodyText.includes("Queries support only the documented Obsidian Bases subset."), "/docs/apps/frostnotes must distinguish shipped subset queries from the graph and app base views that are not built yet.");
+assert(lightHtml.frostnotes.bodyText.includes("Notes inside lodge is done:") && !/Notes inside lodge is in progress/.test(lightHtml.frostnotes.bodyText) && /7-day sync trial['’]s daily checks were not fully recorded, so the trial is not verified in full\./.test(lightHtml.frostnotes.bodyText), "/docs/apps/frostnotes must say that notes inside lodge is done without claiming full verification of the 7-day sync trial.");
 for (const route of ["lodge", "frostnotes"]) {
   assert(lightHtml[route].text.includes("The system extension can trail the latest release"), `/docs/apps/${route} must state that the system extension can trail the latest release.`);
 }
@@ -826,7 +838,9 @@ for (const [route, extension] of Object.entries(extensionForApp)) {
 }
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
-assert(lightHtml.frostmail.text.includes("The latest release is v0.8.0") && lightHtml.frostmail.text.includes("native Go app") && lightHtml.frostmail.text.includes("Close to tray") && lightHtml.frostmail.text.includes("tray icon whose menu shows that count") && !lightHtml.frostmail.text.includes("tray icon with that count"), "/docs/apps/frostmail must name release v0.8.0 as the latest, the native app, and the tray of v0.8.0.");
+assert(lightHtml.frostmail.bodyText.includes("The latest release is v0.9.0") && lightHtml.frostmail.text.includes("native Go app") && lightHtml.frostmail.text.includes("Close to tray") && lightHtml.frostmail.text.includes("tray icon whose menu shows that count") && !lightHtml.frostmail.text.includes("tray icon with that count"), "/docs/apps/frostmail must name release v0.9.0 as the latest, the native app, and the tray of v0.8.0.");
+assert(lightHtml.frostmail.bodyText.includes("Release v0.9.0 adds Settings &gt; General &gt; Text size: Smaller, Default, Larger, or Largest.") && /The choice applies at once to every open desktop window and the reader['’]s message, with no restart\./.test(lightHtml.frostmail.bodyText), "/docs/apps/frostmail must name all 4 text-size choices and their immediate effect on desktop windows and the reader.");
+assert(/It does not change printing or lodge['’]s web app\./.test(lightHtml.frostmail.bodyText) && lightHtml.frostmail.bodyHtml.includes('href="https://github.com/frostyard/frostmail/blob/main/docs/specs/ui.md#tokens"'), "/docs/apps/frostmail must keep text size desktop-only, exclude printing and the lodge web app, and link the canonical text-size description.");
 assert(lightHtml.frostmail.text.includes("Release v0.7.0 draws the desktop app in the Frostyard look") && lightHtml.frostnotes.text.includes("Release v0.6.0 draws the desktop app in the Frostyard look"), "/docs/apps/frostmail and /docs/apps/frostnotes must name the Frostyard look of Frostmail v0.7.0 and Frostnotes v0.6.0.");
 assert(lightHtml.frostmail.text.includes("Follow Up section") && lightHtml.frostmail.text.includes("rail button"), "/docs/apps/frostmail must name the v0.5.0 Follow Up section and the lodge rail badge.");
 assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension can trail the latest release.") && !/maild system extension still carries/.test(lightHtml.frostmail.text), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension can trail the latest release (the catalog lists its version).");
