@@ -12,6 +12,11 @@ npm run dev
 
 `npm run dev` starts the local Astro server with live reload.
 
+`npm ci` also installs the workflow guard's explicit `yaml` 2.9.1
+devDependency. That exact version was already in `package-lock.json`.
+Making it explicit changed only the root dependency metadata in the lock,
+not any resolved package.
+
 ## Commands
 
 | Command | What it does |
@@ -24,12 +29,14 @@ npm run dev
 | `npm run check:prose` | Run the banned-phrase check over the pages in `src/content/docs/`. |
 | `npm test` | Run the unit tests in `scripts/test/`. |
 | `node scripts/check-release-drift.mjs` | Check app, tool and sysext guides against the latest GitHub releases. Needs the network. |
-| `npm run ci` | Run the complete local CI gate, in order: `npm test`, `npm run check:prose`, `npm run check`, `npm run build:check`, `npm run check:site`. |
+| `npm run ci` | Run the npm checks, in order: `npm test`, `npm run check:prose`, `npm run check`, `npm run build:check`, `npm run check:site`. This is not the full repository gate. |
+| `node scripts/check-workflow-pins.mjs` | Check action and reusable-workflow pins in every `.yml` and `.yaml` workflow. |
+| `make check-snapshots` | Compare both generated snapshots with `HEAD`, separately for the index and working tree. |
 | `npm run sync:problem-schema` | Copy the pinned problem report schema into `public/schemas/problem-report/v1.json`, when its bytes match the pin. |
 | `npm run preview` | Build the site, then serve it with `wrangler dev`. |
-| `make verify` | Run the template gate (symlinks, docs index, risk paths, corrections format, vendored copies, and their tests), then `npm run ci`. |
+| `make verify` | Run the template checks and their tests, the workflow pin guard, `npm run ci`, then snapshot validation. |
 | `make check` | The same as `make verify`. |
-| `make ci BASE=origin/main` | `make verify`, then a check of `.memory/corrections/` against `BASE`: no record removed or renamed, only an empty `promoted_to` filled, and the old single corrections file does not come back. Run it before you call a change complete. |
+| `make ci BASE=origin/main` | Run the full pre-push gate: `make verify`, then the append-only corrections comparison against `BASE`. |
 | `npm run deploy` | Build the site, then run `wrangler deploy`. Agents never run it. Brian deploys by merging to `main`. |
 
 The rules for agents are in [AGENTS.md](../AGENTS.md).
@@ -93,6 +100,45 @@ line of a new guide, or the check does not see it.
 
 ## Checks
 
+Run the full gate before each push:
+
+```sh
+make ci BASE=origin/main
+```
+
+`make verify` and `make check` run these checks in order:
+
+1. The template checks and their tests: instruction links, docs index, risk
+   paths, correction records and vendored copies.
+2. The workflow pin guard, after checking that `node_modules` exists.
+3. `npm run ci`: tests, prose checks, Astro diagnostics, the offline
+   `build:check` build, then built-site checks. The build has no `prebuild`
+   refresh step.
+4. `make check-snapshots`: compare `src/data/extensions.json` and
+   `src/data/problem-stats.json` with `HEAD`. The index and working tree are
+   checked separately, so staged changes still fail if the working bytes
+   were restored. A missing snapshot in `HEAD`, the index or the working
+   tree also fails. The diagnostic reports the number of snapshots checked.
+
+`make ci` runs the same checks. When `BASE` is set, it then checks that
+correction records were not removed, renamed or changed against that base.
+The only permitted change to an existing record fills an empty
+`promoted_to`. The retired single corrections file must not return.
+
+The pin guard parses YAML, including flow mappings, quoted keys and aliases.
+It checks only `jobs.<id>.uses` and `jobs.<id>.steps[].uses`. Text in a shell
+`run` block, or input data in `env` and `with`, is not an action reference.
+Malformed YAML, duplicate keys, an empty workflow set and malformed
+reference values fail the guard.
+
+External references must use `owner/repo[/path]@` followed by exactly 40
+hexadecimal commit characters. Local `./` actions are exempt from the pin
+requirement. `docker://` references fail with an explanation: core
+ADR-0021 and repository baseline B5 give no container exemption, so an
+image digest does not satisfy the commit-SHA rule. The guard reports the
+workflow count and actual `uses` count, including local references.
+For fixture checks, pass `--root DIR` to `scripts/check-workflow-pins.mjs`.
+
 Every docs page ends with commit-pinned Sources. Add or change a product fact
 only with a source file that supports it; do not invent commands or flags.
 
@@ -105,8 +151,17 @@ docs navigation link, or a Pagefind page disappears. It also fails when
 
 ## CI and deploy
 
-`.github/workflows/ci.yml` runs `make ci` on each pull request and each push to
-`main`.
+`.github/workflows/ci.yml` runs `npm ci` and the full `make ci` gate on each
+pull request, each push to `main`, and nightly at 02:23 UTC. All 3 events use
+the same unconditional `ci` job, read-only contents permission and no secrets.
+On a pull request, `BASE` is the PR base SHA. Push and scheduled runs leave
+`BASE` empty, so they omit only the optional corrections comparison.
+
+The separate weekly `stats-rebuild.yml` workflow starts a statistics
+rebuild through a credentialed deployment hook. It is not the nightly
+compliance check. The secret-free nightly contract applies only to
+`ci.yml`; the workflow-wide pin guard checks `uses` references, not
+statistics deployment behavior.
 
 Cloudflare Workers Builds builds and deploys the site. A push to `main` deploys
 to production. A pull request gets a preview URL in its `Workers Builds:

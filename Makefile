@@ -2,7 +2,7 @@
 # call these targets; the npm scripts stay for developers.
 NODE_MAJOR := $(shell node -p "process.versions.node.split('.')[0]" 2>/dev/null)
 
-.PHONY: verify check ci verify-template
+.PHONY: verify check ci verify-template check-snapshots
 
 ## verify-template: the template gate (symlinks, docs index, risk paths, corrections, vendored copies) and its tests
 verify-template:
@@ -14,7 +14,13 @@ verify-template:
 ## verify: credential-free, non-mutating gate: the template gate, then npm run ci (tests, prose, astro check, offline build, site check)
 verify: verify-template
 	@if [ ! -d node_modules ]; then echo "FAIL: make verify requires the locked dependencies (run: npm ci)"; exit 1; fi
+	node scripts/check-workflow-pins.mjs
 	npm run ci
+	$(MAKE) check-snapshots
+
+## check-snapshots: compare both committed data snapshots with HEAD, including staged changes
+check-snapshots:
+	node scripts/check-snapshots.mjs
 
 ## check: the developer gate; the repository has no formatter, so it is verify
 check: verify

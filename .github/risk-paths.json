@@ -28,6 +28,16 @@
       "why": "governance: the template verification gate"
     },
     {
+      "glob": "scripts/check-workflow-pins.mjs",
+      "level": "L2",
+      "why": "governance: the workflow-wide action pin guard"
+    },
+    {
+      "glob": "scripts/check-snapshots.mjs",
+      "level": "L2",
+      "why": "governance: the committed data snapshot guard"
+    },
+    {
       "glob": "scripts/check-corrections.mjs",
       "level": "L2",
       "why": "governance: the corrections validation gate"

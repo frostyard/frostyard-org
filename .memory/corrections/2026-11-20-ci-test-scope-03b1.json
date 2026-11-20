@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-20",
+  "scope": "ci-tests",
+  "correction": "Keep workflow-specific test contracts in their scope. The pin guard checks uses references across workflows; the nightly secret-free contract applies only to ci.yml. Check unchanged task files with a parent git diff, not a permanent base-byte assertion that blocks future authorized changes.",
+  "evidence": "Pre-PR parent review for frostyard/frostyard-org#139: a base-byte comparison would block unrelated future statistics deployment changes.",
+  "promoted_to": "scripts/test/ci-safeguards.test.mjs"
+}
