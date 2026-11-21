@@ -1,9 +1,9 @@
 ---
 title: Frostnotes
-description: "Frostnotes is a notes app in the spirit of Obsidian: plain markdown files, sync, a desktop app, and MCP for agents. Pre-release; install the desktop app from the Frostyard Flatpak remote."
+description: "Keep plain markdown notes with live preview, optional self-hosted sync, and Obsidian Bases subset queries through the CLI and MCP. Pre-release; install from the Frostyard Flatpak remote."
 follows:
   repo: frostyard/frostnotes
-  tag: v0.6.0
+  tag: v0.7.0
 ---
 
 Frostnotes is a notes app in the spirit of Obsidian. Your notes are plain
@@ -23,7 +23,7 @@ want notes that sync between your devices and that agents can read and write.
 
 ## Status
 
-Frostnotes is pre-release. The latest release is v0.6.0. Its Flatpak is in the
+Frostnotes is pre-release. The latest release is v0.7.0. Its Flatpak is in the
 [Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
 attaches `frostyard-notesd_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
 `notesd`, `notesctl`, the units, the `frostnotes` user, and the web build for
@@ -31,10 +31,12 @@ lodge's notes app. Frostnotes is not in the Frostyard APT repository or the
 Frostyard Homebrew tap. On a Frostyard image, the
 [notesd system extension](/docs/sysexts/notesd/) installs it. The system extension can trail the latest release. The [catalog](/docs/sysexts/) lists the version it ships.
 
-The vault, sync, and the desktop app are done. Notes inside lodge is in
-progress: `notesd` runs as lodge's `notes` app. The hub moved behind lodge
-on 2026-10-26, and devices now sync through lodge. Graph and queries
-(Obsidian Bases) are planned. A hub container image and systemd unit, and
+The vault, sync, and the desktop app are done. Notes inside lodge is done:
+`notesd` runs as lodge's `notes` app. The hub moved behind lodge on
+2026-10-26, and devices now sync through lodge. The 7-day sync trial's daily
+checks were not recorded, so the trial is not verified in full.
+Queries through the daemon, CLI, and MCP are built; base views in the apps
+and a graph view are planned. A hub container image and systemd unit, and
 Frostyard APT packages, are planned. Windows and macOS builds, Canvas, and a
 mobile app come later.
 
@@ -74,6 +76,14 @@ follows your desktop's light or dark style. The desktop's high contrast and text
 size apply, but its accent color no longer does. Live preview sets headings in
 Inter, bold, and puts the lines of code blocks on a code color.
 
+Release v0.7.0 adds `note.query`, `notesctl query`, and the MCP tool
+`query_notes` for an [Obsidian Bases subset](https://github.com/frostyard/frostnotes/blob/main/docs/specs/bases.md).
+You can query indexed files and properties from a `.base` file with the CLI.
+Agents can use [MCP queries](https://github.com/frostyard/frostnotes/blob/main/docs/specs/mcp.md#queries)
+with filters or a `.base` file. This does not add base views to the apps.
+v0.7.0 also adds a database migration, so v0.6.0 cannot open the database
+after v0.7.0 has run.
+
 ## Install
 
 The desktop app is a Flatpak. It works on its own: you need no account,
@@ -100,7 +110,7 @@ Check the install:
 
 `flatpak info org.frostyard.Frostnotes`
 
-You see version 0.6.0. Frostnotes shows in the app grid. Update it with
+You see version 0.7.0. Frostnotes shows in the app grid. Update it with
 `flatpak update`. From v0.3.0, when you open a new window after
 `flatpak update`, the app replaces a `notesd` of an older build with the new
 one, and you need no logout. The update from v0.2.0 to v0.3.0 is different:
@@ -212,6 +222,8 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 - [The hub behind lodge](https://github.com/frostyard/frostnotes/blob/main/docs/design/hub.md): how the hub runs in lodge, and how devices move to it.
 - [Moving from a host notesd](https://github.com/frostyard/frostnotes/blob/main/docs/design/app.md#operational-notes): the steps from a host `notesd` to the Flatpak.
 - [MCP](https://github.com/frostyard/frostnotes/blob/main/docs/specs/mcp.md): the tools an agent gets.
+- [Obsidian Bases subset](https://github.com/frostyard/frostnotes/blob/main/docs/specs/bases.md): query syntax, supported features, and `notesctl query`.
+- [MCP queries](https://github.com/frostyard/frostnotes/blob/main/docs/specs/mcp.md#queries): `query_notes` inputs and results.
 - [Notes in lodge](https://github.com/frostyard/frostnotes/blob/main/docs/specs/lodge-app.md): the app contract with lodge.
 - [The desktop app in MyGo](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0009-mygo-desktop.md): the native app and how it differs from the web app.
 - [Roadmap](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0002-roadmap.md): what is done and what comes next.
@@ -219,7 +231,8 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 ## Limits
 
-- There is no graph view and no query view yet.
+- There is no graph view or base view in the apps yet. Queries support only
+  the documented Obsidian Bases subset.
 - The desktop app builds for Linux only.
 - `notesd` indexes a note over 10 MB by name only.
 - `notesd` refuses a newer database. Back up `~/.var/app/org.frostyard.Frostnotes/`
@@ -235,7 +248,13 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 ## Sources
 
-Reviewed 2026-11-12.
+Reviewed 2026-11-19.
+
+- Frostnotes release v0.7.0 commit [`83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4`](https://github.com/frostyard/frostnotes/tree/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4), released 2026-11-19. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.7.0) attaches only `frostyard-notesd_0.7.0_amd64.deb`.
+- The v0.7.0 migration: [`0007_sync_pushes_refused.sql`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/internal/store/migrations/0007_sync_pushes_refused.sql). The [v0.6.0 store](https://github.com/frostyard/frostnotes/blob/b9c6c9006d666183f91313f79648f8323b8a61b0/internal/store/store.go) refuses a newer schema.
+- Publication at v0.7.0: the [live Frostyard catalogue](https://frostyard.github.io/flatpak-index/index/static), checked 2026-11-19, lists `org.frostyard.Frostnotes` at digest `sha256:f296521fc9a77af6e0a675bea2372181154a181840918bd3ca63e9210d5e9a06`, with subject `Built from 83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4` and AppStream version `0.7.0`. Packaging at that commit: [`packaging/flatpak/org.frostyard.Frostnotes.json`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/packaging/flatpak/org.frostyard.Frostnotes.json) and [`packaging/nfpm.yaml`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/packaging/nfpm.yaml). The live [APT Packages](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) and [Homebrew Casks](https://github.com/frostyard/homebrew-tap/tree/main/Casks), checked 2026-11-19, still have no Frostnotes package.
+- Queries in v0.7.0: [frostnotes#245](https://github.com/frostyard/frostnotes/pull/245) adds `note.query` and `notesctl query`; [frostnotes#247](https://github.com/frostyard/frostnotes/pull/247) adds `query_notes`. At the release commit, [`docs/specs/bases.md`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/docs/specs/bases.md) defines the subset and says app base views come later; [`docs/specs/mcp.md#queries`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/docs/specs/mcp.md#queries) describes the MCP tool. [`internal/mcpserver/mcpserver.go`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/internal/mcpserver/mcpserver.go#L136) registers it, despite the older phase-2 PR wording in plan 0010.
+- Notes inside lodge: [`docs/plans/0006-m4-notes-inside-lodge.md`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/docs/plans/0006-m4-notes-inside-lodge.md) says Done, 2026-11-13, with all 7 phases done or accepted. It records that the 7-day trial's daily checks were not recorded and the trial is not verified in full. [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/docs/plans/0002-roadmap.md) keeps the graph and app base views in M5.
 
 - Frostnotes release v0.6.0 commit [`b9c6c9006d666183f91313f79648f8323b8a61b0`](https://github.com/frostyard/frostnotes/tree/b9c6c9006d666183f91313f79648f8323b8a61b0), released 2026-11-12. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.6.0) attaches only `frostyard-notesd_0.6.0_amd64.deb`.
 - The Flatpak at v0.6.0: the live Frostyard catalogue (its `Last-Modified` is 2026-11-12 19:57:18 GMT) lists `org.frostyard.Frostnotes` at digest `sha256:6a4d13a462afe0e62a656f36c24bbe63d777b573dde6710dadab9114c487398b`, built from `b9c6c900`, with the release `0.6.0` in its AppStream data.

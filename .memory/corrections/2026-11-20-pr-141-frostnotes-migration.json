@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-20",
+  "scope": "docs/frostnotes",
+  "correction": "Check the tagged migration diff when updating the Frostnotes guide. Name new migrations in Sources and state which older release cannot open the upgraded database in the release paragraph.",
+  "evidence": "https://github.com/frostyard/frostyard-org/pull/141#issuecomment-7026618689",
+  "promoted_to": ""
+}
