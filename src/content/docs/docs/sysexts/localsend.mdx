@@ -3,7 +3,7 @@ title: LocalSend
 description: Enable, update, roll back, and remove the LocalSend system extension on Frostyard bootc images.
 follows:
   repo: frostyard/updex
-  tag: v2.3.1
+  tag: v2.4.0
 ---
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
@@ -21,7 +21,7 @@ You need:
 
 The LocalSend extension has no published test results on Frostyard images yet. Try it on a machine you can spare first.
 
-This guide follows Updex v2.3.1. Run `updex --version` to see yours.
+This guide follows Updex v2.4.0. Run `updex --version` to see yours.
 
 ## Enable LocalSend
 
@@ -95,8 +95,8 @@ Each build checks that these paths are present: the LocalSend binary, the two `/
 
 Reviewed 2026-10-27; Updex facts reviewed 2026-11-16. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.3.1 commit
-[`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
+Updex v2.4.0 commit
+[`ec4b4bbd728f2e9193095e4a5e32ac328be404ff`](https://github.com/frostyard/updex/tree/ec4b4bbd728f2e9193095e4a5e32ac328be404ff).
 
 - [`mkosi.images/localsend/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/localsend/mkosi.conf)
 - [`mkosi.images/localsend/required-paths.txt`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/localsend/required-paths.txt)
@@ -105,6 +105,6 @@ Updex v2.3.1 commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.localsend.d/localsend.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.localsend.d/localsend.feature)
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.localsend.d/localsend.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.localsend.d/localsend.transfer)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [Updex v2.3.1 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md)
-- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
+- [Updex v2.4.0 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md)
+- [Updex v2.4.0 release](https://github.com/frostyard/updex/releases/tag/v2.4.0)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)

@@ -3,7 +3,7 @@ title: K3s
 description: Enable, update, and remove the k3s Kubernetes system extension on a Frostyard bootc image.
 follows:
   repo: frostyard/updex
-  tag: v2.3.1
+  tag: v2.4.0
 ---
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
@@ -33,7 +33,7 @@ k3s starts. A failed load does not stop the unit.
 K3s has no published test results on Frostyard images yet. Try it on a machine
 you can spare first.
 
-This guide follows Updex v2.3.1. Run `updex --version` to see yours.
+This guide follows Updex v2.4.0. Run `updex --version` to see yours.
 
 ## Enable K3s
 
@@ -176,14 +176,14 @@ overlay, so a later Base can break an older k3s image.
 - [Docker system extension](/docs/sysexts/docker/)
 - [Manage system extensions](/docs/sysexts/manage/)
 - [System extension model](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [Updex v2.3.1 command reference](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md)
+- [Updex v2.4.0 command reference](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md)
 
 ## Sources
 
 Reviewed 2026-10-27; Updex facts reviewed 2026-11-16. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.3.1 commit
-[`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
+Updex v2.4.0 commit
+[`ec4b4bbd728f2e9193095e4a5e32ac328be404ff`](https://github.com/frostyard/updex/tree/ec4b4bbd728f2e9193095e4a5e32ac328be404ff).
 
 - [`mkosi.images/k3s/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.conf)
 - [`mkosi.images/k3s/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/k3s/mkosi.postinst.chroot)
@@ -197,11 +197,11 @@ Updex v2.3.1 commit
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.transfer`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.k3s.d/k3s.transfer)
 - [`shared/download/sysext-checksums.json`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/download/sysext-checksums.json)
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
-- [Updex v2.3.1 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md)
-- [Updex v2.3.1 `updex/features.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/features.go)
-- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
+- [Updex v2.4.0 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md)
+- [Updex v2.4.0 `updex/features.go`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/updex/features.go)
+- [Updex v2.4.0 release](https://github.com/frostyard/updex/releases/tag/v2.4.0)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
 - [snosi issue #1100: k3s upholds a unit whose condition always fails](https://github.com/frostyard/snosi/issues/1100)
 - [Murbella's live check of the role switch (frostyard-org#21 review)](https://github.com/frostyard/frostyard-org/pull/21#pullrequestreview-5619934232)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)

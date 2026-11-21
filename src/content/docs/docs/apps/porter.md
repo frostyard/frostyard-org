@@ -3,7 +3,7 @@ title: Porter
 description: "Porter is the owner's assistant inside lodge: a chat panel that reads your apps and drafts but never sends. Pre-release: the only package is a `.deb` of the daemon for lodge."
 follows:
   repo: frostyard/porter
-  tag: v0.3.0
+  tag: v0.4.0
 ---
 
 Porter is a personal assistant that runs inside [lodge](/docs/apps/lodge/).
@@ -23,18 +23,18 @@ lodge.
 
 ## Status
 
-Porter is pre-release. The latest release is v0.3.0. Each release attaches
+Porter is pre-release. The latest release is v0.4.0. Each release attaches
 one package, `frostyard-porterd_X.Y.Z_amd64.deb`, for lodge's host. On a
 Frostyard image, the [porterd system extension](/docs/sysexts/porterd/)
 installs it. Chat and routines are built and run on lodge's host, as lodge's
-`porter` app. Porter no longer reads frostread, which is retired. From v0.2.0, you can run a routine at once from the Routines list in Activity. A run now has the rights and output of a scheduled run, and it does not move the routine's schedule. See [Run now](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now). From v0.3.0, Porter's rail button in lodge shows how many capture and approval cards wait for you. The GitHub manager
+`porter` app. The extension can trail the release. From v0.2.0, you can run a routine at once from the Routines list in Activity. A run now has the rights and output of a scheduled run, and it does not move the routine's schedule. See [Run now](https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now). From v0.3.0, Porter's rail button in lodge shows how many capture and approval cards wait for you. The GitHub manager
 phase is parked until a GitHub manager app exists in lodge.
 
 ## Install
 
 Porter runs as lodge's `porter` app, on lodge's host. You need
 [lodge](/docs/apps/lodge/), an inference alias that lodge routes to a model,
-and the apps Porter reads. The release `.deb` installs `porterd` as
+and the apps Porter reads. Download the `.deb` from the [v0.4.0 release](https://github.com/frostyard/porter/releases/tag/v0.4.0). It installs `porterd` as
 `/usr/bin/porterd`, with its units and the web bundle that lodge serves. On
 lodge's own host, you install the `.deb` by hand with
 `dpkg -i`. The
@@ -46,6 +46,18 @@ cover the configuration, the tokens, and the agent socket. Step 5 of lodge's
 covers agents on lodge's host.
 
 ## Update and roll back
+
+### Before you update to v0.4.0
+
+Porter no longer reads feeds. frostread (the lodge app `read`) is retired and
+its repository is archived. If you used Read with Porter, remove `"read"` from
+the `apps` list in `/etc/porter/porter.json`. The default list is now `notes`
+and `mail`, but an explicit list does not change on upgrade. Edit any routine
+that asks for feeds or a Reading section, and use a separate feed reader for
+feeds. There is no replacement feed tool in Porter. If Read still appears in
+lodge, [remove frostread](/docs/apps/lodge/#remove-frostread).
+
+### Install the update
 
 On a Frostyard image, Updex updates and rolls back the porterd system
 extension.
@@ -84,9 +96,10 @@ rollback archive before the new `.deb` goes in.
 
 ## Sources
 
-Reviewed 2026-11-15.
+Reviewed 2026-11-21.
 
-- Porter `main` at commit [`301c35f8aa8092923f41d9b6da765a1c362572ad`](https://github.com/frostyard/porter/tree/301c35f8aa8092923f41d9b6da765a1c362572ad), checked 2026-11-15. No release follows v0.3.0, and `packaging/` does not change after it. [porter#50](https://github.com/frostyard/porter/pull/50) makes this guide the user documentation that [`README.md`](https://github.com/frostyard/porter/blob/301c35f8aa8092923f41d9b6da765a1c362572ad/README.md) links. [`docs/plans/0001-roadmap.md`](https://github.com/frostyard/porter/blob/301c35f8aa8092923f41d9b6da765a1c362572ad/docs/plans/0001-roadmap.md) (Status; Phase 4, parked 2026-11-13: the GitHub manager app does not exist) and [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/301c35f8aa8092923f41d9b6da765a1c362572ad/docs/design/overview.md) (Status: Phases 2 and 3 built and deployed on lodge's host at v0.3.0).
+- [Porter v0.4.0 release](https://github.com/frostyard/porter/releases/tag/v0.4.0): Read removal, lodge/kit v0.5.0 and web dependency updates.
+- [Packaging](https://github.com/frostyard/porter/blob/v0.4.0/packaging/README.md), [configuration defaults](https://github.com/frostyard/porter/blob/v0.4.0/internal/config/config.go), and [archived frostread repository](https://github.com/frostyard/frostread).
 - Porter v0.3.0 commit [`1f7185ff82a8d06097f31d20ef0e910a75008aef`](https://github.com/frostyard/porter/tree/1f7185ff82a8d06097f31d20ef0e910a75008aef), released 2026-11-11. Its [release](https://github.com/frostyard/porter/releases/tag/v0.3.0) attaches only `frostyard-porterd_0.3.0_amd64.deb`. It adds the rail badge ([porter#33](https://github.com/frostyard/porter/pull/33); [`docs/design/overview.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/docs/design/overview.md), The rail badge) and moves lodge's host to the release `.deb` ([porter#26](https://github.com/frostyard/porter/pull/26); [`packaging/README.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/packaging/README.md), Update and Roll back). [`README.md`](https://github.com/frostyard/porter/blob/1f7185ff82a8d06097f31d20ef0e910a75008aef/README.md) (Limits).
 - Porter v0.2.0 commit [`99ab9a393596b13e096a5c111a3c4f7ac7ac0429`](https://github.com/frostyard/porter/tree/99ab9a393596b13e096a5c111a3c4f7ac7ac0429), released 2026-11-03. Its [release](https://github.com/frostyard/porter/releases/tag/v0.2.0) attaches only `frostyard-porterd_0.2.0_amd64.deb`. It adds the run now ([porter#25](https://github.com/frostyard/porter/pull/25)).
 - [`README.md`](https://github.com/frostyard/porter/blob/99ab9a393596b13e096a5c111a3c4f7ac7ac0429/README.md)

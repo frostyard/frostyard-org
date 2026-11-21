@@ -3,7 +3,7 @@ title: lodge
 description: Enable, update, roll back, and remove the lodge system extension on Frostyard bootc images.
 follows:
   repo: frostyard/updex
-  tag: v2.3.1
+  tag: v2.4.0
 ---
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
@@ -21,7 +21,7 @@ You need:
 
 lodge has no published test results on Frostyard images yet. Try it on a machine you can spare first.
 
-This guide follows Updex v2.3.1. Run `updex --version` to see yours.
+This guide follows Updex v2.4.0. Run `updex --version` to see yours.
 
 ## Enable lodge
 
@@ -290,8 +290,8 @@ core commit
 [`cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a`](https://github.com/frostyard/core/tree/cd2720e0c55d08f3ba8f28a3b55dd5796a5c425a);
 lodge v0.1.0 commit
 [`a43d3be1de45704e0514d51da4c4b32d575f7c6c`](https://github.com/frostyard/lodge/tree/a43d3be1de45704e0514d51da4c4b32d575f7c6c);
-Updex v2.3.1 commit
-[`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
+Updex v2.4.0 commit
+[`ec4b4bbd728f2e9193095e4a5e32ac328be404ff`](https://github.com/frostyard/updex/tree/ec4b4bbd728f2e9193095e4a5e32ac328be404ff).
 
 - [`mkosi.images/lodge/mkosi.conf`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/lodge/mkosi.conf)
 - [`mkosi.images/lodge/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/e423112908540aa3a8045fa9d8022a3742e3cd17/mkosi.images/lodge/mkosi.postinst.chroot)
@@ -309,13 +309,13 @@ Updex v2.3.1 commit
 - lodge [`docs/design/overview.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/design/overview.md) (back up `/var/lib/lodge`; a restore keeps the node names), [`internal/store/store.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/store/store.go) (the migration refusal), [`cmd/lodge/main.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/cmd/lodge/main.go) (`lodge starting`), [`docs/specs/lodge-http.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/lodge-http.md) (`lodgectl status`)
 - lodge [`docs/adr/0015-codex-uses-the-owners-chatgpt-plan-through-sign-in-with-chatgpt.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/adr/0015-codex-uses-the-owners-chatgpt-plan-through-sign-in-with-chatgpt.md) (refresh tokens rotate; a refused refresh signs the provider out), [`internal/codexauth/codexauth.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/codexauth/codexauth.go), [`internal/inference/usage.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/inference/usage.go) (`provider_keys` is in the database), [`cmd/lodgectl/main.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/cmd/lodgectl/main.go) (`provider login`, `provider import`), [`internal/inference/codex.go`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/internal/inference/codex.go) (the signed-out reason gives the login command), [`docs/specs/inference.md`](https://github.com/frostyard/lodge/blob/a43d3be1de45704e0514d51da4c4b32d575f7c6c/docs/specs/inference.md#the-codex-provider) (the sign-in and the import)
 - [Irulan's review (frostyard-org#58)](https://github.com/frostyard/frostyard-org/pull/58#issuecomment-6478694500)
-- [Updex v2.3.1 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
+- [Updex v2.4.0 `cmd/updex/features.go`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/cmd/updex/features.go) (`features update` refreshes the merge unless `--no-refresh`)
 - snosi [`docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md`](https://github.com/frostyard/snosi/blob/0ede646cd878f82e91b891d9c3f6eba77227573b/docs/adr/0024-verify-attestations-of-first-party-sysext-debs.md) (attestation checked at pin time and in every CI build)
 - [Murbella's review (frostyard-org#57)](https://github.com/frostyard/frostyard-org/pull/57#issuecomment-6474564111)
-- [Updex v2.3.1 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; a link on an older image shows an update, and `features update` repoints it)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (Updex does not restart units; a unit at its start limit stays failed until `systemctl reset-failed` or a reboot)
-- Updex v2.3.1 [`updex/features.go`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/features.go) (`activation did not finish`: the images are merged, and a reboot finishes the activation)
-- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1)
+- [Updex v2.4.0 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md) (accounts and paths: a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; a link on an older image shows an update, and `features update` repoints it)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (Updex does not restart units; a unit at its start limit stays failed until `systemctl reset-failed` or a reboot)
+- Updex v2.4.0 [`updex/features.go`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/updex/features.go) (`activation did not finish`: the images are merged, and a reboot finishes the activation)
+- [Updex v2.4.0 release](https://github.com/frostyard/updex/releases/tag/v2.4.0)
 - [lodge#41](https://github.com/frostyard/lodge/pull/41) (merged 2026-10-28)
 - lodge v0.2.1 commit [`74a31e4856b5e44da4567c53307cb83cf1354bf1`](https://github.com/frostyard/lodge/tree/74a31e4856b5e44da4567c53307cb83cf1354bf1): [`internal/store/migrations/`](https://github.com/frostyard/lodge/tree/74a31e4856b5e44da4567c53307cb83cf1354bf1/internal/store/migrations) holds the same 4 migrations as v0.1.0. [snosi#1257](https://github.com/frostyard/snosi/pull/1257) (merged 2026-11-09) pins lodge 0.2.1. `https://repository.frostyard.org/ext/lodge/SHA256SUMS`, checked 2026-11-09, lists 0.1.0 and 0.2.1.
 - lodge [`docs/specs/app-contract.md`](https://github.com/frostyard/lodge/blob/e76a17c57766bad3797b8d78708591d88c5e7777/docs/specs/app-contract.md) (each app's `sysusers.d` entry declares user `lodge`, with the line in lodge's own `packaging/sysusers.d/lodge.conf`)

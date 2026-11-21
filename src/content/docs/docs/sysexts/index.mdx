@@ -3,7 +3,7 @@ title: System extensions
 description: Find, enable, update, roll back, and remove a system extension on a Frostyard bootc image.
 follows:
   repo: frostyard/updex
-  tag: v2.3.1
+  tag: v2.4.0
 ---
 
 import { CardGrid, LinkCard } from "@astrojs/starlight/components";
@@ -11,11 +11,10 @@ import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 import ExtensionCatalog from "../../../../components/ExtensionCatalog.astro";
 
 A system extension adds software to the read-only `/usr` of a Frostyard bootc
-image. Every Frostyard bootc image carries a definition for each extension in
-the catalog, switched off. The extension itself is not in the image: Updex
-turns it on and downloads it.
+image. A Frostyard image carries definitions for the extensions it offers,
+switched off. Updex turns them on and downloads them.
 
-This guide follows Updex v2.3.1. Run `updex --version` to see yours.
+This guide follows Updex v2.4.0. Run `updex --version` to see yours.
 
 ## Find an extension
 
@@ -28,7 +27,9 @@ updex features list
 
 Your image offers only the features it has files for. The catalog below lists
 what the repository published at the last sync. If `updex features list` does
-not show an extension, your image cannot enable it.
+not show an extension, your image cannot enable it. If the snapshot still
+lists `readd`, that is the retired frostread extension. Do not enable it.
+[Remove frostread](/docs/apps/lodge/#remove-frostread) if it is still installed.
 
 ## Enable an extension
 
@@ -91,16 +92,16 @@ update to.
 
 Reviewed 2026-10-27; Updex facts reviewed 2026-11-16. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.3.1 commit
-[`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
+Updex v2.4.0 commit
+[`ec4b4bbd728f2e9193095e4a5e32ac328be404ff`](https://github.com/frostyard/updex/tree/ec4b4bbd728f2e9193095e4a5e32ac328be404ff).
 
 - [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md)
 - [`mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/sysupdate.docker.d/docker.feature)
-- [Updex v2.3.1 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md)
+- [Updex v2.4.0 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md)
 - [Updex PR #445: detect merged extensions for the removal guard](https://github.com/frostyard/updex/pull/445)
-- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
+- [Updex v2.4.0 release](https://github.com/frostyard/updex/releases/tag/v2.4.0)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)
 - [`scripts/sync-extensions.mjs`](https://github.com/frostyard/frostyard-org/blob/main/scripts/sync-extensions.mjs)
 - [`mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset)
-- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
+- [`docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/adr/0016-automatic-sysext-updates-apply-at-next-boot.md)
