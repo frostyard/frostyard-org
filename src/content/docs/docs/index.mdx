@@ -35,12 +35,18 @@ runs on 2026-10-24 and 2026-10-25. That is not a hardware test. See [Snow](/docs
   <LinkCard title="Frostmail" href="/docs/apps/frostmail/" description="A mail client with a daemon, a desktop app, and a CLI. Pre-release: build it from source. A Flatpak is coming." />
   <LinkCard title="Frostnotes" href="/docs/apps/frostnotes/" description="Markdown notes with sync, a desktop app, and MCP for agents. Pre-release: install it from the Frostyard Flatpak remote." />
   <LinkCard title="lodge" href="/docs/apps/lodge/" description="The tailnet web shell that runs Frostyard's apps. Pre-release: build it from source." />
-  <LinkCard title="Porter" href="/docs/apps/porter/" description="An assistant in lodge that reads your mail and notes, and drafts but never sends. Pre-release: build it from source." />
+  <LinkCard title="Porter" href="/docs/apps/porter/" description="An assistant in lodge that reads your mail and notes, and drafts but never sends. Pre-release: install the daemon package on the lodge host." />
+  <LinkCard title="frostmarks" href="/docs/apps/frostmarks/" description="Store bookmarks and import a browser export." />
   <LinkCard title="nsl" href="/docs/tools/nsl/" description="Run WSL-style Linux machines on a Frostyard image." />
   <LinkCard title="Igloo" href="/docs/tools/igloo/" description="Open nsl machines from a GNOME terminal's New Tab menu." />
   <LinkCard title="ChairLift" href="/docs/tools/chairlift/" description="Stage system updates, update Homebrew and Flatpak apps, and toggle features." />
   <LinkCard title="intuneme" href="/docs/tools/intuneme/" description="Run Microsoft Intune for a managed work device in a container." />
 </CardGrid>
+
+## Go libraries
+
+- [clix](/docs/tools/clix/): build a command-line tool with common flags and output.
+- [std](/docs/tools/std/): add progress reporting and app problem records.
 
 ## Choose an image
 
@@ -115,8 +121,8 @@ guide here. Read its [README](https://github.com/frostyard/repogen/blob/c3c9f63c
 - Extension definitions in the image, each with `Enabled=false`: snosi [`mkosi.images/base/mkosi.extra/usr/lib/`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib).
 - Sysext updates on by default: snosi [`05-updex.preset`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/base/mkosi.extra/usr/lib/systemd/system-preset/05-updex.preset).
 - System extension model: [`docs/design/sysexts.md`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/docs/design/sysexts.md).
-- Updex v2.3.1: tag `v2.3.1`, commit [`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
-- Updex lifecycle commands, with `updex features check`: [v2.3.1 `README.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/README.md).
+- Updex v2.4.0: tag `v2.4.0`, commit [`ec4b4bbd728f2e9193095e4a5e32ac328be404ff`](https://github.com/frostyard/updex/tree/ec4b4bbd728f2e9193095e4a5e32ac328be404ff).
+- Updex lifecycle commands, with `updex features check`: [v2.4.0 CLI reference](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md).
 - Newest version in each `SHA256SUMS`: frostyard-org [`scripts/extension-versions.mjs`](https://github.com/frostyard/frostyard-org/blob/cb31aaf3bb5f31dd2969341ae0ace6325f3ca810/scripts/extension-versions.mjs).
 - Snow first-login setup: snosi [ADR-0028](https://github.com/frostyard/snosi/blob/770f9a3c82c4bb7348f6c477fce08febf25554af/docs/adr/0028-first-login-runs-chairlift-first-run.md) at commit `770f9a3c82c4bb7348f6c477fce08febf25554af` ([snosi#1224](https://github.com/frostyard/snosi/pull/1224)).
 - Snow GNOME extensions: snosi [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf).

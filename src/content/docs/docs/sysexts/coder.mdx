@@ -3,7 +3,7 @@ title: Coder
 description: Enable, update, roll back, and remove the Coder system extension on Frostyard bootc images.
 follows:
   repo: frostyard/updex
-  tag: v2.3.1
+  tag: v2.4.0
 ---
 
 import ExtensionSnapshot from "../../../../components/ExtensionSnapshot.astro";
@@ -21,7 +21,7 @@ You need:
 
 Coder has no published test results on Frostyard images yet. Try it on a machine you can spare first.
 
-This guide follows Updex v2.3.1. Run `updex --version` to see yours.
+This guide follows Updex v2.4.0. Run `updex --version` to see yours.
 
 ## Enable Coder
 
@@ -163,8 +163,8 @@ The image is a revised build: it carries `SYSEXT_REVISION=3`, so its file name h
 
 Reviewed 2026-10-27; Updex facts reviewed 2026-11-16. snosi commit
 [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9);
-Updex v2.3.1 commit
-[`7aea0816be5745d285945eca03ed872661cc2b88`](https://github.com/frostyard/updex/tree/7aea0816be5745d285945eca03ed872661cc2b88).
+Updex v2.4.0 commit
+[`ec4b4bbd728f2e9193095e4a5e32ac328be404ff`](https://github.com/frostyard/updex/tree/ec4b4bbd728f2e9193095e4a5e32ac328be404ff).
 
 - [`mkosi.images/coder/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.conf)
 - [`mkosi.images/coder/mkosi.postinst.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.images/coder/mkosi.postinst.chroot)
@@ -188,9 +188,9 @@ Updex v2.3.1 commit
 - [snosi#1121: require a bind address and stop restart loops (r3)](https://github.com/frostyard/snosi/pull/1121)
 - [Coder v2.37.4 `cli/server.go`](https://github.com/coder/coder/blob/v2.37.4/cli/server.go)
 
-- [Updex v2.3.1 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md)
-- [Updex v2.3.1 release](https://github.com/frostyard/updex/releases/tag/v2.3.1)
-- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
+- [Updex v2.4.0 `docs/specs/cli-reference.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md)
+- [Updex v2.4.0 release](https://github.com/frostyard/updex/releases/tag/v2.4.0)
+- Updex [`docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md`](https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/adr/0019-apply-merged-sysusers-and-tmpfiles-on-a-live-refresh.md) (a live refresh runs `systemd-sysusers` and `systemd-tmpfiles --create`; when the last refresh fails, the merge state is unknown; a refresh by hand does not run `systemd-sysusers`)
 - [Murbella's review (frostyard-org#28)](https://github.com/frostyard/frostyard-org/pull/28#pullrequestreview-5630386027)
 - [Murbella's review (frostyard-org#33)](https://github.com/frostyard/frostyard-org/pull/33#pullrequestreview-5632123106)
 - [`src/data/extensions.json`](https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json)

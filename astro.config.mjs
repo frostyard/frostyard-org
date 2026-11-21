@@ -77,6 +77,7 @@ export default defineConfig({
         {
           label: "Apps",
           items: [
+            { label: "frostmarks", slug: "docs/apps/frostmarks" },
             { label: "Frostmail", slug: "docs/apps/frostmail" },
             { label: "Frostnotes", slug: "docs/apps/frostnotes" },
             { label: "lodge", slug: "docs/apps/lodge" },
@@ -93,6 +94,13 @@ export default defineConfig({
             { label: "Igloo", slug: "docs/tools/igloo" },
             { label: "ChairLift", slug: "docs/tools/chairlift" },
             { label: "intuneme", slug: "docs/tools/intuneme" },
+          ],
+        },
+        {
+          label: "Go libraries",
+          items: [
+            { label: "clix", slug: "docs/tools/clix" },
+            { label: "std", slug: "docs/tools/std" },
           ],
         },
       ],

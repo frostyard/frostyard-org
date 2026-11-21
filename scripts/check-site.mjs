@@ -110,6 +110,9 @@ const docsRoutes = [
   "/docs/apps/frostnotes",
   "/docs/apps/lodge",
   "/docs/apps/porter",
+  "/docs/apps/frostmarks",
+  "/docs/tools/clix",
+  "/docs/tools/std",
   "/docs/tools/nsl",
   "/docs/tools/igloo",
   "/docs/tools/chairlift",
@@ -315,6 +318,9 @@ for (const route of docsRoutes) {
     "/docs/apps/frostnotes/",
     "/docs/apps/lodge/",
     "/docs/apps/porter/",
+    "/docs/apps/frostmarks/",
+    "/docs/tools/clix/",
+    "/docs/tools/std/",
     "/docs/tools/nsl/",
     "/docs/tools/igloo/",
     "/docs/tools/chairlift/",
@@ -345,8 +351,8 @@ for (const route of ["/install", "/docs/images/snow/", "/docs/images/snowfield/"
   assert(docsLanding.includes(`href="${route}"`), `/docs must link to ${route}.`);
 }
 assert(docsLanding.includes("menuStateSynced"), "Docs pages must load the mobile menu aria-expanded sync.");
-assert(docsLanding.includes("Updex v2.3.1"), "/docs must name the Updex v2.3.1 source pin, as the Updex and sysext guides do.");
-assert(docsLanding.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/README.md"), "/docs must cite the pinned Updex v2.3.1 README.");
+assert(docsLanding.includes("Updex v2.4.0"), "/docs must name the Updex v2.4.0 source pin, as the Updex and sysext guides do.");
+assert(docsLanding.includes("https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md"), "/docs must cite the pinned Updex v2.4.0 CLI reference.");
 assert(!docsLanding.includes("1843ea8ded298fbde42390a0c8b2842d09a92757"), "/docs must not cite the old Updex v2.1.4 commit.");
 assert(!docsLanding.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), "/docs must not cite the old Updex branch commit.");
 assert(!textOf(docsLanding).includes("snow-first-setup"), "/docs must not name snow-first-setup: snosi#1224 removed it.");
@@ -700,8 +706,8 @@ assert(updexText.includes("updex-update.timer"), "/docs/tools/updex must name th
 assert(updexText.includes("--no-refresh"), "/docs/tools/updex must explain the daemon's --no-refresh command.");
 assert(updexText.includes("AllowUnsigned"), "/docs/tools/updex must explain AllowUnsigned.");
 assert(updexText.includes("/etc/updex/catalogs.d/"), "/docs/tools/updex must name the catalog directory.");
-assert(updexText.includes("This guide follows Updex v2.3.1"), "/docs/tools/updex must follow Updex v2.3.1.");
-assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.3.1"), "/docs/tools/updex must link the Updex v2.3.1 release.");
+assert(updexText.includes("This guide follows Updex v2.4.0"), "/docs/tools/updex must follow Updex v2.4.0.");
+assert(updex.includes("https://github.com/frostyard/updex/releases/tag/v2.4.0"), "/docs/tools/updex must link the Updex v2.4.0 release.");
 assertCites("/docs/tools/updex", updex, "https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88", [
   "README.md",
   "docs/specs/cli-reference.md",
@@ -713,7 +719,7 @@ assertCites("/docs/tools/updex", updex, "https://github.com/frostyard/updex/blob
 // The v2.3.1 README (updex#510) dropped the sections the guide deep-linked; reference links go to the v2.3.1 specs.
 assert(!updex.includes("https://github.com/frostyard/updex/blob/v2.3.0/"), "/docs/tools/updex must not link the Updex v2.3.0 tag.");
 assert(!/https:\/\/github\.com\/frostyard\/updex\/blob\/v[^/"]+\/README\.md#/.test(updex), "/docs/tools/updex must not deep-link a README anchor; the v2.3.1 README has no reference sections.");
-assert(updex.includes("https://github.com/frostyard/updex/blob/v2.3.1/docs/specs/cli-reference.md#install"), "/docs/tools/updex must link the v2.3.1 CLI reference install section.");
+assert(updex.includes("https://github.com/frostyard/updex/blob/v2.4.0/docs/specs/cli-reference.md#install"), "/docs/tools/updex must link the v2.4.0 CLI reference install section.");
 assert(updexText.includes("updex-suite-switch.service"), "/docs/tools/updex must name the suite-switch unit.");
 // The other-suite cleanup keeps the newest image of each other suite, and keeps all of them on systemd < 258 (updex cli-reference "What the vacuum keeps").
 assert(updexText.includes("keep the newest one of each other suite") && updexText.includes("systemd older than 258"), "/docs/tools/updex must state what the other-suite cleanup keeps, including the systemd < 258 rule.");
@@ -786,7 +792,7 @@ for (const page of lightPages) {
 }
 assert(lightHtml.lodge.text.includes("The latest release is v0.6.0") && lightHtml.lodge.text.includes("approve again each grant made before v0.5.1") && lightHtml.lodge.text.includes("v0.2.1 is a patch release") && lightHtml.lodge.text.includes("reach a contrast of 4.5:1") && lightHtml.lodge.text.includes("each migrate the database"), "/docs/apps/lodge must name v0.6.0 as the latest release, with the text contrast of v0.3.0, the migrations of v0.4.0 and v0.5.1, and the new approval of grants made before v0.5.1.");
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
-assert(lightHtml.porter.text.includes("The latest release is v0.3.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.3.0 as the latest release, and the .deb install on lodge's host.");
+assert(lightHtml.porter.text.includes("The latest release is v0.4.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.4.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
 for (const [route, tag] of [["frostnotes", "v0.7.0"], ["frostmail", "v0.9.0"]]) {
   const follows = readFollows(await readFile(new URL(`../src/content/docs/docs/apps/${route}.md`, import.meta.url), "utf8"));
@@ -1102,7 +1108,7 @@ function checkRemovalReloadAndLabRuns(route, html, text) {
   // updex disable --now runs a plain systemd-sysext unmerge first; the removed extension still sets the key, so the unmerge reloads PID 1.
   assert(text.includes("The unmerge reloads systemd, because the extension sets EXTENSION_RELOAD_MANAGER=1") && text.includes("A unit that still runs stays loaded until it stops or the host reboots."), `${route} must state that the unmerge reloads systemd and that a running unit stays loaded.`);
   assert(!text.includes("Until the reboot, systemd can keep the removed units loaded") && !text.includes("only when an extension that stays merged sets"), `${route} must not say that only a remaining extension reloads systemd after a removal.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/sysext/runner.go"), `${route} must cite sysext/runner.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/sysext/runner.go"), `${route} must cite sysext/runner.go.`);
   // ADR-0026 dev probe runs (mm4s5, 4hr54) checked only that the revision 5 units load and start.
   assert(!/ran in (a )?lab tests?/.test(text), `${route} must not imply that a lab run tested workloads.`);
   if (route === "/docs/sysexts/incus" || route === "/docs/sysexts/nix") {
@@ -1195,7 +1201,7 @@ for (const page of sysextPages) {
   assert(text.includes("Only the systemd-sysctl replay waits for the next boot"), `${page.route} must limit the deferred sysctl replay to the next boot.`);
   assert(!text.includes("may not have loaded the new units"), `${page.route} must not say that systemd may not have loaded the new units.`);
   assert(!text.includes("(open on 2026-10-30)"), `${page.route} must not cite the open snosi issues.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/features.go"), `${page.route} must cite updex/features.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/updex/features.go"), `${page.route} must cite updex/features.go.`);
   checkRemovalReloadAndLabRuns(page.route, html, text);
   if (page.route === "/docs/sysexts/incus") {
     assert(html.includes('<code dir="auto">driver: lxc | qemu</code>'), "Incus must render the complete QEMU driver text.");
@@ -1237,15 +1243,15 @@ for (const page of sysextPages) {
   for (const source of page.sources) {
     assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/${source}`), `${page.route} must cite ${source} at snosi ${page.snosi}.`);
   }
-  assert(html.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md"), `${page.route} must cite the Updex v2.3.1 CLI reference.`);
-  assert(html.includes("https://github.com/frostyard/updex/releases/tag/v2.3.1"), `${page.route} must link the Updex v2.3.1 release.`);
-  assert(html.includes("Updex v2.3.1 release"), `${page.route} must label the Updex release source.`);
-  assert(html.includes("Updex v2.3.1 commit"), `${page.route} must label the Updex commit source.`);
-  assert(text.includes("This guide follows Updex v2.3.1"), `${page.route} must state the Updex release it follows.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md"), `${page.route} must cite the Updex v2.4.0 CLI reference.`);
+  assert(html.includes("https://github.com/frostyard/updex/releases/tag/v2.4.0"), `${page.route} must link the Updex v2.4.0 release.`);
+  assert(html.includes("Updex v2.4.0 release"), `${page.route} must label the Updex release source.`);
+  assert(html.includes("Updex v2.4.0 commit"), `${page.route} must label the Updex commit source.`);
+  assert(text.includes("This guide follows Updex v2.4.0"), `${page.route} must state the Updex release it follows.`);
   assert(html.includes("https://github.com/frostyard/updex/pull/445"), `${page.route} must link Updex PR #445.`);
   assert(text.includes("--force"), `${page.route} must explain the --force removal guard.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/install.go"), `${page.route} must cite updex/install.go.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/sysext/manager.go"), `${page.route} must cite sysext/manager.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/updex/install.go"), `${page.route} must cite updex/install.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/sysext/manager.go"), `${page.route} must cite sysext/manager.go.`);
   assert(!html.includes("d750445daf3fe8c589419749a1ebae9f5eb1eba2"), `${page.route} must not cite the old Updex branch commit.`);
   assert(html.includes(`/var/lib/extensions/${page.name}.raw`), `${page.route} must name the live sysext link.`);
   assert(html.includes(`/var/lib/extensions.d/${page.name}.raw`), `${page.route} must name the removed legacy link.`);
@@ -1370,10 +1376,10 @@ for (const page of commandPages) {
     assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/${source}`), `${page.route} must cite ${source} at snosi ${page.snosi}.`);
   }
   assert(html.includes(`https://github.com/frostyard/snosi/blob/${page.snosi}/docs/design/sysexts.md`), `${page.route} must cite the system extension model.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/docs/specs/cli-reference.md"), `${page.route} must cite the Updex v2.3.1 CLI reference.`);
-  assert(html.includes("https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88/updex/features.go"), `${page.route} must cite updex/features.go.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/docs/specs/cli-reference.md"), `${page.route} must cite the Updex v2.4.0 CLI reference.`);
+  assert(html.includes("https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff/updex/features.go"), `${page.route} must cite updex/features.go.`);
   assert(html.includes("https://github.com/frostyard/frostyard-org/blob/main/src/data/extensions.json"), `${page.route} must cite the catalog snapshot.`);
-  assert(text.includes("This guide follows Updex v2.3.1"), `${page.route} must state the Updex release it follows.`);
+  assert(text.includes("This guide follows Updex v2.4.0"), `${page.route} must state the Updex release it follows.`);
 
   for (const statement of page.statements) {
     assert(text.includes(statement), `${page.route} must state "${statement}".`);
@@ -1388,7 +1394,7 @@ for (const page of commandPages) {
   }
 }
 
-// Every sysext guide names the Updex v2.3.1 pins: no page may keep the v2.1.4
+// Every sysext guide names the current Updex pins: no page may keep the v2.1.4
 // commit, or link the Updex README, which no longer holds the commands.
 const sysextDirectory = new URL("../src/content/docs/docs/sysexts/", import.meta.url);
 const sysextNames = (await readdir(sysextDirectory)).filter(name => name.endsWith(".mdx")).sort();
@@ -1435,7 +1441,7 @@ assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/snosi/
   "shared/sysext/postoutput/sysext-postoutput.sh",
   "shared/sysext/finalize/sysext-required-paths.sh",
 ]);
-assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/updex/blob/7aea0816be5745d285945eca03ed872661cc2b88", [
+assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/updex/blob/ec4b4bbd728f2e9193095e4a5e32ac328be404ff", [
   "README.md",
   "docs/specs/cli-reference.md",
   "docs/adr/0021-link-the-running-suites-images-at-boot-after-a-suite-switch.md",
@@ -1456,8 +1462,8 @@ assertCites("/docs/sysexts/manage", manage, "https://github.com/frostyard/updex/
   "sysext/manager.go",
   "systemd/unit.go",
 ]);
-assert(manageText.includes("This guide follows Updex v2.3.1"), "/docs/sysexts/manage must follow Updex v2.3.1.");
-assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.3.1"), "/docs/sysexts/manage must link the Updex v2.3.1 release.");
+assert(manageText.includes("This guide follows Updex v2.4.0"), "/docs/sysexts/manage must follow Updex v2.4.0.");
+assert(manage.includes("https://github.com/frostyard/updex/releases/tag/v2.4.0"), "/docs/sysexts/manage must link the Updex v2.4.0 release.");
 // The v2.3.1 README (updex#510) dropped the sections the guide deep-linked; reference links go to the v2.3.1 specs.
 assert(!manage.includes("https://github.com/frostyard/updex/blob/v2.3.0/") && !manage.includes("2b2def7e81b861e4465ef8f5e180693ed6acd1fc"), "/docs/sysexts/manage must not link Updex v2.3.0.");
 assert(!/https:\/\/github\.com\/frostyard\/updex\/blob\/[^/"]+\/README\.md#/.test(manage), "/docs/sysexts/manage must not deep-link a README anchor; the v2.3.1 README has no reference sections.");

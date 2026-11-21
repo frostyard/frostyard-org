@@ -35,8 +35,10 @@ inference layer are built.
 [Frostnotes](/docs/apps/frostnotes/) as Notes and
 [Frostmail](/docs/apps/frostmail/) as Mail run behind it.
 [Porter](/docs/apps/porter/) runs beside them, since 2026-10-20.
+## Remove frostread
+
 frostread, the feed reader that ran behind lodge as Read, is retired since
-2026-11-15. The articles it saved stay as notes in Frostnotes. A lodge that
+2026-11-15. Its repository is archived. The articles it saved stay as notes in Frostnotes. A lodge that
 still has frostread installed lists Read until you remove it. An image update
 does not remove it.
 
@@ -52,6 +54,8 @@ has the details.
 
 On another host, remove the `frostyard-readd` package, then run
 `sudo lodgectl reload`.
+
+## Release changes
 
 v0.2.0 adds unread counts. An app can report a count of things you have not seen, such as unread mail. lodge shows it on the app's rail button, in the app's row of the switcher, and as a sum on the home-screen icon. The design, ADR-0020, is Proposed.
 

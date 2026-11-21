@@ -99,5 +99,8 @@ redirect in `astro.config.mjs`.
 | `src/content/docs/docs/apps/frostnotes.md` | `/docs/apps/frostnotes/` | Frostnotes: where it runs, what is built, its limits, and deep links to its docs. |
 | `src/content/docs/docs/apps/lodge.md` | `/docs/apps/lodge/` | lodge: building it from source, installing it on a host, adding apps, agent tokens, and inference providers. |
 | `src/content/docs/docs/apps/porter.md` | `/docs/apps/porter/` | Porter: installing it on lodge's host, chat, routines, and what it can and cannot do. |
+| `src/content/docs/docs/apps/frostmarks.md` | `/docs/apps/frostmarks/` | frostmarks: install, update, and import browser bookmarks. |
+| `src/content/docs/docs/tools/clix.md` | `/docs/tools/clix/` | clix: add or upgrade the Go CLI scaffolding module. |
+| `src/content/docs/docs/tools/std.md` | `/docs/tools/std/` | std: add or upgrade the shared Go module. |
 
 `scripts/test/site-map.test.mjs` fails when a page file is missing from this table, or when the table names a file that does not exist.
