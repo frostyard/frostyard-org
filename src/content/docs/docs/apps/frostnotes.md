@@ -34,7 +34,7 @@ Frostyard Homebrew tap. On a Frostyard image, the
 The vault, sync, and the desktop app are done. Notes inside lodge is done:
 `notesd` runs as lodge's `notes` app. The hub moved behind lodge on
 2026-10-26, and devices now sync through lodge. The 7-day sync trial's daily
-checks were not fully recorded, so the trial is not verified in full.
+checks were not recorded, so the trial is not verified in full.
 Queries through the daemon, CLI, and MCP are built; base views in the apps
 and a graph view are planned. A hub container image and systemd unit, and
 Frostyard APT packages, are planned. Windows and macOS builds, Canvas, and a
@@ -81,6 +81,8 @@ Release v0.7.0 adds `note.query`, `notesctl query`, and the MCP tool
 You can query indexed files and properties from a `.base` file with the CLI.
 Agents can use [MCP queries](https://github.com/frostyard/frostnotes/blob/main/docs/specs/mcp.md#queries)
 with filters or a `.base` file. This does not add base views to the apps.
+v0.7.0 also adds a database migration, so v0.6.0 cannot open the database
+after v0.7.0 has run.
 
 ## Install
 
@@ -249,6 +251,7 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 Reviewed 2026-11-19.
 
 - Frostnotes release v0.7.0 commit [`83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4`](https://github.com/frostyard/frostnotes/tree/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4), released 2026-11-19. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.7.0) attaches only `frostyard-notesd_0.7.0_amd64.deb`.
+- The v0.7.0 migration: [`0007_sync_pushes_refused.sql`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/internal/store/migrations/0007_sync_pushes_refused.sql). The [v0.6.0 store](https://github.com/frostyard/frostnotes/blob/b9c6c9006d666183f91313f79648f8323b8a61b0/internal/store/store.go) refuses a newer schema.
 - Publication at v0.7.0: the [live Frostyard catalogue](https://frostyard.github.io/flatpak-index/index/static), checked 2026-11-19, lists `org.frostyard.Frostnotes` at digest `sha256:f296521fc9a77af6e0a675bea2372181154a181840918bd3ca63e9210d5e9a06`, with subject `Built from 83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4` and AppStream version `0.7.0`. Packaging at that commit: [`packaging/flatpak/org.frostyard.Frostnotes.json`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/packaging/flatpak/org.frostyard.Frostnotes.json) and [`packaging/nfpm.yaml`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/packaging/nfpm.yaml). The live [APT Packages](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) and [Homebrew Casks](https://github.com/frostyard/homebrew-tap/tree/main/Casks), checked 2026-11-19, still have no Frostnotes package.
 - Queries in v0.7.0: [frostnotes#245](https://github.com/frostyard/frostnotes/pull/245) adds `note.query` and `notesctl query`; [frostnotes#247](https://github.com/frostyard/frostnotes/pull/247) adds `query_notes`. At the release commit, [`docs/specs/bases.md`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/docs/specs/bases.md) defines the subset and says app base views come later; [`docs/specs/mcp.md#queries`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/docs/specs/mcp.md#queries) describes the MCP tool. [`internal/mcpserver/mcpserver.go`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/internal/mcpserver/mcpserver.go#L136) registers it, despite the older phase-2 PR wording in plan 0010.
 - Notes inside lodge: [`docs/plans/0006-m4-notes-inside-lodge.md`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/docs/plans/0006-m4-notes-inside-lodge.md) says Done, 2026-11-13, with all 7 phases done or accepted. It records that the 7-day trial's daily checks were not recorded and the trial is not verified in full. [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/docs/plans/0002-roadmap.md) keeps the graph and app base views in M5.

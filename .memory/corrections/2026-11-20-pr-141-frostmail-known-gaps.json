@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-20",
+  "scope": "docs/frostmail",
+  "correction": "When updating the Frostmail guide, read the release notes for known gaps. Put reader-facing constraints in Limits, including display gaps for new settings.",
+  "evidence": "https://github.com/frostyard/frostyard-org/pull/141#issuecomment-7026618689",
+  "promoted_to": ""
+}

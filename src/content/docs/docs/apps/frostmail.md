@@ -163,6 +163,11 @@ runs as the system user `frostmail` on lodge's host. To check the release
 - Gmail OAuth sign-in needs your own Google client until Frostmail has a
   verified one. A Gmail app password works without one.
 - Microsoft work and school accounts are not supported.
+- Spell check while you write is not in the native desktop app yet.
+- Some HTML messages can still show at the window's height. At larger text
+  sizes, some fixed-width messages can be cut off at the right edge. Hide
+  the sidebar or choose a smaller text size to see the rest. See
+  [Known gaps](https://github.com/frostyard/frostmail/releases/tag/v0.9.0#known-gaps).
 - `maild` applies database migrations at start and refuses a newer database.
   Back up `~/.var/app/org.frostyard.Frostmail/` before you install a newer
   Flatpak. For a build from source, back up `$XDG_DATA_HOME/frostmail`.
@@ -181,6 +186,7 @@ Reviewed 2026-11-19.
 
 - Frostmail release v0.9.0 commit [`9f96c56eb37087b83cf6ad2d3b4598011a04a807`](https://github.com/frostyard/frostmail/tree/9f96c56eb37087b83cf6ad2d3b4598011a04a807), released 2026-11-19. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.9.0) attaches only `frostyard-maild_0.9.0_amd64.deb`.
 - Publication at v0.9.0: the [live Frostyard catalogue](https://frostyard.github.io/flatpak-index/index/static), checked 2026-11-19, lists `org.frostyard.Frostmail` at digest `sha256:67977d94a12b54a482b5c6193c0beed7f3f58205e783c2ecbf9961e9c85b3522`, with subject `Built from 9f96c56eb37087b83cf6ad2d3b4598011a04a807` and AppStream version `0.9.0`. Packaging at that commit: [`packaging/flatpak/org.frostyard.Frostmail.json`](https://github.com/frostyard/frostmail/blob/9f96c56eb37087b83cf6ad2d3b4598011a04a807/packaging/flatpak/org.frostyard.Frostmail.json) and [`packaging/nfpm.yaml`](https://github.com/frostyard/frostmail/blob/9f96c56eb37087b83cf6ad2d3b4598011a04a807/packaging/nfpm.yaml). The live [APT Packages](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) and [Homebrew Casks](https://github.com/frostyard/homebrew-tap/tree/main/Casks), checked 2026-11-19, still have no Frostmail package.
+- Desktop limits: [Known gaps in the v0.9.0 release notes](https://github.com/frostyard/frostmail/releases/tag/v0.9.0#known-gaps).
 - Desktop text size: [frostmail#342](https://github.com/frostyard/frostmail/pull/342), the v0.9.0 release notes, and [`docs/specs/ui.md`, lines 61–81](https://github.com/frostyard/frostmail/blob/9f96c56eb37087b83cf6ad2d3b4598011a04a807/docs/specs/ui.md#L61-L81): Smaller, Default, Larger, Largest; every desktop window and the reader change at once, not printing or the lodge web app.
 
 - Frostmail release v0.8.0 commit [`f8e30d423768ef8b94c4eb21212b10538a461c55`](https://github.com/frostyard/frostmail/tree/f8e30d423768ef8b94c4eb21212b10538a461c55), released 2026-11-16. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.8.0) attaches only `frostyard-maild_0.8.0_amd64.deb`.
