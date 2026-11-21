@@ -10,13 +10,27 @@
 - Build from the committed catalog snapshot with `npm run build:check`.
 - Run the unit tests in `scripts/test/` with `npm test`.
 - Check app, tool and sysext guides with `node scripts/check-release-drift.mjs` (needs the network; not part of CI); keep `follows` equal to the page's release sentence. Run it again right before each push of a release update: a newer release can come out while you work.
-- Run the complete local CI gate with `npm run ci`.
-- Run the repository gate with `make verify` (the template gate, then
-  `npm run ci`). `make check` is the same. `make ci BASE=origin/main` also
-  checks the records in `.memory/corrections/` against `BASE`: no record
-  removed or renamed, only an empty `promoted_to` filled, and the old single
-  corrections file does not come back. Run
-  `make ci BASE=origin/main` before you call a change complete.
+- Run the npm checks with `npm run ci`; this is not the full repository gate.
+- Run the repository gate with `make verify`: template checks and their tests,
+  the workflow pin guard (after the `node_modules` precondition), `npm run ci`
+  (tests, prose, Astro diagnostics, offline build and site checks), then
+  `make check-snapshots`. `make check` is the same. Snapshot validation compares
+  both generated data files with `HEAD`, separately for the index and working
+  tree, and fails if a tracked snapshot is missing.
+- `make ci` also checks the records in `.memory/corrections/` against `BASE`
+  when it is set: no record removed or renamed, only an empty `promoted_to`
+  filled, and the old single corrections file does not come back. Run
+  `make ci BASE=origin/main` before each push and before calling a change
+  complete.
+- `scripts/check-workflow-pins.mjs` parses every `.yml` and `.yaml` workflow.
+  It checks only `jobs.<id>.uses` and `jobs.<id>.steps[].uses`, not shell text
+  in `run` or input data in `env` and `with`. External references need
+  `owner/repo[/path]@` plus exactly 40 hexadecimal commit characters. Local
+  `./` actions are exempt. Container `docker://` references fail because core
+  ADR-0021/B5 gives no container exemption. The guard reports workflow and
+  actual `uses` counts, including local references. `npm ci` installs the
+  explicit `yaml` 2.9.1 devDependency, already present in the lock; its
+  promotion changed only root lock metadata, not resolved packages.
 - `docs/development.md` explains each command and check; `docs/site.md` holds
   the page inventory.
 
@@ -63,15 +77,18 @@ field or enum value is a new version in a new file.
   up in the Cloudflare dashboard, not in this repository. A push to `main`
   deploys to production. A PR gets a preview URL in its
   `Workers Builds: frostyard-org` check.
-- GitHub Actions only tests. `.github/workflows/ci.yml` runs `npm ci` and
-  `make ci` (with the PR base) on each PR and each push to `main`, as the
-  check `ci`. It builds from the committed catalog snapshot (`build:check` has
-  no prebuild step) and fails if `src/data/extensions.json` or
-  `src/data/problem-stats.json` changes. It does not deploy.
+- `.github/workflows/ci.yml` only tests. It runs `npm ci` and `make ci` on
+  each PR, each push to `main`, and nightly at 02:23 UTC, as the check `ci`.
+  PRs set `BASE` to the PR base SHA; push and scheduled runs leave it empty.
+  The same unconditional job uses read-only contents permission and no
+  secrets. It builds from the committed snapshots (`build:check` has no
+  prebuild step), then checks both snapshots against `HEAD` in the index and
+  working tree. It does not deploy. The nightly secret-free contract applies
+  to this workflow, not to the separate statistics deployment workflow.
 - `.github/dependabot.yml` updates the actions and the npm dependencies
   weekly, in 1 grouped version-update PR for each ecosystem (core
   ADR-0075). Security updates stay 1 PR each.
-- One exception to the rule above: `.github/workflows/stats-rebuild.yml` posts
+- The separate `.github/workflows/stats-rebuild.yml` posts
   to a Cloudflare Workers Builds deploy hook each Monday at 05:41 UTC, after
   the intake Worker's 03:23 UTC weekly aggregation, so `/stats/` shows the new
   week without waiting for a push. It builds `main` as it is and changes no

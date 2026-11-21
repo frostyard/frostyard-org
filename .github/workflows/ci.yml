@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    - cron: "23 2 * * *"
 
 permissions:
   contents: read
@@ -34,6 +36,3 @@ jobs:
       - run: make ci BASE="$BASE"
         env:
           BASE: ${{ github.event.pull_request.base.sha || '' }}
-      # A changed snapshot means a step ran a sync script.
-      - name: Committed data snapshots are unchanged
-        run: git diff --exit-code -- src/data/extensions.json src/data/problem-stats.json
