@@ -13,6 +13,9 @@ const pinScript = join(repository, "scripts/check-workflow-pins.mjs");
 const snapshotScript = join(repository, "scripts/check-snapshots.mjs");
 const makefile = readFileSync(join(repository, "Makefile"), "utf8");
 const ciSource = readFileSync(join(repository, ".github/workflows/ci.yml"), "utf8");
+const policyPath = "policies/agent-governance.json";
+const policySource = readFileSync(join(repository, policyPath), "utf8");
+const schemaPath = "policies/schemas/repository-agent-governance.schema.json";
 const shaLength = 40;
 const sha = "a".repeat(shaLength);
 // Keep this list independent of the implementation so removing a guarded file fails a test.
@@ -277,10 +280,12 @@ for (const path of snapshotPaths) {
 function makeFixture(t, text = makefile) {
   const root = snapshotFixture(t);
   put(root, "Makefile", text);
-  for (const name of ["check-workflow-pins.mjs", "check-snapshots.mjs", "check-corrections.mjs"]) {
+  for (const name of ["check-workflow-pins.mjs", "check-agent-governance.mjs", "check-snapshots.mjs", "check-corrections.mjs"]) {
     mkdirSync(join(root, "scripts"), { recursive: true });
     copyFileSync(join(repository, "scripts", name), join(root, "scripts", name));
   }
+  put(root, policyPath, policySource);
+  put(root, schemaPath, readFileSync(join(repository, schemaPath)));
   // Copied guards import the same installed parser, not a private fixture parser.
   symlinkSync(join(repository, "node_modules"), join(root, "node_modules"), "dir");
   put(root, "scripts/check-template.mjs", 'console.log("fixture template gate");\n');
@@ -327,12 +332,12 @@ function assertBuildDriftBlocks(result) {
   assertOrdered(result.stdout, ["fixture npm run ci completed", "check-snapshots: checked"]);
 }
 
-test("actual Makefile reaches both guards in order and compares corrections with BASE", (t) => {
+test("actual Makefile reaches the guards in order and compares corrections with BASE", (t) => {
   const result = runMake(makeFixture(t));
   assert.equal(result.status, 0, output(result));
   assertOrdered(result.stdout, [
     "fixture template gate", "fixture template tests", "check-workflow-pins: checked",
-    "fixture npm run ci completed", "check-snapshots: checked", "append-only vs HEAD",
+    "Agent governance: checked 1 policy", "fixture npm run ci completed", "check-snapshots: checked", "append-only vs HEAD",
   ]);
 });
 
@@ -340,6 +345,27 @@ test("make ci rejects mutable pins before npm work", (t) => {
   const root = makeFixture(t);
   put(root, ".github/workflows/check.yml", referenceWorkflow("owner/action@main", "step"));
   assertPinsBlock(runMake(root));
+});
+
+test("make ci rejects a policy that allows agent artifact publication", (t) => {
+  const root = makeFixture(t);
+  const fixture = JSON.parse(policySource);
+  fixture.actions["publish-artifact"] = "allow";
+  put(root, policyPath, JSON.stringify(fixture));
+  git(root, "add", policyPath);
+  git(root, "commit", "--quiet", "-m", "Commit permissive publication fixture");
+  const result = runMake(root);
+  assert.notEqual(result.status, 0, "make ci must reject permissive agent publication");
+  assert.match(result.stderr, /policies\/agent-governance\.json: actions\.publish-artifact must explicitly deny/);
+  assert.doesNotMatch(result.stdout, /fixture npm run ci completed/);
+});
+
+test("make ci rejects a missing repository policy", (t) => {
+  const root = makeFixture(t);
+  rmSync(join(root, policyPath));
+  const result = runMake(root);
+  assert.notEqual(result.status, 0, "make ci must reject a missing policy");
+  assert.match(result.stderr, /policies\/agent-governance\.json: ENOENT/);
 });
 
 test("make ci rejects a snapshot rewritten by the npm build", (t) => {

@@ -33,6 +33,26 @@
       "why": "governance: the workflow-wide action pin guard"
     },
     {
+      "glob": "policies/**",
+      "level": "L2",
+      "why": "governance: the local agent authorization policy and its pinned schema"
+    },
+    {
+      "glob": "scripts/check-agent-governance.mjs",
+      "level": "L2",
+      "why": "governance: the offline agent authorization policy guard"
+    },
+    {
+      "glob": "scripts/test/agent-governance.test.mjs",
+      "level": "L2",
+      "why": "governance: rejection tests for agent authorization"
+    },
+    {
+      "glob": "scripts/test/ci-safeguards.test.mjs",
+      "level": "L2",
+      "why": "governance: regression tests for the repository gate"
+    },
+    {
       "glob": "scripts/check-snapshots.mjs",
       "level": "L2",
       "why": "governance: the committed data snapshot guard"

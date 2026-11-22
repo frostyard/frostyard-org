@@ -12,8 +12,9 @@
 - Check app, tool and sysext guides with `node scripts/check-release-drift.mjs` (needs the network; not part of CI); keep `follows` equal to the page's release sentence. Run it again right before each push of a release update: a newer release can come out while you work.
 - Run the npm checks with `npm run ci`; this is not the full repository gate.
 - Run the repository gate with `make verify`: template checks and their tests,
-  the workflow pin guard (after the `node_modules` precondition), `npm run ci`
-  (tests, prose, Astro diagnostics, offline build and site checks), then
+  the workflow pin and agent governance guards (after the `node_modules`
+  precondition), `npm run ci` (tests, prose, Astro diagnostics, offline build
+  and site checks), then
   `make check-snapshots`. `make check` is the same. Snapshot validation compares
   both generated data files with `HEAD`, separately for the index and working
   tree, and fails if a tracked snapshot is missing.
@@ -116,6 +117,10 @@ field or enum value is a new version in a new file.
   no test can catch it) and adds 1 record file under `.memory/corrections/`
   (name `<date>-pr-<N>-<words>.json`; see `.memory/README.md`). A record file
   is never removed or renamed (frostyard/core ADR-0081).
+- `policies/agent-governance.json` records the site's deny-by-default agent
+  authority. `make verify` validates it offline against the pinned core v1
+  schema and checks the site's publication and deployment boundaries. Editing
+  the policy is not an exception to it; see `docs/development.md` for the pin.
 - Risk paths: `.github/risk-paths.json` (schema version 2, frostyard/core
   ADR-0078) gives each path a level L1 to L4, with default L3. The caller
   `.github/workflows/risk-paths.yml` runs core's `pr-triage.yml`: it adds the
