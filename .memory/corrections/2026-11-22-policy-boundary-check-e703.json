@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-22",
+  "scope": "agent governance policy",
+  "correction": "Core's v1 schema allows an action to be set to allow or review-required. The site gate must also reject either decision for protected actions, and a make ci fixture must prove that schema-valid agent publication fails the gate.",
+  "evidence": "frostyard/frostyard-org#140; core ADR-0019 and organization/schemas/v1/repository-agent-governance.schema.json at 96bf43226d19a05811e1767fb69cd051a3691060",
+  "promoted_to": ""
+}

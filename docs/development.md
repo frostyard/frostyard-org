@@ -31,10 +31,11 @@ not any resolved package.
 | `node scripts/check-release-drift.mjs` | Check app, tool and sysext guides against the latest GitHub releases. Needs the network. |
 | `npm run ci` | Run the npm checks, in order: `npm test`, `npm run check:prose`, `npm run check`, `npm run build:check`, `npm run check:site`. This is not the full repository gate. |
 | `node scripts/check-workflow-pins.mjs` | Check action and reusable-workflow pins in every `.yml` and `.yaml` workflow. |
+| `node scripts/check-agent-governance.mjs` | Validate the local agent governance policy offline, from the repository root. |
 | `make check-snapshots` | Compare both generated snapshots with `HEAD`, separately for the index and working tree. |
 | `npm run sync:problem-schema` | Copy the pinned problem report schema into `public/schemas/problem-report/v1.json`, when its bytes match the pin. |
 | `npm run preview` | Build the site, then serve it with `wrangler dev`. |
-| `make verify` | Run the template checks and their tests, the workflow pin guard, `npm run ci`, then snapshot validation. |
+| `make verify` | Run the template checks and their tests, the workflow pin and agent governance guards, `npm run ci`, then snapshot validation. |
 | `make check` | The same as `make verify`. |
 | `make ci BASE=origin/main` | Run the full pre-push gate: `make verify`, then the append-only corrections comparison against `BASE`. |
 | `npm run deploy` | Build the site, then run `wrangler deploy`. Agents never run it. Brian deploys by merging to `main`. |
@@ -111,10 +112,11 @@ make ci BASE=origin/main
 1. The template checks and their tests: instruction links, docs index, risk
    paths, correction records and vendored copies.
 2. The workflow pin guard, after checking that `node_modules` exists.
-3. `npm run ci`: tests, prose checks, Astro diagnostics, the offline
+3. The offline agent governance guard.
+4. `npm run ci`: tests, prose checks, Astro diagnostics, the offline
    `build:check` build, then built-site checks. The build has no `prebuild`
    refresh step.
-4. `make check-snapshots`: compare `src/data/extensions.json` and
+5. `make check-snapshots`: compare `src/data/extensions.json` and
    `src/data/problem-stats.json` with `HEAD`. The index and working tree are
    checked separately, so staged changes still fail if the working bytes
    were restored. A missing snapshot in `HEAD`, the index or the working
@@ -148,6 +150,29 @@ banned phrase from `scripts/prose-rules.json`.
 `npm run check:site` fails if a pilot page, a required section, a source link, a
 docs navigation link, or a Pagefind page disappears. It also fails when
 `dist/client/` has no built pages.
+
+## Agent governance
+
+[`policies/agent-governance.json`](../policies/agent-governance.json) records the
+site's existing agent authority under [core ADR-0019](https://github.com/frostyard/core/blob/96bf43226d19a05811e1767fb69cd051a3691060/docs/adr/0019-governance-as-code-and-risk-tiers.md).
+The default is deny: actions without a rule are denied. Writes are limited to
+work on a proposed change, not protected-branch pushes. Opening a PR is subject
+to review. Agents cannot merge, publish artifacts or releases, deploy directly,
+modify protected environments, or manage credentials. Exceptions require an
+independent authorized approver; agents cannot approve their own exceptions.
+
+Publication and deployment file changes require high-risk review. That review
+is for the proposed file changes, not permission for the agent to publish or
+deploy. This policy does not enroll the site in Fluent and does not change
+GitHub permissions, Cloudflare deployment, or the scheduled statistics rebuild.
+
+The [local schema](../policies/schemas/repository-agent-governance.schema.json)
+is a byte copy of [core's v1 schema at `96bf43226d19a05811e1767fb69cd051a3691060`](https://github.com/frostyard/core/blob/96bf43226d19a05811e1767fb69cd051a3691060/organization/schemas/v1/repository-agent-governance.schema.json).
+Do not edit the copy by hand. The checker uses the locked `ajv` and
+`jsonc-parser` devDependencies and does not fetch a schema. It fails on a
+missing or invalid policy, unknown version, expanded authority, or incomplete
+publication or deployment boundaries. It reports one policy and its action and
+boundary counts on success.
 
 ## CI and deploy
 

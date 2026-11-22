@@ -11,10 +11,11 @@ verify-template:
 	node scripts/check-template.mjs
 	node --test test/*.test.mjs
 
-## verify: credential-free, non-mutating gate: the template gate, then npm run ci (tests, prose, astro check, offline build, site check)
+## verify: credential-free gate: template checks, workflow pins, agent governance, npm run ci, snapshots
 verify: verify-template
 	@if [ ! -d node_modules ]; then echo "FAIL: make verify requires the locked dependencies (run: npm ci)"; exit 1; fi
 	node scripts/check-workflow-pins.mjs
+	node scripts/check-agent-governance.mjs
 	npm run ci
 	$(MAKE) check-snapshots
 
