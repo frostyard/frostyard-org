@@ -4,6 +4,7 @@ import { access, readFile, readdir } from "node:fs/promises";
 import { checkPrivacyPage, checkPublicBugReports, checkStatsPage } from "./lib/problem-page-checks.mjs";
 import { htmlFiles, pageName, textOf } from "./lib/site-files.mjs";
 import { assertReleaseSentence, readFollows } from "./lib/release-drift.mjs";
+import { splitReleasePage } from "./lib/release-page-checks.mjs";
 
 // Astro 7 with the Cloudflare adapter writes the static site to dist/client.
 const dist = new URL("../dist/client/", import.meta.url);
@@ -778,9 +779,9 @@ const lightHtml = {};
 for (const page of lightPages) {
   const path = `/docs/apps/${page.route}`;
   const html = await readRoute(path);
+  const { bodyHtml, sourcesHtml } = splitReleasePage(path, html);
   const text = textOf(html);
-  const bodyHtml = html.split('<h2 id="sources"')[0];
-  lightHtml[page.route] = { html, text, bodyHtml, bodyText: textOf(bodyHtml) };
+  lightHtml[page.route] = { html, text, bodyHtml, sourcesHtml, bodyText: textOf(bodyHtml) };
   assertSections(path, html, ["status", page.install, "documentation", "see-also", "sources"]);
   assert(html.includes(`https://github.com/frostyard/${page.repo}/blob/${page.sha}/README.md`), `${path} must cite README.md at the pinned commit.`);
   assert(html.includes(`https://github.com/frostyard/${page.repo}/blob/main/${page.canonical}`), `${path} must link the canonical install doc ${page.canonical}.`);
@@ -805,10 +806,10 @@ for (const doc of ["bases.md", "mcp.md#queries"]) {
   assert(lightHtml.frostnotes.bodyHtml.includes(`href="https://github.com/frostyard/frostnotes/blob/main/docs/specs/${doc}"`), `/docs/apps/frostnotes must link the canonical ${doc} before Sources.`);
 }
 assert(lightHtml.frostnotes.bodyText.includes("There is no graph view or base view in the apps yet.") && lightHtml.frostnotes.bodyText.includes("Queries support only the documented Obsidian Bases subset."), "/docs/apps/frostnotes must distinguish shipped subset queries from the graph and app base views that are not built yet.");
-assert(lightHtml.frostnotes.bodyText.includes("Notes inside lodge is done:") && !/Notes inside lodge is in progress/.test(lightHtml.frostnotes.bodyText) && /7-day sync trial['’]s daily checks were not recorded, so the trial is not verified in full\./.test(lightHtml.frostnotes.bodyText), "/docs/apps/frostnotes must say that notes inside lodge is done without claiming full verification of the 7-day sync trial.");
+assert(lightHtml.frostnotes.bodyText.includes("Notes inside lodge is done:") && !/Notes inside lodge is in progress/.test(lightHtml.frostnotes.bodyText) && /7-day sync trial['’]s daily checks were not recorded, so the trial is not verified in full\./.test(lightHtml.frostnotes.bodyText), "/docs/apps/frostnotes must say that notes inside lodge is done without claiming full verification of the 7-day sync trial, as recorded in Frostnotes plan 0006.");
 const notesStatus = textOf(lightHtml.frostnotes.bodyHtml.split('<h2 id="status"')[1].split('<h2 id="install"')[0]);
 assert(notesStatus.includes("v0.7.0 also adds a database migration, so v0.6.0 cannot open the database after v0.7.0 has run."), "/docs/apps/frostnotes Status must warn that the v0.7.0 migration prevents v0.6.0 from opening the database.");
-assertCites("/docs/apps/frostnotes Sources", lightHtml.frostnotes.html.split('<h2 id="sources"')[1], "https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4", ["internal/store/migrations/0007_sync_pushes_refused.sql"]);
+assertCites("/docs/apps/frostnotes Sources", lightHtml.frostnotes.sourcesHtml, "https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4", ["internal/store/migrations/0007_sync_pushes_refused.sql"]);
 for (const route of ["lodge", "frostnotes"]) {
   assert(lightHtml[route].text.includes("The system extension can trail the latest release"), `/docs/apps/${route} must state that the system extension can trail the latest release.`);
 }
@@ -856,7 +857,7 @@ const mailLimitsText = textOf(mailLimits);
 const mailKnownGaps = 'href="https://github.com/frostyard/frostmail/releases/tag/v0.9.0#known-gaps"';
 assert(mailLimitsText.includes("Spell check while you write is not in the native desktop app yet."), "/docs/apps/frostmail Limits must state that native desktop spell check is missing.");
 assert(/Some HTML messages can still show at the window['’]s height\./.test(mailLimitsText) && mailLimitsText.includes("At larger text sizes, some fixed-width messages can be cut off at the right edge."), "/docs/apps/frostmail Limits must state both v0.9.0 HTML message display gaps.");
-assert(mailLimits.includes(mailKnownGaps) && lightHtml.frostmail.html.split('<h2 id="sources"')[1].includes(mailKnownGaps), "/docs/apps/frostmail must link the v0.9.0 Known gaps from Limits and cite them in Sources.");
+assert(mailLimits.includes(mailKnownGaps) && lightHtml.frostmail.sourcesHtml.includes(mailKnownGaps), "/docs/apps/frostmail must link the v0.9.0 Known gaps from Limits and cite them in Sources.");
 assert(lightHtml.frostmail.text.includes("Release v0.7.0 draws the desktop app in the Frostyard look") && lightHtml.frostnotes.text.includes("Release v0.6.0 draws the desktop app in the Frostyard look"), "/docs/apps/frostmail and /docs/apps/frostnotes must name the Frostyard look of Frostmail v0.7.0 and Frostnotes v0.6.0.");
 assert(lightHtml.frostmail.text.includes("Follow Up section") && lightHtml.frostmail.text.includes("rail button"), "/docs/apps/frostmail must name the v0.5.0 Follow Up section and the lodge rail badge.");
 assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension can trail the latest release.") && !/maild system extension still carries/.test(lightHtml.frostmail.text), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension can trail the latest release (the catalog lists its version).");
