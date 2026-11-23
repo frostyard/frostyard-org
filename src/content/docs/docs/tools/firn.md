@@ -20,9 +20,10 @@ dark. It follows the desktop's text size and high-contrast setting, but not its
 accent color. The commands and recipes on this page do not change. See
 [The graphical installer](https://frostyard.github.io/firn/guides/graphical-installer/).
 
-From v0.13.0, you can run `firn-gui --kiosk` for kiosk mode. Close and
-`Ctrl+Q` do nothing. Use **Use the console installer** to leave the window;
-the end screen also offers **Power off** and **Restart**. See
+On installer media that include `firn-gui` v0.13.0 or later, you can run
+`firn-gui --kiosk` for kiosk mode. Close and `Ctrl+Q` do nothing. Use **Use
+the console installer** to leave the window; the end screen also offers
+**Power off** and **Restart**. See
 [Kiosk mode](https://frostyard.github.io/firn/guides/graphical-installer/#kiosk-mode)
 for the controls and their safety limits.
 

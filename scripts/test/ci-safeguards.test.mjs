@@ -347,6 +347,17 @@ test("make ci rejects mutable pins before npm work", (t) => {
   assertPinsBlock(runMake(root));
 });
 
+test("make ci rejects byte drift in the pinned governance schema", (t) => {
+  const root = makeFixture(t);
+  // Whitespace keeps the schema valid, so validation alone would accept it.
+  const path = join(root, schemaPath);
+  writeFileSync(path, Buffer.concat([readFileSync(path), Buffer.from("\n")]));
+  const result = runMake(root);
+  assert.notEqual(result.status, 0, "make ci must reject changed schema bytes");
+  assert.match(result.stderr, /policies\/schemas\/repository-agent-governance\.schema\.json: SHA-256 mismatch/);
+  assert.doesNotMatch(result.stdout, /fixture npm run ci completed/);
+});
+
 test("make ci rejects a policy that allows agent artifact publication", (t) => {
   const root = makeFixture(t);
   const fixture = JSON.parse(policySource);

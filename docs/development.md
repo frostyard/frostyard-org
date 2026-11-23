@@ -168,11 +168,38 @@ GitHub permissions, Cloudflare deployment, or the scheduled statistics rebuild.
 
 The [local schema](../policies/schemas/repository-agent-governance.schema.json)
 is a byte copy of [core's v1 schema at `96bf43226d19a05811e1767fb69cd051a3691060`](https://github.com/frostyard/core/blob/96bf43226d19a05811e1767fb69cd051a3691060/organization/schemas/v1/repository-agent-governance.schema.json).
-Do not edit the copy by hand. The checker uses the locked `ajv` and
-`jsonc-parser` devDependencies and does not fetch a schema. It fails on a
-missing or invalid policy, unknown version, expanded authority, or incomplete
-publication or deployment boundaries. It reports one policy and its action and
-boundary counts on success.
+The [checker](../scripts/check-agent-governance.mjs) records the source commit,
+path, and SHA-256 together in `schemaPin`. It hashes the local bytes before
+parsing the schema and rejects any mismatch, including whitespace changes.
+It uses the locked `ajv` and `jsonc-parser` devDependencies and does not fetch a
+schema. It also rejects a missing or invalid policy, unknown version, expanded
+authority, or incomplete publication or deployment boundaries. It reports one
+pinned schema, one policy, and the policy's action and boundary counts.
+
+To refresh the pin, choose a full core commit SHA and the schema path at that
+commit. Download the raw bytes into a temporary file, not into the vendored
+copy. From the repository root, set `core_commit` to the chosen SHA and
+`core_path` to the chosen path, then run:
+
+```sh
+schema_tmp=$(mktemp)
+gh api -H 'Accept: application/vnd.github.raw+json' \
+  "repos/frostyard/core/contents/${core_path}?ref=${core_commit}" > "$schema_tmp" &&
+  sha256sum "$schema_tmp"
+```
+
+Review the downloaded schema before replacing the copy. If the download
+succeeded and the change is intended, copy the file as-is and remove it:
+
+```sh
+cp "$schema_tmp" policies/schemas/repository-agent-governance.schema.json
+rm "$schema_tmp"
+```
+
+Update `schemaPin` with the source commit, path, and printed digest, update the
+schema link above, and run `mise exec -- make ci BASE=origin/main`. Commit the
+copy and the pin together. Do not edit the copy by hand or rehash a drifted
+copy to make the check pass.
 
 ## CI and deploy
 
