@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { lstatSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -5,9 +6,18 @@ import Ajv2020 from "ajv/dist/2020.js";
 import { parseTree } from "jsonc-parser";
 
 const policyPath = "policies/agent-governance.json";
-const schema = JSON.parse(readFileSync(new URL(
-  "../policies/schemas/repository-agent-governance.schema.json", import.meta.url,
-), "utf8"));
+const schemaPath = "policies/schemas/repository-agent-governance.schema.json";
+const schemaPin = {
+  commit: "96bf43226d19a05811e1767fb69cd051a3691060",
+  path: "organization/schemas/v1/repository-agent-governance.schema.json",
+  sha256: "254e131a94c5477e861b0ec792defa1fd05ddebe380fc4e062d03cefc3ab8ebe",
+};
+const schemaBytes = readFileSync(new URL(`../${schemaPath}`, import.meta.url));
+const schemaHash = createHash("sha256").update(schemaBytes).digest("hex");
+if (schemaHash !== schemaPin.sha256) {
+  throw new Error(`${schemaPath}: SHA-256 mismatch: got ${schemaHash}, expected ${schemaPin.sha256} for frostyard/core@${schemaPin.commit}:${schemaPin.path}`);
+}
+const schema = JSON.parse(schemaBytes.toString("utf8"));
 const validateSchema = new Ajv2020({ allErrors: true, ownProperties: true }).compile(schema);
 
 const deniedActions = [
@@ -77,7 +87,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     if (!lstatSync(path).isFile()) throw new Error("expected a regular policy file");
     const source = new TextDecoder("utf-8", { fatal: true }).decode(readFileSync(path));
     const policy = validatePolicy(source);
-    console.log(`Agent governance: checked 1 policy (v${policy.schema_version}, ${Object.keys(policy.actions).length} actions, ${policy.protected_boundaries.length} protected boundaries)`);
+    console.log(`Agent governance: checked 1 policy (v${policy.schema_version}, ${Object.keys(policy.actions).length} actions, ${policy.protected_boundaries.length} protected boundaries) and 1 pinned schema`);
   } catch (error) {
     console.error(`FAIL: ${policyPath}: ${error.message}`);
     process.exitCode = 1;
