@@ -811,9 +811,11 @@ const notesStatus = textOf(lightHtml.frostnotes.bodyHtml.split('<h2 id="status"'
 assert(notesStatus.includes("v0.8.0 makes NSGo the default Linux editor"), "/docs/apps/frostnotes Status must name NSGo as the v0.8.0 default on Linux.");
 assert(["frostyard-notesd_0.8.0_amd64.deb", "systemd units", "frostnotes user setup", "WebAssembly editor for Notes in lodge", "does not install the desktop app"].every(part => notesStatus.includes(part)) && /contains notesd\s*, notesctl\s*,/.test(notesStatus), "/docs/apps/frostnotes Status must distinguish the v0.8.0 server .deb and its contents from the desktop install.");
 const notesHubInstall = textOf(lightHtml.frostnotes.bodyHtml.split('<h3 id="install-the-hub-on-lodges-host"')[1]?.split('<h2 id="documentation"')[0] ?? "");
-assert(notesHubInstall.includes("does not load under lodge v0.6.1") && notesHubInstall.includes("WebAssembly"), "/docs/apps/frostnotes hub installation must warn that lodge v0.6.1 blocks the v0.8.0 browser editor.");
 const lodgeStatus = textOf(lightHtml.lodge.bodyHtml.split('<h2 id="status"')[1].split('<h2 id="remove-frostread"')[0]);
-assert(lodgeStatus.includes("Frostnotes v0.8.0") && lodgeStatus.includes("does not load under lodge v0.6.1"), "/docs/apps/lodge Status must warn that the Frostnotes v0.8.0 browser editor does not load under v0.6.1.");
+for (const [section, text] of [["/docs/apps/frostnotes hub installation", notesHubInstall], ["/docs/apps/lodge Status", lodgeStatus]]) {
+  assert(!/\b(?:upgrade|update|switch to)\s+lodge\b/i.test(text), `${section} must not direct readers to upgrade lodge while no compatible release is published.`);
+  assert(text.includes("No published lodge release can load the Notes editor from the Frostnotes v0.8.0") && /Do not upgrade notesd on lodge['’]s host to v0\.8\.0 until a lodge release adds WebAssembly support\./.test(text), `${section} must say no published lodge release loads the Frostnotes v0.8.0 browser editor and tell readers not to upgrade notesd yet.`);
+}
 assert(/v0\.6\.1 keeps a provider['’]s inference queue.*?query string.*?reserved app IDs.*?does not migrate the database\./s.test(lightHtml.lodge.bodyText), "/docs/apps/lodge must state the v0.6.1 queue, query, and app ID fixes and the absence of a new migration.");
 assert(notesStatus.includes("v0.7.0 also adds a database migration, so v0.6.0 cannot open the database after v0.7.0 has run."), "/docs/apps/frostnotes Status must warn that the v0.7.0 migration prevents v0.6.0 from opening the database.");
 assertCites("/docs/apps/frostnotes Sources", lightHtml.frostnotes.sourcesHtml, "https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4", ["internal/store/migrations/0007_sync_pushes_refused.sql"]);

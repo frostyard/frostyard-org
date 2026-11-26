@@ -220,9 +220,9 @@ to build `notesd`, `notesctl`, or either Linux editor from source.
 
 ### Install the hub on lodge's host
 
-The Notes browser editor in the Frostnotes v0.8.0 `.deb` does not load under
-lodge v0.6.1. Before installing this package for browser use, upgrade lodge
-to a build that allows WebAssembly in app frames.
+No published lodge release can load the Notes editor from the Frostnotes v0.8.0
+`.deb` yet. Do not upgrade `notesd` on lodge's host to v0.8.0 until a lodge
+release adds WebAssembly support.
 
 A hub runs on lodge's host as lodge's `notes` app, as the system user
 `frostnotes`. To check the release `.deb` before you install it, run
@@ -269,7 +269,7 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 Reviewed 2026-11-26.
 
 - [Frostnotes v0.8.0 release and Debian asset](https://github.com/frostyard/frostnotes/releases/tag/v0.8.0) and [the tagged editor decision](https://github.com/frostyard/frostnotes/blob/v0.8.0/docs/adr/0047-use-the-shared-nsgo-editor-on-linux-and-lodge.md). The [v0.8.0 vault pairing test](https://github.com/frostyard/frostnotes/blob/v0.8.0/cmd/frostnotes-nsgo/vaults_test.go#L41-L51) opens Manage vaults.
-- [lodge v0.6.1 app-frame policy](https://github.com/frostyard/lodge/blob/v0.6.1/internal/gateway/headers.go#L59-L78) and [lodge #116](https://github.com/frostyard/lodge/pull/116), which adds WebAssembly support [after v0.6.1](https://github.com/frostyard/lodge/compare/v0.6.1...12408e76e9ed0fe1367b1846f48e3be46ab33a2b).
+- [lodge v0.6.1 app-frame policy](https://github.com/frostyard/lodge/blob/v0.6.1/internal/gateway/headers.go#L59-L78) and [lodge #116](https://github.com/frostyard/lodge/pull/116), which adds WebAssembly support [after v0.6.1](https://github.com/frostyard/lodge/compare/v0.6.1...12408e76e9ed0fe1367b1846f48e3be46ab33a2b). The [lodge release list](https://github.com/frostyard/lodge/releases) and [published lodge extension builds](https://repository.frostyard.org/ext/lodge/SHA256SUMS) listed nothing newer than v0.6.1 on 2026-11-26.
 - [Flatpak catalog](https://frostyard.github.io/flatpak-index/index/static) (`org.frostyard.Frostnotes`, version 0.8.0) and [published notesd extension builds](https://repository.frostyard.org/ext/notesd/SHA256SUMS), checked 2026-11-26.
 - The [Frostyard APT indexes for trixie](https://repository.frostyard.org/debian/dists/trixie/Release) and [Homebrew casks](https://github.com/frostyard/homebrew-tap/tree/main/Casks) had no Frostnotes package on 2026-11-26.
 

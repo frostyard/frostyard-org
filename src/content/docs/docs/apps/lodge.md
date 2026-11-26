@@ -37,7 +37,9 @@ inference layer are built.
 [Frostmail](/docs/apps/frostmail/) as Mail run behind it.
 [Porter](/docs/apps/porter/) runs beside them, since 2026-10-20.
 
-The Frostnotes v0.8.0 browser editor does not load under lodge v0.6.1.
+No published lodge release can load the Notes editor from the Frostnotes v0.8.0
+`.deb` yet. Do not upgrade `notesd` on lodge's host to v0.8.0 until a lodge
+release adds WebAssembly support.
 
 ## Remove frostread
 
@@ -173,7 +175,7 @@ newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 Reviewed 2026-11-26.
 
-- [lodge v0.6.1 release and Debian asset](https://github.com/frostyard/lodge/releases/tag/v0.6.1), [the queue, session, and app ID fixes](https://github.com/frostyard/lodge/pull/110), and the [tag comparison](https://github.com/frostyard/lodge/compare/v0.6.0...v0.6.1). `internal/store/migrations` is unchanged between the tags.
+- [lodge v0.6.1 release and Debian asset](https://github.com/frostyard/lodge/releases/tag/v0.6.1), [the queue, session, and app ID fixes](https://github.com/frostyard/lodge/pull/110), and the [tag comparison](https://github.com/frostyard/lodge/compare/v0.6.0...v0.6.1). `internal/store/migrations` is unchanged between the tags. The [lodge release list](https://github.com/frostyard/lodge/releases) and [published lodge extension builds](https://repository.frostyard.org/ext/lodge/SHA256SUMS) listed nothing newer than v0.6.1 on 2026-11-26.
 
 - lodge v0.6.0 commit [`338a708d451701a90ddf7afd299889cdc7edd620`](https://github.com/frostyard/lodge/tree/338a708d451701a90ddf7afd299889cdc7edd620), released 2026-11-17 ([release](https://github.com/frostyard/lodge/releases/tag/v0.6.0)): the *Agent access* link to the grants page ([lodge#98](https://github.com/frostyard/lodge/pull/98); [`site/content/guides/configure.md`](https://github.com/frostyard/lodge/blob/338a708d451701a90ddf7afd299889cdc7edd620/site/content/guides/configure.md)). `internal/store/migrations` is the same as at v0.5.2. The first start of v0.5.2 and its `resync` events: [`packaging/README.md`](https://github.com/frostyard/lodge/blob/338a708d451701a90ddf7afd299889cdc7edd620/packaging/README.md#update) (Update).
 - lodge v0.5.2 commit [`d2cfffecda33f46187abc1e4ba3ce0ba320342df`](https://github.com/frostyard/lodge/tree/d2cfffecda33f46187abc1e4ba3ce0ba320342df), released 2026-11-17 ([release](https://github.com/frostyard/lodge/releases/tag/v0.5.2)): consumer positions kept across a start, and a `resync` for a gap that a pull on an open connection passed ([lodge#96](https://github.com/frostyard/lodge/pull/96); [`site/content/guides/configure.md`](https://github.com/frostyard/lodge/blob/d2cfffecda33f46187abc1e4ba3ce0ba320342df/site/content/guides/configure.md), Events for agents). `internal/store/migrations` is the same as at v0.5.1. Grants made before v0.5.1 need a new approval: [`packaging/README.md`](https://github.com/frostyard/lodge/blob/d2cfffecda33f46187abc1e4ba3ce0ba320342df/packaging/README.md#update) (Update) and [`docs/specs/oauth.md`](https://github.com/frostyard/lodge/blob/d2cfffecda33f46187abc1e4ba3ce0ba320342df/docs/specs/oauth.md#principals-clients-and-grants).
