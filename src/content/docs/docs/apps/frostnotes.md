@@ -3,7 +3,7 @@ title: Frostnotes
 description: "Keep plain markdown notes with live preview, optional self-hosted sync, and Obsidian Bases subset queries through the CLI and MCP. Pre-release; install from the Frostyard Flatpak remote."
 follows:
   repo: frostyard/frostnotes
-  tag: v0.7.0
+  tag: v0.8.0
 ---
 
 Frostnotes is a notes app in the spirit of Obsidian. Your notes are plain
@@ -12,10 +12,8 @@ want notes that sync between your devices and that agents can read and write.
 
 - `notesd` is a Go daemon. It watches your files and keeps a SQLite index.
 - Each device syncs with a self-hosted hub. There are no conflict copies.
-- The desktop app is a native Go app on MyGo and frostui, with live preview.
-  It is a sibling of [Frostmail](/docs/apps/frostmail/).
-- The web app is a React UI with a CodeMirror 6 editor, served by
-  [lodge](/docs/apps/lodge/). A narrow screen gets a phone layout.
+- Linux and [lodge](/docs/apps/lodge/) share the NSGo editor. On Linux,
+  you can still open the MyGo desktop for version history, attachments, and backlinks.
 - Agents use MCP: `notesctl mcp` on your host, or lodge's `/mcp/notes` with
   a scoped token.
 - Obsidian vaults open as they are.
@@ -23,13 +21,17 @@ want notes that sync between your devices and that agents can read and write.
 
 ## Status
 
-Frostnotes is pre-release. The latest release is v0.7.0. Its Flatpak is in the
-[Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
-attaches `frostyard-notesd_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
-`notesd`, `notesctl`, the units, the `frostnotes` user, and the web build for
-lodge's notes app. Frostnotes is not in the Frostyard APT repository or the
-Frostyard Homebrew tap. On a Frostyard image, the
-[notesd system extension](/docs/sysexts/notesd/) installs it. The system extension can trail the latest release. The [catalog](/docs/sysexts/) lists the version it ships.
+Frostnotes is pre-release. The latest release is v0.8.0. For the desktop,
+install Frostnotes from the [Frostyard Flatpak remote](/docs/get-software/#flatpak).
+The release attaches one file, `frostyard-notesd_0.8.0_amd64.deb`, for lodge's
+host. It contains `notesd`, `notesctl`, systemd units, the `frostnotes` user
+setup, and the WebAssembly editor for Notes in lodge. It does not install
+the desktop app. Frostnotes is not in the Frostyard APT repository or the
+Frostyard Homebrew tap.
+
+On a Frostyard image, the [notesd system extension](/docs/sysexts/notesd/)
+is the separate server install. The system extension can trail the latest release.
+Check the [catalog](/docs/sysexts/) for published extension versions.
 
 The vault, sync, and the desktop app are done. Notes inside lodge is done:
 `notesd` runs as lodge's `notes` app. The hub moved behind lodge on
@@ -84,6 +86,12 @@ with filters or a `.base` file. This does not add base views to the apps.
 v0.7.0 also adds a database migration, so v0.6.0 cannot open the database
 after v0.7.0 has run.
 
+Release v0.8.0 makes NSGo the default Linux editor and ships it for Notes in
+lodge. You can edit Markdown inline, search notes, and recover edits after
+conflicts. Both Linux editors use the same vaults, hub pairing, and background
+setting. The browser editor needs a [lodge gateway with WebAssembly support](https://github.com/frostyard/lodge/pull/116);
+lodge v0.6.1 does not have that support.
+
 ## Install
 
 The desktop app is a Flatpak. It works on its own: you need no account,
@@ -110,12 +118,15 @@ Check the install:
 
 `flatpak info org.frostyard.Frostnotes`
 
-You see version 0.7.0. Frostnotes shows in the app grid. Update it with
+Check the installed version. Frostnotes shows in the app grid. Update it with
 `flatpak update`. From v0.3.0, when you open a new window after
 `flatpak update`, the app replaces a `notesd` of an older build with the new
 one, and you need no logout. The update from v0.2.0 to v0.3.0 is different:
 the v0.2.0 `notesd` keeps running until you log out and in. Your notes,
 files, and versions stay.
+
+To open the MyGo fallback, run `flatpak run org.frostyard.Frostnotes --mygo`.
+It opens the same vaults as the default editor.
 
 Run the CLI on a desktop through the Flatpak, for example:
 
@@ -128,7 +139,7 @@ If you turn Run in Background off (GNOME Settings, Apps, Frostnotes), the
 desktop stops `notesd` once no window is open: on GNOME 48, about 45 seconds
 after the last window closes. Sync then waits until you open the app again.
 
-You can also set this in the app. Open Settings, then Background, then
+In the MyGo fallback, open Settings, then Background, then
 "Keep syncing when no window is open". It is On by default. On: `notesd`
 keeps running after the last window closes, and it can start at login. Off:
 `notesd` stops when the last window closes and does not start at login, so
@@ -168,7 +179,11 @@ out and in.
 ### Sync with a hub
 
 Sync with a hub, for example the hub in [lodge](/docs/apps/lodge/), is
-optional. Nothing turns it on for you.
+optional. Nothing turns it on for you. In the default editor, open
+**Manage vaults** to join a hub. For the pairing flow, see the
+[app guide](https://github.com/frostyard/frostnotes/blob/v0.8.0/docs/design/app.md#shared-nsgo-editor-preview).
+
+In the MyGo fallback:
 
 1. Open the vault menu, and press Manage vaults…. With no vault yet, the app
    opens there.
@@ -201,9 +216,8 @@ From the terminal, with your local vault's name as `VAULT`:
 
 ### Build from source
 
-`notesd`, `notesctl`, and the desktop app build from source with Go. The
-desktop app needs GTK 3, Pango, and cairo when it runs. See
-[Development](https://github.com/frostyard/frostnotes/blob/main/docs/development.md).
+See [Development](https://github.com/frostyard/frostnotes/blob/main/docs/development.md)
+to build `notesd`, `notesctl`, or either Linux editor from source.
 
 ### Install the hub on lodge's host
 
@@ -225,7 +239,8 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 - [Obsidian Bases subset](https://github.com/frostyard/frostnotes/blob/main/docs/specs/bases.md): query syntax, supported features, and `notesctl query`.
 - [MCP queries](https://github.com/frostyard/frostnotes/blob/main/docs/specs/mcp.md#queries): `query_notes` inputs and results.
 - [Notes in lodge](https://github.com/frostyard/frostnotes/blob/main/docs/specs/lodge-app.md): the app contract with lodge.
-- [The desktop app in MyGo](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0009-mygo-desktop.md): the native app and how it differs from the web app.
+- [Shared NSGo editor](https://github.com/frostyard/frostnotes/blob/v0.8.0/docs/design/app.md#shared-nsgo-editor-preview): the default Linux editor and Notes in lodge.
+- [The desktop fallback in MyGo](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0009-mygo-desktop.md): the native app and how it differs from the web app.
 - [Roadmap](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0002-roadmap.md): what is done and what comes next.
 - [Notes inside lodge](https://github.com/frostyard/frostnotes/blob/main/docs/plans/0006-m4-notes-inside-lodge.md): the plan and its phases.
 
@@ -248,7 +263,10 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 ## Sources
 
-Reviewed 2026-11-19.
+Reviewed 2026-11-26.
+
+- [Frostnotes v0.8.0 release and Debian asset](https://github.com/frostyard/frostnotes/releases/tag/v0.8.0) and [the tagged editor decision](https://github.com/frostyard/frostnotes/blob/v0.8.0/docs/adr/0047-use-the-shared-nsgo-editor-on-linux-and-lodge.md). The [lodge WebAssembly change](https://github.com/frostyard/lodge/compare/v0.6.1...12408e76e9ed0fe1367b1846f48e3be46ab33a2b) is newer than lodge v0.6.1.
+- [Flatpak catalog](https://frostyard.github.io/flatpak-index/index/static) (`org.frostyard.Frostnotes`, version 0.8.0) and [published notesd extension builds](https://repository.frostyard.org/ext/notesd/SHA256SUMS), checked 2026-11-26.
 
 - Frostnotes release v0.7.0 commit [`83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4`](https://github.com/frostyard/frostnotes/tree/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4), released 2026-11-19. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.7.0) attaches only `frostyard-notesd_0.7.0_amd64.deb`.
 - The v0.7.0 migration: [`0007_sync_pushes_refused.sql`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/internal/store/migrations/0007_sync_pushes_refused.sql). The [v0.6.0 store](https://github.com/frostyard/frostnotes/blob/b9c6c9006d666183f91313f79648f8323b8a61b0/internal/store/store.go) refuses a newer schema.

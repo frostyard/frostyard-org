@@ -791,16 +791,16 @@ for (const page of lightPages) {
   }
   assert(!html.includes("data-code="), `${path} must not carry copied command blocks.`);
 }
-assert(lightHtml.lodge.text.includes("The latest release is v0.6.0") && lightHtml.lodge.text.includes("approve again each grant made before v0.5.1") && lightHtml.lodge.text.includes("v0.2.1 is a patch release") && lightHtml.lodge.text.includes("reach a contrast of 4.5:1") && lightHtml.lodge.text.includes("each migrate the database"), "/docs/apps/lodge must name v0.6.0 as the latest release, with the text contrast of v0.3.0, the migrations of v0.4.0 and v0.5.1, and the new approval of grants made before v0.5.1.");
+assert(lightHtml.lodge.text.includes("approve again each grant made before v0.5.1") && lightHtml.lodge.text.includes("v0.2.1 is a patch release") && lightHtml.lodge.text.includes("reach a contrast of 4.5:1") && lightHtml.lodge.text.includes("each migrate the database"), "/docs/apps/lodge must keep the text contrast of v0.3.0, the migrations of v0.4.0 and v0.5.1, and the new approval of grants made before v0.5.1.");
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
 assert(lightHtml.porter.text.includes("The latest release is v0.4.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.4.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
-for (const [route, tag] of [["frostnotes", "v0.7.0"], ["frostmail", "v0.9.0"]]) {
+for (const [route, tag] of [["frostnotes", "v0.8.0"], ["frostmail", "v0.9.0"], ["lodge", "v0.6.1"]]) {
   const follows = readFollows(await readFile(new URL(`../src/content/docs/docs/apps/${route}.md`, import.meta.url), "utf8"));
   assert(follows?.repo === `frostyard/${route}` && follows.tag === tag, `/docs/apps/${route} follows metadata must name frostyard/${route} at ${tag}.`);
   assert(lightHtml[route].bodyText.includes(`The latest release is ${follows.tag}.`), `/docs/apps/${route} must render its follows version as the latest release before Sources.`);
 }
-assert(lightHtml.frostnotes.bodyText.includes("The latest release is v0.7.0") && lightHtml.frostnotes.bodyText.includes("You see version 0.7.0") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must name v0.7.0, install version 0.7.0, list_tasks, and the reset layout of the native app.");
+assert(lightHtml.frostnotes.bodyText.includes("flatpak info org.frostyard.Frostnotes") && lightHtml.frostnotes.bodyText.includes("flatpak run org.frostyard.Frostnotes --mygo") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must show how to check the installed Flatpak and open MyGo, and keep list_tasks and the reset layout of the native app.");
 assert(/Release v0\.7\.0 adds note\.query\s*, notesctl query\s*, and the MCP tool query_notes/.test(lightHtml.frostnotes.bodyText) && lightHtml.frostnotes.bodyText.includes("Obsidian Bases subset"), "/docs/apps/frostnotes must name note.query, notesctl query, and query_notes as shipped for an Obsidian Bases subset.");
 for (const doc of ["bases.md", "mcp.md#queries"]) {
   assert(lightHtml.frostnotes.bodyHtml.includes(`href="https://github.com/frostyard/frostnotes/blob/main/docs/specs/${doc}"`), `/docs/apps/frostnotes must link the canonical ${doc} before Sources.`);
