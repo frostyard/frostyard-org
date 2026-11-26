@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-26",
+  "scope": "Frostnotes and lodge app guides",
+  "correction": "State the user-visible failure where readers choose a server package: the Frostnotes v0.8.0 browser editor does not load under lodge v0.6.1. Check both built guides for the warning.",
+  "evidence": "Independent review of 1ce0da6b17a6978434a9d06afdcaf6ab7d8fafea; Frostnotes v0.8.0 Debian payload; lodge v0.6.1 internal/gateway/headers.go and frostyard/lodge#116.",
+  "promoted_to": ""
+}

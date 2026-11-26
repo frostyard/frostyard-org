@@ -89,8 +89,7 @@ after v0.7.0 has run.
 Release v0.8.0 makes NSGo the default Linux editor and ships it for Notes in
 lodge. You can edit Markdown inline, search notes, and recover edits after
 conflicts. Both Linux editors use the same vaults, hub pairing, and background
-setting. The browser editor needs a [lodge gateway with WebAssembly support](https://github.com/frostyard/lodge/pull/116);
-lodge v0.6.1 does not have that support.
+setting.
 
 ## Install
 
@@ -118,7 +117,7 @@ Check the install:
 
 `flatpak info org.frostyard.Frostnotes`
 
-Check the installed version. Frostnotes shows in the app grid. Update it with
+You see version 0.8.0. Frostnotes shows in the app grid. Update it with
 `flatpak update`. From v0.3.0, when you open a new window after
 `flatpak update`, the app replaces a `notesd` of an older build with the new
 one, and you need no logout. The update from v0.2.0 to v0.3.0 is different:
@@ -179,8 +178,8 @@ out and in.
 ### Sync with a hub
 
 Sync with a hub, for example the hub in [lodge](/docs/apps/lodge/), is
-optional. Nothing turns it on for you. In the default editor, open
-**Manage vaults** to join a hub. For the pairing flow, see the
+optional. Nothing turns it on for you. In the v0.8.0 default editor, open
+Manage vaults and choose Join a vault on a hub. For the pairing flow, see the
 [app guide](https://github.com/frostyard/frostnotes/blob/v0.8.0/docs/design/app.md#shared-nsgo-editor-preview).
 
 In the MyGo fallback:
@@ -220,6 +219,10 @@ See [Development](https://github.com/frostyard/frostnotes/blob/main/docs/develop
 to build `notesd`, `notesctl`, or either Linux editor from source.
 
 ### Install the hub on lodge's host
+
+The Notes browser editor in the Frostnotes v0.8.0 `.deb` does not load under
+lodge v0.6.1. Before installing this package for browser use, upgrade lodge
+to a build that allows WebAssembly in app frames.
 
 A hub runs on lodge's host as lodge's `notes` app, as the system user
 `frostnotes`. To check the release `.deb` before you install it, run
@@ -265,8 +268,10 @@ The [hub steps](https://github.com/frostyard/frostnotes/blob/main/docs/design/hu
 
 Reviewed 2026-11-26.
 
-- [Frostnotes v0.8.0 release and Debian asset](https://github.com/frostyard/frostnotes/releases/tag/v0.8.0) and [the tagged editor decision](https://github.com/frostyard/frostnotes/blob/v0.8.0/docs/adr/0047-use-the-shared-nsgo-editor-on-linux-and-lodge.md). The [lodge WebAssembly change](https://github.com/frostyard/lodge/compare/v0.6.1...12408e76e9ed0fe1367b1846f48e3be46ab33a2b) is newer than lodge v0.6.1.
+- [Frostnotes v0.8.0 release and Debian asset](https://github.com/frostyard/frostnotes/releases/tag/v0.8.0) and [the tagged editor decision](https://github.com/frostyard/frostnotes/blob/v0.8.0/docs/adr/0047-use-the-shared-nsgo-editor-on-linux-and-lodge.md). The [v0.8.0 vault pairing test](https://github.com/frostyard/frostnotes/blob/v0.8.0/cmd/frostnotes-nsgo/vaults_test.go#L41-L51) opens Manage vaults.
+- [lodge v0.6.1 app-frame policy](https://github.com/frostyard/lodge/blob/v0.6.1/internal/gateway/headers.go#L59-L78) and [lodge #116](https://github.com/frostyard/lodge/pull/116), which adds WebAssembly support [after v0.6.1](https://github.com/frostyard/lodge/compare/v0.6.1...12408e76e9ed0fe1367b1846f48e3be46ab33a2b).
 - [Flatpak catalog](https://frostyard.github.io/flatpak-index/index/static) (`org.frostyard.Frostnotes`, version 0.8.0) and [published notesd extension builds](https://repository.frostyard.org/ext/notesd/SHA256SUMS), checked 2026-11-26.
+- The [Frostyard APT indexes for trixie](https://repository.frostyard.org/debian/dists/trixie/Release) and [Homebrew casks](https://github.com/frostyard/homebrew-tap/tree/main/Casks) had no Frostnotes package on 2026-11-26.
 
 - Frostnotes release v0.7.0 commit [`83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4`](https://github.com/frostyard/frostnotes/tree/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4), released 2026-11-19. Its [release](https://github.com/frostyard/frostnotes/releases/tag/v0.7.0) attaches only `frostyard-notesd_0.7.0_amd64.deb`.
 - The v0.7.0 migration: [`0007_sync_pushes_refused.sql`](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/internal/store/migrations/0007_sync_pushes_refused.sql). The [v0.6.0 store](https://github.com/frostyard/frostnotes/blob/b9c6c9006d666183f91313f79648f8323b8a61b0/internal/store/store.go) refuses a newer schema.

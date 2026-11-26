@@ -36,6 +36,9 @@ inference layer are built.
 [Frostnotes](/docs/apps/frostnotes/) as Notes and
 [Frostmail](/docs/apps/frostmail/) as Mail run behind it.
 [Porter](/docs/apps/porter/) runs beside them, since 2026-10-20.
+
+The Frostnotes v0.8.0 browser editor does not load under lodge v0.6.1.
+
 ## Remove frostread
 
 frostread, the feed reader that ran behind lodge as Read, is retired since
