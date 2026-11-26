@@ -3,7 +3,7 @@ title: lodge
 description: "lodge is the tailnet-only web shell that opens Notes, Mail, and Porter from one address. Pre-release: it installs from a tarball."
 follows:
   repo: frostyard/lodge
-  tag: v0.6.0
+  tag: v0.6.1
 ---
 
 lodge is a web shell for Frostyard's own apps. One address on your tailnet
@@ -27,14 +27,20 @@ Porter. The full user guide is on the
 
 ## Status
 
-lodge is pre-release. The latest release is v0.6.0. Each release attaches
-`frostyard-lodge_X.Y.Z_amd64.deb`, which the lodge system extension installs.
-The system extension can trail the latest release. The [catalog](/docs/sysexts/) lists the version it ships.
+lodge is pre-release. The latest release is v0.6.1. It attaches
+`frostyard-lodge_0.6.1_amd64.deb` with the lodge server, `lodgectl`, and the
+web shell. The system extension can trail the latest release. Check
+the [catalog](/docs/sysexts/) for published extension versions.
 On another host, you install lodge from the tarball that `make dist` builds. lodge v1 and its
 inference layer are built.
 [Frostnotes](/docs/apps/frostnotes/) as Notes and
 [Frostmail](/docs/apps/frostmail/) as Mail run behind it.
 [Porter](/docs/apps/porter/) runs beside them, since 2026-10-20.
+
+No published lodge release can load the Notes editor from the Frostnotes v0.8.0
+`.deb` yet. Do not upgrade `notesd` on lodge's host to v0.8.0 until a lodge
+release adds WebAssembly support.
+
 ## Remove frostread
 
 frostread, the feed reader that ran behind lodge as Read, is retired since
@@ -86,6 +92,11 @@ v0.6.0 adds *Agent access*, a link at the foot of lodge's rail and under the
 apps in the switcher. It opens the grants page in a new tab. Every login sees
 the link, but the page opens only for an admin. v0.6.0 does not migrate the
 database.
+
+v0.6.1 keeps a provider's inference queue when you reload without changing
+its type or base URL. It passes the browser session's query string through
+to the app and uses the same reserved app IDs in the client and shell.
+It does not migrate the database.
 
 lodge is optional for the desktop apps. Frostnotes and Frostmail work on
 their own as Flatpaks. You opt into lodge for each app, and nothing turns it on for you.
@@ -162,7 +173,9 @@ newer than itself. Back up `/var/lib/lodge` before you install a newer build.
 
 ## Sources
 
-Reviewed 2026-11-16.
+Reviewed 2026-11-26.
+
+- [lodge v0.6.1 release and Debian asset](https://github.com/frostyard/lodge/releases/tag/v0.6.1), [the queue, session, and app ID fixes](https://github.com/frostyard/lodge/pull/110), and the [tag comparison](https://github.com/frostyard/lodge/compare/v0.6.0...v0.6.1). `internal/store/migrations` is unchanged between the tags. The [lodge release list](https://github.com/frostyard/lodge/releases) and [published lodge extension builds](https://repository.frostyard.org/ext/lodge/SHA256SUMS) listed nothing newer than v0.6.1 on 2026-11-26.
 
 - lodge v0.6.0 commit [`338a708d451701a90ddf7afd299889cdc7edd620`](https://github.com/frostyard/lodge/tree/338a708d451701a90ddf7afd299889cdc7edd620), released 2026-11-17 ([release](https://github.com/frostyard/lodge/releases/tag/v0.6.0)): the *Agent access* link to the grants page ([lodge#98](https://github.com/frostyard/lodge/pull/98); [`site/content/guides/configure.md`](https://github.com/frostyard/lodge/blob/338a708d451701a90ddf7afd299889cdc7edd620/site/content/guides/configure.md)). `internal/store/migrations` is the same as at v0.5.2. The first start of v0.5.2 and its `resync` events: [`packaging/README.md`](https://github.com/frostyard/lodge/blob/338a708d451701a90ddf7afd299889cdc7edd620/packaging/README.md#update) (Update).
 - lodge v0.5.2 commit [`d2cfffecda33f46187abc1e4ba3ce0ba320342df`](https://github.com/frostyard/lodge/tree/d2cfffecda33f46187abc1e4ba3ce0ba320342df), released 2026-11-17 ([release](https://github.com/frostyard/lodge/releases/tag/v0.5.2)): consumer positions kept across a start, and a `resync` for a gap that a pull on an open connection passed ([lodge#96](https://github.com/frostyard/lodge/pull/96); [`site/content/guides/configure.md`](https://github.com/frostyard/lodge/blob/d2cfffecda33f46187abc1e4ba3ce0ba320342df/site/content/guides/configure.md), Events for agents). `internal/store/migrations` is the same as at v0.5.1. Grants made before v0.5.1 need a new approval: [`packaging/README.md`](https://github.com/frostyard/lodge/blob/d2cfffecda33f46187abc1e4ba3ce0ba320342df/packaging/README.md#update) (Update) and [`docs/specs/oauth.md`](https://github.com/frostyard/lodge/blob/d2cfffecda33f46187abc1e4ba3ce0ba320342df/docs/specs/oauth.md#principals-clients-and-grants).

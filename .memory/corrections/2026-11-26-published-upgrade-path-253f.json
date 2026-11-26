@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-26",
+  "scope": "Frostnotes and lodge app guides",
+  "correction": "When a compatibility fix has landed but is not published, give readers a step they can take with published builds. Keep notesd below v0.8.0 on the lodge host for browser use until a lodge release adds WebAssembly support.",
+  "evidence": "Independent review of 07f8223212a6c576881e21a6ff8f2bb1a008b174; lodge GitHub release list and lodge system extension SHA256SUMS checked 2026-11-26.",
+  "promoted_to": ""
+}
