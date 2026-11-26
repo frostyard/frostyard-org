@@ -10,7 +10,8 @@ const labels = {
 async function publishedExtensions() {
   const response = await fetch(indexUrl, { signal: AbortSignal.timeout(8000) });
   if (!response.ok) throw new Error(`index returned ${response.status}`);
-  const names = (await response.text()).split(/\r?\n/).map(name => name.trim()).filter(Boolean);
+  // The repository still lists the retired frostread extension.
+  const names = (await response.text()).split(/\r?\n/).map(name => name.trim()).filter(name => name && name !== "readd");
   return {
     source: indexUrl,
     updatedAt: new Date().toISOString(),
