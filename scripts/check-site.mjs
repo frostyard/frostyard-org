@@ -772,7 +772,7 @@ const lightPages = [
   {
     route: "frostnotes",
     repo: "frostnotes",
-    sha: "b9c6c9006d666183f91313f79648f8323b8a61b0",
+    sha: "b5c482ba0d91122cacce0523a7dad04a4fa9b863",
     install: "install",
     canonical: "docs/development.md",
     sentence: "Frostnotes is pre-release",
@@ -799,21 +799,19 @@ assert(lightHtml.lodge.text.includes("approve again each grant made before v0.5.
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
 assert(lightHtml.porter.text.includes("The latest release is v0.4.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.4.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
-for (const [route, tag] of [["frostnotes", "v0.8.0"], ["frostmail", "v0.11.0"], ["lodge", "v0.6.1"]]) {
+for (const [route, tag] of [["frostnotes", "v0.9.0"], ["frostmail", "v0.11.0"], ["lodge", "v0.6.1"]]) {
   const follows = readFollows(await readFile(new URL(`../src/content/docs/docs/apps/${route}.md`, import.meta.url), "utf8"));
   assert(follows?.repo === `frostyard/${route}` && follows.tag === tag, `/docs/apps/${route} follows metadata must name frostyard/${route} at ${tag}.`);
   assert(lightHtml[route].bodyText.includes(`The latest release is ${follows.tag}.`), `/docs/apps/${route} must render its follows version as the latest release before Sources.`);
 }
-assert(lightHtml.frostnotes.bodyText.includes("flatpak info org.frostyard.Frostnotes") && lightHtml.frostnotes.bodyText.includes("You see version 0.8.0.") && lightHtml.frostnotes.bodyText.includes("flatpak run org.frostyard.Frostnotes --mygo") && lightHtml.frostnotes.text.includes("list_tasks") && lightHtml.frostnotes.text.includes("opens the default layout"), "/docs/apps/frostnotes must show the expected installed Flatpak version and how to open MyGo, and keep list_tasks and the reset layout of the native app.");
-assert(/Release v0\.7\.0 adds note\.query\s*, notesctl query\s*, and the MCP tool query_notes/.test(lightHtml.frostnotes.bodyText) && lightHtml.frostnotes.bodyText.includes("Obsidian Bases subset"), "/docs/apps/frostnotes must name note.query, notesctl query, and query_notes as shipped for an Obsidian Bases subset.");
 for (const doc of ["bases.md", "mcp.md#queries"]) {
   assert(lightHtml.frostnotes.bodyHtml.includes(`href="https://github.com/frostyard/frostnotes/blob/main/docs/specs/${doc}"`), `/docs/apps/frostnotes must link the canonical ${doc} before Sources.`);
 }
 assert(lightHtml.frostnotes.bodyText.includes("There is no graph view or base view in the apps yet.") && lightHtml.frostnotes.bodyText.includes("Queries support only the documented Obsidian Bases subset."), "/docs/apps/frostnotes must distinguish shipped subset queries from the graph and app base views that are not built yet.");
 assert(lightHtml.frostnotes.bodyText.includes("Notes inside lodge is done:") && !/Notes inside lodge is in progress/.test(lightHtml.frostnotes.bodyText) && /7-day sync trial['’]s daily checks were not recorded, so the trial is not verified in full\./.test(lightHtml.frostnotes.bodyText), "/docs/apps/frostnotes must say that notes inside lodge is done without claiming full verification of the 7-day sync trial, as recorded in Frostnotes plan 0006.");
 const notesStatus = textOf(lightHtml.frostnotes.bodyHtml.split('<h2 id="status"')[1].split('<h2 id="install"')[0]);
-assert(notesStatus.includes("v0.8.0 makes NSGo the default Linux editor"), "/docs/apps/frostnotes Status must name NSGo as the v0.8.0 default on Linux.");
-assert(["frostyard-notesd_0.8.0_amd64.deb", "systemd units", "frostnotes user setup", "WebAssembly editor for Notes in lodge", "does not install the desktop app"].every(part => notesStatus.includes(part)) && /contains notesd\s*, notesctl\s*,/.test(notesStatus), "/docs/apps/frostnotes Status must distinguish the v0.8.0 server .deb and its contents from the desktop install.");
+assert(/The Linux Flatpak includes notesd and notesctl\s*\. It has no desktop window or app-grid entry\./.test(notesStatus), "/docs/apps/frostnotes Status must describe the headless Flatpak.");
+assert(["frostyard-notesd_0.9.0_amd64.deb", "systemd units", "React web app for Notes in lodge", "does not install a desktop editor"].every(part => notesStatus.includes(part)) && /contains notesd\s*, notesctl\s*,/.test(notesStatus), "/docs/apps/frostnotes Status must distinguish the v0.9.0 server .deb and its contents from the Flatpak.");
 const notesHubInstall = textOf(lightHtml.frostnotes.bodyHtml.split('<h3 id="install-the-hub-on-lodges-host"')[1]?.split('<h2 id="documentation"')[0] ?? "");
 const lodgeStatus = textOf(lightHtml.lodge.bodyHtml.split('<h2 id="status"')[1].split('<h2 id="remove-frostread"')[0]);
 for (const [section, text] of [["/docs/apps/frostnotes hub installation", notesHubInstall], ["/docs/apps/lodge Status", lodgeStatus]]) {
@@ -821,7 +819,10 @@ for (const [section, text] of [["/docs/apps/frostnotes hub installation", notesH
   assert(text.includes("No published lodge release can load the Notes editor from the Frostnotes v0.8.0") && /Do not upgrade notesd on lodge['’]s host to v0\.8\.0 until a lodge release adds WebAssembly support\./.test(text), `${section} must say no published lodge release loads the Frostnotes v0.8.0 browser editor and tell readers not to upgrade notesd yet.`);
 }
 assert(/v0\.6\.1 keeps a provider['’]s inference queue.*?query string.*?reserved app IDs.*?does not migrate the database\./s.test(lightHtml.lodge.bodyText), "/docs/apps/lodge must state the v0.6.1 queue, query, and app ID fixes and the absence of a new migration.");
-assert(notesStatus.includes("v0.7.0 also adds a database migration, so v0.6.0 cannot open the database after v0.7.0 has run."), "/docs/apps/frostnotes Status must warn that the v0.7.0 migration prevents v0.6.0 from opening the database.");
+assert(notesHubInstall.includes("The v0.9.0 package returns to the React web app. An upgrade to v0.9.0 has not been tested with a published lodge release."), "/docs/apps/frostnotes must not present v0.9.0 as a verified lodge upgrade.");
+assertSections("/docs/apps/frostnotes", lightHtml.frostnotes.html, ["limits"]);
+const notesLimits = textOf(lightHtml.frostnotes.bodyHtml.split('<h2 id="limits"')[1].split('<h2')[0]);
+assert(notesLimits.includes("Back up ~/.var/app/org.frostyard.Frostnotes/ before you install a newer Flatpak.") && notesLimits.includes("An older notesd refuses to open a database with a newer schema.") && notesLimits.includes("v0.6.0 cannot open the database after v0.7.0 has run."), "/docs/apps/frostnotes Limits must preserve backup and downgrade warnings.");
 assertCites("/docs/apps/frostnotes Sources", lightHtml.frostnotes.sourcesHtml, "https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4", ["internal/store/migrations/0007_sync_pushes_refused.sql"]);
 for (const route of ["lodge", "frostnotes"]) {
   assert(lightHtml[route].text.includes("The system extension can trail the latest release"), `/docs/apps/${route} must state that the system extension can trail the latest release.`);
@@ -871,10 +872,8 @@ assert(lightHtml.frostmail.bodyText.includes("frostyard-maild_0.11.0_amd64.deb")
 assert(lightHtml.frostmail.bodyText.includes("removes the MyGo client") && lightHtml.frostmail.bodyText.includes("NSGo client’s web build for lodge"), "/docs/apps/frostmail must describe the removal of MyGo and the NSGo web build in the server package.");
 assert(lightHtml.frostmail.bodyHtml.includes('href="https://github.com/frostyard/frostmail/releases"'), "/docs/apps/frostmail must link the canonical release history.");
 assert(!lightHtml.frostmail.text.includes("A real mail store moved"), "/docs/apps/frostmail must not report one deployment's move as a project status fact.");
-assert(lightHtml.frostnotes.text.includes("Release v0.6.0 draws the desktop app in the Frostyard look"), "/docs/apps/frostnotes must name the Frostyard look of Frostnotes v0.6.0.");
 assert(lightHtml.frostmail.bodyHtml.includes('href="https://github.com/frostyard/flatpak-index/blob/main/README.md#install"'), "/docs/apps/frostmail must link the Frostyard Flatpak remote install steps.");
-assert(lightHtml.frostnotes.text.includes("flatpak install --user frostyard org.frostyard.Frostnotes"), "/docs/apps/frostnotes must give the per-user Flatpak install command.");
-assert(lightHtml.frostnotes.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostnotes must link the Frostyard Flatpak remote README.");
+assert(lightHtml.frostnotes.bodyHtml.includes('href="https://github.com/frostyard/flatpak-index/blob/main/README.md#install"') && lightHtml.frostnotes.bodyText.includes("per-user Flathub setup"), "/docs/apps/frostnotes must link the canonical Flatpak install steps and mention per-user Flathub setup.");
 
 const nsl = await readRoute("/docs/tools/nsl");
 const nslText = textOf(nsl);
@@ -969,7 +968,7 @@ for (const [route, pageText] of [
   ["/docs/tools/igloo", iglooText],
 ]) {
   assert(!pageText.includes("flatpak remote-add --if-not-exists frostyard") && !pageText.includes("flatpak install frostyard "), `${route} must teach the per-user Frostyard remote (flatpak-index README.md, Install apps).`);
-  if (route !== "/docs/apps/frostmail") {
+  if (route === "/docs/tools/igloo") {
     assert(pageText.includes("flatpak remote-add --user --if-not-exists flathub"), `${route} must give the per-user Flathub remote command.`);
   }
 }
