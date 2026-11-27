@@ -3,14 +3,14 @@ title: intuneme
 description: "Run Microsoft Intune for a managed work device on a Frostyard image: install intuneme, enroll, and use it every day."
 follows:
   repo: frostyard/intuneme
-  tag: v0.24.0
+  tag: v0.25.0
 ---
 
 intuneme runs Microsoft Intune, the Microsoft Identity Broker, and Microsoft
 Edge in a systemd-nspawn container on an immutable host. You need it when your
 employer manages your device with Intune and the host `/usr` is read-only.
 The host stays almost unchanged, and your enrollment lives in `~/Intune`. This
-guide follows intuneme v0.24.0; the full documentation is at
+guide follows intuneme v0.25.0; the full documentation is at
 [frostyard.github.io/intuneme](https://frostyard.github.io/intuneme/).
 
 Snow, Snowfield, and Sundog already include the `frostyard-intuneme` package.
@@ -128,6 +128,8 @@ down. Your enrollment, browser profile, and downloads stay in `~/Intune`.
 | See whether the container runs | `intuneme status` |
 | Open a shell in the container | `intuneme shell` |
 | Open Intune Portal, for a compliance check | `intuneme open portal` |
+| List web apps installed in the container’s Edge | `intuneme open app --list` |
+| Open an installed web app | `intuneme open app ID`, using an ID from the list |
 
 ## Options
 
@@ -178,7 +180,7 @@ says what the helpers allow.
 
 ## Upgrade
 
-intuneme v0.24.0 refuses an unsafe `rootfs_path` in `config.toml`, such as an
+Since v0.24.0, intuneme refuses an unsafe `rootfs_path` in `config.toml`, such as an
 empty, relative, or top-level path. Every command then stops with an error that
 names `rootfs_path`. The default value is safe. If you changed the key, read
 the [v0.24.0 migration notes](https://github.com/frostyard/intuneme/releases/tag/v0.24.0)
@@ -317,7 +319,7 @@ records, and ChairLift sends a report only after you turn reporting on.
 the records and see the codes, see intuneme's
 [Problem records](https://frostyard.github.io/intuneme/reference/problem-records/)
 page. To learn why intuneme keeps them local, read
-[intuneme ADR-0003](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/docs/adr/0003-record-problems-with-std-problems.md).
+[intuneme ADR-0003](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/docs/adr/0003-record-problems-with-std-problems.md).
 
 ## See also
 
@@ -326,38 +328,39 @@ page. To learn why intuneme keeps them local, read
 
 ## Sources
 
-Reviewed 2026-11-16.
+Reviewed 2026-11-27.
 
-- intuneme v0.24.0 commit [`57864f3ffddaa3df7362297f4a6e6eab43408e6e`](https://github.com/frostyard/intuneme/tree/57864f3ffddaa3df7362297f4a6e6eab43408e6e)
+- intuneme v0.25.0 commit [`83c197ce5f77fc565ce6952ec3f97e746faabb4f`](https://github.com/frostyard/intuneme/tree/83c197ce5f77fc565ce6952ec3f97e746faabb4f)
+- [intuneme v0.25.0 release](https://github.com/frostyard/intuneme/releases/tag/v0.25.0) and [the Edge web app commands](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/cmd/open.go).
 - [intuneme v0.24.0 release](https://github.com/frostyard/intuneme/releases/tag/v0.24.0) (the image signature check, [intuneme#281](https://github.com/frostyard/intuneme/pull/281); the `product_name` key, [intuneme#267](https://github.com/frostyard/intuneme/pull/267); the unsafe `rootfs_path` refusal and its migration notes, [intuneme#282](https://github.com/frostyard/intuneme/pull/282); the hotplug rules in `/run/udev/rules.d`, [intuneme#283](https://github.com/frostyard/intuneme/pull/283))
-- [`docs/adr/0005-verify-the-container-image-signature-before-extraction.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/docs/adr/0005-verify-the-container-image-signature-before-extraction.md)
-- [`cmd/image_signature.go`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/cmd/image_signature.go) (the `image signature check failed` error)
-- [`internal/config/rootfs.go`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/internal/config/rootfs.go) (the `rootfs_path` errors)
-- [`internal/udev/udev.go`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/internal/udev/udev.go) (the rules directory `/run/udev/rules.d`)
+- [`docs/adr/0005-verify-the-container-image-signature-before-extraction.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/docs/adr/0005-verify-the-container-image-signature-before-extraction.md)
+- [`cmd/image_signature.go`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/cmd/image_signature.go) (the `image signature check failed` error)
+- [`internal/config/rootfs.go`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/internal/config/rootfs.go) (the `rootfs_path` errors)
+- [`internal/udev/udev.go`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/internal/udev/udev.go) (the rules directory `/run/udev/rules.d`)
 - intuneme v0.23.0 commit [`e4d5265b3b4fef8ac4bcbee6521e32e39920f015`](https://github.com/frostyard/intuneme/tree/e4d5265b3b4fef8ac4bcbee6521e32e39920f015), the previous review (2026-11-07)
 - [intuneme v0.23.0 release](https://github.com/frostyard/intuneme/releases/tag/v0.23.0) (problem records with std/problems)
 - [intuneme v0.22.1 release](https://github.com/frostyard/intuneme/releases/tag/v0.22.1)
 - [intuneme v0.22.0 release](https://github.com/frostyard/intuneme/releases/tag/v0.22.0)
-- [`README.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/README.md)
-- [`SECURITY.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/SECURITY.md) (private vulnerability reporting)
-- [`site/reference/helper-security.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/reference/helper-security.md) (the helper limits)
-- [`site/reference/problem-records.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/reference/problem-records.md), [`docs/adr/0003-record-problems-with-std-problems.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/docs/adr/0003-record-problems-with-std-problems.md), and the section Problem Records of [`docs/design/overview.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/docs/design/overview.md) (chairlift is the only sender, after the user opts in)
-- [`site/getting-started/prerequisites.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/getting-started/prerequisites.md)
-- [`site/getting-started/installation.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/getting-started/installation.md)
-- [`site/getting-started/quick-start.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/getting-started/quick-start.md)
-- [`site/user-guide/daily-workflow.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/user-guide/daily-workflow.md)
-- [`site/user-guide/broker-proxy.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/user-guide/broker-proxy.md)
-- [`site/user-guide/mcp-servers.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/user-guide/mcp-servers.md)
-- [`site/user-guide/device-hotplug.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/user-guide/device-hotplug.md)
-- [`site/user-guide/gnome-extension.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/user-guide/gnome-extension.md)
-- [`site/user-guide/desktop-shortcuts.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/user-guide/desktop-shortcuts.md)
-- [`site/user-guide/upgrading.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/user-guide/upgrading.md)
-- [`site/troubleshooting.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/troubleshooting.md) (sign in again after a reboot: the recovery steps)
-- [`site/reference/configuration.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/site/reference/configuration.md) (container hostname)
-- [`docs/specs/container-image.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/docs/specs/container-image.md) (the Edge policy file `/etc/opt/edge/policies/managed/intuneme-command-line-flags.json`)
-- [`docs/design/overview.md`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/docs/design/overview.md) (v0.21.1: `start` enables linger on every run; the keyring unlock retries at most 3 times each boot, logged with the tag `intuneme-session-setup`)
-- [`cmd/init.go`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/cmd/init.go)
-- [`cmd/destroy.go`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/cmd/destroy.go)
-- [`internal/version/version.go`](https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e/internal/version/version.go)
+- [`README.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/README.md)
+- [`SECURITY.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/SECURITY.md) (private vulnerability reporting)
+- [`site/reference/helper-security.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/reference/helper-security.md) (the helper limits)
+- [`site/reference/problem-records.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/reference/problem-records.md), [`docs/adr/0003-record-problems-with-std-problems.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/docs/adr/0003-record-problems-with-std-problems.md), and the section Problem Records of [`docs/design/overview.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/docs/design/overview.md) (chairlift is the only sender, after the user opts in)
+- [`site/getting-started/prerequisites.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/getting-started/prerequisites.md)
+- [`site/getting-started/installation.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/getting-started/installation.md)
+- [`site/getting-started/quick-start.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/getting-started/quick-start.md)
+- [`site/user-guide/daily-workflow.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/user-guide/daily-workflow.md)
+- [`site/user-guide/broker-proxy.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/user-guide/broker-proxy.md)
+- [`site/user-guide/mcp-servers.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/user-guide/mcp-servers.md)
+- [`site/user-guide/device-hotplug.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/user-guide/device-hotplug.md)
+- [`site/user-guide/gnome-extension.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/user-guide/gnome-extension.md)
+- [`site/user-guide/desktop-shortcuts.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/user-guide/desktop-shortcuts.md)
+- [`site/user-guide/upgrading.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/user-guide/upgrading.md)
+- [`site/troubleshooting.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/troubleshooting.md) (sign in again after a reboot: the recovery steps)
+- [`site/reference/configuration.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/site/reference/configuration.md) (container hostname)
+- [`docs/specs/container-image.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/docs/specs/container-image.md) (the Edge policy file `/etc/opt/edge/policies/managed/intuneme-command-line-flags.json`)
+- [`docs/design/overview.md`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/docs/design/overview.md) (v0.21.1: `start` enables linger on every run; the keyring unlock retries at most 3 times each boot, logged with the tag `intuneme-session-setup`)
+- [`cmd/init.go`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/cmd/init.go)
+- [`cmd/destroy.go`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/cmd/destroy.go)
+- [`internal/version/version.go`](https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f/internal/version/version.go)
 - [Duncan's review: intuneme roll back (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
 - snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf), [`shared/composition/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/composition/snow/mkosi.conf), [`shared/packages/snow/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/snow/mkosi.conf), [`shared/packages/sundog/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/packages/sundog/mkosi.conf)
