@@ -819,7 +819,7 @@ for (const [section, text] of [["/docs/apps/frostnotes hub installation", notesH
   assert(text.includes("No published lodge release can load the Notes editor from the Frostnotes v0.8.0") && /Do not upgrade notesd on lodge['’]s host to v0\.8\.0 until a lodge release adds WebAssembly support\./.test(text), `${section} must say no published lodge release loads the Frostnotes v0.8.0 browser editor and tell readers not to upgrade notesd yet.`);
 }
 assert(/v0\.6\.1 keeps a provider['’]s inference queue.*?query string.*?reserved app IDs.*?does not migrate the database\./s.test(lightHtml.lodge.bodyText), "/docs/apps/lodge must state the v0.6.1 queue, query, and app ID fixes and the absence of a new migration.");
-assert(notesHubInstall.includes("The v0.9.0 package returns to the React web app. Upgrade compatibility with published lodge releases has not been verified here."), "/docs/apps/frostnotes must not present v0.9.0 as a verified lodge upgrade.");
+assert(notesHubInstall.includes("The v0.9.0 package returns to the React web app. An upgrade to v0.9.0 has not been tested with a published lodge release."), "/docs/apps/frostnotes must not present v0.9.0 as a verified lodge upgrade.");
 assertSections("/docs/apps/frostnotes", lightHtml.frostnotes.html, ["limits"]);
 const notesLimits = textOf(lightHtml.frostnotes.bodyHtml.split('<h2 id="limits"')[1].split('<h2')[0]);
 assert(notesLimits.includes("Back up ~/.var/app/org.frostyard.Frostnotes/ before you install a newer Flatpak.") && notesLimits.includes("An older notesd refuses to open a database with a newer schema.") && notesLimits.includes("v0.6.0 cannot open the database after v0.7.0 has run."), "/docs/apps/frostnotes Limits must preserve backup and downgrade warnings.");

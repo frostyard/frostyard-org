@@ -31,12 +31,18 @@ so the trial is not verified in full. See the [Notes in lodge plan](https://gith
 
 Follow the [Frostyard Flatpak install steps](https://github.com/frostyard/flatpak-index/blob/main/README.md#install)
 for `org.frostyard.Frostnotes`, including the per-user Flathub setup for the
-runtime. Run `flatpak run org.frostyard.Frostnotes` from a terminal. It starts
-`notesd` and prints its status rather than opening an editor.
+runtime. Run `flatpak run org.frostyard.Frostnotes` from a terminal to start
+`notesd`. Your desktop may ask once to let Frostnotes run in the background.
+The launcher waits up to 10 minutes for an answer, then prints `notesctl status`
+output in the terminal.
 
 Use `flatpak run --command=notesctl org.frostyard.Frostnotes status` to check
 the daemon and its vaults. See [Flatpak setup](https://github.com/frostyard/frostnotes/blob/main/docs/design/app.md#the-flatpak)
 to register a folder, pair with a hub, or change background startup.
+
+If you are updating from a release with a window, `flatpak update` keeps
+your vaults, hub pairing, and background setting. The window goes away, and
+`--mygo` now exits with an error.
 
 The Flatpak does not read data from a host `notesd` installation. If you are
 moving from one, follow [Moving from a host notesd](https://github.com/frostyard/frostnotes/blob/main/docs/design/app.md#operational-notes)
@@ -48,8 +54,8 @@ No published lodge release can load the Notes editor from the Frostnotes v0.8.0
 `.deb` yet. Do not upgrade `notesd` on lodge's host to v0.8.0 until a lodge
 release adds WebAssembly support.
 
-The v0.9.0 package returns to the React web app. Upgrade compatibility with
-published lodge releases has not been verified here. For how a hub works, see
+The v0.9.0 package returns to the React web app. An upgrade to v0.9.0
+has not been tested with a published lodge release. For how a hub works, see
 [The hub behind lodge](https://github.com/frostyard/frostnotes/blob/main/docs/design/hub.md).
 
 ## Documentation
@@ -83,4 +89,4 @@ published lodge releases has not been verified here. For how a hub works, see
 - [Frostyard Flatpak catalog](https://frostyard.github.io/flatpak-index/index/static): `org.frostyard.Frostnotes` v0.9.0, OCI digest `sha256:a296e87b2a04c2128699bf34afa38ac68b92da684003a35bfae02091523547c2`. The [launcher](https://github.com/frostyard/frostnotes/blob/b5c482ba0d91122cacce0523a7dad04a4fa9b863/packaging/flatpak/frostnotes.sh) starts `notesd` and prints its status.
 - [Server .deb](https://github.com/frostyard/frostnotes/releases/download/v0.9.0/frostyard-notesd_0.9.0_amd64.deb): SHA-256 `20ccddf20c81e81109d2561e0652fa67579036ba2e4b6c95da41d4d35eeab988`. Both packages attest to the same release commit. [Frostnotes #293](https://github.com/frostyard/frostnotes/pull/293) restores the React web app.
 - The v0.8.0 warning concerns that release's [WebAssembly editor](https://github.com/frostyard/frostnotes/releases/tag/v0.8.0) and the [lodge v0.6.1 app-frame policy](https://github.com/frostyard/lodge/blob/v0.6.1/internal/gateway/headers.go#L59-L78). [Lodge #116](https://github.com/frostyard/lodge/pull/116) adds WebAssembly support after v0.6.1.
-- [The v0.7.0 migration](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/internal/store/migrations/0007_sync_pushes_refused.sql) and [the newer-schema check in v0.9.0](https://github.com/frostyard/frostnotes/blob/b5c482ba0d91122cacce0523a7dad04a4fa9b863/internal/store/store.go).
+- v0.9.0 adds no database migration. [`0007_sync_pushes_refused.sql` is still the newest migration](https://github.com/frostyard/frostnotes/tree/b5c482ba0d91122cacce0523a7dad04a4fa9b863/internal/store/migrations). See [the v0.7.0 migration](https://github.com/frostyard/frostnotes/blob/83fb2a5ff5c3adf4e60048ab7a5ff7d0e49600b4/internal/store/migrations/0007_sync_pushes_refused.sql) and [the newer-schema check in v0.9.0](https://github.com/frostyard/frostnotes/blob/b5c482ba0d91122cacce0523a7dad04a4fa9b863/internal/store/store.go).
