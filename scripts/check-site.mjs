@@ -947,6 +947,7 @@ assert(nsl.includes("https://github.com/frostyard/nsl/blob/4d087c480a0ff1810ff1a
 
 const igloo = await readRoute("/docs/tools/igloo");
 const iglooText = textOf(igloo);
+assert(igloo.includes('href="https://github.com/frostyard/igloo/releases/tag/v51.1">Igloo v51.1</a>'), "/docs/tools/igloo must link the v51.1 release.");
 assertSections("/docs/tools/igloo", igloo, [
   "before-you-start",
   "install",
@@ -956,15 +957,15 @@ assertSections("/docs/tools/igloo", igloo, [
   "see-also",
   "sources",
 ]);
-assertCites("/docs/tools/igloo", igloo, "https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522", ["README.md", "org.frostyard.Igloo.json", "agent/ptyxis-nsl.c", "docs/design/nsl-integration.md", "docs/adr/0003-rename-the-application-id.md"]);
+assertCites("/docs/tools/igloo", igloo, "https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152", ["README.md", "org.frostyard.Igloo.json", "agent/ptyxis-nsl.c", "docs/design/nsl-integration.md", "docs/adr/0003-rename-the-application-id.md"]);
 assert(igloo.includes("https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo"), "/docs/tools/igloo must cite the Snow Flathub remote.");
 assert(iglooText.includes("nsl 0.8.0 or later"), "/docs/tools/igloo must state the nsl 0.8.0 requirement.");
 assert(iglooText.includes("The Flatpak does not bundle nsl"), "/docs/tools/igloo must state that the Flatpak does not bundle nsl.");
 assert(igloo.includes('data-code="flatpak remote-add --user --if-not-exists frostyard'), "/docs/tools/igloo must give the per-user Frostyard remote command.");
 assert(igloo.includes('data-code="flatpak install --user frostyard org.frostyard.Igloo"'), "/docs/tools/igloo must give the per-user install command.");
 assert(!iglooText.includes("flatpak install --user frostyard io.github.frostyard.Igloo") && !iglooText.includes("flatpak uninstall io.github.frostyard.Igloo"), "/docs/tools/igloo must install and remove the application ID org.frostyard.Igloo (igloo ADR-0003).");
-assert(iglooText.includes("Grow the Shared VM’s Disk…") && /in an isolated machine['’]s menu/.test(iglooText), "/docs/tools/igloo must name both igloo#27 controls: Grow the Shared VM’s Disk… under Host and Grow Disk… in an isolated machine's menu (igloo 1bb63dd).");
-assert(iglooText.includes("with Import…") && !iglooText.includes("Import Machine…"), "/docs/tools/igloo must name the Machines page import button Import… (igloo v51.0 src/ptyxis-machines-page.ui); Import Machine is only the dialog title.");
+assert(iglooText.includes("Grow the Shared VM’s Disk…") && /in an isolated machine['’]s menu/.test(iglooText), "/docs/tools/igloo must name both igloo#27 controls: Grow the Shared VM’s Disk… under Host and Grow Disk… in an isolated machine's menu (igloo v51.1).");
+assert(iglooText.includes("with Import…") && !iglooText.includes("Import Machine…"), "/docs/tools/igloo must name the Machines page import button Import… (igloo v51.1 src/ptyxis-machines-page.ui); Import Machine is only the dialog title.");
 assert(iglooText.includes("Check Again"), "/docs/tools/igloo must mention the Check Again button.");
 assert(igloo.includes('href="/docs/tools/nsl/"'), "/docs/tools/igloo must link the nsl page.");
 for (const [route, pageText] of [
@@ -1063,11 +1064,11 @@ assertSections("/docs/tools/intuneme", intuneme, [
   "see-also",
   "sources",
 ]);
-assertCites("/docs/tools/intuneme", intuneme, "https://github.com/frostyard/intuneme/blob/57864f3ffddaa3df7362297f4a6e6eab43408e6e", ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md", "site/reference/problem-records.md", "site/reference/helper-security.md", "docs/adr/0003-record-problems-with-std-problems.md"]);
+assertCites("/docs/tools/intuneme", intuneme, "https://github.com/frostyard/intuneme/blob/83c197ce5f77fc565ce6952ec3f97e746faabb4f", ["README.md", "SECURITY.md", "site/getting-started/quick-start.md", "site/user-guide/upgrading.md", "site/troubleshooting.md", "site/reference/problem-records.md", "site/reference/helper-security.md", "docs/adr/0003-record-problems-with-std-problems.md"]);
 assertCites("/docs/tools/intuneme", intuneme, "https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9", ["shared/packages/snow/mkosi.conf", "shared/packages/sundog/mkosi.conf"], "snosi ");
-assert(intunemeText.includes("This guide follows intuneme v0.24.0"), "/docs/tools/intuneme must follow intuneme v0.24.0.");
-assert(!intunemeText.includes("intuneme version") && intunemeText.includes("intuneme --version"), "/docs/tools/intuneme must check the version with intuneme --version: intuneme v0.24.0 has no version subcommand.");
-assert(intunemeText.includes("image signature check failed"), "/docs/tools/intuneme must name the image signature check error (intuneme v0.24.0).");
+assert(intunemeText.includes("This guide follows intuneme v0.25.0"), "/docs/tools/intuneme must follow intuneme v0.25.0.");
+assert(!intunemeText.includes("intuneme version") && intunemeText.includes("intuneme --version"), "/docs/tools/intuneme must check the version with intuneme --version: intuneme v0.25.0 has no version subcommand.");
+assert(intunemeText.includes("image signature check failed"), "/docs/tools/intuneme must name the image signature check error (intuneme v0.25.0).");
 assert(intunemeText.includes("writes a record to your local systemd journal") && intunemeText.includes("intuneme sends nothing over the network"), "/docs/tools/intuneme must say that problem records stay in the local journal.");
 assert(intuneme.includes('href="https://frostyard.github.io/intuneme/reference/problem-records/"'), "/docs/tools/intuneme must link intuneme's problem records reference.");
 assert(intuneme.includes('href="/privacy/problem-reports/"'), "/docs/tools/intuneme must link the problem reports privacy page.");

@@ -6,7 +6,8 @@ description: "Install Igloo, the GNOME terminal that opens nsl machines from its
 Igloo is a GNOME terminal that opens nsl machines the way it opens Podman,
 Toolbox, and Distrobox containers. Pick a machine from the New Tab menu, or
 create and manage machines in Preferences. It installs as
-`org.frostyard.Igloo`, beside Ptyxis, with its own settings.
+`org.frostyard.Igloo`, beside Ptyxis, with its own settings. This guide follows
+[Igloo v51.1](https://github.com/frostyard/igloo/releases/tag/v51.1).
 
 ## Before you start
 
@@ -48,7 +49,7 @@ flatpak run org.frostyard.Igloo
 ```
 
 The terminal opens. To
-build Igloo yourself, see [build and release](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/docs/design/build-and-release.md).
+build Igloo yourself, see [build and release](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/docs/design/build-and-release.md).
 
 ## Use Igloo
 
@@ -73,7 +74,10 @@ with its distribution, tier, state, and default marker. It also lets you:
   font, and command.
 - Change *Resources*: shared VM memory and processors, autostart, idle timeout,
   and isolated VM resources. Igloo writes them to `nsl.conf`.
-- Run *Host* commands: `nsl doctor`, `nsl update`, and `nsl shutdown`.
+- Run *Host* commands: `nsl doctor`, `nsl update`, and `nsl shutdown`. Use
+  *Show Logs* to see recent VM and machine-session logs.
+- Grow the data disk with *Grow the Shared VM’s Disk…* under *Host* or
+  *Grow Disk…* in an isolated machine’s menu.
 
 A profile's *Default Container* can be an nsl machine. Pinned or restored tabs
 reopen in their machine, and new tabs keep the current machine as they keep the
@@ -127,21 +131,21 @@ its installation guide.
 - [nsl documentation](https://frostyard.github.io/nsl/)
 - [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis)
 - [Frostyard Flatpak remote](https://github.com/frostyard/flatpak-index)
-- [Igloo README](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/README.md)
+- [Igloo README](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/README.md)
 
 ## Sources
 
-Reviewed 2026-11-16.
+Reviewed 2026-11-27.
 
-- Igloo release v51.0 commit [`71b440d0bbe6837977dcf7a7a358862b3c610522`](https://github.com/frostyard/igloo/tree/71b440d0bbe6837977dcf7a7a358862b3c610522), tagged 2026-11-06 ([tag](https://github.com/frostyard/igloo/tree/v51.0)): the application ID becomes `org.frostyard.Igloo`, with an end-of-life rebase from `io.github.frostyard.Igloo` ([igloo#10](https://github.com/frostyard/igloo/pull/10)), and the Machines page exports and imports machines ([igloo#7](https://github.com/frostyard/igloo/pull/7)). On 2026-11-15, `ghcr.io/frostyard/igloo:latest`, the image the Frostyard remote serves, has the same digest as `v51.0` (`sha256:4ca67169dc6caf0a36711cb9447160a53efce42c93816406ae79dd0cb6051325`).
-- Igloo main commit [`1bb63dd1182536633e7b484d93daa617d8d1f0c4`](https://github.com/frostyard/igloo/tree/1bb63dd1182536633e7b484d93daa617d8d1f0c4), checked 2026-11-16: after v51.0 it adds logs and recovery to the Machines page ([igloo#15](https://github.com/frostyard/igloo/pull/15)), resumes an unfinished removal ([igloo#19](https://github.com/frostyard/igloo/pull/19)), restores `nsl.conf` when `nsl config` cannot run ([igloo#20](https://github.com/frostyard/igloo/pull/20)), and shows the data disk of the shared VM and of each isolated machine, with *Grow the Shared VM’s Disk…* under *Host* and *Grow Disk…* in an isolated machine's menu, which run `nsl resize` ([igloo#27](https://github.com/frostyard/igloo/pull/27)). No tag carries them yet, and the Flatpak image moves only on a tag ([`.github/workflows/flatpak.yml`](https://github.com/frostyard/igloo/blob/1bb63dd1182536633e7b484d93daa617d8d1f0c4/.github/workflows/flatpak.yml)), so this page does not describe them. On 2026-11-16, `latest` still has the `v51.0` digest.
-- [`README.md`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/README.md)
-- [`org.frostyard.Igloo.json`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/org.frostyard.Igloo.json)
-- [`meson.build`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/meson.build)
-- [`agent/ptyxis-nsl.c`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/agent/ptyxis-nsl.c)
-- [`docs/design/nsl-integration.md`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/docs/design/nsl-integration.md)
-- [`docs/design/build-and-release.md`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/docs/design/build-and-release.md)
-- [`docs/adr/0003-rename-the-application-id.md`](https://github.com/frostyard/igloo/blob/71b440d0bbe6837977dcf7a7a358862b3c610522/docs/adr/0003-rename-the-application-id.md)
+- [Igloo v51.1](https://github.com/frostyard/igloo/releases/tag/v51.1), published 2026-11-22 at commit [`0cc70a29a8d76d3ca890017474771d45281c2152`](https://github.com/frostyard/igloo/tree/0cc70a29a8d76d3ca890017474771d45281c2152). The [Frostyard Flatpak catalog](https://frostyard.github.io/flatpak-index/index/static) lists the x86_64 app at OCI digest `sha256:508fb943f17da71d5b49b2cd4fce3f7ce376460a611f07c87708b1f25cf4bd18`, built from that commit.
+- [Machines page controls](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/src/ptyxis-machines-page.ui) and [disk management in v51.1](https://github.com/frostyard/igloo/pull/27).
+- [`README.md`](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/README.md)
+- [`org.frostyard.Igloo.json`](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/org.frostyard.Igloo.json)
+- [`meson.build`](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/meson.build)
+- [`agent/ptyxis-nsl.c`](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/agent/ptyxis-nsl.c)
+- [`docs/design/nsl-integration.md`](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/docs/design/nsl-integration.md)
+- [`docs/design/build-and-release.md`](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/docs/design/build-and-release.md)
+- [`docs/adr/0003-rename-the-application-id.md`](https://github.com/frostyard/igloo/blob/0cc70a29a8d76d3ca890017474771d45281c2152/docs/adr/0003-rename-the-application-id.md)
 - Igloo commit [`38d98cd171d4ffbbe4adfaa55818f503206866dd`](https://github.com/frostyard/igloo/tree/38d98cd171d4ffbbe4adfaa55818f503206866dd), the previous review (2026-10-27).
 - [Duncan's review: Igloo roll back (frostyard-org#30)](https://github.com/frostyard/frostyard-org/pull/30#pullrequestreview-5630346572)
 - snosi commit [`b2858ca0222814c395cf8248db98f3e096d57dc9`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9): [`shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/etc/flatpak/remotes.d/flathub.flatpakrepo), [`shared/sundog/scripts/postinstall/sundog.postinst.chroot`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/sundog/scripts/postinstall/sundog.postinst.chroot), [`mkosi.profiles/snowfield/mkosi.conf`](https://github.com/frostyard/snosi/blob/b2858ca0222814c395cf8248db98f3e096d57dc9/mkosi.profiles/snowfield/mkosi.conf)
