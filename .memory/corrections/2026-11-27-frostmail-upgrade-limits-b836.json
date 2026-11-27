@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-27",
+  "scope": "Frostmail guide",
+  "correction": "When replacing release history with upstream links, preserve backup-before-upgrade guidance for the Frostmail Flatpak and check that it renders under Limits.",
+  "evidence": "Independent review of local head a96f26f; scripts/check-site.mjs checks the backup path and newer-schema refusal in Limits.",
+  "promoted_to": ""
+}

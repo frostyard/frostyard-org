@@ -258,9 +258,13 @@ const frostmailFollows = readFollows(await readFile(new URL("../src/content/docs
 assert(frostmailFollows, "/frostmail release check requires follows metadata in src/content/docs/docs/apps/frostmail.md.");
 const frostmailHome = await readRoute("/frostmail");
 assertReleaseSentence(frostmailHome, frostmailFollows, escapeHtml);
+const frostmailHomeText = textOf(frostmailHome);
+assert(frostmailHomeText.includes("The Linux Flatpak opens the native NSGo client by default."), "/frostmail/ must name NSGo as the Linux Flatpak default.");
+assert(frostmailHomeText.includes("frostyard-maild .deb for lodge hosts, not the desktop app."), "/frostmail/ must distinguish the server .deb from the desktop Flatpak.");
 assert(/<h1[^>]*>Frostmail<\/h1>/.test(frostmailHome), "/frostmail/ must name the app Frostmail in its heading, as the OAuth consent screen does.");
 assert((frostmailHome.match(/href="\/privacy"/g) ?? []).length >= 2, "/frostmail/ must link the privacy policy at /privacy in its body, not only in the footer.");
 assert(frostmailHome.includes('href="/docs/apps/frostmail/#install"'), "/frostmail/ must link the install steps.");
+assert(frostmailHomeText.includes("The remote may still serve an earlier version.") && frostmailHome.includes('href="/docs/apps/frostmail/#status"'), "/frostmail/ must warn that the Flatpak remote may lag and link to the guide’s Status.");
 const siteHome = await readRoute("/");
 assert(siteHome.includes('href="/privacy"'), "/ must link the privacy policy at /privacy.");
 
@@ -759,7 +763,7 @@ const lightPages = [
   {
     route: "frostmail",
     repo: "frostmail",
-    sha: "7db1e7b322695bc3d41662ddf0001c3ad05d1490",
+    sha: "28b886a9972ab85dceafceabda7a63ef3b3ebecb",
     install: "install",
     canonical: "docs/design/desktop.md#installing-for-one-user",
     sentence: "Frostmail is pre-release",
@@ -795,7 +799,7 @@ assert(lightHtml.lodge.text.includes("approve again each grant made before v0.5.
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
 assert(lightHtml.porter.text.includes("The latest release is v0.4.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.4.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
-for (const [route, tag] of [["frostnotes", "v0.8.0"], ["frostmail", "v0.9.0"], ["lodge", "v0.6.1"]]) {
+for (const [route, tag] of [["frostnotes", "v0.8.0"], ["frostmail", "v0.11.0"], ["lodge", "v0.6.1"]]) {
   const follows = readFollows(await readFile(new URL(`../src/content/docs/docs/apps/${route}.md`, import.meta.url), "utf8"));
   assert(follows?.repo === `frostyard/${route}` && follows.tag === tag, `/docs/apps/${route} follows metadata must name frostyard/${route} at ${tag}.`);
   assert(lightHtml[route].bodyText.includes(`The latest release is ${follows.tag}.`), `/docs/apps/${route} must render its follows version as the latest release before Sources.`);
@@ -857,27 +861,18 @@ for (const [route, extension] of Object.entries(extensionForApp)) {
 }
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/README.md#limits"), "/docs/apps/porter must link the canonical Limits section.");
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
-assert(lightHtml.frostmail.bodyText.includes("The latest release is v0.9.0") && lightHtml.frostmail.text.includes("native Go app") && lightHtml.frostmail.text.includes("Close to tray") && lightHtml.frostmail.text.includes("tray icon whose menu shows that count") && !lightHtml.frostmail.text.includes("tray icon with that count"), "/docs/apps/frostmail must name release v0.9.0 as the latest, the native app, and the tray of v0.8.0.");
-assert(lightHtml.frostmail.bodyText.includes("Release v0.9.0 adds Settings &gt; General &gt; Text size: Smaller, Default, Larger, or Largest.") && /The choice applies at once to every open desktop window and the reader['’]s message, with no restart\./.test(lightHtml.frostmail.bodyText), "/docs/apps/frostmail must name all 4 text-size choices and their immediate effect on desktop windows and the reader.");
-assert(/It does not change printing or lodge['’]s web app\./.test(lightHtml.frostmail.bodyText) && lightHtml.frostmail.bodyHtml.includes('href="https://github.com/frostyard/frostmail/blob/main/docs/specs/ui.md#tokens"'), "/docs/apps/frostmail must keep text size desktop-only, exclude printing and the lodge web app, and link the canonical text-size description.");
+assert(lightHtml.frostmail.bodyText.includes("The Linux Flatpak starts the native NSGo client by default."), "/docs/apps/frostmail must name NSGo as the Linux Flatpak default.");
+assertSections("/docs/apps/frostmail", lightHtml.frostmail.html, ["server-package", "limits"]);
 const mailStatus = textOf(lightHtml.frostmail.bodyHtml.split('<h2 id="status"')[1].split('<h2 id="install"')[0]);
-assert(mailStatus.includes("Mail in lodge is still in progress. Phase 7 was accepted as done on 2026-11-15 without a record of its completion checks."), "/docs/apps/frostmail Status must say Phase 7 was accepted as done without a record of its completion checks, while Mail in lodge remains in progress.");
+assert(/The Frostyard Flatpak remote may still serve an earlier version. On \d{4}-\d{2}-\d{2}, it listed version \d+\.\d+\.\d+\./.test(mailStatus), "/docs/apps/frostmail Status must warn about Flatpak remote lag and give the version and date checked.");
+const mailLimits = textOf(lightHtml.frostmail.bodyHtml.split('<h2 id="limits"')[1].split('<h2')[0]);
+assert(mailLimits.includes("Back up ~/.var/app/org.frostyard.Frostmail/ before you install a newer Flatpak.") && mailLimits.includes("An older maild refuses to open a database with a newer schema."), "/docs/apps/frostmail Limits must advise a backup before upgrading the Flatpak and explain why.");
+assert(lightHtml.frostmail.bodyText.includes("frostyard-maild_0.11.0_amd64.deb") && lightHtml.frostmail.bodyText.includes("It does not install the desktop client."), "/docs/apps/frostmail must distinguish the v0.11.0 server .deb from the desktop Flatpak.");
+assert(lightHtml.frostmail.bodyText.includes("removes the MyGo client") && lightHtml.frostmail.bodyText.includes("NSGo client’s web build for lodge"), "/docs/apps/frostmail must describe the removal of MyGo and the NSGo web build in the server package.");
+assert(lightHtml.frostmail.bodyHtml.includes('href="https://github.com/frostyard/frostmail/releases"'), "/docs/apps/frostmail must link the canonical release history.");
 assert(!lightHtml.frostmail.text.includes("A real mail store moved"), "/docs/apps/frostmail must not report one deployment's move as a project status fact.");
-const mailPlanPin = "https://github.com/frostyard/frostmail/blob/54b6111009c6f0e3937d432028e82aa5e2477794/docs/plans";
-assert(lightHtml.frostmail.sourcesHtml.includes(`href="${mailPlanPin}/0011-m8-mail-in-lodge.md#L12-L27"`), "/docs/apps/frostmail Sources must link the pinned Plan 0011 Status for the missing Phase 7 checks.");
-assert(lightHtml.frostmail.sourcesHtml.includes(`href="${mailPlanPin}/0002-roadmap.md#L17"`), "/docs/apps/frostmail Sources must cite the pinned roadmap's M8 entry.");
-assertSections("/docs/apps/frostmail", lightHtml.frostmail.html, ["limits"]);
-const mailLimits = lightHtml.frostmail.bodyHtml.split('<h2 id="limits"')[1].split('<h2 id="see-also"')[0];
-const mailLimitsText = textOf(mailLimits);
-const mailKnownGaps = 'href="https://github.com/frostyard/frostmail/releases/tag/v0.9.0#known-gaps"';
-assert(mailLimitsText.includes("Spell check while you write is not in the native desktop app yet."), "/docs/apps/frostmail Limits must state that native desktop spell check is missing.");
-assert(/Some HTML messages can still show at the window['’]s height\./.test(mailLimitsText) && mailLimitsText.includes("At larger text sizes, some fixed-width messages can be cut off at the right edge."), "/docs/apps/frostmail Limits must state both v0.9.0 HTML message display gaps.");
-assert(mailLimits.includes(mailKnownGaps) && lightHtml.frostmail.sourcesHtml.includes(mailKnownGaps), "/docs/apps/frostmail must link the v0.9.0 Known gaps from Limits and cite them in Sources.");
-assert(lightHtml.frostmail.text.includes("Release v0.7.0 draws the desktop app in the Frostyard look") && lightHtml.frostnotes.text.includes("Release v0.6.0 draws the desktop app in the Frostyard look"), "/docs/apps/frostmail and /docs/apps/frostnotes must name the Frostyard look of Frostmail v0.7.0 and Frostnotes v0.6.0.");
-assert(lightHtml.frostmail.text.includes("Follow Up section") && lightHtml.frostmail.text.includes("rail button"), "/docs/apps/frostmail must name the v0.5.0 Follow Up section and the lodge rail badge.");
-assert(/With maild v0\.5\.0 on lodge['’]s host and lodge v0\.2\.0 or later, Frostmail['’]s rail button shows the unread count/.test(lightHtml.frostmail.text) && lightHtml.frostmail.text.includes("The maild system extension can trail the latest release.") && !/maild system extension still carries/.test(lightHtml.frostmail.text), "/docs/apps/frostmail must say that the lodge rail badge needs maild v0.5.0 on lodge's host, and that the maild system extension can trail the latest release (the catalog lists its version).");
-assert(lightHtml.frostmail.text.includes("flatpak install --user frostyard org.frostyard.Frostmail"), "/docs/apps/frostmail must give the per-user Flatpak install command.");
-assert(lightHtml.frostmail.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostmail must link the Frostyard Flatpak remote README.");
+assert(lightHtml.frostnotes.text.includes("Release v0.6.0 draws the desktop app in the Frostyard look"), "/docs/apps/frostnotes must name the Frostyard look of Frostnotes v0.6.0.");
+assert(lightHtml.frostmail.bodyHtml.includes('href="https://github.com/frostyard/flatpak-index/blob/main/README.md#install"'), "/docs/apps/frostmail must link the Frostyard Flatpak remote install steps.");
 assert(lightHtml.frostnotes.text.includes("flatpak install --user frostyard org.frostyard.Frostnotes"), "/docs/apps/frostnotes must give the per-user Flatpak install command.");
 assert(lightHtml.frostnotes.html.includes("https://github.com/frostyard/flatpak-index/blob/main/README.md"), "/docs/apps/frostnotes must link the Frostyard Flatpak remote README.");
 
@@ -973,7 +968,9 @@ for (const [route, pageText] of [
   ["/docs/tools/igloo", iglooText],
 ]) {
   assert(!pageText.includes("flatpak remote-add --if-not-exists frostyard") && !pageText.includes("flatpak install frostyard "), `${route} must teach the per-user Frostyard remote (flatpak-index README.md, Install apps).`);
-  assert(pageText.includes("flatpak remote-add --user --if-not-exists flathub"), `${route} must give the per-user Flathub remote command.`);
+  if (route !== "/docs/apps/frostmail") {
+    assert(pageText.includes("flatpak remote-add --user --if-not-exists flathub"), `${route} must give the per-user Flathub remote command.`);
+  }
 }
 
 const chairlift = await readRoute("/docs/tools/chairlift");
