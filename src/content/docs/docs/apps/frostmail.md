@@ -1,181 +1,53 @@
 ---
 title: Frostmail
-description: "Read, search, and send mail on Linux and Windows, with contacts, calendars, tasks, and a choice of desktop text size. Pre-release; install from the Frostyard Flatpak remote."
+description: Read, search, and send mail with contacts, calendars, and tasks. Install the NSGo desktop client from the Frostyard Flatpak remote.
 follows:
   repo: frostyard/frostmail
-  tag: v0.9.0
+  tag: v0.11.0
 ---
 
-Frostmail is a mail client that works like Apple Mail.app. It runs on Linux
-and on Windows. It keeps your mail, contacts, calendars, and tasks in a
-daemon on your machine, and the app and the command line talk to it.
-
-- `maild` is a per-user Go daemon. It syncs your mail, keeps a SQLite cache
-  with full-text search, and serves a JSON-RPC socket.
-- The app is a native Go app, drawn with MyGo and frostui. It shows each
-  message in a web view: WebKitGTK on Linux, WebView2 on Windows. lodge
-  serves a React web app of the same mail.
-- `mailctl` is a command-line client of the same socket.
-- The daemon can also serve a phone and any browser on your tailnet, as the
-  mail app of [lodge](/docs/apps/lodge/).
-- Mail: sync, read, search, and send for generic IMAP, Gmail, iCloud, and
-  Outlook.com accounts.
-- Contacts, calendars, and tasks over CardDAV, CalDAV, Google Tasks, and
-  Microsoft Graph. You answer invitations from the reader, and you edit
-  events and contacts in place. A To-Do bar sits beside the inbox.
-- Rules, smart mailboxes, VIPs, Send Later, and Remind Me.
+Frostmail is a desktop mail client with contacts, calendars, and tasks.
 
 ## Status
 
-Frostmail is pre-release. The latest release is v0.9.0. Its Flatpak,
-`org.frostyard.Frostmail`, is in the
-[Frostyard Flatpak remote](/docs/get-software/#flatpak). The release also
-attaches `frostyard-maild_X.Y.Z_amd64.deb`, for lodge's host. The `.deb` holds
-`maild`, `mailctl`, the units, the `frostmail` user, and the web build for
-lodge's mail app. Frostmail is not in the Frostyard APT repository or the
-Frostyard Homebrew tap. On a Frostyard image, the
-[maild system extension](/docs/sysexts/maild/) installs `maild` for lodge's
-host.
+Frostmail is pre-release. The latest release is v0.11.0. The Linux Flatpak
+starts the native NSGo client by default. It includes `maild` for local sync
+and `mailctl` for the command line. You do not need a lodge server to use it.
 
-Release v0.5.0 adds a Follow Up section to the sidebar: sent mail with no
-reply for 3 days or more. With maild v0.5.0 on lodge's host and lodge v0.2.0
-or later, Frostmail's rail button shows the unread count of your inboxes. The
-maild system extension can trail the latest release. The
-[catalog](/docs/sysexts/) lists the version it ships. The Flatpak and the
-`.deb` of v0.9.0 come from the same commit.
-
-Release v0.6.0 replaces the desktop app with a native Go app. Your mail,
-accounts, and the install steps stay the same. v0.6.0 adds database
-migrations, so v0.5.0 cannot open the database after v0.6.0 has run. It also adds snippets that you
-insert from compose, a command palette (Ctrl+Shift+P), Find in the message
-shown (Ctrl+F), and replies that quote the text you select in the reader. Read
-messages in a conversation collapse to 1 row each. The reader warns "Sender
-not verified" when the provider's sender checks fail. Compose asks before it
-sends when the text mentions an attachment that is missing. A search says how
-far it looked, and you choose each account's sync window in Settings. Erase
-Deleted Items and Erase Junk Mail remove old mail from Trash and Junk when you
-ask.
-
-Release v0.7.0 draws the desktop app in the Frostyard look: the Frostyard
-theme on a dark desktop, and Frostyard light otherwise. It follows the
-desktop's text size and high contrast, but not its accent color. Follow Up and
-the Outbox are now sections of the sidebar, after your accounts. In lodge's
-mail app, a `mailto` link in a message keeps only the address and the `to`,
-`cc`, `bcc`, `subject`, and `body` fields before it opens, as the desktop app
-does.
-
-Release v0.8.0 shows the All Inboxes unread count on the launcher icon, for
-docks that read it, and adds a tray icon whose menu shows that count, with a dot on the icon while
-mail is unread. *Close to tray*, in
-the General pane, keeps Frostmail running when you close its window; it is
-off until you turn it on. A new-mail notification on Linux offers Reply,
-Archive, and Trash. You can search the calendar, add a ticket or a booking
-from a message to your calendar, mark all messages in a mailbox as read, and
-choose how many preview lines the message list shows, from none to 5. The
-reader shows picture attachments as thumbnails.
-
-Release v0.9.0 adds Settings > General > Text size: Smaller, Default,
-Larger, or Largest. The choice applies at once to every open desktop window
-and the reader's message, with no restart. It does not change printing or
-lodge's web app. See [Text size](https://github.com/frostyard/frostmail/blob/main/docs/specs/ui.md#tokens)
-for how it works with your desktop's text size.
-
-From v0.6.0, `maild`, `mailctl`, and the app write their panics and a few
-coded errors to the local systemd journal. They send nothing over the
-network. On a Frostyard image, [ChairLift](/docs/tools/chairlift/) can show
-these records, and it sends nothing without your consent.
-
-The Flatpak carries `maild` and `mailctl`, and its launcher starts its own
-local `maild`. Local is the default, and [lodge](/docs/apps/lodge/) is a
-connection you choose: nothing turns it on for you, and a change of mode never
-copies, moves, merges, or deletes your data.
-
-The first launch asks the Background portal to let `maild` run in the
-background and start at login. If you refuse, `maild` runs only while a window
-is open, so sync, Send Later, and notifications wait until you open the app.
-
-Mail in lodge is still in progress. Phase 7 was accepted as done on
-2026-11-15 without a record of its completion checks. Calendar, task, and
-contact tools for agents are built. Google and Microsoft verification are
-planned.
+Frostmail v0.11.0 removes the MyGo client. The Frostyard Flatpak remote
+still listed version 0.10.0 when checked on 2026-11-27.
 
 ## Install
 
-The desktop app is a Flatpak. It works on its own: it carries `maild` and
-`mailctl`, and you need no lodge. Floe has no Flatpak.
+On Linux, follow the [Frostyard Flatpak install steps](https://github.com/frostyard/flatpak-index/blob/main/README.md#install)
+for `org.frostyard.Frostmail`, including the per-user Flathub setup for the
+runtime. Launch Frostmail from your app menu or run
+`flatpak run org.frostyard.Frostmail`.
 
-Add the Frostyard remote once, for your user:
+The NSGo client opens. If you have no account set up, Frostmail shows a
+welcome screen. For sign-in, see [Accounts and providers](https://github.com/frostyard/frostmail/blob/main/docs/design/accounts.md#sign-in).
 
-`flatpak remote-add --user --if-not-exists frostyard https://frostyard.github.io/flatpak-index/frostyard.flatpakrepo`
+For a source build, see [Desktop setup](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#installing-for-one-user)
+or [Windows build steps](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#windows).
+The Windows build produces an installer for NSGo, but the v0.11.0 release
+has no Windows installer attached.
 
-Apps use runtimes from Flathub, such as the GNOME runtime. A `--user` install
-gets a missing runtime only from a user remote, so add Flathub for your user
-too:
+## Server package
 
-`flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`
-
-Install Frostmail:
-
-`flatpak install --user frostyard org.frostyard.Frostmail`
-
-The [Frostyard Flatpak remote](https://github.com/frostyard/flatpak-index/blob/main/README.md#install-apps)
-has the canonical steps. Check the install:
-
-`flatpak info org.frostyard.Frostmail`
-
-The output shows `ID: org.frostyard.Frostmail`. Frostmail shows in the app
-grid. Update it with `flatpak update`. The app's data is under
-`~/.var/app/org.frostyard.Frostmail/`.
-
-If you ran `maild` on the host before, the welcome screen shows a note with the
-steps that move your mail into the Flatpak. [The Flatpak's own
-maild](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#the-flatpaks-own-maild)
-has them.
-
-To build from source, `make install` puts `maild` and `mailctl` in
-`~/.local/bin` with a systemd user service, and `make install-app` builds the
-app with Go and installs it as a local Flatpak. The local build has the same
-app ID as the Flatpak from the remote: install one of the two at a time. The
-[install steps](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#installing-for-one-user)
-for one user are the canonical ones. Behind [lodge](/docs/apps/lodge/), `maild`
-runs as the system user `frostmail` on lodge's host. To check the release
-`.deb` before you install it, run
-`gh attestation verify frostyard-maild_X.Y.Z_amd64.deb --repo frostyard/frostmail`.
+The [v0.11.0 release](https://github.com/frostyard/frostmail/releases/tag/v0.11.0)
+attaches `frostyard-maild_0.11.0_amd64.deb` for a lodge host. It contains
+`maild`, `mailctl`, service files, and the NSGo client's web build for lodge.
+It does not install the desktop client. On Frostyard images, see the [maild system extension](/docs/sysexts/maild/).
 
 ## Documentation
 
-- [README](https://github.com/frostyard/frostmail/blob/main/README.md): what Frostmail is and what works now.
-- [Problem records](https://github.com/frostyard/frostmail/blob/main/docs/adr/0049-record-problems-in-the-local-journal.md): what the app writes to the journal, and how to read it.
-- [Frostyard Flatpak remote](https://github.com/frostyard/flatpak-index/blob/main/README.md): the remote and its apps.
-- [Installing for one user](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#installing-for-one-user): the build from source with `make install`, and where its data lives.
-- [The Flatpak's own maild](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#the-flatpaks-own-maild): the launcher, the modes, the paths, and the move from a host `maild`.
-- [Accounts, sign-in and providers](https://github.com/frostyard/frostmail/blob/main/docs/design/accounts.md): how to add an account, and what each provider needs.
-- [A personal Google client](https://github.com/frostyard/frostmail/blob/main/docs/design/accounts.md#setting-up-a-personal-google-client): the Google Cloud steps for Gmail sign-in.
-- [On a maild behind lodge](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#on-a-maild-behind-lodge): how the desktop app reaches lodge's `maild`.
-- [Mail in lodge](https://github.com/frostyard/frostmail/blob/main/docs/specs/lodge-app.md): the app contract, the user, the socket, and the agent tools.
-- [Windows](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#windows): the Windows build and how it starts at sign-in.
-- [Search](https://github.com/frostyard/frostmail/blob/main/docs/specs/search.md): the search language.
-- [The standalone desktop Flatpak](https://github.com/frostyard/frostmail/blob/main/docs/plans/0013-m6-the-standalone-desktop-flatpak.md): the plan and its phases.
-- [The desktop app in MyGo](https://github.com/frostyard/frostmail/blob/main/docs/plans/0015-mygo-desktop.md): the native app and its parity with the old app.
-- [Roadmap](https://github.com/frostyard/frostmail/blob/54b6111009c6f0e3937d432028e82aa5e2477794/docs/plans/0002-roadmap.md): what is built and what comes next.
-
-## Limits
-
-- Gmail OAuth sign-in needs your own Google client until Frostmail has a
-  verified one. A Gmail app password works without one.
-- Microsoft work and school accounts are not supported.
-- Spell check while you write is not in the native desktop app yet.
-- Some HTML messages can still show at the window's height. At larger text
-  sizes, some fixed-width messages can be cut off at the right edge. Hide
-  the sidebar or choose a smaller text size to see the rest. See
-  [Known gaps](https://github.com/frostyard/frostmail/releases/tag/v0.9.0#known-gaps).
-- `maild` applies database migrations at start and refuses a newer database.
-  Back up `~/.var/app/org.frostyard.Frostmail/` before you install a newer
-  Flatpak. For a build from source, back up `$XDG_DATA_HOME/frostmail`.
+- [Frostmail project](https://github.com/frostyard/frostmail): features and project documentation.
+- [Release history](https://github.com/frostyard/frostmail/releases): what changed in each version.
+- [The Flatpak's own maild](https://github.com/frostyard/frostmail/blob/main/docs/design/desktop.md#the-flatpaks-own-maild): local storage and moving from a host daemon.
+- [Frostmail privacy policy](/privacy): what data Frostmail uses and how to remove it.
 
 ## See also
 
-- [Frostmail privacy policy](/privacy)
 - [lodge](/docs/apps/lodge/)
 - [Frostnotes](/docs/apps/frostnotes/)
 - [Porter](/docs/apps/porter/)
@@ -183,43 +55,6 @@ runs as the system user `frostmail` on lodge's host. To check the release
 
 ## Sources
 
-Release facts reviewed 2026-11-19. Mail in lodge status updated after [frostmail#377](https://github.com/frostyard/frostmail/pull/377).
-
-- Frostmail release v0.9.0 commit [`9f96c56eb37087b83cf6ad2d3b4598011a04a807`](https://github.com/frostyard/frostmail/tree/9f96c56eb37087b83cf6ad2d3b4598011a04a807), released 2026-11-19. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.9.0) attaches only `frostyard-maild_0.9.0_amd64.deb`.
-- Publication at v0.9.0: the [live Frostyard catalogue](https://frostyard.github.io/flatpak-index/index/static), checked 2026-11-19, lists `org.frostyard.Frostmail` at digest `sha256:67977d94a12b54a482b5c6193c0beed7f3f58205e783c2ecbf9961e9c85b3522`, with subject `Built from 9f96c56eb37087b83cf6ad2d3b4598011a04a807` and AppStream version `0.9.0`. Packaging at that commit: [`packaging/flatpak/org.frostyard.Frostmail.json`](https://github.com/frostyard/frostmail/blob/9f96c56eb37087b83cf6ad2d3b4598011a04a807/packaging/flatpak/org.frostyard.Frostmail.json) and [`packaging/nfpm.yaml`](https://github.com/frostyard/frostmail/blob/9f96c56eb37087b83cf6ad2d3b4598011a04a807/packaging/nfpm.yaml). The live [APT Packages](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) and [Homebrew Casks](https://github.com/frostyard/homebrew-tap/tree/main/Casks), checked 2026-11-19, still have no Frostmail package.
-- Desktop limits: [Known gaps in the v0.9.0 release notes](https://github.com/frostyard/frostmail/releases/tag/v0.9.0#known-gaps).
-- Desktop text size: [frostmail#342](https://github.com/frostyard/frostmail/pull/342), the v0.9.0 release notes, and [`docs/specs/ui.md`, lines 61–81](https://github.com/frostyard/frostmail/blob/9f96c56eb37087b83cf6ad2d3b4598011a04a807/docs/specs/ui.md#L61-L81): Smaller, Default, Larger, Largest; every desktop window and the reader change at once, not printing or the lodge web app.
-
-- Frostmail release v0.8.0 commit [`f8e30d423768ef8b94c4eb21212b10538a461c55`](https://github.com/frostyard/frostmail/tree/f8e30d423768ef8b94c4eb21212b10538a461c55), released 2026-11-16. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.8.0) attaches only `frostyard-maild_0.8.0_amd64.deb`.
-- The Flatpak at v0.8.0: the live Frostyard catalogue, checked 2026-11-16, lists `org.frostyard.Frostmail` at digest `sha256:3c38a9abffc3ede871ffaeca0b3d591e412bccb7b3808de4f1018799a0558a11`, built from `f8e30d42`, with the release `0.8.0` in its AppStream data.
-- v0.8.0's changes: the launcher count [frostmail#335](https://github.com/frostyard/frostmail/pull/335) (Unity's `LauncherEntry` signal); the tray icon and *Close to tray*, off by default, [frostmail#336](https://github.com/frostyard/frostmail/pull/336); Reply, Archive, and Trash in a Linux notification [frostmail#315](https://github.com/frostyard/frostmail/pull/315); calendar search [frostmail#310](https://github.com/frostyard/frostmail/pull/310); Add to Calendar for a published event [frostmail#311](https://github.com/frostyard/frostmail/pull/311); Mark All Messages as Read [frostmail#314](https://github.com/frostyard/frostmail/pull/314); the preview lines, none to 5 [frostmail#313](https://github.com/frostyard/frostmail/pull/313); picture thumbnails [frostmail#312](https://github.com/frostyard/frostmail/pull/312). No database migration: `internal/store/migrations` is the same as at v0.7.0. The maild system extension: `https://repository.frostyard.org/ext/maild/SHA256SUMS`, checked 2026-11-16, lists up to 0.8.0.
-- Mail in lodge: [Plan 0011 Status](https://github.com/frostyard/frostmail/blob/54b6111009c6f0e3937d432028e82aa5e2477794/docs/plans/0011-m8-mail-in-lodge.md#L12-L27) lists the missing Phase 7 completion checks. The [roadmap](https://github.com/frostyard/frostmail/blob/54b6111009c6f0e3937d432028e82aa5e2477794/docs/plans/0002-roadmap.md#L17) keeps M8 in progress.
-- Frostmail release v0.7.0 commit [`7db1e7b322695bc3d41662ddf0001c3ad05d1490`](https://github.com/frostyard/frostmail/tree/7db1e7b322695bc3d41662ddf0001c3ad05d1490), released 2026-11-12. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.7.0) attaches only `frostyard-maild_0.7.0_amd64.deb`. The tag `v0.7.0` is the commit of the release candidate `v0.7.0-rc.1`.
-- The Flatpak at v0.7.0: the live Frostyard catalogue (its `Last-Modified` is 2026-11-12 19:57:18 GMT) lists `org.frostyard.Frostmail` at digest `sha256:a28092da7134e578e135df3c5cbb86e30536c7f429c32d70b7706f0997d66fe5`, built from `7db1e7b3`, with the release `0.7.0` in its AppStream data.
-- v0.7.0's changes: the Frostyard look and the sidebar sections [frostmail#277](https://github.com/frostyard/frostmail/pull/277) (frostui v0.5.0), [`docs/specs/ui.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/specs/ui.md) (The desktop app; Sidebar, Follow Up), [`docs/plans/0015-mygo-desktop.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/plans/0015-mygo-desktop.md#the-frostyard-look) (The Frostyard look); the `mailto` filter [frostmail#264](https://github.com/frostyard/frostmail/pull/264), [frostmail#265](https://github.com/frostyard/frostmail/pull/265) and [`docs/adr/0056-filter-mailto-links-before-opening-them.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/docs/adr/0056-filter-mailto-links-before-opening-them.md); [`README.md`](https://github.com/frostyard/frostmail/blob/7db1e7b322695bc3d41662ddf0001c3ad05d1490/README.md).
-- No database migration in v0.7.0: `internal/store/migrations` is the same as at v0.6.0. The maild system extension: `https://repository.frostyard.org/ext/maild/SHA256SUMS`, checked 2026-11-12, lists up to 0.5.0.
-- Frostmail release v0.6.0 commit [`f505fcb8d5310d0a9ad245f3e906f10a61bcef15`](https://github.com/frostyard/frostmail/tree/f505fcb8d5310d0a9ad245f3e906f10a61bcef15), released 2026-11-11. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.6.0) attaches only `frostyard-maild_0.6.0_amd64.deb`. The tag `v0.6.0` is the commit of the release candidate `v0.6.0-rc.1`.
-- The Flatpak at v0.6.0: the live Frostyard catalogue, checked 2026-11-11, lists `org.frostyard.Frostmail` at digest `sha256:6321577ba8ce08377d39bc5c161bf210748abecc267809b7f0f9fcd17e325214`, built from `f505fcb8`, with the release `0.6.0` in its AppStream data.
-- The native app: [frostmail#223](https://github.com/frostyard/frostmail/pull/223), [`docs/adr/0054-draw-the-desktop-app-natively-with-mygo-and-frostui.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/docs/adr/0054-draw-the-desktop-app-natively-with-mygo-and-frostui.md), [`docs/plans/0015-mygo-desktop.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/docs/plans/0015-mygo-desktop.md), [`README.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/README.md), and [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/docs/design/desktop.md) (Installing for one user, The Flatpak in CI, The Flatpak's own maild, Windows). `make install-app` depends on `desktop-build`, a Go build: [`Makefile`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/Makefile).
-- v0.6.0's features: snippets [frostmail#192](https://github.com/frostyard/frostmail/pull/192), the command palette [frostmail#210](https://github.com/frostyard/frostmail/pull/210), find in the message [frostmail#219](https://github.com/frostyard/frostmail/pull/219), the quoted selection [frostmail#220](https://github.com/frostyard/frostmail/pull/220), collapsed read messages [frostmail#211](https://github.com/frostyard/frostmail/pull/211), "Sender not verified" [frostmail#169](https://github.com/frostyard/frostmail/pull/169), the missing attachment [frostmail#168](https://github.com/frostyard/frostmail/pull/168), the search's reach and the sync window [frostmail#209](https://github.com/frostyard/frostmail/pull/209), erasing Trash and Junk [frostmail#221](https://github.com/frostyard/frostmail/pull/221); [`docs/specs/ui.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/docs/specs/ui.md) (Command palette, Find in the message). The native app's code has each one under `internal/desktop/`; `internal/desktop/mainwin/mainwin_test.go` tests that Ctrl+Shift+P opens the palette.
-- The migrations of v0.6.0: [`internal/store/migrations`](https://github.com/frostyard/frostmail/tree/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/internal/store/migrations) adds `0021_snippets.sql` and `0022_erase_old.sql` after v0.5.0.
-- Problem records: [frostmail#157](https://github.com/frostyard/frostmail/pull/157) and [`docs/adr/0049-record-problems-in-the-local-journal.md`](https://github.com/frostyard/frostmail/blob/f505fcb8d5310d0a9ad245f3e906f10a61bcef15/docs/adr/0049-record-problems-in-the-local-journal.md).
-- Frostmail release v0.5.0 commit [`88d71ce16bcc4035aa080a2a7ca46f441d92ac77`](https://github.com/frostyard/frostmail/tree/88d71ce16bcc4035aa080a2a7ca46f441d92ac77), released 2026-11-07. Its [release](https://github.com/frostyard/frostmail/releases/tag/v0.5.0) attaches only `frostyard-maild_0.5.0_amd64.deb`. The tag `v0.5.0` is the commit of the release candidate `v0.5.0-rc.1`.
-- The Flatpak: the live Frostyard catalogue (its `Last-Modified` is 2026-11-07 20:55:15 GMT) lists `org.frostyard.Frostmail` at digest `sha256:0e6f1e07c475224c4a315d2705e9c867d2f6a19b33d5a83807c7257b747ec07b`, built from `88d71ce1`, with the release `0.5.0` in its AppStream data ([frostmail#152](https://github.com/frostyard/frostmail/pull/152) stamps it). [`packaging/flatpak/org.frostyard.Frostmail.json`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/packaging/flatpak/org.frostyard.Frostmail.json) (runtime `org.gnome.Platform` 51).
-- Follow Up: [frostmail#153](https://github.com/frostyard/frostmail/pull/153), [`docs/specs/ui.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/ui.md) (Sidebar, Follow Up) and [`docs/specs/parity.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/parity.md) (P-413).
-- The lodge badge: [frostmail#154](https://github.com/frostyard/frostmail/pull/154) and [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/lodge-app.md) (`badge`). lodge draws it from [lodge#45](https://github.com/frostyard/lodge/pull/45) (merge commit `58cd0c5`), which [lodge v0.2.0](https://github.com/frostyard/lodge/releases/tag/v0.2.0) contains. maild sends `badge` from v0.5.0: frostmail#154 is not in v0.4.1. The maild system extension: [snosi#1257](https://github.com/frostyard/snosi/pull/1257), merged 2026-11-09, pins maild 0.5.0, and [`SHA256SUMS`](https://repository.frostyard.org/ext/maild/SHA256SUMS), checked 2026-11-11, lists 0.2.0, 0.3.0, 0.4.1 and 0.5.0.
-- The release path: [`docs/adr/0048-tag-each-release-on-its-tested-candidates-commit.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/adr/0048-tag-each-release-on-its-tested-candidates-commit.md).
-- Frostyard Flatpak remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md) and [`apps.json`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/apps.json) at `4828c9836d451aaa7376483737d25a764b4e17bd`, after [flatpak-index#6](https://github.com/frostyard/flatpak-index/pull/6), merged 2026-10-29.
-- Install text: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md) at `4828c9836d451aaa7376483737d25a764b4e17bd` ([flatpak-index#7](https://github.com/frostyard/flatpak-index/pull/7), merged 2026-10-30): the per-user remote and the Flathub user remote.
-- The per-user remote: flatpak-index [`README.md`](https://github.com/frostyard/flatpak-index/blob/4828c9836d451aaa7376483737d25a764b4e17bd/README.md#install-apps) at `4828c9836d451aaa7376483737d25a764b4e17bd` adds it with `flatpak remote-add --user`. A Snow image carries no `frostyard` remote: snosi [`shared/snow/tree/etc/flatpak/remotes.d/`](https://github.com/frostyard/snosi/tree/b2858ca0222814c395cf8248db98f3e096d57dc9/shared/snow/tree/etc/flatpak/remotes.d) at `b2858ca0222814c395cf8248db98f3e096d57dc9` holds only `flathub.flatpakrepo`.
-- The Flathub user remote: a test on 2026-10-30 with Flatpak 1.16.6 and an empty user installation. Without Flathub as a user remote, `flatpak install --user` fails with `requires the runtime org.gnome.Platform/x86_64/51 which was not found`.
-- [`README.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/README.md)
-- [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/design/desktop.md) (sections Installing for one user, The Flatpak in CI, The Flatpak's own maild, Windows), [`docs/design/accounts.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/design/accounts.md), [`docs/design/overview.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/design/overview.md)
-- [`docs/specs/lodge-app.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/lodge-app.md), [`docs/specs/search.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/specs/search.md)
-- [`docs/plans/0002-roadmap.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/plans/0002-roadmap.md), [`docs/plans/0010-m7-microsoft-and-windows.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/plans/0010-m7-microsoft-and-windows.md), [`docs/plans/0011-m8-mail-in-lodge.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/plans/0011-m8-mail-in-lodge.md), [`docs/plans/0013-m6-the-standalone-desktop-flatpak.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/plans/0013-m6-the-standalone-desktop-flatpak.md)
-- [`docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md) (Accepted 2026-10-28)
-- A refused Background portal: [`docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/adr/0046-the-desktop-flatpak-carries-its-own-maild.md) (amended 2026-10-29) and [`docs/design/desktop.md`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/docs/design/desktop.md) (section The Flatpak's own maild).
-- [`internal/store/store.go`](https://github.com/frostyard/frostmail/blob/88d71ce16bcc4035aa080a2a7ca46f441d92ac77/internal/store/store.go)
-- Suite rule: core [`docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md`](https://github.com/frostyard/core/blob/4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c/docs/adr/0062-make-desktop-suite-apps-standalone-flatpaks-with-opt-in-lodge.md) (Accepted 2026-10-27) at `4d340b939fccab2ecb7f0be5dbf9e7ab7c03963c`.
-- snosi PR [snosi#1169](https://github.com/frostyard/snosi/pull/1169), merged 2026-10-28, adds the notesd and maild extensions.
-- No APT or Homebrew package: the Homebrew tap [`Casks`](https://github.com/frostyard/homebrew-tap/tree/8dfab8783f6b22e6333656aa317b5aac2611d5f7/Casks) at `8dfab8783f6b22e6333656aa317b5aac2611d5f7` holds only `chairlift.rb` and `nsl.rb`. The Frostyard APT index [`Packages`](https://repository.frostyard.org/debian/dists/trixie/main/binary-amd64/Packages) for trixie on amd64, checked 2026-11-01, lists no Frostmail package.
+- [Frostmail v0.11.0](https://github.com/frostyard/frostmail/releases/tag/v0.11.0), published 2026-11-27. See the [README at the release commit](https://github.com/frostyard/frostmail/blob/28b886a9972ab85dceafceabda7a63ef3b3ebecb/README.md).
+- [Frostyard Flatpak catalog](https://frostyard.github.io/flatpak-index/index/static): `org.frostyard.Frostmail` version `0.10.0` as checked on 2026-11-27. The attested `v0.11.0-rc.1` Flatpak (OCI digest `sha256:ea46b8915427a6b2c6da236d18203b00a904c1d64a76df6f9a10c7a1a5155406`) was built from the v0.11.0 release commit and includes the [NSGo-only launcher](https://github.com/frostyard/frostmail/blob/v0.11.0/packaging/flatpak/frostmail.sh).
+- [Server .deb](https://github.com/frostyard/frostmail/releases/download/v0.11.0/frostyard-maild_0.11.0_amd64.deb): SHA-256 `1f6d55260594f92ccb3d64eed636e4de6571938b0910f36a0f020837cc4c5ea5`. Its attestation names the same release commit as the Flatpak candidate.

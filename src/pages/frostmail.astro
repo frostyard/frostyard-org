@@ -18,7 +18,7 @@ const repo = "https://github.com/frostyard/frostmail";
 ---
 <Document title="Frostmail | Frostyard" description="Frostmail is a desktop mail client from Frostyard for Linux and Windows. It reads, searches and sends your mail, with your contacts, calendars and tasks beside it." eyebrow="App" heading="Frostmail" canonicalPath="/frostmail/">
   <p class="lede">Frostmail is a desktop mail client from Frostyard, for Linux and Windows. It reads, searches and sends your mail, and it keeps your contacts, calendars and tasks beside it. It works like Apple Mail.app.</p>
-  <p>Frostmail is free and open source, under the MIT license. It is pre-release. The latest release is <a href={releaseUrl}>{follows.tag}</a>.</p>
+  <p>Frostmail is free and open source, under the MIT license. It is pre-release. The latest release is <a href={releaseUrl}>{follows.tag}</a>. The Linux Flatpak opens the native NSGo client by default. This release removes the older MyGo client.</p>
 
   <h2 id="what-it-does">What it does</h2>
   <ul>
@@ -33,8 +33,9 @@ const repo = "https://github.com/frostyard/frostmail";
 
   <h2 id="get-frostmail">Get Frostmail</h2>
   <ul>
-    <li><strong>Linux:</strong> install the Flatpak <code>org.frostyard.Frostmail</code> from the Frostyard Flatpak remote. <a href="/docs/apps/frostmail/#install">The install steps</a> are in the Frostmail guide.</li>
-    <li><strong>Windows:</strong> build the installer from source. The <a href={`${repo}/blob/main/docs/design/desktop.md#windows`}>Windows build</a> has the steps.</li>
+    <li><strong>Linux:</strong> install the Flatpak <code>org.frostyard.Frostmail</code> from the Frostyard Flatpak remote. The remote can lag the GitHub release. <a href="/docs/apps/frostmail/#install">The install steps</a> are in the Frostmail guide.</li>
+    <li><strong>Windows:</strong> build the installer from source. No Windows installer is attached to this release. The <a href={`${repo}/blob/main/docs/design/desktop.md#windows`}>Windows build</a> has the steps.</li>
+    <li><strong>Server:</strong> the <a href={releaseUrl}>GitHub release</a> attaches a <code>frostyard-maild</code> <code>.deb</code> for lodge hosts, not the desktop app.</li>
     <li><strong>Source and documentation:</strong> <a href={repo}>github.com/frostyard/frostmail</a>, and the <a href="/docs/apps/frostmail/">Frostmail guide</a> on this site.</li>
   </ul>
 
