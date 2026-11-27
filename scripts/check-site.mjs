@@ -341,6 +341,7 @@ for (const route of docsRoutes) {
 }
 
 const docsLanding = await readRoute("/docs");
+assert(/href="\/docs\/apps\/frostmail\/"[^>]*><span[^>]*>Frostmail<\/span><\/a><span[^>]*>[^<]*Pre-release:/.test(docsLanding), "/docs must mark the Frostmail card as pre-release.");
 for (const text of [
   "Support boundary",
   "Start here",
@@ -864,8 +865,6 @@ assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/
 assert(!lightHtml.lodge.text.includes("proposed plan"), "/docs/apps/lodge must not call the accepted sysext plan proposed.");
 assert(lightHtml.frostmail.bodyText.includes("The Linux Flatpak starts the native NSGo client by default."), "/docs/apps/frostmail must name NSGo as the Linux Flatpak default.");
 assertSections("/docs/apps/frostmail", lightHtml.frostmail.html, ["server-package", "limits"]);
-const mailStatus = textOf(lightHtml.frostmail.bodyHtml.split('<h2 id="status"')[1].split('<h2 id="install"')[0]);
-assert(mailStatus.includes(`The Frostyard Flatpak remote serves version ${frostmailFollows.tag.slice(1)}.`), "/docs/apps/frostmail Status must name the published Flatpak version.");
 const mailLimits = textOf(lightHtml.frostmail.bodyHtml.split('<h2 id="limits"')[1].split('<h2')[0]);
 assert(mailLimits.includes("Back up ~/.var/app/org.frostyard.Frostmail/ before you install a newer Flatpak.") && mailLimits.includes("An older maild refuses to open a database with a newer schema."), "/docs/apps/frostmail Limits must advise a backup before upgrading the Flatpak and explain why.");
 assert(lightHtml.frostmail.bodyText.includes("frostyard-maild_0.11.0_amd64.deb") && lightHtml.frostmail.bodyText.includes("It does not install the desktop client."), "/docs/apps/frostmail must distinguish the v0.11.0 server .deb from the desktop Flatpak.");
