@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-27",
+  "scope": "Frostmail docs index card",
+  "correction": "Preserve the Frostmail card's pre-release label when updating its installation guidance.",
+  "evidence": "Review of local head 9d592538; scripts/check-site.mjs checks the rendered Frostmail card for the pre-release label.",
+  "promoted_to": ""
+}
