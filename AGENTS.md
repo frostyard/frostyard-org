@@ -86,8 +86,8 @@ field or enum value is a new version in a new file.
   prebuild step), then checks both snapshots against `HEAD` in the index and
   working tree. It does not deploy. The nightly secret-free contract applies
   to this workflow, not to the separate statistics deployment workflow.
-- `.github/dependabot.yml` updates the actions and the npm dependencies
-  weekly, in 1 grouped version-update PR for each ecosystem (core
+- `.github/dependabot.yml` checks for GitHub Actions and npm version updates
+  monthly, with at most 1 grouped PR for each ecosystem (core ADR-0089 and
   ADR-0075). Security updates stay 1 PR each.
 - The separate `.github/workflows/stats-rebuild.yml` posts
   to a Cloudflare Workers Builds deploy hook each Monday at 05:41 UTC, after
