@@ -798,6 +798,10 @@ for (const page of lightPages) {
 }
 assert(lightHtml.lodge.text.includes("approve again each grant made before v0.5.1") && lightHtml.lodge.text.includes("v0.2.1 is a patch release") && lightHtml.lodge.text.includes("reach a contrast of 4.5:1") && lightHtml.lodge.text.includes("each migrate the database"), "/docs/apps/lodge must keep the text contrast of v0.3.0, the migrations of v0.4.0 and v0.5.1, and the new approval of grants made before v0.5.1.");
 assert(lightHtml.lodge.html.includes("https://github.com/frostyard/lodge/blob/main/docs/specs/shell.md#badges"), "/docs/apps/lodge must link the Badges spec.");
+const mailPlanStatus = ' href="https://github.com/frostyard/frostmail/blob/28b886a9972ab85dceafceabda7a63ef3b3ebecb/docs/plans/0011-m8-mail-in-lodge.md#L12-L27"';
+assert(lightHtml.lodge.sourcesHtml.includes(mailPlanStatus), "/docs/apps/lodge Sources must link pinned Plan 0011 lines 12–27.");
+assert(lightHtml.frostmail.bodyHtml.includes(mailPlanStatus), "/docs/apps/frostmail must link pinned Plan 0011 lines 12–27 before Sources.");
+assert(!/\shref="https:\/\/github\.com\/frostyard\/frostmail\/(?:blob|tree)\/df106558209fad29c63983710a1a646557064dd4\/docs\/plans\/0011-m8-mail-in-lodge\.md(?:[?#][^"]*)?"/.test(lightHtml.lodge.html), "/docs/apps/lodge must not link the obsolete Plan 0011 commit.");
 assert(lightHtml.porter.text.includes("The latest release is v0.4.0") && lightHtml.porter.text.includes("dpkg -i"), "/docs/apps/porter must name v0.4.0 as the latest release, and the .deb install on lodge's host.");
 assert(lightHtml.porter.html.includes("https://github.com/frostyard/porter/blob/main/docs/specs/routines.md#run-now"), "/docs/apps/porter must link Run now.");
 for (const [route, tag] of [["frostnotes", "v0.9.0"], ["frostmail", "v0.11.0"], ["lodge", "v0.6.1"]]) {
@@ -1725,4 +1729,4 @@ assert(privacyText.includes("Controller: Frostyard Privacy Admin") && privacy.in
 // src/data/privacy-contact.mjs (frostyard-org#74). Do not remove this assertion to make a build pass.
 assert(!privacyText.includes("PLACEHOLDER"), "/privacy/problem-reports/ still has a PLACEHOLDER: set the controller and the contact in src/data/privacy-contact.mjs (frostyard-org#74).");
 
-console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, 1 landing page release display, and their internal routes.`);
+console.log(`Checked ${files.length} built pages, ${docsRoutes.length} docs pages, 1 landing page release display, 2 Plan 0011 links, and their internal routes.`);
