@@ -52,7 +52,7 @@ It does not install the desktop client. On Frostyard images, see the [maild syst
   Flatpak. An older `maild` refuses to open a database with a newer schema.
 - Gmail OAuth needs [your own Google client](https://github.com/frostyard/frostmail/blob/main/docs/design/accounts.md#setting-up-a-personal-google-client).
   Microsoft work and school accounts are not supported.
-- Mail in lodge is still in progress. See the [Frostmail roadmap](https://github.com/frostyard/frostmail/blob/main/docs/plans/0002-roadmap.md).
+- Mail in lodge is still in progress. See the [status in Plan 0011](https://github.com/frostyard/frostmail/blob/28b886a9972ab85dceafceabda7a63ef3b3ebecb/docs/plans/0011-m8-mail-in-lodge.md#L12-L27).
 
 ## See also
 
@@ -66,3 +66,4 @@ It does not install the desktop client. On Frostyard images, see the [maild syst
 - [Frostmail v0.11.0](https://github.com/frostyard/frostmail/releases/tag/v0.11.0), published 2026-11-27. See the [README at the release commit](https://github.com/frostyard/frostmail/blob/28b886a9972ab85dceafceabda7a63ef3b3ebecb/README.md).
 - [Frostyard Flatpak catalog](https://frostyard.github.io/flatpak-index/index/static): `org.frostyard.Frostmail` version `0.11.0` as checked on 2026-11-27 after the [promotion run](https://github.com/frostyard/frostmail/actions/runs/45929962008). The published Flatpak (OCI digest `sha256:ea46b8915427a6b2c6da236d18203b00a904c1d64a76df6f9a10c7a1a5155406`) was built from the v0.11.0 release commit and includes the [NSGo-only launcher](https://github.com/frostyard/frostmail/blob/28b886a9972ab85dceafceabda7a63ef3b3ebecb/packaging/flatpak/frostmail.sh).
 - [Server .deb](https://github.com/frostyard/frostmail/releases/download/v0.11.0/frostyard-maild_0.11.0_amd64.deb): SHA-256 `1f6d55260594f92ccb3d64eed636e4de6571938b0910f36a0f020837cc4c5ea5`. Its attestation names the same release commit as the published Flatpak.
+- [Frostmail roadmap at v0.11.0: M8](https://github.com/frostyard/frostmail/blob/28b886a9972ab85dceafceabda7a63ef3b3ebecb/docs/plans/0002-roadmap.md#L17) tracks Mail in lodge as in progress.
